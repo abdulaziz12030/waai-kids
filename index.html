@@ -4,27 +4,35 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
 <title>واعي كيدز | هدايا مواليد أنيقة - أولاد/بنات</title>
-<meta name="description" content="واعي كيدز - بُكسات مواليد فاخرة مع تغليف أنيق وبطاقة إهداء مطبوعة. تصميم مريح للجوال.">
+<meta name="description" content="واعي كيدز - بُكسات مواليد فاخرة مع تغليف أنيق وبطاقة إهداء مطبوعة. تصميم مريح للجوال والآيباد والكمبيوتر.">
 <meta name="theme-color" content="#0f3d5b">
+
+<!-- OG -->
 <meta property="og:title" content="واعي كيدز | بُكسات هدايا المواليد" />
 <meta property="og:description" content="اختيارات أنيقة للمولود الجديد + بطاقة إهداء" />
 <meta property="og:type" content="website" />
 <meta property="og:image" content="https://i.postimg.cc/wxnGnhBJ/Chat-GPT-Image-13-2025-03-25-58.png" />
 <meta property="og:locale" content="ar_SA" />
+
 <style>
   :root{
     --navy:#0f3d5b; --sky:#3aa6d0; --mint:#a6e4db; --blush:#f9d5df; --sand:#fffefb;
     --ink:#0e1a22; --muted:#5c6a74; --radius:18px; --shadow:0 10px 25px rgba(15,61,91,.12);
     --gold:#ffb400;
+    --fs-h1: clamp(1.35rem, 2.2vw, 2.1rem);
+    --fs-h2: clamp(1.05rem, 1.6vw, 1.3rem);
+    --fs-body: clamp(.95rem, 1.1vw, 1.05rem);
   }
   *{box-sizing:border-box}
-  html,body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif;background:var(--sand);color:var(--ink)}
+  html,body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif;background:var(--sand);color:var(--ink);font-size:var(--fs-body)}
   a{color:inherit;text-decoration:none}
   img{display:block;max-width:100%}
-  .container{width:min(960px,92%);margin-inline:auto}
+  .container{width:min(1200px,92%);margin-inline:auto}
 
+  /* Top notice */
   .topbar{background:linear-gradient(90deg,var(--sky),var(--mint));color:#053548;padding:.55rem 0;text-align:center;font-weight:700;letter-spacing:.2px}
 
+  /* Header - MOBILE FIRST */
   header{position:sticky;top:0;z-index:80;background:#fff;border-bottom:1px solid #e7eef2}
   .nav{display:flex;align-items:center;justify-content:space-between;padding:.75rem 0;gap:8px}
   .brand{display:flex;align-items:center;gap:.6rem}
@@ -40,20 +48,24 @@
   .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:.9rem 1.1rem;border-radius:14px;background:var(--navy);color:#fff;box-shadow:var(--shadow);min-height:48px}
   .ghost{display:inline-flex;align-items:center;justify-content:center;padding:.8rem 1rem;border:1px solid #dbe7ee;border-radius:14px;min-height:44px;background:#fff}
 
+  /* Hero */
   .hero{padding:20px 0}
   .hero-card{background:linear-gradient(180deg,#fff,#f5fbff);border:1px solid #e9f1f5;border-radius:calc(var(--radius)*1.2);box-shadow:var(--shadow);padding:18px;display:grid;gap:16px}
-  .hero h1{margin:0;font-size:clamp(1.35rem,4.5vw,1.9rem);line-height:1.7}
+  .hero h1{margin:0;font-size:var(--fs-h1);line-height:1.7}
   .hero p{margin:.3rem 0 0;color:var(--muted)}
   .hero .media{border-radius:16px;overflow:hidden;background:#eef7fb}
   .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
 
+  /* Sections */
   section{padding:22px 0}
   .sec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:10px;flex-wrap:wrap}
-  .sec-head h2{margin:0;font-size:1.15rem}
+  .sec-head h2{margin:0;font-size:var(--fs-h2)}
   .pill{display:inline-flex;align-items:center;gap:6px;padding:.35rem .6rem;border-radius:999px;background:#f0f7fb;border:1px solid #e0edf4;color:#256581;font-size:.85rem}
 
+  /* Products – mobile: single column */
   .grid{display:grid;gap:14px}
-  .card{background:#fff;border:1px solid #eaf0f3;border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);position:relative}
+  .card{background:#fff;border:1px solid #eaf0f3;border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);position:relative;transition:transform .25s ease}
+  .card:hover{transform:translateY(-3px)}
   .badge{position:absolute;top:10px;right:10px;background:linear-gradient(90deg,#ffd27a,#ffb347);color:#542d00;font-weight:800;border-radius:999px;padding:.28rem .6rem;font-size:.78rem;box-shadow:var(--shadow);display:flex;align-items:center;gap:6px}
   .badge svg{width:14px;height:14px}
   .pic{aspect-ratio:4/3;background:#f6fbff}
@@ -62,6 +74,7 @@
   .price s{color:#9aa9b2;font-weight:600}
   .ghost2{border:1px dashed #cfe4ee;background:#f7fdff}
 
+  /* Gift */
   .gift{background:linear-gradient(180deg,#ffffff,#f9fdff);border:1px solid #eaf0f3;border-radius:18px;box-shadow:var(--shadow);padding:16px;display:grid;gap:16px}
   .gift label{font-size:.95rem;color:#274a5d}
   .gift input,.gift textarea,.gift select{width:100%;padding:.8rem .9rem;border:1px solid #dfeaf0;border-radius:12px;background:#fff;min-height:48px}
@@ -74,30 +87,48 @@
   .gc-from{margin-top:8px;font-size:.92rem;color:#557a8e}
   .controls{display:flex;gap:8px;flex-wrap:wrap}
 
+  /* Reviews */
   .reviews .stars{color:var(--gold);font-size:1.05rem}
   .review-card{background:#fff;border:1px solid #eaf0f3;border-radius:14px;padding:14px;box-shadow:var(--shadow)}
 
+  /* Footer */
   footer{margin-top:20px;padding:22px 0;border-top:1px solid #e8eef2;background:#fff}
   footer .links{display:flex;gap:12px;flex-wrap:wrap}
   footer .links a{color:#0f4663}
-  .wa{position:fixed;left:14px;bottom:14px;z-index:90;display:grid;place-items:center;width:56px;height:56px;border-radius:50%;background:#25d366;box-shadow:var(--shadow)}
-  .wa svg{width:28px;height:28px;fill:#fff}
 
+  /* WhatsApp floating button */
+  .wa{position:fixed;left:14px;bottom:14px;z-index:90;display:grid;place-items:center;width:56px;height:56px;border-radius:50%;background:#25D366;box-shadow:var(--shadow)}
+  .wa:active{transform:scale(.98)}
+  .wa svg{width:28px;height:28px;display:block}
+
+  /* Reveal */
   [data-reveal]{transform:translateY(12px);opacity:0;transition:transform .5s ease, opacity .5s ease}
   [data-reveal].visible{transform:translateY(0);opacity:1}
   @media (prefers-reduced-motion: reduce){*{animation:none !important;transition:none !important}}
 
+  /* آيباد */
   @media (min-width:720px){
+    .container{ width: min(1100px, 90%); }
     .hero-card{grid-template-columns:1.1fr .9fr;padding:22px}
     .grid{grid-template-columns:repeat(12,1fr)}
     .card{grid-column:span 6}
     .gift{grid-template-columns:1.1fr .9fr;padding:18px}
+    .menu{position: static; display: flex !important; gap: 8px; border: 0; padding: 0; background: transparent;}
+    #menuBtn{ display:none; }
+  }
+
+  /* لابتوب */
+  @media (min-width:1024px){
+    .container{ width: min(1200px, 88%); }
+    .hero-card{ padding: 26px; }
+    .pic{ aspect-ratio: 16/10; }
+    .gift{ gap: 20px; }
   }
 
   /* طباعة البطاقة فقط */
   @media print{
     body{background:#fff}
-    header,.topbar,footer,.wa,.menu,.hero,#products,#reviews,.controls,.form,.muted{display:none !important}
+    header,.topbar,footer,.wa,.menu,.hero,#products,#reviews,.controls .btn[id="gift-wa"],.controls .ghost[id="gift-clear"]{display:none !important}
     #gift{padding:0 !important;margin:0 !important}
     #gift .card-preview{border:0;box-shadow:none;padding:0;margin:0}
     #gift .card-surface{border:1px solid #dfeaf0;page-break-inside:avoid}
@@ -122,7 +153,7 @@
       <a href="privacy.html" onclick="closeMenu()">الخصوصية</a>
       <a href="returns.html" onclick="closeMenu()">الاسترجاع</a>
       <a href="terms.html" onclick="closeMenu()">الشروط</a>
-      <a id="cta-top" class="btn" href="https://wa.me/966558446008?text=مرحبا%20واعي%20كيدز%2C%20أرغب%20بطلب%20بُكس%20المواليد">اطلب عبر واتساب</a>
+      <a id="cta-top" class="btn" href="https://wa.me/966552794082?text=%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%20%D9%88%D8%A7%D8%B9%D9%8A%20%D9%83%D9%8A%D8%AF%D8%B2%20%D8%A3%D8%B1%D8%BA%D8%A8%20%D8%A8%D8%B7%D9%84%D8%A8%20%D8%A8%D9%8F%D9%83%D8%B3%20%D8%A7%D9%84%D9%85%D9%88%D8%A7%D9%84%D9%8A%D8%AF">اطلب عبر واتساب</a>
     </nav>
   </header>
 
@@ -139,7 +170,9 @@
           </div>
         </div>
         <div class="media">
-          <img alt="هدايا مواليد - تغليف أنيق" src="https://i.postimg.cc/pVmS00PR/Chat-GPT-Image-13-2025-03-25-59.png">
+          <img alt="هدايا مواليد - تغليف أنيق"
+               src="https://i.postimg.cc/pVmS00PR/Chat-GPT-Image-13-2025-03-25-59.png"
+               loading="eager" decoding="async" width="1200" height="900">
         </div>
       </div>
     </section>
@@ -155,9 +188,13 @@
         <!-- Girl Box -->
         <article class="card" data-reveal>
           <div class="badge" title="الأكثر مبيعًا">
-            <svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 2l3 7h7l-5.5 4.1L18 21l-6-4-6 4 1.5-7.9L2 9h7z"/></svg> الأكثر مبيعًا
+            <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path fill="currentColor" d="M12 2l3 7h7l-5.5 4.1L18 21l-6-4-6 4 1.5-7.9L2 9h7z"/></svg> الأكثر مبيعًا
           </div>
-          <div class="pic"><img alt="بوكس هدية مواليد - بنات" src="https://i.postimg.cc/wxnGnhBJ/Chat-GPT-Image-13-2025-03-25-58.png"></div>
+          <div class="pic">
+            <img alt="بوكس هدية مواليد - بنات"
+                 src="https://i.postimg.cc/wxnGnhBJ/Chat-GPT-Image-13-2025-03-25-58.png"
+                 loading="lazy" decoding="async" width="1200" height="900">
+          </div>
           <div class="body">
             <h3 style="margin:0 0 6px">بُكس المواليد — بنات</h3>
             <p style="margin:0 0 8px;color:var(--muted)">توليفة وردية لطيفة مع تفاصيل رقيقة ولمسات تصوير جميلة.</p>
@@ -171,7 +208,11 @@
 
         <!-- Boy Box -->
         <article class="card" data-reveal>
-          <div class="pic"><img alt="بوكس هدية مواليد - أولاد" src="https://i.postimg.cc/HjGX3Wdc/Chat-GPT-Image-13-2025-03-26-00.png"></div>
+          <div class="pic">
+            <img alt="بوكس هدية مواليد - أولاد"
+                 src="https://i.postimg.cc/HjGX3Wdc/Chat-GPT-Image-13-2025-03-26-00.png"
+                 loading="lazy" decoding="async" width="1200" height="900">
+          </div>
           <div class="body">
             <h3 style="margin:0 0 6px">بُكس المواليد — أولاد</h3>
             <p style="margin:0 0 8px;color:var(--muted)">أزرق سماوي مع لمسات بحرية بسيطة، مناسبة لهدايا العائلة والأصدقاء.</p>
@@ -201,13 +242,13 @@
           </select>
 
           <label>الاسم على البطاقة</label>
-          <input id="gift-name" placeholder="مثال: للمولودة شهد" maxlength="40">
+          <input id="gift-name" placeholder="مثال: للمولودة شهد" maxlength="40" value="للمولودة شهد">
 
           <label>رسالة قصيرة (اختياري)</label>
-          <textarea id="gift-message" rows="3" placeholder="مثال: نُورتي الدنيا يا أجمل العطايا"></textarea>
+          <textarea id="gift-message" rows="3" placeholder="مثال: نُورتي الدنيا يا أجمل العطايا">نُورتي الدنيا يا أجمل العطايا</textarea>
 
           <label>من (اسم المُهدي)</label>
-          <input id="gift-from" placeholder="مثال: من خالتكم مدى">
+          <input id="gift-from" placeholder="مثال: من خالتكم مدى" value="من خالتكم مدى">
 
           <div class="controls">
             <button class="btn" id="gift-wa" type="button">إرسال الطلب عبر واتساب</button>
@@ -221,9 +262,9 @@
           <div class="card-surface" id="gc-surface">
             <div>
               <div class="gc-title">بطاقة إهداء</div>
-              <div class="gc-name" id="gc-name">—</div>
-              <div class="gc-msg" id="gc-message">—</div>
-              <div class="gc-from" id="gc-from">—</div>
+              <div class="gc-name" id="gc-name">للمولودة شهد</div>
+              <div class="gc-msg" id="gc-message">نُورتي الدنيا يا أجمل العطايا</div>
+              <div class="gc-from" id="gc-from">من: من خالتكم مدى</div>
             </div>
           </div>
           <div class="muted" style="margin-top:6px">* المعاينة تقريبية وقد تختلف طباعتها قليلًا.</div>
@@ -282,20 +323,42 @@
     </div>
   </footer>
 
-  <!-- WhatsApp FAB -->
-  <a class="wa" aria-label="تواصل واتساب" id="cta-fab" href="https://wa.me/966558446008?text=مرحبا%20واعي%20كيدز">
-    <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M19.11 17.39c-.27-.13-1.6-.79-1.85-.88-.25-.09-.43-.13-.61.13-.18.27-.7.88-.86 1.06-.16.18-.32.2-.59.07-.27-.13-1.12-.41-2.14-1.31-.79-.7-1.32-1.56-1.48-1.82-.16-.27-.02-.41.11-.54.11-.11.27-.29.41-.45.14-.16.18-.27.27-.45.09-.18.05-.34-.02-.48-.07-.13-.61-1.46-.84-2-.22-.52-.46-.45-.61-.45-.16 0-.34-.02-.52-.02-.18 0-.48.07-.73.34s-.96.94-.96 2.29 1 2.66 1.14 2.85c.14.18 1.96 2.99 4.75 4.19.66.29 1.18.46 1.58.59.66.21 1.26.18 1.73.11.53-.08 1.6-.65 1.83-1.28.23-.63.23-1.17.16-1.28-.07-.11-.25-.18-.52-.3zM16.06 3C9.84 3 4.8 8.03 4.8 14.26c0 2.39.72 4.61 1.96 6.46L5 29l8.5-1.79c1.78.98 3.83 1.53 5.99 1.53 6.22 0 11.26-5.03 11.26-11.26C30.76 8.03 25.73 3 19.5 3h-3.44z"/></svg>
+  <!-- WhatsApp FAB (SVG رسمي) -->
+  <a class="wa" aria-label="تواصل واتساب" id="cta-fab"
+     href="https://wa.me/966552794082?text=%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%20%D9%88%D8%A7%D8%B9%D9%8A%20%D9%83%D9%8A%D8%AF%D8%B2">
+    <!-- دائرة خضراء + شعار واتساب أبيض مت矢ّر -->
+    <svg viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+      <defs>
+        <clipPath id="r">
+          <circle cx="16" cy="16" r="16"></circle>
+        </clipPath>
+      </defs>
+      <!-- الخلفية الخضراء -->
+      <circle cx="16" cy="16" r="16" fill="#25D366"/>
+      <!-- فقاعة بيضاء مصغّرة لإبراز الشعار -->
+      <g clip-path="url(#r)">
+        <path fill="#ffffff" d="M25.6 6.6A13.4 13.4 0 0 0 16 3.1C8.8 3.1 3 8.9 3 16.1c0 2.2.6 4.3 1.7 6.2L3 29l6.8-1.7c1.8 1 3.9 1.5 6 1.5 7.2 0 13-5.8 13-13 0-3.4-1.3-6.6-3.7-9.2z"/>
+      </g>
+      <!-- علامة الهاتف داخل الفقاعة الخضراء (ساليد) -->
+      <path fill="#25D366" d="M21.9 18.5c-.4-.2-2.2-1.1-2.5-1.2-.3-.1-.5-.2-.8.2-.2.3-.9 1.2-1.1 1.4-.3.2-.4.3-.8.1-.4-.2-1.6-.6-3-1.9-1.1-1-1.8-2.2-2-2.6-.2-.4 0-.6.1-.8.2-.2.4-.5.6-.7.2-.2.3-.4.4-.7.1-.3 0-.5 0-.7 0-.1-.8-2.1-1.1-2.9-.3-.8-.5-.7-.7-.7-.2 0-.4 0-.6 0-.2 0-.6.1-.9.4s-1.2 1.3-1.2 3.1 1 3.6 1.2 3.9.2.3 0 .6c-.2.3-.6 1.6 0 2.6.7 1.1 2.1 2.6 4.5 3.7.6.3 1.1.4 1.5.6.6.2 1.2.2 1.7.1.5-.1 1.6-.7 1.8-1.3.2-.6.2-1.2.1-1.3 0-.1-.2-.2-.5-.3z"/>
+    </svg>
   </a>
 
 <script>
+  // رقم واتساب مركزي
+  const WA_NUM = '966552794082';
+
+  // سنة الحقوق
   document.getElementById('y').textContent = new Date().getFullYear();
 
-  // القائمة للجوال
+  // قائمة الجوال
   const menuBtn = document.getElementById('menuBtn');
   const menu = document.getElementById('menu');
   const closeMenu = () => { menu.style.display='none'; };
   window.closeMenu = closeMenu;
-  menuBtn.addEventListener('click', ()=>{ menu.style.display = (menu.style.display==='block') ? 'none' : 'block'; });
+  menuBtn.addEventListener('click', ()=>{
+    menu.style.display = (menu.style.display==='block') ? 'none' : 'block';
+  });
 
   // ظهور سلس
   const reveal = () => {
@@ -306,9 +369,14 @@
   };
   window.addEventListener('scroll',reveal); window.addEventListener('load',reveal);
 
-  // واتساب مع تمرير بطاقة الإهداء (بدون "المناسبة")
-  const toWA = (payload) => 'https://wa.me/966558446008?text=' + encodeURIComponent(payload);
-  function prefillGift(type){ document.getElementById('gift-product').value = type || 'بنات'; document.getElementById('gift').scrollIntoView({behavior:'smooth'}); }
+  // مولّد رابط واتساب
+  const toWA = (payload) => 'https://wa.me/' + WA_NUM + '?text=' + encodeURIComponent(payload);
+
+  // تعبئة سريعة للبطاقة من منتج
+  function prefillGift(type){
+    document.getElementById('gift-product').value = type || 'بنات';
+    document.getElementById('gift').scrollIntoView({behavior:'smooth'});
+  }
   window.prefillGift = prefillGift;
 
   // حقول البطاقة
@@ -338,18 +406,21 @@
     v.from.textContent = g.from ? `من: ${g.from}` : '—';
     localStorage.setItem('waai_kids_gift', JSON.stringify(g));
     // تحديث زر واتساب العلوي برسالة مختصرة
-    let baseMsg = 'مرحبا واعي كيدز, أرغب بطلب بُكس المواليد';
+    let baseMsg = 'مرحبا واعي كيدز، أرغب بطلب بُكس المواليد';
     if(g.name || g.message || g.from){
       baseMsg += `\n\nبطاقة الإهداء:\n- الاسم: ${g.name||'-'}\n- رسالة: ${g.message||'-'}\n- من: ${g.from||'-'}`;
     }
     document.getElementById('cta-top').href = toWA(baseMsg);
+    // زر الفاب ثابت على ترحيب عام
+    document.getElementById('cta-fab').href = toWA('مرحبا واعي كيدز');
   };
   ['input','change'].forEach(evt=>{ Object.values(f).forEach(el=> el.addEventListener(evt, renderGift)); });
 
   // استرجاع آخر إدخال
   const savedGift = localStorage.getItem('waai_kids_gift');
   if(savedGift){
-    try{ const g = JSON.parse(savedGift);
+    try{
+      const g = JSON.parse(savedGift);
       if(g.product) f.product.value=g.product;
       if(g.name) f.name.value=g.name;
       if(g.message) f.message.value=g.message;
@@ -385,9 +456,6 @@
   document.getElementById('gift-clear').addEventListener('click', ()=>{
     Object.values(f).forEach(el=> el.value=''); renderGift();
   });
-
-  // زر واتساب العائم
-  document.getElementById('cta-fab').href = toWA('مرحبا واعي كيدز');
 </script>
 </body>
 </html>
