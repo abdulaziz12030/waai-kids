@@ -23,10 +23,8 @@
   img{display:block;max-width:100%}
   .container{width:min(960px,92%);margin-inline:auto}
 
-  /* Top notice */
   .topbar{background:linear-gradient(90deg,var(--sky),var(--mint));color:#053548;padding:.55rem 0;text-align:center;font-weight:700;letter-spacing:.2px}
 
-  /* Header - MOBILE FIRST */
   header{position:sticky;top:0;z-index:80;background:#fff;border-bottom:1px solid #e7eef2}
   .nav{display:flex;align-items:center;justify-content:space-between;padding:.75rem 0;gap:8px}
   .brand{display:flex;align-items:center;gap:.6rem}
@@ -42,7 +40,6 @@
   .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:.9rem 1.1rem;border-radius:14px;background:var(--navy);color:#fff;box-shadow:var(--shadow);min-height:48px}
   .ghost{display:inline-flex;align-items:center;justify-content:center;padding:.8rem 1rem;border:1px solid #dbe7ee;border-radius:14px;min-height:44px;background:#fff}
 
-  /* Hero */
   .hero{padding:20px 0}
   .hero-card{background:linear-gradient(180deg,#fff,#f5fbff);border:1px solid #e9f1f5;border-radius:calc(var(--radius)*1.2);box-shadow:var(--shadow);padding:18px;display:grid;gap:16px}
   .hero h1{margin:0;font-size:clamp(1.35rem,4.5vw,1.9rem);line-height:1.7}
@@ -50,13 +47,11 @@
   .hero .media{border-radius:16px;overflow:hidden;background:#eef7fb}
   .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
 
-  /* Sections */
   section{padding:22px 0}
   .sec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:10px;flex-wrap:wrap}
   .sec-head h2{margin:0;font-size:1.15rem}
   .pill{display:inline-flex;align-items:center;gap:6px;padding:.35rem .6rem;border-radius:999px;background:#f0f7fb;border:1px solid #e0edf4;color:#256581;font-size:.85rem}
 
-  /* Products – mobile: single column */
   .grid{display:grid;gap:14px}
   .card{background:#fff;border:1px solid #eaf0f3;border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);position:relative}
   .badge{position:absolute;top:10px;right:10px;background:linear-gradient(90deg,#ffd27a,#ffb347);color:#542d00;font-weight:800;border-radius:999px;padding:.28rem .6rem;font-size:.78rem;box-shadow:var(--shadow);display:flex;align-items:center;gap:6px}
@@ -67,7 +62,6 @@
   .price s{color:#9aa9b2;font-weight:600}
   .ghost2{border:1px dashed #cfe4ee;background:#f7fdff}
 
-  /* Gift */
   .gift{background:linear-gradient(180deg,#ffffff,#f9fdff);border:1px solid #eaf0f3;border-radius:18px;box-shadow:var(--shadow);padding:16px;display:grid;gap:16px}
   .gift label{font-size:.95rem;color:#274a5d}
   .gift input,.gift textarea,.gift select{width:100%;padding:.8rem .9rem;border:1px solid #dfeaf0;border-radius:12px;background:#fff;min-height:48px}
@@ -80,30 +74,33 @@
   .gc-from{margin-top:8px;font-size:.92rem;color:#557a8e}
   .controls{display:flex;gap:8px;flex-wrap:wrap}
 
-  /* Reviews */
   .reviews .stars{color:var(--gold);font-size:1.05rem}
   .review-card{background:#fff;border:1px solid #eaf0f3;border-radius:14px;padding:14px;box-shadow:var(--shadow)}
 
-  /* Footer & WA */
   footer{margin-top:20px;padding:22px 0;border-top:1px solid #e8eef2;background:#fff}
   footer .links{display:flex;gap:12px;flex-wrap:wrap}
   footer .links a{color:#0f4663}
   .wa{position:fixed;left:14px;bottom:14px;z-index:90;display:grid;place-items:center;width:56px;height:56px;border-radius:50%;background:#25d366;box-shadow:var(--shadow)}
   .wa svg{width:28px;height:28px;fill:#fff}
 
-  /* Reveal (خففنا الحركة للجوال) */
   [data-reveal]{transform:translateY(12px);opacity:0;transition:transform .5s ease, opacity .5s ease}
   [data-reveal].visible{transform:translateY(0);opacity:1}
-  @media (prefers-reduced-motion: reduce){
-    *{animation:none !important;transition:none !important}
-  }
+  @media (prefers-reduced-motion: reduce){*{animation:none !important;transition:none !important}}
 
-  /* Larger screens */
   @media (min-width:720px){
     .hero-card{grid-template-columns:1.1fr .9fr;padding:22px}
     .grid{grid-template-columns:repeat(12,1fr)}
     .card{grid-column:span 6}
     .gift{grid-template-columns:1.1fr .9fr;padding:18px}
+  }
+
+  /* طباعة البطاقة فقط */
+  @media print{
+    body{background:#fff}
+    header,.topbar,footer,.wa,.menu,.hero,#products,#reviews,.controls,.form,.muted{display:none !important}
+    #gift{padding:0 !important;margin:0 !important}
+    #gift .card-preview{border:0;box-shadow:none;padding:0;margin:0}
+    #gift .card-surface{border:1px solid #dfeaf0;page-break-inside:avoid}
   }
 </style>
 </head>
@@ -135,7 +132,7 @@
       <div class="hero-card" data-reveal>
         <div>
           <h1>بُكسات مواليد أنيقة <span style="color:var(--sky)">— أولاد / بنات</span><br>تغليف فاخر، تفاصيل مُبهجة، وبطاقة إهداء مطبوعة. 🎁</h1>
-          <p>جهّز هديتك باختيار البُكس المناسب وإضافة بطاقة تحمل الاسم والمناسبة قبل التجهيز.</p>
+          <p>جهّز هديتك باختيار البُكس المناسب وإضافة بطاقة تحمل الاسم قبل التجهيز.</p>
           <div class="actions">
             <a class="btn" href="#products">تصفح المنتجات</a>
             <a class="ghost" href="#gift">بطاقة الإهداء</a>
@@ -162,7 +159,7 @@
           </div>
           <div class="pic"><img alt="بوكس هدية مواليد - بنات" src="https://i.postimg.cc/wxnGnhBJ/Chat-GPT-Image-13-2025-03-25-58.png"></div>
           <div class="body">
-            <h3 style="margin:0 0 6px">بُكس المواليد — أولاد</h3>
+            <h3 style="margin:0 0 6px">بُكس المواليد — بنات</h3>
             <p style="margin:0 0 8px;color:var(--muted)">توليفة وردية لطيفة مع تفاصيل رقيقة ولمسات تصوير جميلة.</p>
             <div class="price"><strong>149 ر.س</strong> <s>200 ر.س</s> <span class="pill">وفر 25%</span></div>
             <div class="actions">
@@ -176,7 +173,7 @@
         <article class="card" data-reveal>
           <div class="pic"><img alt="بوكس هدية مواليد - أولاد" src="https://i.postimg.cc/HjGX3Wdc/Chat-GPT-Image-13-2025-03-26-00.png"></div>
           <div class="body">
-            <h3 style="margin:0 0 6px">بُكس المواليد — بنات</h3>
+            <h3 style="margin:0 0 6px">بُكس المواليد — أولاد</h3>
             <p style="margin:0 0 8px;color:var(--muted)">أزرق سماوي مع لمسات بحرية بسيطة، مناسبة لهدايا العائلة والأصدقاء.</p>
             <div class="price"><strong>149 ر.س</strong> <s>200 ر.س</s> <span class="pill">عرض الافتتاح</span></div>
             <div class="actions">
@@ -207,10 +204,10 @@
           <input id="gift-name" placeholder="مثال: للمولودة شهد" maxlength="40">
 
           <label>رسالة قصيرة (اختياري)</label>
-          <textarea id="gift-message" rows="3" placeholder="رسالة رقيقة من سطرين.."></textarea>
+          <textarea id="gift-message" rows="3" placeholder="مثال: نُورتي الدنيا يا أجمل العطايا"></textarea>
 
           <label>من (اسم المُهدي)</label>
-          <input id="gift-from" placeholder="مثال: نورت الدنيا ياأجمل العطايا">
+          <input id="gift-from" placeholder="مثال: من خالتكم مدى">
 
           <div class="controls">
             <button class="btn" id="gift-wa" type="button">إرسال الطلب عبر واتساب</button>
@@ -221,11 +218,10 @@
 
         <div class="card-preview">
           <div class="ribbon">واعي كيدز</div>
-          <div class="card-surface">
+          <div class="card-surface" id="gc-surface">
             <div>
               <div class="gc-title">بطاقة إهداء</div>
               <div class="gc-name" id="gc-name">—</div>
-              <div class="gc-msg" id="gc-occasion">—</div>
               <div class="gc-msg" id="gc-message">—</div>
               <div class="gc-from" id="gc-from">—</div>
             </div>
@@ -292,17 +288,14 @@
   </a>
 
 <script>
-  // سنة الحقوق
   document.getElementById('y').textContent = new Date().getFullYear();
 
-  // قائمة الجوال
+  // القائمة للجوال
   const menuBtn = document.getElementById('menuBtn');
   const menu = document.getElementById('menu');
   const closeMenu = () => { menu.style.display='none'; };
   window.closeMenu = closeMenu;
-  menuBtn.addEventListener('click', ()=>{
-    menu.style.display = (menu.style.display==='block') ? 'none' : 'block';
-  });
+  menuBtn.addEventListener('click', ()=>{ menu.style.display = (menu.style.display==='block') ? 'none' : 'block'; });
 
   // ظهور سلس
   const reveal = () => {
@@ -313,43 +306,41 @@
   };
   window.addEventListener('scroll',reveal); window.addEventListener('load',reveal);
 
-  // واتساب مع تمرير بطاقة الإهداء
+  // واتساب مع تمرير بطاقة الإهداء (بدون "المناسبة")
   const toWA = (payload) => 'https://wa.me/966558446008?text=' + encodeURIComponent(payload);
   function prefillGift(type){ document.getElementById('gift-product').value = type || 'بنات'; document.getElementById('gift').scrollIntoView({behavior:'smooth'}); }
   window.prefillGift = prefillGift;
 
-  // كائن الحقول
+  // حقول البطاقة
   const f = {
     product: document.getElementById('gift-product'),
     name: document.getElementById('gift-name'),
-    occasion: document.getElementById('gift-occasion'),
     message: document.getElementById('gift-message'),
     from: document.getElementById('gift-from')
   };
   const v = {
     name: document.getElementById('gc-name'),
-    occasion: document.getElementById('gc-occasion'),
     message: document.getElementById('gc-message'),
     from: document.getElementById('gc-from')
   };
+
   const readGift = ()=>({
     product: f.product.value.trim(),
     name: f.name.value.trim(),
-    occasion: f.occasion.value.trim(),
     message: f.message.value.trim(),
     from: f.from.value.trim(),
   });
+
   const renderGift = ()=>{
     const g = readGift();
     v.name.textContent = g.name || '—';
-    v.occasion.textContent = g.occasion || '—';
     v.message.textContent = g.message || '—';
     v.from.textContent = g.from ? `من: ${g.from}` : '—';
     localStorage.setItem('waai_kids_gift', JSON.stringify(g));
-    // تحديث زر واتساب في القائمة
+    // تحديث زر واتساب العلوي برسالة مختصرة
     let baseMsg = 'مرحبا واعي كيدز, أرغب بطلب بُكس المواليد';
-    if(g.name || g.occasion || g.message || g.from){
-      baseMsg += `\n\nبطاقة الإهداء:\n- الاسم: ${g.name||'-'}\n- المناسبة: ${g.occasion||'-'}\n- رسالة: ${g.message||'-'}\n- من: ${g.from||'-'}`;
+    if(g.name || g.message || g.from){
+      baseMsg += `\n\nبطاقة الإهداء:\n- الاسم: ${g.name||'-'}\n- رسالة: ${g.message||'-'}\n- من: ${g.from||'-'}`;
     }
     document.getElementById('cta-top').href = toWA(baseMsg);
   };
@@ -359,69 +350,43 @@
   const savedGift = localStorage.getItem('waai_kids_gift');
   if(savedGift){
     try{ const g = JSON.parse(savedGift);
-      if(g.product) f.product.value=g.product; if(g.name) f.name.value=g.name;
-      if(g.occasion) f.occasion.value=g.occasion; if(g.message) f.message.value=g.message;
+      if(g.product) f.product.value=g.product;
+      if(g.name) f.name.value=g.name;
+      if(g.message) f.message.value=g.message;
       if(g.from) f.from.value=g.from;
     }catch(e){}
   }
   renderGift();
 
-  // أزرار الطلب
+  // أزرار الطلب من المنتجات
   document.querySelectorAll('.order').forEach(btn=>{
     btn.addEventListener('click', ()=>{
       const p = btn.dataset.product;
       const g = readGift();
       let msg = `أريد طلب بُكس المواليد (${p}) سعر 149 ر.س`;
-      if(g.name || g.occasion || g.message || g.from){
-        msg += `\n\nبطاقة الإهداء:\n- الاسم: ${g.name||'-'}\n- المناسبة: ${g.occasion||'-'}\n- رسالة: ${g.message||'-'}\n- من: ${g.from||'-'}`;
+      if(g.name || g.message || g.from){
+        msg += `\n\nبطاقة الإهداء:\n- الاسم: ${g.name||'-'}\n- رسالة: ${g.message||'-'}\n- من: ${g.from||'-'}`;
       }
       window.location.href = toWA(msg);
     });
   });
 
-  // أزرار بطاقة الإهداء
+  // أزرار البطاقة
   document.getElementById('gift-wa').addEventListener('click', ()=>{
     const g = readGift();
-    let msg = `أرغب بطلب بُكس (${g.product}) مع بطاقة إهداء مطبوعة:\n- الاسم: ${g.name||'-'}\n- المناسبة: ${g.occasion||'-'}\n- رسالة: ${g.message||'-'}\n- من: ${g.from||'-'}`;
+    let msg = `أرغب بطلب بُكس (${g.product}) مع بطاقة إهداء مطبوعة:\n- الاسم: ${g.name||'-'}\n- رسالة: ${g.message||'-'}\n- من: ${g.from||'-'}`;
     window.location.href = toWA(msg);
   });
+
+  // طباعة البطاقة فقط
   document.getElementById('gift-print').addEventListener('click', ()=> window.print());
-  document.getElementById('gift-clear').addEventListener('click', ()=>{ Object.values(f).forEach(el=> el.value=''); renderGift(); });
 
-  // التقييمات
-  const baseReviews = [
-    {n:'نوف', s:5, t:'تغليف أنيق والتسليم سريع. البطاقة كانت لمسة جميلة جدًا ✨'},
-    {n:'عبدالرحمن', s:5, t:'طلبت بُكس أولاد، الألوان رايقة والتنسيق مرتب. أنصح فيه.'},
-    {n:'سارة', s:4, t:'جودة ممتازة، أتمنى إضافة خيار شريط ذهبي للتغليف.'}
-  ];
-  const stored = JSON.parse(localStorage.getItem('waai_kids_reviews')||'[]');
-  const reviews = [...baseReviews, ...stored];
-
-  function refreshAvg(){
-    const avg = reviews.reduce((a,b)=>a+b.s,0) / reviews.length;
-    const rounded = Math.round(avg*10)/10, s = Math.round(avg);
-    document.getElementById('avg-stars').textContent = '★★★★★'.slice(0,s)+'☆☆☆☆☆'.slice(0,5-s);
-    document.getElementById('avg-label').textContent = `${rounded} من 5 (${reviews.length} تقييمات)`;
-  }
-  refreshAvg();
-
-  document.getElementById('review-form').addEventListener('submit',(e)=>{
-    e.preventDefault();
-    const name = document.getElementById('rev-name').value.trim() || 'ضيف';
-    const star = parseInt(document.getElementById('rev-stars').value,10);
-    const text = document.getElementById('rev-text').value.trim() || '—';
-    const item = {n:name, s:star, t:text};
-    reviews.push(item);
-    const holder = document.getElementById('reviews-list');
-    const card = document.createElement('div');
-    card.className='review-card'; card.style.marginTop='10px';
-    card.innerHTML = `<div class="stars">${'★★★★★'.slice(0,star)}${'☆☆☆☆☆'.slice(0,5-star)}</div><strong>${name}</strong><div class="muted">${text}</div>`;
-    holder.appendChild(card);
-    localStorage.setItem('waai_kids_reviews', JSON.stringify(reviews.slice(baseReviews.length)));
-    refreshAvg(); e.target.reset(); alert('تم إضافة تقييمك بنجاح. شكرًا لك!');
+  // مسح الحقول
+  document.getElementById('gift-clear').addEventListener('click', ()=>{
+    Object.values(f).forEach(el=> el.value=''); renderGift();
   });
 
-  // تحديث زر الفاب (ثابت)
+  // زر واتساب العائم
   document.getElementById('cta-fab').href = toWA('مرحبا واعي كيدز');
 </script>
 </body>
