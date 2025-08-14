@@ -22,14 +22,14 @@
   <section class="container hero">
     <div class="hero-card" data-reveal>
       <div>
-        <h1>🎁 واعي كيدز — بُكسات مواليد بتغليف فاخر وبطاقة إهداء اختيارية</h1>
-        <p style="color:var(--muted)">اختَر النوع (أولاد/بنات) وأرسل الاسم والرسالة لتصل جاهزة.</p>
-        <div class="actions">
+        <h1 class="fade-up">🎁 واعي كيدز — بُكسات مواليد بتغليف فاخر وبطاقة إهداء اختيارية</h1>
+        <p class="fade-up" style="color:var(--muted);animation-delay:.08s">اختَر النوع (أولاد/بنات) وأرسل الاسم والرسالة لتصل جاهزة.</p>
+        <div class="actions fade-up" style="animation-delay:.15s">
           <a class="btn" href="product.html">اطلب الآن</a>
           <a class="ghost" href="#products">تصفّح المنتجات</a>
         </div>
       </div>
-      <div class="hero-media">
+      <div class="hero-media" data-anim="float">
         <img src="images/banner.png" alt="بنر واعي كيدز" loading="eager">
       </div>
     </div>
@@ -39,7 +39,7 @@
   <section id="products" class="container">
     <div class="grid">
       <article class="card" data-reveal>
-        <div class="pic"><img src="images/girl.png" alt="بُكس المواليد — بنات"></div>
+        <div class="pic" data-anim="float"><img src="images/girl.png" alt="بُكس المواليد — بنات"></div>
         <div class="body">
           <h3>بُكس المواليد — بنات</h3>
           <div class="price"><strong>149 ر.س</strong></div>
@@ -47,7 +47,7 @@
         </div>
       </article>
       <article class="card" data-reveal>
-        <div class="pic"><img src="images/boy1.png" alt="بُكس المواليد — أولاد"></div>
+        <div class="pic" data-anim="float"><img src="images/boy1.png" alt="بُكس المواليد — أولاد"></div>
         <div class="body">
           <h3>بُكس المواليد — أولاد</h3>
           <div class="price"><strong>149 ر.س</strong></div>
@@ -60,11 +60,6 @@
 
 <footer>
   <div class="container">
-    <div class="links">
-      <a href="terms.html">الشروط</a>
-      <a href="returns.html">الاسترجاع</a>
-      <a href="privacy.html">الخصوصية</a>
-    </div>
     <div>© <span id="y"></span> واعي كيدز</div>
   </div>
 </footer>
