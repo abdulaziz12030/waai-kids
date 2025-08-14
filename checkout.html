@@ -3,9 +3,6 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>السلة | واعي كيدز</title>
 <link rel="stylesheet" href="css.css">
-<style>
-  .muted{color:var(--muted);font-size:.95em}
-</style>
 </head><body>
 <header>
   <div class="container nav">
@@ -17,28 +14,31 @@
 <main class="container" style="padding:18px 0">
   <!-- هوية -->
   <section style="padding:0 0 18px">
-    <div class="pill" style="background:#eaf9ff;border-color:#d9f1fb;color:#0f4663">🧸 واعي كيدز • لحظاتك مع المواليد تبدأ من هنا</div>
+    <div class="pill" style="background:#eaf9ff;border-color:#d9f1fb;color:#0f4663" data-reveal>🧸 واعي كيدز • لحظاتك مع المواليد تبدأ من هنا</div>
   </section>
 
-  <div class="card" data-reveal><div class="body" style="display:grid;gap:16px" id="formArea">
-    <h2>السلة</h2>
+  <div class="card" data-reveal id="formArea"><div class="body" style="display:grid;gap:16px">
+    <h2 class="fade-up">السلة</h2>
 
     <div id="list" style="display:grid;gap:10px"></div>
     <div style="margin-top:4px">الإجمالي: <strong id="total">0</strong> ر.س</div>
 
-    <!-- معاينة بطاقة الإهداء -->
+    <!-- معاينة بطاقة الإهداء (عرضية) -->
     <div id="giftBox" class="gift-preview" style="display:none">
       <div class="gift-brand">
         <img src="images/logo.png" alt="واعي كيدز"><strong>معاينة بطاقة الإهداء</strong>
       </div>
-      <div class="gift-frame">
-        <canvas id="giftCanvas" width="1400" height="820" aria-label="معاينة البطاقة"></canvas>
+      <div class="gift-frame" data-reveal>
+        <!-- عرضية: ارتفاع أقل لتناسب الجوال -->
+        <canvas id="giftCanvas" width="1440" height="640" aria-label="معاينة البطاقة"></canvas>
       </div>
       <div class="gift-actions">
-        <button class="ghost" id="downloadGift">تحميل البطاقة كصورة</button>
-        <button class="btn" id="shareGift">إرسال الطلب + الصورة عبر واتساب</button>
+        <!-- زر واحد فقط: إرسال مع البطاقة -->
+        <button class="btn" id="shareGift">إرسال الطلب + صورة البطاقة عبر واتساب</button>
+        <!-- خيار نص فقط (احتياطي) -->
+        <button class="ghost" id="waText">إرسال الطلب نصًا فقط</button>
       </div>
-      <div class="muted">إن لم يدعم جهازك المشاركة بالملفات من المتصفح: سنحمّل الصورة ونفتح واتساب بالنص فقط (ثم أرفق الصورة يدويًا).</div>
+      <div class="muted">إن لم يدعم جهازك المشاركة بالملفات من المتصفح: سنفتح واتساب بالنص فقط، ويمكنك إرفاق الصورة لاحقًا.</div>
     </div>
 
     <div class="pill">بيانات العميل والعنوان</div>
@@ -47,12 +47,11 @@
     <input class="ghost" id="c-city"  placeholder="المدينة">
     <input class="ghost" id="c-area"  placeholder="الحي">
     <textarea class="ghost" id="c-addr" rows="2" placeholder="وصف العنوان (الشارع، علامة مميزة..)"></textarea>
-
-    <div class="actions">
-      <a class="btn" id="waText">إرسال الطلب نصًا عبر واتساب</a>
-      <a class="ghost" href="product.html">إضافة منتج</a>
-    </div>
   </div></div>
+
+  <section style="padding-top:12px">
+    <a class="ghost" href="product.html">+ إضافة منتج</a>
+  </section>
 </main>
 
 <footer>
@@ -78,6 +77,7 @@
   const ctx = canvas.getContext('2d');
 
   let lastGift = null;
+  let sending = false; // منع التكرار
 
   function fmt(n){ return new Intl.NumberFormat('ar-SA').format(n); }
 
@@ -92,6 +92,7 @@
 
       const row = document.createElement('div');
       row.className = 'card';
+      row.setAttribute('data-reveal','');
       row.innerHTML = `
         <div class="body" style="display:grid;gap:8px">
           <strong>${x.name}</strong>
@@ -132,34 +133,37 @@
     else { giftBox.style.display = 'none'; }
   }
 
-  // رسم بطاقة الإهداء — إبراز هوية واعي كيدز
+  // رسم بطاقة الإهداء (Landscape محسَّنة للجوال)
   function drawGiftCard(gift){
     const DPR = Math.max(1, Math.floor(devicePixelRatio || 1));
-    const baseW = 1400, baseH = 820;
+    const baseW = 1440, baseH = 640; // عرضي أكثر
     canvas.width = baseW * DPR; canvas.height = baseH * DPR;
-    canvas.style.width = baseW + 'px'; canvas.style.height = baseH + 'px';
+    canvas.style.width = '100%'; canvas.style.maxWidth = baseW+'px';
     ctx.setTransform(DPR,0,0,DPR,0,0);
 
     // خلفية وهوية
     const grd = ctx.createLinearGradient(0,0,0,baseH);
     grd.addColorStop(0,'#f6fbff'); grd.addColorStop(1,'#ffffff');
     ctx.fillStyle = grd; ctx.fillRect(0,0,baseW,baseH);
-    roundRect(20,20,baseW-40,baseH-40,26,'#ffffff','#e9f1f5');
 
-    // زخارف لطيفة بهوية واعي
-    ctx.globalAlpha = .22;
-    ctx.fillStyle = '#a6e4db'; circle(baseW-160,140,110);
-    ctx.fillStyle = '#3aa6d0'; circle(160,baseH-140,90);
+    // لوحة داخلية
+    roundRect(18,18,baseW-36,baseH-36,24,'#ffffff','#e9f1f5');
+
+    // شريط علوي رفيع + نقاط زخرفية
+    ctx.fillStyle = '#0f3d5b'; ctx.fillRect(18,18,baseW-36,56);
+    ctx.globalAlpha = .20;
+    ctx.fillStyle = '#a6e4db'; circle(baseW-120,115,80);
+    ctx.fillStyle = '#3aa6d0'; circle(110,baseH-120,68);
     ctx.globalAlpha = 1;
 
-    // شريط علوي
-    ctx.fillStyle = '#0f3d5b'; ctx.fillRect(20,20,baseW-40,68);
-    ctx.fillStyle = '#ffffff'; ctx.font = '700 30px system-ui'; ctx.textAlign='right';
-    ctx.fillText('واعي كيدز • بطاقة إهداء', baseW-50, 65);
+    // عناوين
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '700 28px system-ui'; ctx.textAlign='right';
+    ctx.fillText('واعي كيدز • بطاقة إهداء', baseW-50, 56);
 
-    // اسم المنتج
-    ctx.fillStyle = '#256581'; ctx.font = '600 22px system-ui'; ctx.textAlign='right';
-    ctx.fillText(gift.productName || 'هدية المواليد', baseW-50, 110);
+    ctx.fillStyle = '#256581';
+    ctx.font = '600 22px system-ui'; ctx.textAlign='right';
+    ctx.fillText(gift.productName || 'هدية المواليد', baseW-50, 100);
 
     // نصوص البطاقة
     const nameLine = (gift.name || '').trim() || 'للمولودة الجميلة';
@@ -168,20 +172,20 @@
 
     ctx.textAlign = 'center';
     ctx.fillStyle = '#0e1a22';
-    ctx.font = '800 48px system-ui';
-    ctx.fillText(nameLine, baseW/2, 300);
+    ctx.font = '800 44px system-ui';
+    ctx.fillText(nameLine, baseW/2, 260);
 
     ctx.fillStyle = '#33434f';
-    wrapText(msgLine, baseW/2, 380, baseW-260, 38, '600 32px system-ui');
+    wrapText(msgLine, baseW/2, 330, baseW-240, 36, '600 30px system-ui');
 
     ctx.fillStyle = '#0f3d5b';
-    ctx.font = '700 28px system-ui';
-    ctx.fillText('— ' + fromLine + ' —', baseW/2, 560);
+    ctx.font = '700 26px system-ui';
+    ctx.fillText('— ' + fromLine + ' —', baseW/2, 480);
 
     // وسم الموقع
     ctx.fillStyle = '#6a7c88';
     ctx.font = '600 18px system-ui';
-    ctx.fillText('waai-kids.sa', baseW/2, baseH-60);
+    ctx.fillText('waai-kids.sa', baseW/2, baseH-40);
   }
 
   function circle(x,y,r){ ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.fill(); }
@@ -233,33 +237,91 @@
   }
 
   async function shareGiftWithWhatsApp(){
-    if(!lastGift){ alert('لا توجد بطاقة إهداء في السلة'); return; }
-    const blob = await new Promise(res => canvas.toBlob(res,'image/png',0.95));
-    const file = new File([blob], 'gift-card.png', {type:'image/png'});
-    const text = decodeURIComponent(buildWaText().replace(/%0A/g, '\n'));
+    if(sending) return; sending = true;
+    const btn = document.getElementById('shareGift');
+    btn.disabled = true; const prev = btn.textContent; btn.textContent = 'جارٍ التحضير…';
 
-    if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
-      try{ await navigator.share({ files:[file], text, title:'طلب واعي كيدز' }); }catch(_){}
-    } else {
-      downloadBlob(blob, 'gift-card.png');
-      location.href = 'https://wa.me/'+WA_NUM+'?text=' + buildWaText();
+    try{
+      if(!lastGift){
+        // لا توجد بطاقة: افتح واتساب بالنص فقط
+        location.href = 'https://wa.me/'+WA_NUM+'?text=' + buildWaText();
+        return;
+      }
+      const blob = await new Promise(res => canvas.toBlob(res,'image/png',0.95));
+      const file = new File([blob], 'gift-card.png', {type:'image/png'});
+      const text = decodeURIComponent(buildWaText().replace(/%0A/g, '\n'));
+
+      if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({ files:[file], text, title:'طلب واعي كيدز' });
+      } else {
+        // fallback: نص فقط (بدون تحميل الصورة لتبسيط التجربة كما طلبت)
+        location.href = 'https://wa.me/'+WA_NUM+'?text=' + buildWaText();
+      }
+    }catch(_){
+      alert('تعذر الإرسال مؤقتًا');
+    }finally{
+      // نمنع التكرار بالعودة للزر بعد 8 ثوانٍ فقط إن بقي في الصفحة
+      setTimeout(()=>{ sending=false; btn.disabled=false; btn.textContent=prev; }, 8000);
     }
   }
 
-  function downloadBlob(blob, filename){
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a'); a.href = url; a.download = filename; a.click();
-    setTimeout(()=>URL.revokeObjectURL(url), 1000);
-  }
-
-  document.getElementById('downloadGift').onclick = async ()=>{
-    if(!lastGift){ alert('لا توجد بطاقة إهداء'); return; }
-    const blob = await new Promise(res => canvas.toBlob(res,'image/png',0.95));
-    downloadBlob(blob, 'gift-card.png');
-  };
   document.getElementById('shareGift').onclick = shareGiftWithWhatsApp;
-  document.getElementById('waText').onclick = ()=>{ location.href = 'https://wa.me/'+WA_NUM+'?text=' + buildWaText(); };
+  document.getElementById('waText').onclick = ()=>{
+    if(sending) return; sending = true;
+    const tbtn = document.getElementById('waText'); const prev = tbtn.textContent;
+    tbtn.disabled = true; tbtn.textContent = 'جارٍ الفتح…';
+    location.href = 'https://wa.me/'+WA_NUM+'?text=' + buildWaText();
+    setTimeout(()=>{ sending=false; tbtn.disabled=false; tbtn.textContent=prev; }, 8000);
+  };
 
   render();
+  function render(){
+    const items = Cart.get();
+    listEl.innerHTML = '';
+    let total = 0;
+    lastGift = null;
+
+    items.forEach((x, i) => {
+      const sum = x.price * x.qty; total += sum;
+      const row = document.createElement('div');
+      row.className = 'card'; row.setAttribute('data-reveal','');
+      row.innerHTML = `
+        <div class="body" style="display:grid;gap:8px">
+          <strong>${x.name}</strong>
+          ${x.gift ? `<div class="pill">بطاقة الإهداء</div>` : ''}
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+            <label>الكمية</label>
+            <input type="number" min="1" value="${x.qty}" style="width:90px" class="ghost" data-qty="${i}">
+            <button class="ghost" data-del="${i}">حذف</button>
+          </div>
+          <div>المجموع: <strong>${sum}</strong> ر.س</div>
+          ${x.gift ? `<div class="muted">الاسم: ${x.gift.name||'-'} — الرسالة: ${x.gift.msg||'-'} — من: ${x.gift.from||'-'}</div>` : ''}
+        </div>`;
+      listEl.appendChild(row);
+      if (x.gift) lastGift = { ...x.gift, productName: x.name };
+    });
+
+    totalEl.textContent = fmt(total);
+
+    listEl.querySelectorAll('[data-qty]').forEach(inp=>{
+      inp.onchange = () => {
+        const idx = +inp.dataset.qty;
+        const it = Cart.get();
+        it[idx].qty = Math.max(1, parseInt(inp.value||'1',10));
+        Cart.set(it); render();
+      };
+    });
+    listEl.querySelectorAll('[data-del]').forEach(btn=>{
+      btn.onclick = () => {
+        const idx = +btn.dataset.del;
+        const it = Cart.get();
+        it.splice(idx,1);
+        Cart.set(it); render();
+      };
+    });
+
+    if(lastGift){ giftBox.style.display = ''; drawGiftCard(lastGift); }
+    else { giftBox.style.display = 'none'; }
+  }
 </script>
 </body></html>
