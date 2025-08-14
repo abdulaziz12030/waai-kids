@@ -1,313 +1,108 @@
-<!doctype html>
-<html lang="ar" dir="rtl">
+<!doctype html><html lang="ar" dir="rtl">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-<title>واعي كيدز | هدايا مواليد أنيقة - أولاد/بنات</title>
-<meta name="description" content="واعي كيدز - بوكسات مواليد فاخرة مع تغليف أنيق وبطاقة إهداء مطبوعة. تصميم مريح للجوال.">
-<meta name="theme-color" content="#0f3d5b">
-<meta property="og:title" content="واعي كيدز | بوكسات هدايا المواليد" />
-<meta property="og:description" content="اختيارات أنيقة للمولود الجديد + بطاقة إهداء" />
-<meta property="og:type" content="website" />
-<meta property="og:image" content="https://i.postimg.cc/wxnGnhBJ/Chat-GPT-Image-13-2025-03-25-58.png" />
-<meta property="og:locale" content="ar_SA" />
-<style>
-  :root{
-    --navy:#0f3d5b; --sky:#3aa6d0; --mint:#a6e4db; --blush:#f9d5df; --sand:#fffefb;
-    --ink:#0e1a22; --muted:#5c6a74; --radius:18px; --shadow:0 10px 25px rgba(15,61,91,.12);
-    --gold:#ffb400;
-  }
-  *{box-sizing:border-box}
-  html,body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif;background:var(--sand);color:var(--ink)}
-  a{color:inherit;text-decoration:none}
-  img{display:block;max-width:100%}
-  .container{width:min(960px,92%);margin-inline:auto}
-
-  .topbar{background:linear-gradient(90deg,var(--sky),var(--mint));color:#053548;padding:.55rem 0;text-align:center;font-weight:700;letter-spacing:.2px}
-
-  header{position:sticky;top:0;z-index:80;background:#fff;border-bottom:1px solid #e7eef2}
-  .nav{display:flex;align-items:center;justify-content:space-between;padding:.75rem 0;gap:8px}
-  .brand{display:flex;align-items:center;gap:.6rem}
-  .logo{width:36px;height:36px;border-radius:12px;box-shadow:var(--shadow)}
-  .brand span{font-weight:900;font-size:1rem}
-  .hamburger{inline-size:44px;block-size:44px;border:1px solid #dbe7ee;border-radius:10px;display:grid;place-items:center;background:#fff}
-  .hamburger div{inline-size:20px;block-size:2px;background:#133a4f;position:relative}
-  .hamburger div:before,.hamburger div:after{content:"";position:absolute;inline-size:20px;block-size:2px;background:#133a4f;inset-inline-start:0}
-  .hamburger div:before{transform:translateY(-6px)}
-  .hamburger div:after{transform:translateY(6px)}
-  .menu{position:fixed;inset-inline:0;top:56px;background:#fff;border-bottom:1px solid #e8eef2;display:none}
-  .menu a{display:block;padding:14px 16px;border-top:1px solid #f2f6f9}
-  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:.9rem 1.1rem;border-radius:14px;background:var(--navy);color:#fff;box-shadow:var(--shadow);min-height:48px}
-  .ghost{display:inline-flex;align-items:center;justify-content:center;padding:.8rem 1rem;border:1px solid #dbe7ee;border-radius:14px;min-height:44px;background:#fff}
-
-  .hero{padding:20px 0}
-  .hero-card{background:linear-gradient(180deg,#fff,#f5fbff);border:1px solid #e9f1f5;border-radius:calc(var(--radius)*1.2);box-shadow:var(--shadow);padding:18px;display:grid;gap:16px}
-  .hero h1{margin:0;font-size:clamp(1.35rem,4.5vw,1.9rem);line-height:1.7}
-  .hero p{margin:.3rem 0 0;color:var(--muted)}
-  .hero .media{border-radius:16px;overflow:hidden;background:#eef7fb}
-  .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
-
-  section{padding:22px 0}
-  .sec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:10px;flex-wrap:wrap}
-  .sec-head h2{margin:0;font-size:1.15rem}
-  .pill{display:inline-flex;align-items:center;gap:6px;padding:.35rem .6rem;border-radius:999px;background:#f0f7fb;border:1px solid #e0edf4;color:#256581;font-size:.85rem}
-
-  .grid{display:grid;gap:14px}
-  .card{background:#fff;border:1px solid #eaf0f3;border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);position:relative}
-  .badge{position:absolute;top:10px;right:10px;background:linear-gradient(90deg,#ffd27a,#ffb347);color:#542d00;font-weight:800;border-radius:999px;padding:.28rem .6rem;font-size:.78rem;box-shadow:var(--shadow);display:flex;align-items:center;gap:6px}
-  .badge svg{width:14px;height:14px}
-  .pic{aspect-ratio:4/3;background:#f6fbff}
-  .body{padding:14px}
-  .price{display:flex;align-items:center;gap:10px;font-weight:800;margin-top:6px}
-  .price s{color:#9aa9b2;font-weight:600}
-  .ghost2{border:1px dashed #cfe4ee;background:#f7fdff}
-
-  .gift{background:linear-gradient(180deg,#ffffff,#f9fdff);border:1px solid #eaf0f3;border-radius:18px;box-shadow:var(--shadow);padding:16px;display:grid;gap:16px}
-  .gift label{font-size:.95rem;color:#274a5d}
-  .gift input,.gift textarea,.gift select{width:100%;padding:.8rem .9rem;border:1px solid #dfeaf0;border-radius:12px;background:#fff;min-height:48px}
-  .card-preview{background:#fff;border:1px dashed #cfe1ea;border-radius:16px;padding:12px}
-  .card-surface{width:100%;aspect-ratio:7/5;border-radius:14px;background:radial-gradient(120% 100% at 100% 0, #e9f7ff, #fff), linear-gradient(180deg,#fff,#f7fbff);display:flex;align-items:center;justify-content:center;text-align:center;padding:12px;box-shadow:var(--shadow);position:relative}
-  .ribbon{position:absolute;left:-28px;top:12px;transform:rotate(-12deg);background:var(--mint);padding:.3rem 1.4rem;border-radius:8px;border:1px solid #b7eae1;color:#0a3b4f;font-weight:800;box-shadow:var(--shadow)}
-  .gc-title{font-weight:900;color:var(--navy);margin-bottom:4px}
-  .gc-name{font-size:clamp(1.1rem,4.4vw,1.5rem);font-weight:800;color:#123f56}
-  .gc-msg{margin-top:6px;color:#415c6d}
-  .gc-from{margin-top:8px;font-size:.92rem;color:#557a8e}
-  .controls{display:flex;gap:8px;flex-wrap:wrap}
-
-  .reviews .stars{color:var(--gold);font-size:1.05rem}
-  .review-card{background:#fff;border:1px solid #eaf0f3;border-radius:14px;padding:14px;box-shadow:var(--shadow)}
-
-  footer{margin-top:20px;padding:22px 0;border-top:1px solid #e8eef2;background:#fff}
-  footer .links{display:flex;gap:12px;flex-wrap:wrap}
-  footer .links a{color:#0f4663}
-  .wa{position:fixed;left:14px;bottom:14px;z-index:90;display:grid;place-items:center;width:56px;height:56px;border-radius:50%;background:#25d366;box-shadow:var(--shadow)}
-  .wa svg{width:28px;height:28px;fill:#fff}
-
-  [data-reveal]{transform:translateY(12px);opacity:0;transition:transform .5s ease, opacity .5s ease}
-  [data-reveal].visible{transform:translateY(0);opacity:1}
-  @media (prefers-reduced-motion: reduce){*{animation:none !important;transition:none !important}}
-
-  @media (min-width:720px){
-    .hero-card{grid-template-columns:1.1fr .9fr;padding:22px}
-    .grid{grid-template-columns:repeat(12,1fr)}
-    .card{grid-column:span 6}
-    .gift{grid-template-columns:1.1fr .9fr;padding:18px}
-  }
-
-  /* طباعة البطاقة فقط */
-  @media print{
-    body{background:#fff}
-    header,.topbar,footer,.wa,.menu,.hero,#products,#reviews,.controls,.form,.muted{display:none !important}
-    #gift{padding:0 !important;margin:0 !important}
-    #gift .card-preview{border:0;box-shadow:none;padding:0;margin:0}
-    #gift .card-surface{border:1px solid #dfeaf0;page-break-inside:avoid}
-  }
-
-/* --- تحسين منع الانفلات أفقياً على الجوال + حواف آمنة --- */
-html, body { overflow-x: hidden; }
-* { min-width: 0; }
-.container { padding-inline: clamp(10px, 3vw, 18px); }
-img, video { max-width: 100%; height: auto; display: block; }
-
-/* Review form polish */
-.review-form{display:grid;gap:10px;background:#fff;border:1px solid #eaf0f3;border-radius:14px;padding:14px;box-shadow:var(--shadow)}
-.review-form .row{display:grid;grid-template-columns:1fr 140px;gap:8px}
-.review-form input[type="text"],.review-form textarea{width:100%;padding:.8rem .9rem;border:1px solid #dfeaf0;border-radius:12px;background:#fff;min-height:48px;font:inherit}
-.review-form textarea{resize:vertical;min-height:90px}
-.counter{text-align:left;color:var(--muted);font-size:.85rem}
-.stars-input{display:inline-flex;gap:4px;align-items:center;direction:rtl}
-.stars-input input{display:none}
-.stars-input label{cursor:pointer;width:28px;height:28px;display:grid;place-items:center;transition:transform .15s ease}
-.stars-input label:active{transform:scale(.92)}
-.stars-input svg{width:100%;height:100%;fill:#cfd8dc}
-#star-1:checked ~ label[for="star-1"] svg,
-#star-2:checked ~ label[for="star-2"] svg,
-#star-3:checked ~ label[for="star-3"] svg,
-#star-4:checked ~ label[for="star-4"] svg,
-#star-5:checked ~ label[for="star-5"] svg{fill:var(--gold)}
-@media (max-width:719px){.review-form .row{grid-template-columns:1fr}.review-form button{width:100%}}
-.toast{position:fixed;inset-inline-start:50%;bottom:18px;transform:translateX(-50%);background:#123f56;color:#fff;padding:.8rem 1rem;border-radius:12px;box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:opacity .3s ease;z-index:120}
-.toast.show{opacity:1}
-</style>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<title>واعي كيدز | لحظاتك مع المواليد تبدأ من هنا</title>
+<meta name="description" content="واعي كيدز - بُكسات مواليد أنيقة مع بطاقة إهداء اختيارية. متوافق مع الجوال والآيباد واللابتوب.">
+<link rel="preload" as="image" href="images/banner.png">
+<link rel="stylesheet" href="css.css">
 </head>
 <body>
-  <div class="topbar">🚀 قريبًا إطلاق متجر <strong>واعي كيدز</strong> — اطلب الآن عبر واتساب!</div>
-
+  <div class="topbar">🎁 واعي كيدز — لحظاتك مع المواليد تبدأ من هنا</div>
   <header>
     <div class="container nav">
       <div class="brand">
-        <img class="logo" src="https://i.postimg.cc/N00PdGxM/Logo.png" alt="شعار واعي كيدز">
-        <span>واعي كيدز • waai-kids.sa</span>
+        <img class="logo" src="images/logo.png" alt="شعار واعي كيدز">
+        <span style="font-weight:900">واعي كيدز • waai-kids.sa</span>
       </div>
-      <button class="hamburger" aria-label="القائمة" id="menuBtn"><div></div></button>
+      <div style="display:flex;gap:8px;align-items:center">
+        <a href="checkout.html" class="ghost" style="gap:6px">🛍️ <span data-cart-count>0</span></a>
+        <button class="hamburger" aria-label="القائمة" id="menuBtn"><div></div></button>
+      </div>
     </div>
     <nav class="menu" id="menu">
       <a href="#products" onclick="closeMenu()">المنتجات</a>
-      <a href="#gift" onclick="closeMenu()">بطاقة الإهداء</a>
       <a href="#reviews" onclick="closeMenu()">التقييمات</a>
-      <a href="privacy.html" onclick="closeMenu()">الخصوصية</a>
-      <a href="returns.html" onclick="closeMenu()">الاسترجاع</a>
-      <a href="terms.html" onclick="closeMenu()">الشروط</a>
-      <a id="cta-top" class="btn" href="https://wa.me/966552794082?text=مرحبا%20واعي%20كيدز%2C%20أرغب%20بطلب%20بوكس%20المواليد">اطلب عبر واتساب</a>
+      <a href="product.html?sku=baby-girl" onclick="closeMenu()">اطلب الآن</a>
     </nav>
   </header>
 
   <main>
-    <!-- HERO -->
     <section class="hero container">
       <div class="hero-card" data-reveal>
         <div>
-          <h1>بوكسات مواليد أنيقة <span style="color:var(--sky)">— أولاد / بنات</span><br>تغليف فاخر، تفاصيل مُبهجة، وبطاقة إهداء مطبوعة. 🎁</h1>
-          <p>جهّز هديتك باختيار البوكس المناسب وإضافة بطاقة تحمل الاسم قبل التجهيز.</p>
+          <h1>🎁 واعي كيدز — لحظاتك مع المواليد تبدأ من هنا</h1>
+          <p style="margin:.3rem 0 0;color:var(--muted)">بُكسات مواليد — أولاد/بنات — مع تغليف فاخر وبطاقة إهداء اختيارية.</p>
           <div class="actions">
             <a class="btn" href="#products">تصفح المنتجات</a>
-            <a class="ghost" href="#gift">بطاقة الإهداء</a>
+            <a class="ghost" href="product.html?sku=baby-girl">ابدأ الآن</a>
           </div>
         </div>
         <div class="media">
-          <img alt="هدايا مواليد - تغليف أنيق" src="https://i.postimg.cc/pVmS00PR/Chat-GPT-Image-13-2025-03-25-59.png">
+          <img src="images/banner.png" alt="واعي كيدز - غلاف" loading="eager" decoding="async">
         </div>
       </div>
     </section>
 
-    <!-- PRODUCTS -->
     <section id="products" class="container">
       <div class="sec-head">
         <h2>اختياراتنا للمولود الجديد</h2>
-        <span class="pill">توصيل سريع • تغليف فاخر • قابل للتخصيص</span>
+        <span class="pill">توصيل سريع • تغليف فاخر • بطاقة إهداء اختيارية</span>
       </div>
-
       <div class="grid">
-        <!-- Girl Box -->
         <article class="card" data-reveal>
-          <div class="badge" title="الأكثر مبيعًا">
-            <svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 2l3 7h7l-5.5 4.1L18 21l-6-4-6 4 1.5-7.9L2 9h7z"/></svg> الأكثر مبيعًا
-          </div>
-          <div class="pic"><img alt="بوكس هدية مواليد - بنات" src="https://i.postimg.cc/wxnGnhBJ/Chat-GPT-Image-13-2025-03-25-58.png"></div>
+          <div class="pic"><img src="images/girl.png" alt="بُكس المواليد — بنات"></div>
           <div class="body">
-            <h3 style="margin:0 0 6px">بوكس المواليد — أولاد</h3>
-            <p style="margin:0 0 8px;color:var(--muted)">توليفة وردية لطيفة مع تفاصيل رقيقة ولمسات تصوير جميلة.</p>
+            <h3 style="margin:0 0 6px">بُكس المواليد — بنات</h3>
             <div class="price"><strong>149 ر.س</strong> <s>200 ر.س</s> <span class="pill">وفر 25%</span></div>
             <div class="actions">
-              <a class="btn order" data-product="بنات">اطلب الآن</a>
-              <a class="ghost2" href="#gift" onclick="prefillGift('بنات')">أضف بطاقة إهداء</a>
+              <a class="btn" href="product.html?sku=baby-girl">اطلب الآن</a>
             </div>
           </div>
         </article>
 
-        <!-- Boy Box -->
         <article class="card" data-reveal>
-          <div class="pic"><img alt="بوكس هدية مواليد - أولاد" src="https://i.postimg.cc/HjGX3Wdc/Chat-GPT-Image-13-2025-03-26-00.png"></div>
+          <div class="pic"><img src="images/boy.png" alt="بُكس المواليد — أولاد"></div>
           <div class="body">
-            <h3 style="margin:0 0 6px">بوكس المواليد — بنات</h3>
-            <p style="margin:0 0 8px;color:var(--muted)">أزرق سماوي مع لمسات بحرية بسيطة، مناسبة لهدايا العائلة والأصدقاء.</p>
+            <h3 style="margin:0 0 6px">بُكس المواليد — أولاد</h3>
             <div class="price"><strong>149 ر.س</strong> <s>200 ر.س</s> <span class="pill">عرض الافتتاح</span></div>
             <div class="actions">
-              <a class="btn order" data-product="أولاد">اطلب الآن</a>
-              <a class="ghost2" href="#gift" onclick="prefillGift('أولاد')">أضف بطاقة إهداء</a>
+              <a class="btn" href="product.html?sku=baby-boy">اطلب الآن</a>
             </div>
           </div>
         </article>
       </div>
     </section>
 
-    <!-- GIFT CARD -->
-    <section id="gift" class="container">
-      <div class="sec-head">
-        <h2>بطاقة الإهداء (اختياري)</h2>
-        <span class="pill">تتم طباعتها وإرفاقها داخل البوكس</span>
-      </div>
-
-      <div class="gift" data-reveal>
-        <div class="form">
-          <label>نوع البوكس</label>
-          <select id="gift-product">
-            <option value="بنات">بنات</option>
-            <option value="أولاد">أولاد</option>
-          </select>
-
-          <label>الاسم على البطاقة</label>
-          <input id="gift-name" placeholder="مثال: للمولودة شهد" maxlength="40">
-
-          <label>رسالة قصيرة (اختياري)</label>
-          <textarea id="gift-message" rows="3" placeholder="مثال: نُورتي الدنيا يا أجمل العطايا"></textarea>
-
-          <label>من (اسم المُهدي)</label>
-          <input id="gift-from" placeholder="مثال: من خالتكم مدى">
-
-          <div class="controls">
-            <button class="btn" id="gift-wa" type="button">إرسال الطلب عبر واتساب</button>
-            <button class="ghost" id="gift-print" type="button">طباعة البطاقة</button>
-            <button class="ghost" id="gift-clear" type="button">مسح الحقول</button>
-          </div>
-        </div>
-
-        <div class="card-preview">
-          <div class="ribbon">واعي كيدز</div>
-          <div class="card-surface" id="gc-surface">
-            <div>
-              <div class="gc-title">بطاقة إهداء</div>
-              <div class="gc-name" id="gc-name">—</div>
-              <div class="gc-msg" id="gc-message">—</div>
-              <div class="gc-from" id="gc-from">—</div>
-            </div>
-          </div>
-          <div class="muted" style="margin-top:6px">* المعاينة تقريبية وقد تختلف طباعتها قليلًا.</div>
-        </div>
-      </div>
-    </section>
-
-    <!-- REVIEWS -->
-    <section id="reviews" class="container reviews">
+    <section id="reviews" class="container">
       <div class="sec-head">
         <h2>التقييمات</h2>
-        <div>
-          <span class="stars" id="avg-stars">★★★★★</span>
-          <span class="pill" id="avg-label">4.9 من 5 (3 تقييمات)</span>
-        </div>
+        <div><span class="pill">جديدة ومصدّقة</span></div>
       </div>
-
       <div class="grid" id="reviews-list">
-        <div class="review-card" data-reveal>
-          <div class="stars">★★★★★</div><strong>نوف</strong>
-          <div class="muted">تغليف أنيق والتسليم سريع. البطاقة كانت لمسة جميلة جدًا ✨</div>
-        </div>
-        <div class="review-card" data-reveal>
-          <div class="stars">★★★★★</div><strong>عبدالرحمن</strong>
-          <div class="muted">طلبت بوكس أولاد، الألوان رايقة والتنسيق مرتب. أنصح فيه.</div>
-        </div>
-        <div class="review-card" data-reveal>
-          <div class="stars">★★★★☆</div><strong>سارة</strong>
-          <div class="muted">جودة ممتازة، أتمنى إضافة خيار شريط ذهبي للتغليف.</div>
-        </div>
+        <!-- ستُحمّل التقييمات من /api/reviews -->
       </div>
 
-      
-<div class="review-card" style="margin-top:12px" data-reveal>
-  <form class="review-form" id="review-form">
-    <h3 style="margin:0 0 8px">أضف تقييمك</h3>
-    <div class="row">
-      <input id="rev-name" placeholder="اسمك (اختياري)">
-      <div class="stars-input" aria-label="التقييم" role="radiogroup">
-        <input type="radio" id="star-5" name="rev-stars" value="5" checked>
-        <label for="star-5" title="5 نجوم"><svg viewBox="0 0 24 24"><path d="M12 17.3l-6.16 3.35 1.18-6.88L1.99 9.9l6.9-1 3.1-6.3 3.1 6.3 6.9 1-5.03 3.87 1.18 6.88z"/></svg></label>
-        <input type="radio" id="star-4" name="rev-stars" value="4">
-        <label for="star-4" title="4 نجوم"><svg viewBox="0 0 24 24"><path d="M12 17.3l-6.16 3.35 1.18-6.88L1.99 9.9l6.9-1 3.1-6.3 3.1 6.3 6.9 1-5.03 3.87 1.18 6.88z"/></svg></label>
-        <input type="radio" id="star-3" name="rev-stars" value="3">
-        <label for="star-3" title="3 نجوم"><svg viewBox="0 0 24 24"><path d="M12 17.3l-6.16 3.35 1.18-6.88L1.99 9.9l6.9-1 3.1-6.3 3.1 6.3 6.9 1-5.03 3.87 1.18 6.88z"/></svg></label>
-        <input type="radio" id="star-2" name="rev-stars" value="2">
-        <label for="star-2" title="نجمتان"><svg viewBox="0 0 24 24"><path d="M12 17.3l-6.16 3.35 1.18-6.88L1.99 9.9l6.9-1 3.1-6.3 3.1 6.3 6.9 1-5.03 3.87 1.18 6.88z"/></svg></label>
-        <input type="radio" id="star-1" name="rev-stars" value="1">
-        <label for="star-1" title="نجمة"><svg viewBox="0 0 24 24"><path d="M12 17.3l-6.16 3.35 1.18-6.88L1.99 9.9l6.9-1 3.1-6.3 3.1 6.3 6.9 1-5.03 3.87 1.18 6.88z"/></svg></label>
+      <div class="card" style="margin-top:12px" data-reveal>
+        <form class="review-form" id="review-form" style="display:grid;gap:10px">
+          <h3 style="margin:0 0 8px">أضف تقييمك</h3>
+          <div style="display:grid;grid-template-columns:1fr 160px;gap:8px">
+            <input id="rev-name" placeholder="اسمك (اختياري)" style="padding:.8rem .9rem;border:1px solid #dfeaf0;border-radius:12px">
+            <!-- نجوم تفاعلية -->
+            <div class="stars-input" id="stars" aria-label="التقييم" role="radiogroup">
+              <button type="button" data-star="1" aria-label="نجمة 1">★</button>
+              <button type="button" data-star="2" aria-label="نجمتان">★</button>
+              <button type="button" data-star="3" aria-label="3 نجوم">★</button>
+              <button type="button" data-star="4" aria-label="4 نجوم">★</button>
+              <button type="button" data-star="5" aria-label="5 نجوم">★</button>
+              <input type="hidden" id="rev-stars" name="rev-stars" value="5">
+            </div>
+          </div>
+          <textarea id="rev-text" maxlength="300" placeholder="رأيك باختصار.." style="padding:.8rem .9rem;border:1px solid #dfeaf0;border-radius:12px;min-height:100px"></textarea>
+          <div style="text-align:left;color:var(--muted);font-size:.9rem"><span id="rev-count">0</span>/300</div>
+          <button class="btn" type="submit">إرسال التقييم</button>
+        </form>
       </div>
-    </div>
-    <textarea id="rev-text" maxlength="300" placeholder="رأيك باختصار.."></textarea>
-    <div class="counter"><span id="rev-count">0</span>/300</div>
-    <button class="btn" type="submit">إرسال التقييم</button>
-  </form>
-</div>
-<div class="toast" id="toast">تم إضافة تقييمك بنجاح. شكرًا لك!</div>
-
     </section>
   </main>
 
@@ -315,157 +110,74 @@ img, video { max-width: 100%; height: auto; display: block; }
     <div class="container" style="display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap">
       <div>© <span id="y"></span> واعي كيدز • waai-kids.sa</div>
       <div class="links">
-        <a href="privacy.html">الخصوصية</a>
-        <a href="returns.html">الاسترجاع</a>
-        <a href="terms.html">الشروط والأحكام</a>
+        <a href="admin.html">لوحة الإدارة</a>
       </div>
     </div>
   </footer>
 
-  <!-- WhatsApp FAB -->
-  <a class="wa" aria-label="تواصل واتساب" id="cta-fab" href="https://wa.me/966552794082?text=مرحبا%20واعي%20كيدز">
-    <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M19.11 17.39c-.27-.13-1.6-.79-1.85-.88-.25-.09-.43-.13-.61.13-.18.27-.7.88-.86 1.06-.16.18-.32.2-.59.07-.27-.13-1.12-.41-2.14-1.31-.79-.7-1.32-1.56-1.48-1.82-.16-.27-.02-.41.11-.54.11-.11.27-.29.41-.45.14-.16.18-.27.27-.45.09-.18.05-.34-.02-.48-.07-.13-.61-1.46-.84-2-.22-.52-.46-.45-.61-.45-.16 0-.34-.02-.52-.02-.18 0-.48.07-.73.34s-.96.94-.96 2.29 1 2.66 1.14 2.85c.14.18 1.96 2.99 4.75 4.19.66.29 1.18.46 1.58.59.66.21 1.26.18 1.73.11.53-.08 1.6-.65 1.83-1.28.23-.63.23-1.17.16-1.28-.07-.11-.25-.18-.52-.3zM16.06 3C9.84 3 4.8 8.03 4.8 14.26c0 2.39.72 4.61 1.96 6.46L5 29l8.5-1.79c1.78.98 3.83 1.53 5.99 1.53 6.22 0 11.26-5.03 11.26-11.26C30.76 8.03 25.73 3 19.5 3h-3.44z"/></svg>
+  <a class="wa" aria-label="واتساب" id="cta-fab" href="#">
+    <svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="16" fill="#25D366"/><path fill="#fff" d="M25.6 6.6A13.4 13.4 0 0 0 16 3.1C8.8 3.1 3 8.9 3 16.1c0 2.2.6 4.3 1.7 6.2L3 29l6.8-1.7c1.8 1 3.9 1.5 6 1.5 7.2 0 13-5.8 13-13 0-3.4-1.3-6.6-3.7-9.2z"/></svg>
   </a>
 
-<script>
-  document.getElementById('y').textContent = new Date().getFullYear();
+  <script type="module">
+    import { Cart, initReveal } from './js/cart.js';
+    document.getElementById('y').textContent = new Date().getFullYear();
+    const menuBtn = document.getElementById('menuBtn');
+    const menu = document.getElementById('menu');
+    window.closeMenu = ()=> menu.style.display='none';
+    menuBtn.addEventListener('click', ()=> menu.style.display = (menu.style.display==='block') ? 'none':'block');
 
-  // القائمة للجوال
-  const menuBtn = document.getElementById('menuBtn');
-  const menu = document.getElementById('menu');
-  const closeMenu = () => { menu.style.display='none'; };
-  window.closeMenu = closeMenu;
-  menuBtn.addEventListener('click', ()=>{ menu.style.display = (menu.style.display==='block') ? 'none' : 'block'; });
+    // WhatsApp FAB
+    document.getElementById('cta-fab').href = Cart.waLink('مرحبا واعي كيدز');
 
-  // ظهور سلس
-  const reveal = () => {
-    document.querySelectorAll('[data-reveal]').forEach(el=>{
-      const r = el.getBoundingClientRect();
-      if(r.top < window.innerHeight - 80) el.classList.add('visible');
-    });
-  };
-  window.addEventListener('scroll',reveal); window.addEventListener('load',reveal);
+    // Reviews: UI stars
+    (function(){
+      const wrap = document.getElementById('stars');
+      const btns = Array.from(wrap.querySelectorAll('[data-star]'));
+      const hidden = document.getElementById('rev-stars');
+      const cnt = document.getElementById('rev-count');
+      const txt = document.getElementById('rev-text');
+      const setStars = n => { btns.forEach(b => b.classList.toggle('filled', +b.dataset.star <= n)); hidden.value=n; };
+      btns.forEach(b=>{ b.addEventListener('click', ()=> setStars(+b.dataset.star)); b.addEventListener('mouseenter', ()=> setStars(+b.dataset.star)); });
+      wrap.addEventListener('mouseleave', ()=> setStars(+hidden.value||5));
+      txt.addEventListener('input', ()=> cnt.textContent = (txt.value||'').length);
+      setStars(5); cnt.textContent='0';
+      // style stars
+      const style = document.createElement('style'); style.textContent = `.stars-input{display:inline-flex;gap:6px;align-items:center;direction:rtl}
+      .stars-input button{border:0;background:none;cursor:pointer;font-size:28px;line-height:1;color:#cfd8dc;transition:transform .12s ease}
+      .stars-input button.filled{color:var(--gold)} .stars-input button:active{transform:scale(.92)}`; document.head.appendChild(style);
+    })();
 
-  // واتساب مع تمرير بطاقة الإهداء (بدون "المناسبة")
-  const toWA = (payload) => 'https://wa.me/966552794082?text=' + encodeURIComponent(payload);
-  function prefillGift(type){ document.getElementById('gift-product').value = type || 'بنات'; document.getElementById('gift').scrollIntoView({behavior:'smooth'}); }
-  window.prefillGift = prefillGift;
-
-  // حقول البطاقة
-  const f = {
-    product: document.getElementById('gift-product'),
-    name: document.getElementById('gift-name'),
-    message: document.getElementById('gift-message'),
-    from: document.getElementById('gift-from')
-  };
-  const v = {
-    name: document.getElementById('gc-name'),
-    message: document.getElementById('gc-message'),
-    from: document.getElementById('gc-from')
-  };
-
-  const readGift = ()=>({
-    product: f.product.value.trim(),
-    name: f.name.value.trim(),
-    message: f.message.value.trim(),
-    from: f.from.value.trim(),
-  });
-
-  const renderGift = ()=>{
-    const g = readGift();
-    v.name.textContent = g.name || '—';
-    v.message.textContent = g.message || '—';
-    v.from.textContent = g.from ? `من: ${g.from}` : '—';
-    localStorage.setItem('waai_kids_gift', JSON.stringify(g));
-    // تحديث زر واتساب العلوي برسالة مختصرة
-    let baseMsg = 'مرحبا واعي كيدز, أرغب بطلب بوكس المواليد';
-    if(g.name || g.message || g.from){
-      baseMsg += `\n\nبطاقة الإهداء:\n- الاسم: ${g.name||'-'}\n- رسالة: ${g.message||'-'}\n- من: ${g.from||'-'}`;
-    }
-    document.getElementById('cta-top').href = toWA(baseMsg);
-  };
-  ['input','change'].forEach(evt=>{ Object.values(f).forEach(el=> el.addEventListener(evt, renderGift)); });
-
-  // استرجاع آخر إدخال
-  const savedGift = localStorage.getItem('waai_kids_gift');
-  if(savedGift){
-    try{ const g = JSON.parse(savedGift);
-      if(g.product) f.product.value=g.product;
-      if(g.name) f.name.value=g.name;
-      if(g.message) f.message.value=g.message;
-      if(g.from) f.from.value=g.from;
-    }catch(e){}
-  }
-  renderGift();
-
-  // أزرار الطلب من المنتجات
-  document.querySelectorAll('.order').forEach(btn=>{
-    btn.addEventListener('click', ()=>{
-      const p = btn.dataset.product;
-      const g = readGift();
-      let msg = `أريد طلب بوكس المواليد (${p}) سعر 149 ر.س`;
-      if(g.name || g.message || g.from){
-        msg += `\n\nبطاقة الإهداء:\n- الاسم: ${g.name||'-'}\n- رسالة: ${g.message||'-'}\n- من: ${g.from||'-'}`;
-      }
-      window.location.href = toWA(msg);
-    });
-  });
-
-  // أزرار البطاقة
-  document.getElementById('gift-wa').addEventListener('click', ()=>{
-    const g = readGift();
-    let msg = `أرغب بطلب بوكس (${g.product}) مع بطاقة إهداء مطبوعة:\n- الاسم: ${g.name||'-'}\n- رسالة: ${g.message||'-'}\n- من: ${g.from||'-'}`;
-    window.location.href = toWA(msg);
-  });
-
-  // طباعة البطاقة فقط
-  document.getElementById('gift-print').addEventListener('click', ()=> window.print());
-
-  // مسح الحقول
-  document.getElementById('gift-clear').addEventListener('click', ()=>{
-    Object.values(f).forEach(el=> el.value=''); renderGift();
-  });
-
-  // زر واتساب العائم
-  document.getElementById('cta-fab').href = toWA('مرحبا واعي كيدز');
-</script>
-
-<script>
-  // عدّاد أحرف
-  (function(){
-    const revText = document.getElementById('rev-text');
-    const revCount = document.getElementById('rev-count');
-    if(revText && revCount){
-      const update = ()=> revCount.textContent = (revText.value||'').length;
-      revText.addEventListener('input', update); update();
-    }
-    function getStars(){
-      const el = document.querySelector('input[name="rev-stars"]:checked');
-      return el ? parseInt(el.value,10) : 5;
-    }
-    const form = document.getElementById('review-form');
-    if(form){
-      form.addEventListener('submit', function(e){
-        e.preventDefault();
-        const name = (document.getElementById('rev-name').value||'ضيف').trim();
-        const stars = getStars();
-        const text = (document.getElementById('rev-text').value||'—').trim();
-        const holder = document.getElementById('reviews-list');
-        if(holder){
+    // Fetch reviews
+    async function loadReviews(){
+      try{
+        const res = await fetch('/api/reviews');
+        const list = await res.json();
+        const holder = document.getElementById('reviews-list'); holder.innerHTML='';
+        list.forEach(({name,stars,text})=>{
           const card = document.createElement('div');
-          card.className = 'review-card'; card.style.marginTop='10px';
-          const full = '★★★★★'; const starsTxt = full.slice(0,stars)+'☆☆☆☆☆'.slice(0,5-stars);
-          card.innerHTML = `<div class="stars">${starsTxt}</div><strong>${name}</strong><div class="muted">${text}</div>`;
+          card.className='card'; card.setAttribute('data-reveal','');
+          const full='★★★★★', sTxt = full.slice(0,stars)+'☆☆☆☆☆'.slice(0,5-stars);
+          card.innerHTML = \`<div class="body"><div class="stars">\${sTxt}</div><strong>\${name||'ضيف'}</strong><div class="muted">\${text}</div></div>\`;
           holder.appendChild(card);
-        }
-        if(typeof refreshAvg==='function'){ refreshAvg(); }
-        const toast = document.getElementById('toast'); if(toast){ toast.classList.add('show'); setTimeout(()=>toast.classList.remove('show'), 1800); }
-        form.reset(); const s5=document.getElementById('star-5'); if(s5){ s5.checked=true; }
-        if(revCount){ revCount.textContent='0'; }
-      });
+        });
+        initReveal();
+      }catch(_){}
     }
-  })();
-</script>
+    loadReviews();
 
-</body>
-</html>
+    // Submit review
+    document.getElementById('review-form').addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      const name = (document.getElementById('rev-name').value||'ضيف').trim();
+      const stars = +document.getElementById('rev-stars').value || 5;
+      const text = (document.getElementById('rev-text').value||'').trim();
+      if(!text) return alert('اكتب رأيك باختصار');
+      await fetch('/api/reviews', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ name, stars, text }) });
+      e.target.reset(); document.getElementById('rev-stars').value=5;
+      loadReviews();
+    });
+
+    initReveal();
+  </script>
+</body></html>

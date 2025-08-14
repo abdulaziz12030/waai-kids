@@ -1,0 +1,71 @@
+<!doctype html><html lang="ar" dir="rtl"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>بطاقة الإهداء</title>
+<link rel="stylesheet" href="css.css">
+</head><body>
+<header>
+  <div class="container nav">
+    <div class="brand">
+      <img class="logo" src="images/logo.png" alt="شعار واعي كيدز">
+      <span style="font-weight:900">واعي كيدز</span>
+    </div>
+    <a href="checkout.html" class="ghost" style="gap:6px">🛍️ <span data-cart-count>0</span></a>
+  </div>
+</header>
+
+<main class="container" style="padding:18px 0">
+  <div class="card" data-reveal>
+    <div class="grid" style="grid-template-columns:1fr 1fr">
+      <div class="body">
+        <label style="display:flex;gap:8px;align-items:center">
+          <input type="checkbox" id="enable" checked>
+          <strong>تفعيل بطاقة الإهداء (اختياري)</strong>
+        </label>
+        <label>الاسم على البطاقة</label>
+        <input id="g-name" class="ghost" placeholder="مثال: للمولودة شهد">
+        <label>رسالة قصيرة</label>
+        <textarea id="g-msg" class="ghost" rows="4" placeholder="مثال: نُورتي الدنيا يا أجمل العطايا"></textarea>
+        <label>من (اسم المُهدي)</label>
+        <input id="g-from" class="ghost" placeholder="مثال: من خالتكم مدى">
+        <div class="actions" style="margin-top:12px">
+          <a class="btn" id="to-checkout">إضافة للسلة ومتابعة</a>
+          <a class="ghost" href="product.html">رجوع</a>
+        </div>
+      </div>
+      <div class="body">
+        <div class="pic" style="border:1px dashed #cfe1ea;border-radius:12px;display:grid;place-items:center">
+          <div style="text-align:center">
+            <div style="font-weight:800;margin-bottom:6px">معاينة بطاقة الإهداء</div>
+            <div id="pv-name" style="font-weight:800"></div>
+            <div id="pv-msg"></div>
+            <div id="pv-from" style="opacity:.7"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script type="module">
+import { Cart, initReveal } from './js/cart.js';
+const $ = s=>document.querySelector(s);
+function render(){
+  $('#pv-name').textContent = $('#g-name').value || '—';
+  $('#pv-msg').textContent  = $('#g-msg').value  || '—';
+  $('#pv-from').textContent = $('#g-from').value ? ('من: '+$('#g-from').value) : '—';
+}
+['#g-name','#g-msg','#g-from'].forEach(sel=> $(sel).addEventListener('input', render));
+render();
+
+document.getElementById('to-checkout').addEventListener('click', ()=>{
+  const items = Cart.get();
+  if(!items.length){ alert('السلة فارغة، أضف المنتج أولاً'); return; }
+  const last = items[items.length-1];
+  const enabled = document.getElementById('enable').checked;
+  last.gift = enabled ? { name: $('#g-name').value.trim(), message: $('#g-msg').value.trim(), from: $('#g-from').value.trim() } : null;
+  Cart.set(items);
+  location.href = 'checkout.html';
+});
+initReveal();
+</script>
+</body></html>
