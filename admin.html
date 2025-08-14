@@ -1,65 +1,20 @@
 <!doctype html><html lang="ar" dir="rtl"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>واعي كيدز | إدارة التقييمات</title>
-<link rel="stylesheet" href="css.css">
-</head><body>
+<title>لوحة إدارة التقييمات</title><link rel="stylesheet" href="css.css"></head><body>
 <main class="container" style="padding:18px 0">
   <h1>إدارة التقييمات</h1>
-  <div class="card" data-reveal>
-    <div class="body">
-      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-        <input id="k" class="ghost" placeholder="ADMIN_KEY (افتراضيًا 123123)" style="width:280px">
-        <button class="btn" onclick="saveKey()">حفظ</button>
-        <button class="ghost" onclick="loadAll()">تحديث</button>
-      </div>
-      <div id="info" style="margin-top:8px;color:var(--muted)">يجب ضبط مفاتيح البيئة في Vercel.</div>
-      <table style="width:100%;border-collapse:collapse;margin-top:12px">
-        <thead><tr><th style="text-align:right;padding:8px;border-bottom:1px solid #eee">الاسم</th>
-          <th style="text-align:right;padding:8px;border-bottom:1px solid #eee">النجوم</th>
-          <th style="text-align:right;padding:8px;border-bottom:1px solid #eee">النص</th>
-          <th style="text-align:right;padding:8px;border-bottom:1px solid #eee">الحالة</th>
-          <th style="text-align:right;padding:8px;border-bottom:1px solid #eee">الإجراءات</th></tr></thead>
-        <tbody id="rows"></tbody>
-      </table>
-    </div>
-  </div>
+  <div class="card"><div class="body">
+    <input id="k" class="ghost" placeholder="ADMIN_KEY (افتراضيًا 123123)" style="width:280px">
+    <button class="btn" onclick="localStorage.setItem('admin_key', document.getElementById('k').value.trim());alert('تم الحفظ')">حفظ</button>
+    <button class="ghost" onclick="loadAll()">تحديث</button>
+    <table style="width:100%;border-collapse:collapse;margin-top:12px"><thead><tr><th>الاسم</th><th>النجوم</th><th>النص</th><th>الحالة</th><th>الإجراءات</th></tr></thead><tbody id="rows"></tbody></table>
+  </div></div>
 </main>
-
 <script>
-const API = '/api/reviews';
-function key(){ return localStorage.getItem('admin_key') || '123123'; }
-function saveKey(){ localStorage.setItem('admin_key', document.getElementById('k').value.trim()); alert('تم الحفظ'); }
-async function loadAll(){
-  // مبدئيًا سنجلب المعتمد فقط من نفس GET، ويمكن لاحقًا نضيف /api/reviews?all=1 للأدمن
-  const res = await fetch(API); const list = await res.json();
-  const tbody = document.getElementById('rows'); tbody.innerHTML='';
-  list.forEach(r=>{
-    const tr = document.createElement('tr');
-    tr.innerHTML = \`
-      <td style="padding:8px;border-bottom:1px solid #eee">\${r.name||'ضيف'}</td>
-      <td style="padding:8px;border-bottom:1px solid #eee">\${r.stars}</td>
-      <td style="padding:8px;border-bottom:1px solid #eee">\${r.text}</td>
-      <td style="padding:8px;border-bottom:1px solid #eee">\${r.approved ? 'معتمد' : 'مخفي'}</td>
-      <td style="padding:8px;border-bottom:1px solid #eee">
-        <button class="ghost" onclick="toggle(\${r.id}, \${!r.approved})">\${r.approved?'إخفاء':'اعتماد'}</button>
-        <button class="ghost" style="background:#ffe5e5;border-color:#ffcccc" onclick="delRev(\${r.id})">حذف</button>
-      </td>\`;
-    tbody.appendChild(tr);
-  });
-}
-async function delRev(id){
-  if(!confirm('حذف نهائي؟')) return;
-  const res = await fetch(API+'?id='+id, { method:'DELETE', headers:{ 'x-admin-key': key() } });
-  if(!res.ok) return alert('فشل الحذف'); loadAll();
-}
-async function toggle(id, approved){
-  const res = await fetch(API, {
-    method:'PATCH',
-    headers:{ 'Content-Type':'application/json', 'x-admin-key': key() },
-    body: JSON.stringify({ id, approved })
-  });
-  if(!res.ok) return alert('فشل التعديل'); loadAll();
-}
-document.getElementById('k').value = key(); loadAll();
+const API='/api/reviews'; const key=()=>localStorage.getItem('admin_key')||'123123';
+async function loadAll(){ const r=await fetch(API); const list=await r.json(); const tb=document.getElementById('rows'); tb.innerHTML=''; list.forEach(x=>{ const tr=document.createElement('tr'); tr.innerHTML=`<td>${x.name||'ضيف'}</td><td>${x.stars}</td><td>${x.text}</td><td>${x.approved?'معتمد':'مخفي'}</td><td><button class='ghost' onclick='toggle(${x.id}, ${!x.approved})'>${x.approved?'إخفاء':'اعتماد'}</button> <button class='ghost' style="background:#fee" onclick='delv(${x.id})'>حذف</button></td>`; tb.appendChild(tr); }); }
+async function delv(id){ if(!confirm('حذف نهائي؟')) return; const r=await fetch(API+'?id='+id,{method:'DELETE',headers:{'x-admin-key':key()}}); if(!r.ok) return alert('فشل الحذف'); loadAll(); }
+async function toggle(id,approved){ const r=await fetch(API,{method:'PATCH',headers:{'Content-Type':'application/json','x-admin-key':key()},body:JSON.stringify({id,approved})}); if(!r.ok) return alert('فشل التعديل'); loadAll(); }
+document.getElementById('k').value=key(); loadAll();
 </script>
 </body></html>

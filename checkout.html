@@ -1,88 +1,26 @@
 <!doctype html><html lang="ar" dir="rtl"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>إتمام الطلب</title>
-<link rel="stylesheet" href="css.css">
-</head><body>
-<header>
-  <div class="container nav">
-    <div class="brand">
-      <img class="logo" src="images/logo.png" alt="شعار واعي كيدز">
-      <span style="font-weight:900">واعي كيدز</span>
-    </div>
-    <a href="checkout.html" class="ghost" style="gap:6px">🛍️ <span data-cart-count>0</span></a>
-  </div>
-</header>
-
+<title>إتمام الطلب</title><link rel="stylesheet" href="css.css"></head><body>
+<header><div class="container nav"><div class="brand"><img class="logo" src="images/logo.png"><strong>واعي كيدز</strong></div><a href="#" class="ghost">🛍️ <span data-cart-count>0</span></a></div></header>
 <main class="container" style="padding:18px 0">
-  <div class="grid" style="grid-template-columns:1.2fr .8fr">
-    <div class="card" data-reveal>
-      <div class="body">
-        <h2 style="margin:0 0 10px">السلة</h2>
-        <table style="width:100%;border-collapse:collapse">
-          <thead><tr><th style="text-align:right;padding:8px;border-bottom:1px solid #eee">المنتج</th>
-          <th style="text-align:right;padding:8px;border-bottom:1px solid #eee">الكمية</th>
-          <th style="text-align:right;padding:8px;border-bottom:1px solid #eee">السعر</th>
-          <th style="text-align:right;padding:8px;border-bottom:1px solid #eee">الإجمالي</th>
-          <th style="text-align:right;padding:8px;border-bottom:1px solid #eee"></th></tr></thead>
-          <tbody id="rows"></tbody>
-        </table>
-        <div id="giftbox" style="margin-top:10px"></div>
-      </div>
-    </div>
-
-    <div class="card" data-reveal>
-      <div class="body">
-        <h2 style="margin:0 0 10px">بيانات العميل</h2>
-        <input class="ghost" id="c-name" placeholder="الاسم">
-        <input class="ghost" id="c-phone" placeholder="الجوال">
-        <input class="ghost" id="c-city" placeholder="المدينة">
-        <div style="margin-top:10px">الإجمالي: <strong id="total">0</strong> ر.س</div>
-        <div class="actions" style="margin-top:12px;flex-wrap:wrap">
-          <a class="btn" id="wa">إرسال الطلب عبر واتساب</a>
-          <a class="ghost" href="product.html">متابعة التسوق</a>
-        </div>
-      </div>
-    </div>
-  </div>
+  <div class="card"><div class="body">
+    <h2>السلة</h2>
+    <div id="list"></div>
+    <div id="gift"></div>
+    <div style="margin-top:8px">الإجمالي: <strong id="total">0</strong> ر.س</div>
+    <input class="ghost" id="c-name" placeholder="اسم العميل">
+    <input class="ghost" id="c-phone" placeholder="الجوال">
+    <input class="ghost" id="c-city" placeholder="المدينة">
+    <div class="actions"><a class="btn" id="wa">إرسال عبر واتساب</a><a class="ghost" href="product.html">متابعة التسوق</a></div>
+  </div></div>
 </main>
-
 <script type="module">
-import { Cart, initReveal } from './js/cart.js';
+import { Cart } from './js/cart.js';
 function fmt(n){return new Intl.NumberFormat('ar-SA').format(n)}
-const tbody = document.getElementById('rows');
-const items = Cart.get();
-let total = 0;
-items.forEach((x,i)=>{
-  const sum = x.price * x.qty; total += sum;
-  const tr = document.createElement('tr');
-  tr.innerHTML = \`<td style="padding:8px;border-bottom:1px solid #eee">\${x.name}</td>
-                   <td style="padding:8px;border-bottom:1px solid #eee"><span class="pill">\${x.qty}</span></td>
-                   <td style="padding:8px;border-bottom:1px solid #eee">\${fmt(x.price)}</td>
-                   <td style="padding:8px;border-bottom:1px solid #eee">\${fmt(sum)}</td>
-                   <td style="padding:8px;border-bottom:1px solid #eee"><button class="ghost" onclick="removeItem(\${i})">حذف</button></td>\`;
-  tbody.appendChild(tr);
-});
-document.getElementById('total').textContent = fmt(total);
-// gift
-const last = items[items.length-1]||{};
-if(last.gift){
-  const g = last.gift;
-  document.getElementById('giftbox').innerHTML = \`<div class="pill">بطاقة الإهداء</div>
-    <div>الاسم: \${g.name||'-'}</div><div>الرسالة: \${g.message||'-'}</div><div>من: \${g.from||'-'}</div>\`;
-}
-// removal
-window.removeItem = function(i){ const arr = Cart.get(); arr.splice(i,1); Cart.set(arr); location.reload(); };
-// whatsapp
-document.getElementById('wa').addEventListener('click', ()=>{
-  const name=(document.getElementById('c-name').value||'').trim();
-  const phone=(document.getElementById('c-phone').value||'').trim();
-  const city=(document.getElementById('c-city').value||'').trim();
-  let msg='طلب جديد - واعي كيدز\n';
-  Cart.get().forEach(x=> msg += \`- \${x.name} × \${x.qty} = \${x.price*x.qty} ر.س\n\`);
-  if(last.gift){ msg += \`\nبطاقة الإهداء:\nالاسم: \${last.gift.name||'-'}\nالرسالة: \${last.gift.message||'-'}\nمن: \${last.gift.from||'-'}\n\`; }
-  msg += \`\nالإجمالي: \${total} ر.س\nالعميل: \${name} | \${phone} | \${city}\`;
-  location.href = Cart.waLink(msg);
-});
-initReveal();
+const items=Cart.get(); let total=0; const list=document.getElementById('list');
+items.forEach((x,i)=>{ const sum=x.price*x.qty; total+=sum; const d=document.createElement('div'); d.className='pill'; d.style.margin='6px 0'; d.textContent=`${x.name} × ${x.qty} = ${sum} ر.س`; list.appendChild(d); });
+document.getElementById('total').textContent=fmt(total);
+const last=Cart.getLast(); if(last&&last.gift){const g=last.gift; document.getElementById('gift').innerHTML=`<div class="pill">بطاقة الإهداء</div><div>الاسم: ${g.name||'-'}</div><div>الرسالة: ${g.message||'-'}</div><div>من: ${g.from||'-'}</div>`;}
+document.getElementById('wa').onclick=()=>{ const n=(document.getElementById('c-name').value||'').trim(); const p=(document.getElementById('c-phone').value||'').trim(); const c=(document.getElementById('c-city').value||'').trim(); let msg='طلب جديد - واعي كيدز\n'; Cart.get().forEach(x=> msg+=`- ${x.name} × ${x.qty} = ${x.price*x.qty} ر.س\n`); if(last&&last.gift){const g=last.gift; msg+=`\nبطاقة الإهداء:\nالاسم: ${g.name||'-'}\nالرسالة: ${g.message||'-'}\nمن: ${g.from||'-'}\n`; } msg+=`\nالإجمالي: ${total} ر.س\nالعميل: ${n} | ${p} | ${c}`; location.href='https://wa.me/966552794082?text='+encodeURIComponent(msg); };
 </script>
 </body></html>
