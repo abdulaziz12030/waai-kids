@@ -1,18 +1,21 @@
 <!doctype html><html lang="ar" dir="rtl"><head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>اختيار المنتج</title>
 <link rel="stylesheet" href="css.css">
 </head><body>
 <header>
   <div class="container nav">
-    <div class="brand"><img class="logo" src="images/logo.png"><strong>واعي كيدز</strong></div>
-    <nav class="menu"><a href="index.html">الرئيسية</a><a href="checkout.html">السلة</a></nav>
+    <div class="brand"><img class="logo" src="images/logo.png"><strong>waai-kids.sa</strong></div>
+    <nav class="menu">
+      <a href="index.html">الرئيسية</a>
+      <a href="product.html" class="is-active">اطلب الآن</a>
+      <a href="checkout.html">السلة</a>
+    </nav>
   </div>
 </header>
 
 <main class="container" style="padding:18px 0">
-  <div class="card"><div class="body" style="display:grid;gap:12px">
+  <div class="card" data-reveal><div class="body" style="display:grid;gap:12px">
     <h1 id="p-name">—</h1>
     <img id="p-img" alt="" style="border-radius:12px">
     <div class="price">السعر: <strong id="p-price">149</strong> ر.س</div>
@@ -26,13 +29,13 @@
     <label>الكمية</label>
     <div><input id="qty" type="number" min="1" value="1" class="ghost" style="width:110px"></div>
 
-    <!-- بطاقة الإهداء داخل صفحة المنتج (اختيارية) -->
+    <!-- بطاقة الإهداء داخل نفس الصفحة -->
     <div class="pill">بطاقة الإهداء (اختياري)</div>
     <label style="display:flex;align-items:center;gap:8px">
       <input type="checkbox" id="enableGift" checked> تفعيل بطاقة الإهداء
     </label>
     <input id="g-name" class="ghost" placeholder="الاسم على البطاقة (مثال: للمولودة شهد)">
-    <textarea id="g-msg" class="ghost" rows="3" placeholder="رسالة قصيرة (مثال: نوّرتِ الدنيا يا أجمل العطايا)"></textarea>
+    <textarea id="g-msg" class="ghost" rows="3" placeholder="رسالة قصيرة (مثال: نورتِ الدنيا يا أجمل العطايا)"></textarea>
     <input id="g-from" class="ghost" placeholder="من (مثال: من خالتكم مدى)">
 
     <div class="actions">
@@ -43,15 +46,14 @@
 </main>
 
 <script type="module">
-  import { Cart } from './js/cart.js';
+  import { Cart, initReveal } from './js/cart.js';
+  initReveal();
 
-  // بيانات المنتج
   const PRODUCTS = {
     'baby-girl': { name:'بُكس المواليد — بنات', price:149, img:'images/girl.png' },
     'baby-boy' : { name:'بُكس المواليد — أولاد', price:149, img:'images/boy1.png' }
   };
 
-  // ربط الواجهة
   let sku = new URLSearchParams(location.search).get('sku') || 'baby-girl';
   const img = document.getElementById('p-img');
   const nameEl = document.getElementById('p-name');
@@ -65,12 +67,9 @@
   render();
   typeSel.onchange = () => { sku = typeSel.value; render(); };
 
-  // إضافة للسلة + حفظ بطاقة الإهداء (محليًا فقط)
   document.getElementById('add-cart').onclick = () => {
     const qty = Math.max(1, parseInt(document.getElementById('qty').value||'1', 10));
     const p = PRODUCTS[sku];
-
-    // بطاقة الإهداء (اختيارية)
     const enabled = document.getElementById('enableGift').checked;
     const gift = enabled ? {
       name:  document.getElementById('g-name').value.trim(),
