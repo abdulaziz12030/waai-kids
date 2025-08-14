@@ -6,8 +6,11 @@ export const CART_KEY = 'waai_kids_cart_v1';
 export const Cart = {
   get(){ try{ return JSON.parse(localStorage.getItem(CART_KEY)) || []; }catch{ return []; } },
   set(items){ localStorage.setItem(CART_KEY, JSON.stringify(items)); this.renderBadge(); },
-  upsert(item){ const it=this.get(); const i=it.findIndex(x=>x.sku===item.sku);
-    if(i>-1) it[i]={...it[i],...item}; else it.push(item); this.set(it);
+  upsert(item){
+    const it=this.get();
+    const i=it.findIndex(x=>x.sku===item.sku);
+    if(i>-1) it[i]={...it[i],...item}; else it.push(item);
+    this.set(it);
   },
   getLast(){ const it=this.get(); return it[it.length-1]; },
   count(){ return this.get().length; },
