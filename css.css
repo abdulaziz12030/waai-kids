@@ -20,6 +20,7 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
 
 /* Buttons / inputs */
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:1rem 1.15rem;border-radius:14px;background:var(--brand);color:#fff;box-shadow:var(--shadow);min-height:48px;border:0;cursor:pointer}
+.btn[disabled]{opacity:.6;cursor:not-allowed}
 .ghost{display:inline-flex;align-items:center;justify-content:center;padding:.85rem 1rem;border:1px solid #dbe7ee;border-radius:14px;min-height:44px;background:#fff;color:#0f4663;cursor:pointer}
 input,select,textarea{padding:.85rem 1rem;border:1px solid #dfeaf0;border-radius:14px;width:100%;background:#fff}
 
@@ -42,17 +43,26 @@ border:1px solid #e9f1f5;border-radius:24px;box-shadow:var(--shadow);padding:22p
 .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
 .hero-media{border-radius:16px;overflow:hidden;background:#eef7fb}
 
-/* Reviews (تبقى لو فعّلتها لاحقاً) */
-.review-wrap{display:grid;gap:14px}
-
 /* WhatsApp fab */
 .wa{position:fixed;left:14px;bottom:14px;z-index:90;display:grid;place-items:center;width:56px;height:56px;border-radius:50%;background:#25D366;box-shadow:var(--shadow)}
 .wa svg{width:28px;height:28px}
 
-/* Reveal */
-[data-reveal]{transform:translateY(12px);opacity:0;transition:transform .6s ease,opacity .6s ease}
-[data-reveal].visible{transform:translateY(0);opacity:1}
-@media (prefers-reduced-motion:reduce){*{transition:none !important}}
+/* Gift Preview */
+.gift-preview{display:grid;gap:12px}
+.gift-frame{background:#fff;border:2px dashed #c0e9f2;border-radius:20px;box-shadow:var(--shadow);padding:14px}
+.gift-brand{display:flex;align-items:center;gap:8px;color:#0f4663}
+.gift-brand img{width:34px;height:34px;border-radius:10px;box-shadow:var(--shadow)}
+.gift-actions{display:flex;gap:10px;flex-wrap:wrap}
+canvas#giftCanvas{width:100%;height:auto;display:block;border-radius:16px}
+.muted{color:var(--muted);font-size:.95em}
+
+/* Reveal + Animations */
+[data-reveal]{opacity:0;transform:translateY(14px);transition:transform .7s cubic-bezier(.2,.7,.2,1),opacity .7s}
+[data-reveal].visible{opacity:1;transform:none}
+[data-anim="float"]{animation:floatY 6s ease-in-out infinite}
+@keyframes floatY{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.fade-up{animation:fadeUp .8s ease forwards}
 
 /* Responsive */
 @media (min-width:720px){
@@ -60,21 +70,13 @@ border:1px solid #e9f1f5;border-radius:24px;box-shadow:var(--shadow);padding:22p
   .grid{grid-template-columns:repeat(12,1fr)}
   .card{grid-column:span 6}
   .hero-card{grid-template-columns:1.1fr .9fr}
+  .pic{aspect-ratio:16/10}
 }
 @media (min-width:1024px){
   .container{width:min(1200px,88%)}
-  .pic{aspect-ratio:16/10}
 }
 
-/* Gift Preview tweaks */
-.gift-preview{display:grid;gap:12px}
-.gift-frame{background:#fff;border:2px dashed #c0e9f2;border-radius:20px;box-shadow:var(--shadow);padding:14px}
-.gift-brand{display:flex;align-items:center;gap:8px;color:#0f4663}
-.gift-brand img{width:34px;height:34px;border-radius:10px;box-shadow:var(--shadow)}
-.gift-actions{display:flex;gap:10px;flex-wrap:wrap}
-canvas#giftCanvas{width:100%;height:auto;display:block;border-radius:16px}
-
-/* طباعة بطاقة الإهداء فقط */
+/* Print (إخفاء النموذج وإبقاء البطاقة فقط عند الطباعة) */
 @media print{
   header,.wa,#formArea{display:none !important}
 }
