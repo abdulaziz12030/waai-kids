@@ -1,11 +1,12 @@
 <!doctype html><html lang="ar" dir="rtl"><head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>اختيار المنتج</title>
 <link rel="stylesheet" href="css.css">
 </head><body>
 <header>
   <div class="container nav">
-    <div class="brand"><img class="logo" src="images/logo.png"><strong>waai-kids.sa</strong></div>
+    <div class="brand"><img class="logo" src="images/logo.png" alt="واعي كيدز"><strong>waai-kids.sa</strong></div>
     <nav class="menu">
       <a href="index.html">الرئيسية</a>
       <a href="product.html" class="is-active">اطلب الآن</a>
@@ -45,9 +46,25 @@
   </div></div>
 </main>
 
+<footer>
+  <div class="container">
+    <div class="links">
+      <a href="terms.html">الشروط</a>
+      <a href="returns.html">الاسترجاع</a>
+      <a href="privacy.html">الخصوصية</a>
+    </div>
+    <div>© <span id="y"></span> واعي كيدز</div>
+  </div>
+</footer>
+
+<a class="wa" href="https://wa.me/966552794082" aria-label="واتساب">
+  <svg viewBox="0 0 32 32" width="28" height="28"><circle cx="16" cy="16" r="16" fill="#25D366"/></svg>
+</a>
+
 <script type="module">
   import { Cart, initReveal } from './js/cart.js';
   initReveal();
+  document.getElementById('y').textContent = new Date().getFullYear();
 
   const PRODUCTS = {
     'baby-girl': { name:'بُكس المواليد — بنات', price:149, img:'images/girl.png' },
