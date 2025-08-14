@@ -1,5 +1,6 @@
 export const WA_NUM = '966552794082';
 export const CART_KEY = 'waai_kids_cart_v1';
+export const REVIEWS_KEY = 'waai_kids_reviews_v1';
 
 export const Cart = {
   get(){ try{ return JSON.parse(localStorage.getItem(CART_KEY)) || []; }catch{ return []; } },
@@ -9,7 +10,6 @@ export const Cart = {
     if(i>-1) it[i]={...it[i],...item}; else it.push(item);
     this.set(it);
   },
-  getLast(){ const it=this.get(); return it[it.length-1]; },
   count(){ return this.get().length; },
   total(){ return this.get().reduce((s,x)=>s+x.price*x.qty,0); },
   renderBadge(){ const el=document.querySelector('[data-cart-count]')||document.querySelector('.bubble'); if(el) el.textContent=this.count(); }
@@ -22,3 +22,13 @@ export function initReveal(){
   addEventListener('scroll',fire); addEventListener('load',fire); fire();
 }
 document.addEventListener('DOMContentLoaded',()=>Cart.renderBadge());
+
+// تقييمات مباشرة
+export const Reviews = {
+  all(){ try{ return JSON.parse(localStorage.getItem(REVIEWS_KEY)) || []; }catch{ return []; } },
+  add({name='ضيف',stars=5,text=''}){
+    const arr=this.all(); arr.push({id:Date.now(), name,stars,text,approved:true});
+    localStorage.setItem(REVIEWS_KEY, JSON.stringify(arr));
+  },
+  clear(){ localStorage.removeItem(REVIEWS_KEY); }
+};

@@ -1,7 +1,7 @@
 <!doctype html><html lang="ar" dir="rtl"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>اختيار المنتج</title>
+<title>اختيار البوكس | واعي كيدز</title>
 <link rel="stylesheet" href="css.css">
 </head><body>
 <header>
@@ -15,25 +15,27 @@
   <div class="card" data-reveal><div class="body" style="display:grid;gap:12px">
     <h1 id="p-name" class="fade-up">—</h1>
     <img id="p-img" alt="" style="border-radius:12px" data-anim="float">
-    <div class="price"><span>السعر:</span> <strong id="p-price">149</strong> ر.س</div>
+    <p style="color:var(--muted)">بوكس أنيق بكامل محتوياته، بطاقة إهداء اختيارية، والسعر شامل التوصيل.</p>
 
-    <label>نوع البُكس</label>
+    <label>نوع البوكس</label>
     <select id="p-type" class="ghost">
-      <option value="baby-girl">بنات</option>
-      <option value="baby-boy">أولاد</option>
+      <option value="baby-girl">مواليد — بنات</option>
+      <option value="baby-boy">مواليد — أولاد</option>
     </select>
 
     <label>الكمية</label>
     <div><input id="qty" type="number" min="1" value="1" class="ghost" style="width:110px"></div>
 
-    <!-- بطاقة الإهداء داخل نفس الصفحة -->
     <div class="pill">بطاقة الإهداء (اختياري)</div>
-    <label style="display:flex;align-items:center;gap:8px">
-      <input type="checkbox" id="enableGift" checked> تفعيل بطاقة الإهداء
-    </label>
-    <input id="g-name" class="ghost" placeholder="الاسم على البطاقة (مثال: للمولودة شهد)">
-    <textarea id="g-msg" class="ghost" rows="3" placeholder="رسالة قصيرة (مثال: نورتِ الدنيا يا أجمل العطايا)"></textarea>
-    <input id="g-from" class="ghost" placeholder="من (مثال: من خالتكم مدى)">
+    <div style="display:grid;gap:8px">
+      <select id="g-theme" class="ghost" title="ثيم البطاقة">
+        <option value="girl">ثيم مولودة (هادئ/وردي)</option>
+        <option value="boy">ثيم مولود (سماوي)</option>
+      </select>
+      <input id="g-name" class="ghost" placeholder="الاسم على البطاقة (مثال: للمولودة شهد)">
+      <textarea id="g-msg" class="ghost" rows="3" placeholder="رسالة قصيرة (مثال: نوّرتِ الدنيا يا أجمل العطايا)"></textarea>
+      <input id="g-from" class="ghost" placeholder="من (مثال: من خالتكم مدى)">
+    </div>
 
     <div class="actions">
       <a class="btn" id="add-cart">إضافة للسلة والمتابعة</a>
@@ -43,9 +45,7 @@
 </main>
 
 <footer>
-  <div class="container">
-    <div>© <span id="y"></span> واعي كيدز</div>
-  </div>
+  <div class="container"><div>© <span id="y"></span> واعي كيدز</div></div>
 </footer>
 
 <script type="module">
@@ -54,34 +54,33 @@
   document.getElementById('y').textContent = new Date().getFullYear();
 
   const PRODUCTS = {
-    'baby-girl': { name:'بُكس المواليد — بنات', price:149, img:'images/girl.png' },
-    'baby-boy' : { name:'بُكس المواليد — أولاد', price:149, img:'images/boy1.png' }
+    'baby-girl': { name:'بوكس مواليد — بنات', price:149, img:'images/girl.png' },
+    'baby-boy' : { name:'بوكس مواليد — أولاد', price:149, img:'images/boy1.png' }
   };
 
   let sku = new URLSearchParams(location.search).get('sku') || 'baby-girl';
   const img = document.getElementById('p-img');
   const nameEl = document.getElementById('p-name');
-  const priceEl = document.getElementById('p-price');
-  const typeSel = document.getElementById('p-type');
 
   function render(){
     const p = PRODUCTS[sku];
-    img.src = p.img; nameEl.textContent = p.name; priceEl.textContent = p.price; typeSel.value = sku;
+    img.src = p.img; nameEl.textContent = p.name;
   }
   render();
-  typeSel.onchange = () => { sku = typeSel.value; render(); };
+
+  document.getElementById('p-type').onchange = (e)=>{ sku=e.target.value; render(); };
 
   document.getElementById('add-cart').onclick = () => {
     const qty = Math.max(1, parseInt(document.getElementById('qty').value||'1', 10));
     const p = PRODUCTS[sku];
-    const enabled = document.getElementById('enableGift').checked;
-    const gift = enabled ? {
+    const gift = {
+      theme: document.getElementById('g-theme').value,
       name:  document.getElementById('g-name').value.trim(),
       msg:   document.getElementById('g-msg').value.trim(),
       from:  document.getElementById('g-from').value.trim()
-    } : null;
-
-    Cart.upsert({ sku, name:p.name, price:p.price, qty, gift });
+    };
+    const enabled = gift.name || gift.msg || gift.from;
+    Cart.upsert({ sku, name:p.name, price:p.price, qty, gift: enabled? gift : null });
     location.href = 'checkout.html';
   };
 </script>
