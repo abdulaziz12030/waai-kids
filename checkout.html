@@ -1,37 +1,36 @@
 <!doctype html><html lang="ar" dir="rtl"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>إتمام الطلب</title>
+<title>السلة | واعي كيدز</title>
 <link rel="stylesheet" href="css.css">
 <style>
-  .gift-preview{display:grid;gap:10px}
-  .gift-frame{background:#fff;border:1px solid #e9f1f5;border-radius:18px;box-shadow:var(--shadow);padding:12px}
-  .gift-actions{display:flex;gap:10px;flex-wrap:wrap}
   .muted{color:var(--muted);font-size:.95em}
-  canvas#giftCanvas{width:100%;height:auto;display:block;border-radius:16px}
 </style>
 </head><body>
 <header>
   <div class="container nav">
     <div class="brand"><img class="logo" src="images/logo.png" alt=""><strong>waai-kids.sa</strong></div>
-    <nav class="menu">
-      <a href="index.html">الرئيسية</a>
-      <a href="product.html">اطلب الآن</a>
-      <a href="checkout.html" class="is-active">السلة</a>
-    </nav>
+    <a class="cart-link" href="checkout.html" aria-label="السلة">🛍️ <span class="bubble" data-cart-count>0</span></a>
   </div>
 </header>
 
 <main class="container" style="padding:18px 0">
-  <div class="card" data-reveal><div class="body" style="display:grid;gap:16px">
+  <!-- هوية -->
+  <section style="padding:0 0 18px">
+    <div class="pill" style="background:#eaf9ff;border-color:#d9f1fb;color:#0f4663">🧸 واعي كيدز • لحظاتك مع المواليد تبدأ من هنا</div>
+  </section>
+
+  <div class="card" data-reveal><div class="body" style="display:grid;gap:16px" id="formArea">
     <h2>السلة</h2>
 
     <div id="list" style="display:grid;gap:10px"></div>
     <div style="margin-top:4px">الإجمالي: <strong id="total">0</strong> ر.س</div>
 
-    <!-- معاينة بطاقة الإهداء كصورة -->
+    <!-- معاينة بطاقة الإهداء -->
     <div id="giftBox" class="gift-preview" style="display:none">
-      <div class="pill">معاينة بطاقة الإهداء</div>
+      <div class="gift-brand">
+        <img src="images/logo.png" alt="واعي كيدز"><strong>معاينة بطاقة الإهداء</strong>
+      </div>
       <div class="gift-frame">
         <canvas id="giftCanvas" width="1400" height="820" aria-label="معاينة البطاقة"></canvas>
       </div>
@@ -39,7 +38,7 @@
         <button class="ghost" id="downloadGift">تحميل البطاقة كصورة</button>
         <button class="btn" id="shareGift">إرسال الطلب + الصورة عبر واتساب</button>
       </div>
-      <div class="muted">تنبيه: إن لم يدعم جهازك مشاركة الملفات من المتصفح، سنحمّل الصورة ونفتح واتساب بالنص فقط (ثم ترفق الصورة يدويًا).</div>
+      <div class="muted">إن لم يدعم جهازك المشاركة بالملفات من المتصفح: سنحمّل الصورة ونفتح واتساب بالنص فقط (ثم أرفق الصورة يدويًا).</div>
     </div>
 
     <div class="pill">بيانات العميل والعنوان</div>
@@ -51,18 +50,13 @@
 
     <div class="actions">
       <a class="btn" id="waText">إرسال الطلب نصًا عبر واتساب</a>
-      <a class="ghost" href="product.html">متابعة التسوق</a>
+      <a class="ghost" href="product.html">إضافة منتج</a>
     </div>
   </div></div>
 </main>
 
 <footer>
   <div class="container">
-    <div class="links">
-      <a href="terms.html">الشروط</a>
-      <a href="returns.html">الاسترجاع</a>
-      <a href="privacy.html">الخصوصية</a>
-    </div>
     <div>© <span id="y"></span> واعي كيدز</div>
   </div>
 </footer>
@@ -75,6 +69,7 @@
   import { Cart, WA_NUM, initReveal } from './js/cart.js';
   initReveal();
   document.getElementById('y').textContent = new Date().getFullYear();
+  Cart.renderBadge();
 
   const listEl = document.getElementById('list');
   const totalEl = document.getElementById('total');
@@ -107,7 +102,7 @@
             <button class="ghost" data-del="${i}">حذف</button>
           </div>
           <div>المجموع: <strong>${sum}</strong> ر.س</div>
-          ${x.gift ? `<div class="muted">الاسم على البطاقة: ${x.gift.name||'-'} — الرسالة: ${x.gift.msg||'-'} — من: ${x.gift.from||'-'}</div>` : ''}
+          ${x.gift ? `<div class="muted">الاسم: ${x.gift.name||'-'} — الرسالة: ${x.gift.msg||'-'} — من: ${x.gift.from||'-'}</div>` : ''}
         </div>`;
       listEl.appendChild(row);
 
@@ -116,7 +111,6 @@
 
     totalEl.textContent = fmt(total);
 
-    // تعديل/حذف
     listEl.querySelectorAll('[data-qty]').forEach(inp=>{
       inp.onchange = () => {
         const idx = +inp.dataset.qty;
@@ -134,12 +128,11 @@
       };
     });
 
-    // معاينة البطاقة
     if(lastGift){ giftBox.style.display = ''; drawGiftCard(lastGift); }
     else { giftBox.style.display = 'none'; }
   }
 
-  // رسم بطاقة الإهداء
+  // رسم بطاقة الإهداء — إبراز هوية واعي كيدز
   function drawGiftCard(gift){
     const DPR = Math.max(1, Math.floor(devicePixelRatio || 1));
     const baseW = 1400, baseH = 820;
@@ -147,47 +140,51 @@
     canvas.style.width = baseW + 'px'; canvas.style.height = baseH + 'px';
     ctx.setTransform(DPR,0,0,DPR,0,0);
 
+    // خلفية وهوية
     const grd = ctx.createLinearGradient(0,0,0,baseH);
     grd.addColorStop(0,'#f6fbff'); grd.addColorStop(1,'#ffffff');
     ctx.fillStyle = grd; ctx.fillRect(0,0,baseW,baseH);
+    roundRect(20,20,baseW-40,baseH-40,26,'#ffffff','#e9f1f5');
 
-    roundRect(20,20,baseW-40,baseH-40,24,'#ffffff','#e9f1f5');
-
-    ctx.globalAlpha = 0.24;
-    ctx.fillStyle = '#a6e4db'; ctx.beginPath(); ctx.arc(baseW-160,140,110,0,Math.PI*2); ctx.fill();
-    ctx.fillStyle = '#3aa6d0'; ctx.beginPath(); ctx.arc(160,baseH-140,90,0,Math.PI*2); ctx.fill();
+    // زخارف لطيفة بهوية واعي
+    ctx.globalAlpha = .22;
+    ctx.fillStyle = '#a6e4db'; circle(baseW-160,140,110);
+    ctx.fillStyle = '#3aa6d0'; circle(160,baseH-140,90);
     ctx.globalAlpha = 1;
 
-    ctx.fillStyle = '#0f3d5b';
-    ctx.font = 'bold 36px system-ui, -apple-system, Segoe UI, Tahoma';
-    ctx.textAlign = 'right';
-    ctx.fillText('واعي كيدز • بطاقة إهداء', baseW-60, 90);
+    // شريط علوي
+    ctx.fillStyle = '#0f3d5b'; ctx.fillRect(20,20,baseW-40,68);
+    ctx.fillStyle = '#ffffff'; ctx.font = '700 30px system-ui'; ctx.textAlign='right';
+    ctx.fillText('واعي كيدز • بطاقة إهداء', baseW-50, 65);
 
-    ctx.fillStyle = '#256581';
-    ctx.font = '600 22px system-ui';
-    ctx.fillText((gift.productName || 'هدية المواليد'), baseW-60, 130);
+    // اسم المنتج
+    ctx.fillStyle = '#256581'; ctx.font = '600 22px system-ui'; ctx.textAlign='right';
+    ctx.fillText(gift.productName || 'هدية المواليد', baseW-50, 110);
 
+    // نصوص البطاقة
     const nameLine = (gift.name || '').trim() || 'للمولودة الجميلة';
     const msgLine  = (gift.msg  || '').trim()  || 'نورتِ الدنيا يا أجمل العطايا';
     const fromLine = (gift.from || '').trim() || 'محبتكم';
 
     ctx.textAlign = 'center';
     ctx.fillStyle = '#0e1a22';
-    ctx.font = 'bold 48px system-ui';
-    ctx.fillText(nameLine, baseW/2, 280);
+    ctx.font = '800 48px system-ui';
+    ctx.fillText(nameLine, baseW/2, 300);
 
     ctx.fillStyle = '#33434f';
-    wrapText(msgLine, baseW/2, 360, baseW-240, 36, '600 30px system-ui');
+    wrapText(msgLine, baseW/2, 380, baseW-260, 38, '600 32px system-ui');
 
     ctx.fillStyle = '#0f3d5b';
-    ctx.font = 'bold 28px system-ui';
-    ctx.fillText('— ' + fromLine + ' —', baseW/2, 540);
+    ctx.font = '700 28px system-ui';
+    ctx.fillText('— ' + fromLine + ' —', baseW/2, 560);
 
+    // وسم الموقع
     ctx.fillStyle = '#6a7c88';
     ctx.font = '600 18px system-ui';
     ctx.fillText('waai-kids.sa', baseW/2, baseH-60);
   }
 
+  function circle(x,y,r){ ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.fill(); }
   function roundRect(x,y,w,h,r,fill='#fff',stroke='#e9f1f5'){
     const rr = Math.min(r, w/2, h/2);
     ctx.beginPath();
@@ -200,12 +197,9 @@
     ctx.fillStyle = fill; ctx.fill();
     ctx.lineWidth = 2; ctx.strokeStyle = stroke; ctx.stroke();
   }
-
   function wrapText(text, cx, startY, maxW, lineH, font){
-    ctx.font = font;
-    ctx.textAlign = 'center';
-    const words = text.split(' ');
-    let line = '', y = startY;
+    ctx.font = font; ctx.textAlign = 'center';
+    const words = text.split(' '); let line = '', y = startY;
     for (let i=0;i<words.length;i++){
       const test = line ? (line + ' ' + words[i]) : words[i];
       const w = ctx.measureText(test).width;
