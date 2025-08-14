@@ -1,183 +1,0 @@
-<!doctype html><html lang="ar" dir="rtl">
-<head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
-<title>واعي كيدز | لحظاتك مع المواليد تبدأ من هنا</title>
-<meta name="description" content="واعي كيدز - بُكسات مواليد أنيقة مع بطاقة إهداء اختيارية. متوافق مع الجوال والآيباد واللابتوب.">
-<link rel="preload" as="image" href="images/banner.png">
-<link rel="stylesheet" href="css.css">
-</head>
-<body>
-  <div class="topbar">🎁 واعي كيدز — لحظاتك مع المواليد تبدأ من هنا</div>
-  <header>
-    <div class="container nav">
-      <div class="brand">
-        <img class="logo" src="images/logo.png" alt="شعار واعي كيدز">
-        <span style="font-weight:900">واعي كيدز • waai-kids.sa</span>
-      </div>
-      <div style="display:flex;gap:8px;align-items:center">
-        <a href="checkout.html" class="ghost" style="gap:6px">🛍️ <span data-cart-count>0</span></a>
-        <button class="hamburger" aria-label="القائمة" id="menuBtn"><div></div></button>
-      </div>
-    </div>
-    <nav class="menu" id="menu">
-      <a href="#products" onclick="closeMenu()">المنتجات</a>
-      <a href="#reviews" onclick="closeMenu()">التقييمات</a>
-      <a href="product.html?sku=baby-girl" onclick="closeMenu()">اطلب الآن</a>
-    </nav>
-  </header>
-
-  <main>
-    <section class="hero container">
-      <div class="hero-card" data-reveal>
-        <div>
-          <h1>🎁 واعي كيدز — لحظاتك مع المواليد تبدأ من هنا</h1>
-          <p style="margin:.3rem 0 0;color:var(--muted)">بُكسات مواليد — أولاد/بنات — مع تغليف فاخر وبطاقة إهداء اختيارية.</p>
-          <div class="actions">
-            <a class="btn" href="#products">تصفح المنتجات</a>
-            <a class="ghost" href="product.html?sku=baby-girl">ابدأ الآن</a>
-          </div>
-        </div>
-        <div class="media">
-          <img src="images/banner.png" alt="واعي كيدز - غلاف" loading="eager" decoding="async">
-        </div>
-      </div>
-    </section>
-
-    <section id="products" class="container">
-      <div class="sec-head">
-        <h2>اختياراتنا للمولود الجديد</h2>
-        <span class="pill">توصيل سريع • تغليف فاخر • بطاقة إهداء اختيارية</span>
-      </div>
-      <div class="grid">
-        <article class="card" data-reveal>
-          <div class="pic"><img src="images/girl.png" alt="بُكس المواليد — بنات"></div>
-          <div class="body">
-            <h3 style="margin:0 0 6px">بُكس المواليد — بنات</h3>
-            <div class="price"><strong>149 ر.س</strong> <s>200 ر.س</s> <span class="pill">وفر 25%</span></div>
-            <div class="actions">
-              <a class="btn" href="product.html?sku=baby-girl">اطلب الآن</a>
-            </div>
-          </div>
-        </article>
-
-        <article class="card" data-reveal>
-          <div class="pic"><img src="images/boy.png" alt="بُكس المواليد — أولاد"></div>
-          <div class="body">
-            <h3 style="margin:0 0 6px">بُكس المواليد — أولاد</h3>
-            <div class="price"><strong>149 ر.س</strong> <s>200 ر.س</s> <span class="pill">عرض الافتتاح</span></div>
-            <div class="actions">
-              <a class="btn" href="product.html?sku=baby-boy">اطلب الآن</a>
-            </div>
-          </div>
-        </article>
-      </div>
-    </section>
-
-    <section id="reviews" class="container">
-      <div class="sec-head">
-        <h2>التقييمات</h2>
-        <div><span class="pill">جديدة ومصدّقة</span></div>
-      </div>
-      <div class="grid" id="reviews-list">
-        <!-- ستُحمّل التقييمات من /api/reviews -->
-      </div>
-
-      <div class="card" style="margin-top:12px" data-reveal>
-        <form class="review-form" id="review-form" style="display:grid;gap:10px">
-          <h3 style="margin:0 0 8px">أضف تقييمك</h3>
-          <div style="display:grid;grid-template-columns:1fr 160px;gap:8px">
-            <input id="rev-name" placeholder="اسمك (اختياري)" style="padding:.8rem .9rem;border:1px solid #dfeaf0;border-radius:12px">
-            <!-- نجوم تفاعلية -->
-            <div class="stars-input" id="stars" aria-label="التقييم" role="radiogroup">
-              <button type="button" data-star="1" aria-label="نجمة 1">★</button>
-              <button type="button" data-star="2" aria-label="نجمتان">★</button>
-              <button type="button" data-star="3" aria-label="3 نجوم">★</button>
-              <button type="button" data-star="4" aria-label="4 نجوم">★</button>
-              <button type="button" data-star="5" aria-label="5 نجوم">★</button>
-              <input type="hidden" id="rev-stars" name="rev-stars" value="5">
-            </div>
-          </div>
-          <textarea id="rev-text" maxlength="300" placeholder="رأيك باختصار.." style="padding:.8rem .9rem;border:1px solid #dfeaf0;border-radius:12px;min-height:100px"></textarea>
-          <div style="text-align:left;color:var(--muted);font-size:.9rem"><span id="rev-count">0</span>/300</div>
-          <button class="btn" type="submit">إرسال التقييم</button>
-        </form>
-      </div>
-    </section>
-  </main>
-
-  <footer>
-    <div class="container" style="display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap">
-      <div>© <span id="y"></span> واعي كيدز • waai-kids.sa</div>
-      <div class="links">
-        <a href="admin.html">لوحة الإدارة</a>
-      </div>
-    </div>
-  </footer>
-
-  <a class="wa" aria-label="واتساب" id="cta-fab" href="#">
-    <svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="16" fill="#25D366"/><path fill="#fff" d="M25.6 6.6A13.4 13.4 0 0 0 16 3.1C8.8 3.1 3 8.9 3 16.1c0 2.2.6 4.3 1.7 6.2L3 29l6.8-1.7c1.8 1 3.9 1.5 6 1.5 7.2 0 13-5.8 13-13 0-3.4-1.3-6.6-3.7-9.2z"/></svg>
-  </a>
-
-  <script type="module">
-    import { Cart, initReveal } from './js/cart.js';
-    document.getElementById('y').textContent = new Date().getFullYear();
-    const menuBtn = document.getElementById('menuBtn');
-    const menu = document.getElementById('menu');
-    window.closeMenu = ()=> menu.style.display='none';
-    menuBtn.addEventListener('click', ()=> menu.style.display = (menu.style.display==='block') ? 'none':'block');
-
-    // WhatsApp FAB
-    document.getElementById('cta-fab').href = Cart.waLink('مرحبا واعي كيدز');
-
-    // Reviews: UI stars
-    (function(){
-      const wrap = document.getElementById('stars');
-      const btns = Array.from(wrap.querySelectorAll('[data-star]'));
-      const hidden = document.getElementById('rev-stars');
-      const cnt = document.getElementById('rev-count');
-      const txt = document.getElementById('rev-text');
-      const setStars = n => { btns.forEach(b => b.classList.toggle('filled', +b.dataset.star <= n)); hidden.value=n; };
-      btns.forEach(b=>{ b.addEventListener('click', ()=> setStars(+b.dataset.star)); b.addEventListener('mouseenter', ()=> setStars(+b.dataset.star)); });
-      wrap.addEventListener('mouseleave', ()=> setStars(+hidden.value||5));
-      txt.addEventListener('input', ()=> cnt.textContent = (txt.value||'').length);
-      setStars(5); cnt.textContent='0';
-      // style stars
-      const style = document.createElement('style'); style.textContent = `.stars-input{display:inline-flex;gap:6px;align-items:center;direction:rtl}
-      .stars-input button{border:0;background:none;cursor:pointer;font-size:28px;line-height:1;color:#cfd8dc;transition:transform .12s ease}
-      .stars-input button.filled{color:var(--gold)} .stars-input button:active{transform:scale(.92)}`; document.head.appendChild(style);
-    })();
-
-    // Fetch reviews
-    async function loadReviews(){
-      try{
-        const res = await fetch('/api/reviews');
-        const list = await res.json();
-        const holder = document.getElementById('reviews-list'); holder.innerHTML='';
-        list.forEach(({name,stars,text})=>{
-          const card = document.createElement('div');
-          card.className='card'; card.setAttribute('data-reveal','');
-          const full='★★★★★', sTxt = full.slice(0,stars)+'☆☆☆☆☆'.slice(0,5-stars);
-          card.innerHTML = \`<div class="body"><div class="stars">\${sTxt}</div><strong>\${name||'ضيف'}</strong><div class="muted">\${text}</div></div>\`;
-          holder.appendChild(card);
-        });
-        initReveal();
-      }catch(_){}
-    }
-    loadReviews();
-
-    // Submit review
-    document.getElementById('review-form').addEventListener('submit', async (e)=>{
-      e.preventDefault();
-      const name = (document.getElementById('rev-name').value||'ضيف').trim();
-      const stars = +document.getElementById('rev-stars').value || 5;
-      const text = (document.getElementById('rev-text').value||'').trim();
-      if(!text) return alert('اكتب رأيك باختصار');
-      await fetch('/api/reviews', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ name, stars, text }) });
-      e.target.reset(); document.getElementById('rev-stars').value=5;
-      loadReviews();
-    });
-
-    initReveal();
-  </script>
-</body></html>
