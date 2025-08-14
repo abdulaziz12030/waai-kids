@@ -1,18 +1,21 @@
 <!doctype html><html lang="ar" dir="rtl"><head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>إتمام الطلب</title>
 <link rel="stylesheet" href="css.css">
 </head><body>
 <header>
   <div class="container nav">
-    <div class="brand"><img class="logo" src="images/logo.png"><strong>واعي كيدز</strong></div>
-    <nav class="menu"><a href="index.html">الرئيسية</a><a href="product.html">إضافة منتج</a></nav>
+    <div class="brand"><img class="logo" src="images/logo.png"><strong>waai-kids.sa</strong></div>
+    <nav class="menu">
+      <a href="index.html">الرئيسية</a>
+      <a href="product.html">اطلب الآن</a>
+      <a href="checkout.html" class="is-active">السلة</a>
+    </nav>
   </div>
 </header>
 
 <main class="container" style="padding:18px 0">
-  <div class="card"><div class="body" style="display:grid;gap:12px">
+  <div class="card" data-reveal><div class="body" style="display:grid;gap:12px">
     <h2>السلة</h2>
     <div id="list" style="display:grid;gap:10px"></div>
     <div style="margin-top:8px">الإجمالي: <strong id="total">0</strong> ر.س</div>
@@ -31,8 +34,26 @@
   </div></div>
 </main>
 
+<footer>
+  <div class="container">
+    <div class="links">
+      <a href="terms.html">الشروط</a>
+      <a href="returns.html">الاسترجاع</a>
+      <a href="privacy.html">الخصوصية</a>
+    </div>
+    <div>© <span id="y"></span> واعي كيدز</div>
+  </div>
+</footer>
+
+<a class="wa" href="https://wa.me/966552794082" aria-label="واتساب">
+  <svg viewBox="0 0 32 32" width="28" height="28"><circle cx="16" cy="16" r="16" fill="#25D366"/></svg>
+</a>
+
 <script type="module">
-  import { Cart } from './js/cart.js';
+  import { Cart, WA_NUM, initReveal } from './js/cart.js';
+  initReveal();
+  document.getElementById('y').textContent = new Date().getFullYear();
+
   const listEl = document.getElementById('list');
   const totalEl = document.getElementById('total');
 
@@ -67,7 +88,7 @@
 
     totalEl.textContent = fmt(total);
 
-    // أحداث التعديل/الحذف
+    // تعديل/حذف
     listEl.querySelectorAll('[data-qty]').forEach(inp=>{
       inp.onchange = () => {
         const idx = +inp.dataset.qty;
@@ -120,8 +141,7 @@
     msg += `الحي: ${encodeURIComponent(area)}%0A`;
     msg += `العنوان: ${encodeURIComponent(addr)}%0A`;
 
-    // رقمك المعتمد
-    location.href = 'https://wa.me/966552794082?text=' + msg;
+    location.href = 'https://wa.me/'+WA_NUM+'?text=' + msg;
   };
 </script>
 </body></html>
