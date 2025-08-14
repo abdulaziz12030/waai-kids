@@ -1,1 +1,127 @@
-<!doctype html><html lang='ar' dir='rtl'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><title>إتمام الطلب</title><link rel='stylesheet' href='css.css'></head><body><header><div class='container nav'><div class='brand'><img class='logo' src='images/logo.png'><strong>واعي كيدز</strong></div><nav class='menu'><a href='index.html'>الرئيسية</a></nav></div></header><main class='container' style='padding:18px 0'><div class='card'><div class='body'><h2>السلة</h2><div id='list'></div><div id='gift'></div><div style='margin-top:8px'>الإجمالي: <strong id='total'>0</strong> ر.س</div><input class='ghost' id='c-name' placeholder='اسم العميل'><input class='ghost' id='c-phone' placeholder='الجوال'><input class='ghost' id='c-city' placeholder='المدينة'><div class='actions'><a class='btn' id='wa'>إرسال عبر واتساب</a><a class='ghost' href='product.html'>متابعة التسوق</a></div></div></div></main><script type='module'>import {Cart} from './js/cart.js';function fmt(n){return new Intl.NumberFormat('ar-SA').format(n)}const items=Cart.get();let total=0;const list=document.getElementById('list');items.forEach(x=>{const sum=x.price*x.qty;total+=sum;const d=document.createElement('div');d.className='pill';d.style.margin='6px 0';d.textContent=`${x.name} × ${x.qty} = ${sum} ر.س`;list.appendChild(d)});document.getElementById('total').textContent=fmt(total);const last=Cart.getLast();if(last&&last.gift){const g=last.gift;document.getElementById('gift').innerHTML=`<div class='pill'>بطاقة الإهداء</div><div>الاسم: ${g.name||'-'}</div><div>الرسالة: ${g.message||'-'}</div><div>من: ${g.from||'-'}</div>`}document.getElementById('wa').onclick=()=>{const n=(document.getElementById('c-name').value||'').trim();const p=(document.getElementById('c-phone').value||'').trim();const c=(document.getElementById('c-city').value||'').trim();let msg='طلب جديد - واعي كيدز%0A';items.forEach(x=> msg+=`- ${x.name} × ${x.qty} = ${x.price*x.qty} ر.س%0A`);if(last&&last.gift){const g=last.gift;msg+=`%0Aبطاقة الإهداء:%0Aالاسم: ${encodeURIComponent(g.name||'-')}%0Aالرسالة: ${encodeURIComponent(g.message||'-')}%0Aمن: ${encodeURIComponent(g.from||'-')}%0A`;}msg+=`%0Aالإجمالي: ${total} ر.س%0Aالعميل: ${encodeURIComponent(n)}%0Aالجوال: ${encodeURIComponent(p)}%0Aالمدينة: ${encodeURIComponent(c)}`;location.href='https://wa.me/966552794082?text='+msg};</script></body></html>
+<!doctype html><html lang="ar" dir="rtl"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>إتمام الطلب</title>
+<link rel="stylesheet" href="css.css">
+</head><body>
+<header>
+  <div class="container nav">
+    <div class="brand"><img class="logo" src="images/logo.png"><strong>واعي كيدز</strong></div>
+    <nav class="menu"><a href="index.html">الرئيسية</a><a href="product.html">إضافة منتج</a></nav>
+  </div>
+</header>
+
+<main class="container" style="padding:18px 0">
+  <div class="card"><div class="body" style="display:grid;gap:12px">
+    <h2>السلة</h2>
+    <div id="list" style="display:grid;gap:10px"></div>
+    <div style="margin-top:8px">الإجمالي: <strong id="total">0</strong> ر.س</div>
+
+    <div class="pill">بيانات العميل والعنوان</div>
+    <input class="ghost" id="c-name"  placeholder="اسم العميل">
+    <input class="ghost" id="c-phone" placeholder="الجوال">
+    <input class="ghost" id="c-city"  placeholder="المدينة">
+    <input class="ghost" id="c-area"  placeholder="الحي">
+    <textarea class="ghost" id="c-addr" rows="2" placeholder="وصف العنوان (الشارع، علامة مميزة..)"></textarea>
+
+    <div class="actions">
+      <a class="btn" id="wa">إرسال الطلب عبر واتساب</a>
+      <a class="ghost" href="product.html">متابعة التسوق</a>
+    </div>
+  </div></div>
+</main>
+
+<script type="module">
+  import { Cart } from './js/cart.js';
+  const listEl = document.getElementById('list');
+  const totalEl = document.getElementById('total');
+
+  function fmt(n){ return new Intl.NumberFormat('ar-SA').format(n); }
+
+  function render(){
+    const items = Cart.get();
+    listEl.innerHTML = '';
+    let total = 0;
+
+    items.forEach((x, i) => {
+      const sum = x.price * x.qty; total += sum;
+
+      const row = document.createElement('div');
+      row.className = 'card';
+      row.innerHTML = `
+        <div class="body" style="display:grid;gap:8px">
+          <strong>${x.name}</strong>
+          ${x.gift ? `<div class="pill">بطاقة الإهداء</div>
+            <div>الاسم: ${x.gift.name||'-'}</div>
+            <div>الرسالة: ${x.gift.msg||'-'}</div>
+            <div>من: ${x.gift.from||'-'}</div>` : ''}
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+            <label>الكمية</label>
+            <input type="number" min="1" value="${x.qty}" style="width:90px" class="ghost" data-qty="${i}">
+            <button class="ghost" data-del="${i}">حذف</button>
+          </div>
+          <div>المجموع: <strong>${sum}</strong> ر.س</div>
+        </div>`;
+      listEl.appendChild(row);
+    });
+
+    totalEl.textContent = fmt(total);
+
+    // أحداث التعديل/الحذف
+    listEl.querySelectorAll('[data-qty]').forEach(inp=>{
+      inp.onchange = () => {
+        const idx = +inp.dataset.qty;
+        const it = Cart.get();
+        it[idx].qty = Math.max(1, parseInt(inp.value||'1',10));
+        Cart.set(it); render();
+      };
+    });
+    listEl.querySelectorAll('[data-del]').forEach(btn=>{
+      btn.onclick = () => {
+        const idx = +btn.dataset.del;
+        const it = Cart.get();
+        it.splice(idx,1);
+        Cart.set(it); render();
+      };
+    });
+  }
+  render();
+
+  // إرسال واتساب
+  document.getElementById('wa').onclick = () => {
+    const items = Cart.get();
+    if(!items.length) return alert('السلة فارغة');
+
+    const n = (document.getElementById('c-name').value||'').trim();
+    const p = (document.getElementById('c-phone').value||'').trim();
+    const city = (document.getElementById('c-city').value||'').trim();
+    const area = (document.getElementById('c-area').value||'').trim();
+    const addr = (document.getElementById('c-addr').value||'').trim();
+
+    let total = 0, msg = 'طلب جديد - واعي كيدز%0A%0A';
+
+    items.forEach(x=>{
+      const sum = x.price * x.qty; total += sum;
+      msg += `• ${x.name} × ${x.qty} = ${sum} ر.س%0A`;
+      if(x.gift){
+        msg += `   بطاقة الإهداء:%0A`;
+        msg += `   - الاسم على البطاقة: ${encodeURIComponent(x.gift.name||'-')}%0A`;
+        msg += `   - الرسالة: ${encodeURIComponent(x.gift.msg||'-')}%0A`;
+        msg += `   - من: ${encodeURIComponent(x.gift.from||'-')}%0A`;
+      }
+      msg += `%0A`;
+    });
+
+    msg += `الإجمالي: ${total} ر.س%0A%0A`;
+    msg += `بيانات العميل:%0A`;
+    msg += `الاسم: ${encodeURIComponent(n)}%0A`;
+    msg += `الجوال: ${encodeURIComponent(p)}%0A`;
+    msg += `المدينة: ${encodeURIComponent(city)}%0A`;
+    msg += `الحي: ${encodeURIComponent(area)}%0A`;
+    msg += `العنوان: ${encodeURIComponent(addr)}%0A`;
+
+    // رقمك المعتمد
+    location.href = 'https://wa.me/966552794082?text=' + msg;
+  };
+</script>
+</body></html>
