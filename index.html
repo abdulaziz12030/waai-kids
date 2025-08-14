@@ -102,6 +102,32 @@
     #gift .card-preview{border:0;box-shadow:none;padding:0;margin:0}
     #gift .card-surface{border:1px solid #dfeaf0;page-break-inside:avoid}
   }
+
+/* --- تحسين منع الانفلات أفقياً على الجوال + حواف آمنة --- */
+html, body { overflow-x: hidden; }
+* { min-width: 0; }
+.container { padding-inline: clamp(10px, 3vw, 18px); }
+img, video { max-width: 100%; height: auto; display: block; }
+
+/* Review form polish */
+.review-form{display:grid;gap:10px;background:#fff;border:1px solid #eaf0f3;border-radius:14px;padding:14px;box-shadow:var(--shadow)}
+.review-form .row{display:grid;grid-template-columns:1fr 140px;gap:8px}
+.review-form input[type="text"],.review-form textarea{width:100%;padding:.8rem .9rem;border:1px solid #dfeaf0;border-radius:12px;background:#fff;min-height:48px;font:inherit}
+.review-form textarea{resize:vertical;min-height:90px}
+.counter{text-align:left;color:var(--muted);font-size:.85rem}
+.stars-input{display:inline-flex;gap:4px;align-items:center;direction:rtl}
+.stars-input input{display:none}
+.stars-input label{cursor:pointer;width:28px;height:28px;display:grid;place-items:center;transition:transform .15s ease}
+.stars-input label:active{transform:scale(.92)}
+.stars-input svg{width:100%;height:100%;fill:#cfd8dc}
+#star-1:checked ~ label[for="star-1"] svg,
+#star-2:checked ~ label[for="star-2"] svg,
+#star-3:checked ~ label[for="star-3"] svg,
+#star-4:checked ~ label[for="star-4"] svg,
+#star-5:checked ~ label[for="star-5"] svg{fill:var(--gold)}
+@media (max-width:719px){.review-form .row{grid-template-columns:1fr}.review-form button{width:100%}}
+.toast{position:fixed;inset-inline-start:50%;bottom:18px;transform:translateX(-50%);background:#123f56;color:#fff;padding:.8rem 1rem;border-radius:12px;box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:opacity .3s ease;z-index:120}
+.toast.show{opacity:1}
 </style>
 </head>
 <body>
@@ -110,7 +136,7 @@
   <header>
     <div class="container nav">
       <div class="brand">
-        <img class="logo" src="https://i.postimg.cc/dtCG2MPy/Logo-11.png" alt="شعار واعي كيدز" style="width:36px;height:36px;border-radius:12px;box-shadow:0 10px 25px rgba(15,61,91,.12)">
+        <img class="logo" src="https://i.postimg.cc/N00PdGxM/Logo.png" alt="شعار واعي كيدز">
         <span>واعي كيدز • waai-kids.sa</span>
       </div>
       <button class="hamburger" aria-label="القائمة" id="menuBtn"><div></div></button>
@@ -256,18 +282,32 @@
         </div>
       </div>
 
-      <div class="review-card" style="margin-top:12px" data-reveal>
-        <form class="review-form" id="review-form">
-          <h3 style="margin:0 0 10px">أضف تقييمك</h3>
-          <input id="rev-name" placeholder="اسمك">
-          <select id="rev-stars" aria-label="التقييم">
-            <option value="5">5 نجوم</option><option value="4">4 نجوم</option>
-            <option value="3">3 نجوم</option><option value="2">نجمتان</option><option value="1">نجمة</option>
-          </select>
-          <textarea id="rev-text" rows="3" placeholder="رأيك باختصار.."></textarea>
-          <button class="btn" type="submit">إرسال التقييم</button>
-        </form>
+      
+<div class="review-card" style="margin-top:12px" data-reveal>
+  <form class="review-form" id="review-form">
+    <h3 style="margin:0 0 8px">أضف تقييمك</h3>
+    <div class="row">
+      <input id="rev-name" placeholder="اسمك (اختياري)">
+      <div class="stars-input" aria-label="التقييم" role="radiogroup">
+        <input type="radio" id="star-5" name="rev-stars" value="5" checked>
+        <label for="star-5" title="5 نجوم"><svg viewBox="0 0 24 24"><path d="M12 17.3l-6.16 3.35 1.18-6.88L1.99 9.9l6.9-1 3.1-6.3 3.1 6.3 6.9 1-5.03 3.87 1.18 6.88z"/></svg></label>
+        <input type="radio" id="star-4" name="rev-stars" value="4">
+        <label for="star-4" title="4 نجوم"><svg viewBox="0 0 24 24"><path d="M12 17.3l-6.16 3.35 1.18-6.88L1.99 9.9l6.9-1 3.1-6.3 3.1 6.3 6.9 1-5.03 3.87 1.18 6.88z"/></svg></label>
+        <input type="radio" id="star-3" name="rev-stars" value="3">
+        <label for="star-3" title="3 نجوم"><svg viewBox="0 0 24 24"><path d="M12 17.3l-6.16 3.35 1.18-6.88L1.99 9.9l6.9-1 3.1-6.3 3.1 6.3 6.9 1-5.03 3.87 1.18 6.88z"/></svg></label>
+        <input type="radio" id="star-2" name="rev-stars" value="2">
+        <label for="star-2" title="نجمتان"><svg viewBox="0 0 24 24"><path d="M12 17.3l-6.16 3.35 1.18-6.88L1.99 9.9l6.9-1 3.1-6.3 3.1 6.3 6.9 1-5.03 3.87 1.18 6.88z"/></svg></label>
+        <input type="radio" id="star-1" name="rev-stars" value="1">
+        <label for="star-1" title="نجمة"><svg viewBox="0 0 24 24"><path d="M12 17.3l-6.16 3.35 1.18-6.88L1.99 9.9l6.9-1 3.1-6.3 3.1 6.3 6.9 1-5.03 3.87 1.18 6.88z"/></svg></label>
       </div>
+    </div>
+    <textarea id="rev-text" maxlength="300" placeholder="رأيك باختصار.."></textarea>
+    <div class="counter"><span id="rev-count">0</span>/300</div>
+    <button class="btn" type="submit">إرسال التقييم</button>
+  </form>
+</div>
+<div class="toast" id="toast">تم إضافة تقييمك بنجاح. شكرًا لك!</div>
+
     </section>
   </main>
 
@@ -389,5 +429,43 @@
   // زر واتساب العائم
   document.getElementById('cta-fab').href = toWA('مرحبا واعي كيدز');
 </script>
+
+<script>
+  // عدّاد أحرف
+  (function(){
+    const revText = document.getElementById('rev-text');
+    const revCount = document.getElementById('rev-count');
+    if(revText && revCount){
+      const update = ()=> revCount.textContent = (revText.value||'').length;
+      revText.addEventListener('input', update); update();
+    }
+    function getStars(){
+      const el = document.querySelector('input[name="rev-stars"]:checked');
+      return el ? parseInt(el.value,10) : 5;
+    }
+    const form = document.getElementById('review-form');
+    if(form){
+      form.addEventListener('submit', function(e){
+        e.preventDefault();
+        const name = (document.getElementById('rev-name').value||'ضيف').trim();
+        const stars = getStars();
+        const text = (document.getElementById('rev-text').value||'—').trim();
+        const holder = document.getElementById('reviews-list');
+        if(holder){
+          const card = document.createElement('div');
+          card.className = 'review-card'; card.style.marginTop='10px';
+          const full = '★★★★★'; const starsTxt = full.slice(0,stars)+'☆☆☆☆☆'.slice(0,5-stars);
+          card.innerHTML = `<div class="stars">${starsTxt}</div><strong>${name}</strong><div class="muted">${text}</div>`;
+          holder.appendChild(card);
+        }
+        if(typeof refreshAvg==='function'){ refreshAvg(); }
+        const toast = document.getElementById('toast'); if(toast){ toast.classList.add('show'); setTimeout(()=>toast.classList.remove('show'), 1800); }
+        form.reset(); const s5=document.getElementById('star-5'); if(s5){ s5.checked=true; }
+        if(revCount){ revCount.textContent='0'; }
+      });
+    }
+  })();
+</script>
+
 </body>
 </html>
