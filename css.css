@@ -3,24 +3,20 @@
   --ink:#0e1a22; --muted:#5c6a74; --line:#e8eef2;
   --chip:#eef7fb; --chip-b:#e0edf4; --gold:#ffb400;
   --r:18px; --shadow:0 10px 28px rgba(15,61,91,.10);
-  --fs:clamp(16px,1.05vw,17px); --h1:clamp(1.45rem,2.5vw,2.2rem); --h2:clamp(1.15rem,1.9vw,1.5rem);
+  --fs:clamp(16px,1.05vw,17px); --h1:clamp(1.45rem,2.5vw,2.2rem);
 }
 *{box-sizing:border-box;min-width:0}
 html,body{margin:0;background:var(--bg);color:var(--ink);font:normal var(--fs)/1.75 system-ui,-apple-system,"Segoe UI",Tahoma,Arial;overflow-x:hidden}
 img{max-width:100%;display:block;height:auto}
 .container{width:min(1200px,92%);margin-inline:auto}
-.topbar{background:linear-gradient(90deg,var(--brand-2),var(--mint));color:#053548;padding:.55rem 0;text-align:center;font-weight:700}
 
-/* Header / Footer */
+/* Header */
 header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid var(--line)}
 .nav{display:flex;align-items:center;justify-content:space-between;padding:.75rem 0;gap:12px}
 .brand{display:flex;align-items:center;gap:.6rem}
 .logo{width:44px;height:44px;border-radius:12px;box-shadow:var(--shadow)}
-.menu{display:flex;gap:10px;flex-wrap:wrap}
-.menu a{display:inline-flex;align-items:center;padding:.55rem .8rem;border-radius:12px;border:1px solid #e6eef3;text-decoration:none;background:#fff;color:#0f4663}
-.menu a.is-active{background:var(--chip);border-color:var(--chip-b)}
-footer{margin-top:26px;padding:22px 0;border-top:1px solid var(--line);background:#fff}
-footer .links{display:flex;gap:12px;flex-wrap:wrap}
+.cart-link{display:inline-flex;align-items:center;gap:6px;text-decoration:none;color:#0f4663;border:1px solid #e6eef3;background:#fff;border-radius:12px;padding:.5rem .7rem}
+.cart-link .bubble{display:inline-grid;place-items:center;min-width:22px;height:22px;border-radius:999px;background:var(--brand-2);color:#fff;font-size:.85em;padding:0 6px}
 
 /* Buttons / inputs */
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:1rem 1.15rem;border-radius:14px;background:var(--brand);color:#fff;box-shadow:var(--shadow);min-height:48px;border:0;cursor:pointer}
@@ -46,16 +42,8 @@ border:1px solid #e9f1f5;border-radius:24px;box-shadow:var(--shadow);padding:22p
 .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
 .hero-media{border-radius:16px;overflow:hidden;background:#eef7fb}
 
-/* Reviews – بطاقة جذابة */
+/* Reviews (تبقى لو فعّلتها لاحقاً) */
 .review-wrap{display:grid;gap:14px}
-.review-card{display:grid;grid-template-columns:56px 1fr;gap:12px;align-items:start;background:
-  radial-gradient(550px 150px at 0% -40%, #eaf9ff, transparent 60%),
-  #ffffff;
-border:1px solid #e8f3f7;border-radius:18px;padding:14px;box-shadow:var(--shadow)}
-.avatar{width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--brand-2),var(--mint));display:grid;place-items:center;color:#fff;font-weight:800}
-.name{font-weight:800}
-.stars{color:var(--gold);letter-spacing:1px}
-.review-badge{background:#ffeec2;color:#7a4b00;border:1px solid #ffde8a}
 
 /* WhatsApp fab */
 .wa{position:fixed;left:14px;bottom:14px;z-index:90;display:grid;place-items:center;width:56px;height:56px;border-radius:50%;background:#25D366;box-shadow:var(--shadow)}
@@ -78,7 +66,15 @@ border:1px solid #e8f3f7;border-radius:18px;padding:14px;box-shadow:var(--shadow
   .pic{aspect-ratio:16/10}
 }
 
+/* Gift Preview tweaks */
+.gift-preview{display:grid;gap:12px}
+.gift-frame{background:#fff;border:2px dashed #c0e9f2;border-radius:20px;box-shadow:var(--shadow);padding:14px}
+.gift-brand{display:flex;align-items:center;gap:8px;color:#0f4663}
+.gift-brand img{width:34px;height:34px;border-radius:10px;box-shadow:var(--shadow)}
+.gift-actions{display:flex;gap:10px;flex-wrap:wrap}
+canvas#giftCanvas{width:100%;height:auto;display:block;border-radius:16px}
+
 /* طباعة بطاقة الإهداء فقط */
 @media print{
-  header,.topbar,footer,.wa,#products,#reviews,.hero{display:none !important}
+  header,.wa,#formArea{display:none !important}
 }
