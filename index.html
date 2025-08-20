@@ -1,147 +1,0 @@
-<!doctype html><html lang="ar" dir="rtl"><head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
-<title>واعي كيدز | بوكسات مواليد بتغليف فاخر</title>
-<link rel="preload" as="image" href="images/banner.png">
-<link rel="stylesheet" href="css.css">
-</head><body>
-<header>
-  <div class="container nav">
-    <div class="brand">
-      <img class="logo" src="images/logo.png" alt="واعي كيدز">
-      <strong>waai-kids.sa</strong>
-    </div>
-    <a class="cart-link" href="checkout.html" aria-label="السلة">
-      🛍️ <span class="bubble" data-cart-count>0</span>
-    </a>
-  </div>
-</header>
-
-<main>
-  <!-- HERO -->
-  <section class="container hero">
-    <div class="hero-card" data-reveal>
-      <div>
-        <h1 class="fade-up">🎁 بوكسات مواليد بتغليف فاخر وبطاقة إهداء اختيارية</h1>
-        <p class="fade-up" style="color:var(--muted);animation-delay:.08s">
-          اختر بوكس “مواليد أولاد” أو “مواليد بنات” — السعر شامل كامل البوكس + بطاقة الإهداء + التوصيل.
-        </p>
-        <div class="actions fade-up" style="animation-delay:.15s">
-          <a class="btn" href="product.html">اطلب الآن</a>
-          <a class="ghost" href="#products">تصفّح البوكسات</a>
-        </div>
-      </div>
-      <div class="hero-media" data-anim="float">
-        <img src="images/banner.png" alt="بنر واعي كيدز" loading="eager">
-        <div class="hero-badge" title="بوكسات مواليد أنيقة">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-            <circle cx="12" cy="12" r="10" stroke="#0f3d5b" opacity=".5"/>
-            <path d="M8 14c1.2 1.2 2.8 2 4 2s2.8-.8 4-2" stroke="#0f3d5b" opacity=".5"/>
-          </svg>
-          بوكسات مواليد أنيقة
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- المنتجات -->
-  <section id="products" class="container">
-    <div class="grid">
-      <article class="card" data-reveal>
-        <div class="pic" data-anim="float"><img src="images/girl.png" alt="بوكس مواليد — بنات"></div>
-        <div class="body">
-          <h3>بوكس مواليد — بنات</h3>
-          <div class="price"><strong>149 ر.س</strong></div>
-          <div class="actions"><a class="btn" href="product.html?sku=baby-girl">اطلب الآن</a></div>
-        </div>
-      </article>
-      <article class="card" data-reveal>
-        <div class="pic" data-anim="float"><img src="images/boy1.png" alt="بوكس مواليد — أولاد"></div>
-        <div class="body">
-          <h3>بوكس مواليد — أولاد</h3>
-          <div class="price"><strong>149 ر.س</strong></div>
-          <div class="actions"><a class="btn" href="product.html?sku=baby-boy">اطلب الآن</a></div>
-        </div>
-      </article>
-    </div>
-  </section>
-
-  <!-- آراء العملاء -->
-  <section id="reviews" class="container">
-    <div class="pill" data-reveal>آراء عملائنا</div>
-
-    <div class="card" data-reveal>
-      <div class="body">
-        <form id="review-form" style="display:grid;gap:10px">
-          <div class="review-card">
-            <div class="avatar">★</div>
-            <div>
-              <div class="name" style="margin-bottom:4px">أضف تقييمك</div>
-              <div class="stars" id="stars" aria-label="التقييم" role="radiogroup" style="font-size:26px">
-                <button type="button" data-star="1" class="ghost" style="border:none;background:none">★</button>
-                <button type="button" data-star="2" class="ghost" style="border:none;background:none">★</button>
-                <button type="button" data-star="3" class="ghost" style="border:none;background:none">★</button>
-                <button type="button" data-star="4" class="ghost" style="border:none;background:none">★</button>
-                <button type="button" data-star="5" class="ghost" style="border:none;background:none">★</button>
-                <input type="hidden" id="rev-stars" value="5">
-              </div>
-              <div style="display:grid;gap:8px;margin-top:10px">
-                <input id="rev-name" class="ghost" placeholder="اسمك (اختياري)">
-                <textarea id="rev-text" class="ghost" rows="3" placeholder="رأيك باختصار.."></textarea>
-                <button class="btn" type="submit">إرسال التقييم</button>
-              </div>
-            </div>
-          </div>
-        </form>
-      </div>
-    </div>
-
-    <div id="reviews-list" class="review-wrap"></div>
-  </section>
-</main>
-
-<footer>
-  <div class="container">
-    <div>© <span id="y"></span> واعي كيدز</div>
-  </div>
-</footer>
-
-<a class="wa" href="https://wa.me/966552794082" aria-label="واتساب">
-  <svg viewBox="0 0 32 32" width="28" height="28"><circle cx="16" cy="16" r="16" fill="#25D366"/></svg>
-</a>
-
-<script type="module">
-  import { initReveal, Cart, Reviews } from './js/cart.js';
-  initReveal();
-  document.getElementById('y').textContent = new Date().getFullYear();
-  Cart.renderBadge();
-
-  // نجوم
-  const wrap=document.getElementById('stars'); const btns=[...wrap.querySelectorAll('[data-star]')]; const hidden=document.getElementById('rev-stars');
-  const setN=n=>{ btns.forEach(b=>b.style.color=(+b.dataset.star<=n?'var(--gold)':'#cfd8dc')); hidden.value=n; };
-  btns.forEach(b=>{ b.onclick=()=>setN(+b.dataset.star); b.onmouseenter=()=>setN(+b.dataset.star); });
-  wrap.onmouseleave=()=>setN(+hidden.value||5); setN(5);
-
-  document.getElementById('review-form').addEventListener('submit',(e)=>{
-    e.preventDefault();
-    const name=(document.getElementById('rev-name').value||'ضيف').trim();
-    const stars=+hidden.value||5;
-    const text=(document.getElementById('rev-text').value||'').trim();
-    if(!text){ alert('اكتب رأيك باختصار'); return; }
-    Reviews.add({name,stars,text}); e.target.reset(); setN(5); loadReviews();
-  });
-
-  function loadReviews(){
-    const list=Reviews.all(); const holder=document.getElementById('reviews-list'); holder.innerHTML='';
-    list.forEach(x=>{
-      const el=document.createElement('div'); el.className='review-card';
-      el.innerHTML=`<div class="avatar">${(x.name||'★').trim().slice(0,1)}</div>
-                    <div><div class="name">${x.name||'ضيف'}</div>
-                    <div class="stars">${'★'.repeat(x.stars||5)}</div>
-                    <div style="color:var(--muted);margin-top:6px">${x.text||''}</div></div>`;
-      holder.appendChild(el);
-    });
-  }
-  loadReviews();
-</script>
-</body></html>
