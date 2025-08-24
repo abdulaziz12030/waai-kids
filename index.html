@@ -3,173 +3,135 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Waai Kids | هدايا مواليد راقية وناعمة</title>
-  <meta name="description" content="Waai Kids: بوكسات مواليد للأولاد والبنات بألوان باستيل راقية، جاهزة للإهداء مع تغليف أنيق.">
-  <meta property="og:title" content="Waai Kids | هدايا مواليد راقية وناعمة">
-  <meta property="og:description" content="بوكس للأولاد وآخر للبنات — اختيار أنيق وعملي للهدايا.">
-  <meta property="og:image" content="assets/slide1.jpg">
-  <link rel="icon" type="image/png" href="assets/logo-mark.png">
-  <link rel="apple-touch-icon" href="assets/logo-mark.png">
+  <title>واعي كيدز | بوكسات مواليد أنيقة</title>
+  <meta name="description" content="بوكسات مواليد للأولاد والبنات مع إمكانية طباعة رسالة على كرت الهدية مجانًا.">
+  <link rel="icon" type="image/svg+xml" href="assets/logo-mark.svg">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-<header class="nav">
-  <a href="index.html" class="brand" aria-label="العودة للرئيسية">
-    <img src="assets/logo-lockup.svg" alt="Waai Kids"
-         onerror="this.onerror=null;this.src='assets/logo-lockup.png'">
-  </a>
-  <nav class="links" aria-label="روابط رئيسية">
-    <a href="index.html" aria-current="page">الرئيسية</a>
-    <a href="products.html">المتجر</a>
-    <a href="about.html">من نحن</a>
-    <a href="contact.html">تواصل</a>
-  </nav>
+<header class="site-header">
+  <div class="container nav">
+    <a class="brand" href="index.html">
+      <img src="assets/logo-lockup.svg" alt="Waai Kids" height="40">
+    </a>
+    <nav class="menu">
+      <a href="index.html">الرئيسية</a>
+      <a href="products.html">المتجر</a>
+      <a href="about.html">من نحن</a>
+      <a href="contact.html">تواصل</a>
+    </nav>
+  </div>
 </header>
 
-<main>
+<!-- سلايدر -->
+<section class="hero">
+  <div class="slider" data-autoplay="6000">
+    <!-- الشريحة 1 -->
+    <article class="slide">
+      <picture>
+        <source media="(max-width: 600px)" srcset="assets/hero-1.jpg">
+        <img src="assets/hero-1.jpg" alt="بوكسات مواليد أنيقة للإهداء" loading="eager" decoding="async">
+      </picture>
+      <div class="slide-caption">
+        <h1>بوكسات مواليد أنيقة</h1>
+        <p>خيار مثالي للإهداء — اطبع رسالتك على الكرت مجانًا</p>
+        <a class="btn btn-primary" href="products.html">تسوق الآن</a>
+      </div>
+    </article>
+    <!-- الشريحة 2 -->
+    <article class="slide">
+      <picture>
+        <source media="(max-width: 600px)" srcset="assets/hero-2.jpg">
+        <img src="assets/hero-2.jpg" alt="قدّم هدية مبهجة بلمسة شخصية" loading="lazy" decoding="async">
+      </picture>
+      <div class="slide-caption">
+        <h2>طباعة رسالة على الكرت</h2>
+        <p>لمسة شخصية تصل للقلب</p>
+        <a class="btn" href="products.html">ابدأ الآن</a>
+      </div>
+    </article>
 
-  <!-- ====== (أ) HERO SLIDER: بنرات عرضية 1920×600 ====== -->
-  <section class="hero-slider" aria-label="بنرات رئيسية">
-    <div class="slides">
-      <div class="slide is-active" id="slide-1">
-        <img src="assets/slide1.jpg" alt="هدايا مواليد — بوكس للأولاد" loading="eager" decoding="async" fetchpriority="high">
-        <div class="caption">
-          <h1>هدايا مواليد راقية للأولاد</h1>
-          <p>بوكس أنيق بتفاصيل ناعمة</p>
-          <a class="btn btn-primary" href="products.html#boy">تسوّق الآن</a>
-        </div>
-      </div>
-      <div class="slide" id="slide-2">
-        <img src="assets/slide2.jpg" alt="هدايا مواليد — بوكس للبنات" loading="lazy" decoding="async">
-        <div class="caption">
-          <h1>بوكس البنات بتغليف فاخر</h1>
-          <p>ألوان باستيل ولمسات دافئة</p>
-          <a class="btn btn-primary" href="products.html#girl">تسوّق الآن</a>
-        </div>
-      </div>
-      <div class="slide" id="slide-3">
-        <img src="assets/slide3.jpg" alt="تهنئة وهدية للمولود" loading="lazy" decoding="async">
-        <div class="caption">
-          <h1>جاهز للإهداء فورًا</h1>
-          <p>بطاقة معايدة ولفة أنيقة</p>
-          <a class="btn btn-primary" href="products.html">شاهد جميع البوكسات</a>
-        </div>
-      </div>
-    </div>
-
-    <!-- أسهم -->
-    <button class="nav-arrow prev" aria-label="السابق">‹</button>
-    <button class="nav-arrow next" aria-label="التالي">›</button>
+    <!-- أزرار -->
+    <button class="slide-arrow prev" aria-label="الشريحة السابقة">❮</button>
+    <button class="slide-arrow next" aria-label="الشريحة التالية">❯</button>
 
     <!-- نقاط -->
-    <div class="dots" role="tablist" aria-label="التنقل بين البنرات">
-      <button class="dot is-active" aria-label="الشريحة 1" aria-controls="slide-1"></button>
-      <button class="dot" aria-label="الشريحة 2" aria-controls="slide-2"></button>
-      <button class="dot" aria-label="الشريحة 3" aria-controls="slide-3"></button>
-    </div>
-  </section>
+    <div class="dots" aria-label="التنقل بين الشرائح"></div>
+  </div>
+</section>
 
-  <!-- ====== FEATURES ====== -->
-  <section class="features container" aria-label="مميزات واعي كيدز">
-    <h2 class="section-title">لماذا تختار <span class="brand-text">Waai Kids</span>؟</h2>
-    <div class="grid features-grid">
-      <article class="card feature">
-        <h3>تغليف فاخر</h3>
-        <p>بوكس أنيق مناسب للإهداء مباشرة مع بطاقة معايدة.</p>
-      </article>
-      <article class="card feature">
-        <h3>اختيار عملي</h3>
-        <p>محتويات مختارة بعناية للمواليد — جودة وخامات ناعمة.</p>
-      </article>
-      <article class="card feature">
-        <h3>توصيل سريع</h3>
-        <p>نجهّز طلبك بسرعة ونوصله لعنوانك أو للمهدى له.</p>
-      </article>
-    </div>
-  </section>
-
-  <!-- ====== TEASER PRODUCTS (عرضية بفضل thumb) ====== -->
-  <section class="container" aria-label="بوكسات المواليد">
-    <h2 class="section-title">بوكسات المواليد</h2>
-    <div class="grid products-grid">
-      <article class="card product">
-        <div class="thumb">
-          <img src="assets/box-boy.jpg" alt="بوكس مواليد للأولاد" loading="lazy" decoding="async">
-        </div>
-        <h3>بوكس الأولاد</h3>
-        <a class="btn" href="products.html#boy">شوف التفاصيل</a>
-      </article>
-      <article class="card product">
-        <div class="thumb">
-          <img src="assets/box-girl.jpg" alt="بوكس مواليد للبنات" loading="lazy" decoding="async">
-        </div>
-        <h3>بوكس البنات</h3>
-        <a class="btn" href="products.html#girl">شوف التفاصيل</a>
-      </article>
-    </div>
-  </section>
-
-  <!-- ====== CTA ====== -->
-  <section class="cta container" aria-label="دعوة للإجراء">
-    <h2>جاهز تختار الهدية المثالية؟</h2>
-    <a class="btn btn-primary" href="products.html">ابدأ التسوّق</a>
-  </section>
-</main>
+<section class="container features">
+  <div class="feat">
+    <span>🎁</span>
+    <h3>تغليف فخم</h3>
+    <p>بوكس أنيق بألوان باستيل ومحتوى عملي.</p>
+  </div>
+  <div class="feat">
+    <span>📝</span>
+    <h3>كرت إهداء</h3>
+    <p>اطبع رسالتك مجانًا بخط واضح.</p>
+  </div>
+  <div class="feat">
+    <span>🚚</span>
+    <h3>توصيل سريع</h3>
+    <p>داخل المملكة خلال أيام قليلة.</p>
+  </div>
+</section>
 
 <footer class="footer">
   <p>© Waai Kids — كل الحقوق محفوظة</p>
 </footer>
 
-<!-- زر واتساب عائم (أسفل يسار) -->
+<!-- زر واتساب عائم يسار -->
 <a href="https://wa.me/966570905999" class="whatsapp-float left" target="_blank" aria-label="تواصل واتساب 0570905999">
-  <svg viewBox="0 0 32 32" aria-hidden="true"><path fill="#fff" d="M19.11 17.58a4.7 4.7 0 0 1-1.53-.3c-.24-.1-.55-.24-.95-.47-.4-.22-.8-.5-1.21-.86-.4-.35-.79-.77-1.16-1.24-.36-.47-.64-.92-.83-1.33-.2-.41-.33-.78-.4-1.1-.07-.33-.1-.63-.1-.9 0-.3.07-.57.22-.82.14-.25.34-.46.6-.62.26-.17.55-.25.86-.25.12 0 .24.06.37.17.12.1.25.25.38.42l.26.36c.1.14.18.28.25.41.07.13.1.25.1.35 0 .1-.03.22-.1.37-.07.15-.14.29-.22.42-.07.13-.14.25-.2.35-.06.1-.1.2-.1.28 0 .08.03.17.1.27.06.1.14.2.21.3.08.1.17.2.28.3.1.1.2.2.3.3.1.09.21.18.32.27.11.09.21.17.3.24.1.07.18.12.24.16.07.04.13.06.18.06.06 0 .12-.02.2-.07.07-.05.15-.1.23-.16.08-.06.16-.12.25-.19.09-.07.17-.11.25-.11.06 0 .13.02.22.06.08.04.18.08.28.13.1.05.21.1.32.16.1.06.2.11.28.17.07.06.13.11.18.17.04.06.07.11.07.16 0 .2-.05.42-.17.67-.11.25-.23.45-.36.61-.13.17-.28.32-.45.47-.17.15-.34.27-.52.36-.18.1-.35.16-.51.2-.17.03-.3.05-.4.05Z"/><path fill="#25D366" d="M27.57 4.43A13.98 13.98 0 0 0 16 0C7.16 0 0 7.16 0 16c0 2.8.74 5.43 2.02 7.72L0 32l8.5-2.22A15.95 15.95 0 0 0 16 32c8.84 0 16-7.16 16-16 0-3.73-1.3-7.16-3.43-9.57ZM16 29.09c-2.67 0-5.13-.82-7.16-2.22l-.52-.35-5.03 1.31 1.35-4.9-.36-.56A12.95 12.95 0 0 1 3.05 16C3.05 8.81 8.81 3.05 16 3.05S28.95 8.81 28.95 16 23.19 29.09 16 29.09Z"/></svg>
+  <!-- أيقونة واتساب الرسمية (SVG) -->
+  <svg viewBox="0 0 32 32" aria-hidden="true">
+    <path fill="#fff" d="M19.11 17.58a4.7 4.7 0 0 1-1.53-.3c-.24-.1-.55-.24-.95-.47-.4-.22-.8-.5-1.21-.86-.4-.35-.79-.77-1.16-1.24-.36-.47-.64-.92-.83-1.33-.2-.41-.33-.78-.4-1.1-.07-.33-.1-.63-.1-.9 0-.3.07-.57.22-.82.14-.25.34-.46.6-.62.26-.17.55-.25.86-.25.12 0 .24.06.37.17.12.1.25.25.38.42l.26.36c.1.14.18.28.25.41.07.13.1.25.1.35 0 .1-.03.22-.1.37-.07.15-.14.29-.22.42-.07.13-.14.25-.2.35-.06.1-.1.2-.1.28 0 .08.03.17.1.27.06.1.14.2.21.3.08.1.17.2.28.3.1.1.2.2.3.3.1.09.21.18.32.27.11.09.21.17.3.24.1.07.18.12.24.16.07.04.13.06.18.06.06 0 .12-.02.2-.07.07-.05.15-.1.23-.16.08-.06.16-.12.25-.19.09-.07.17-.11.25-.11.06 0 .13.02.22.06.08.04.18.08.28.13.1.05.21.1.32.16.1.06.2.11.28.17.07.06.13.11.18.17.04.06.07.11.07.16 0 .2-.05.42-.17.67-.11.25-.23.45-.36.61-.13.17-.28.32-.45.47-.17.15-.34.27-.52.36-.18.1-.35.16-.51.2-.17.03-.3.05-.4.05Z"/>
+    <path fill="#25D366" d="M27.57 4.43A13.98 13.98 0 0 0 16 0C7.16 0 0 7.16 0 16c0 2.8.74 5.43 2.02 7.72L0 32l8.5-2.22A15.95 15.95 0 0 0 16 32c8.84 0 16-7.16 16-16 0-3.73-1.3-7.16-3.43-9.57ZM16 29.09c-2.67 0-5.13-.82-7.16-2.22l-.52-.35-5.03 1.31 1.35-4.9-.36-.56A12.95 12.95 0 0 1 3.05 16C3.05 8.81 8.81 3.05 16 3.05S28.95 8.81 28.95 16 23.19 29.09 16 29.09Z"/>
+  </svg>
 </a>
 
-<!-- سكرِبت السلايدر -->
 <script>
+/* سلايدر بسيط جداً */
 (function(){
-  const slider  = document.querySelector('.hero-slider');
-  const slides  = Array.from(slider.querySelectorAll('.slide'));
-  const dots    = Array.from(slider.querySelectorAll('.dot'));
-  const prevBtn = slider.querySelector('.prev');
-  const nextBtn = slider.querySelector('.next');
+  const root = document.querySelector('.slider');
+  if(!root) return;
+  const slides = [...root.querySelectorAll('.slide')];
+  const dotsEl = root.querySelector('.dots');
+  const prev = root.querySelector('.prev');
+  const next = root.querySelector('.next');
+  const delay = +root.dataset.autoplay || 6000;
+  let i = 0, t;
 
-  let i = 0, timer;
+  const makeDots = () => {
+    dotsEl.innerHTML = '';
+    slides.forEach((_,idx)=>{
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'dot' + (idx===i?' active':'');
+      b.setAttribute('aria-label','الانتقال إلى الشريحة '+(idx+1));
+      b.addEventListener('click', ()=>go(idx));
+      dotsEl.appendChild(b);
+    });
+  };
 
-  function goTo(idx){
-    slides[i].classList.remove('is-active');
-    dots[i].classList.remove('is-active');
-    i = (idx + slides.length) % slides.length;
-    slides[i].classList.add('is-active');
-    dots[i].classList.add('is-active');
-  }
+  const go = (idx) => {
+    i = (idx+slides.length)%slides.length;
+    slides.forEach((s,si)=>s.classList.toggle('active', si===i));
+    [...dotsEl.children].forEach((d,di)=>d.classList.toggle('active', di===i));
+    restart();
+  };
 
-  function next(){ goTo(i+1); }
-  function prev(){ goTo(i-1); }
+  const restart = () => {
+    clearInterval(t);
+    t = setInterval(()=>go(i+1), delay);
+  };
 
-  // autoplay
-  function start(){ stop(); timer = setInterval(next, 5000); }
-  function stop(){ if (timer) clearInterval(timer); }
-
-  // arrows
-  nextBtn.addEventListener('click', ()=>{ next(); start(); });
-  prevBtn.addEventListener('click', ()=>{ prev(); start(); });
-
-  // dots
-  dots.forEach((d,idx)=> d.addEventListener('click', ()=>{ goTo(idx); start(); }));
-
-  // swipe (للجوال)
-  let sx=0;
-  slider.addEventListener('touchstart', e=> sx = e.touches[0].clientX, {passive:true});
-  slider.addEventListener('touchend', e=>{
-    const dx = e.changedTouches[0].clientX - sx;
-    if (Math.abs(dx) > 40){ dx<0 ? next() : prev(); start(); }
-  });
-
-  start();
+  prev.addEventListener('click', ()=>go(i-1));
+  next.addEventListener('click', ()=>go(i+1));
+  makeDots(); go(0);
 })();
 </script>
-
 </body>
 </html>
