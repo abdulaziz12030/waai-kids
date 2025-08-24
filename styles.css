@@ -1,6 +1,7 @@
+/* ====== أساس ألوان وهوية ====== */
 :root{
   --pink:#f6b6c8; --blue:#78d3e8; --text:#0e1b22; --bg:#fafcff; --line:#eef2f6;
-  --shadow:0 10px 25px rgba(0,0,0,.08);
+  --muted:#6b7a86; --card:#ffffff; --shadow:0 10px 25px rgba(0,0,0,.08);
 }
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
@@ -8,25 +9,27 @@ body{margin:0;font-family:system-ui,-apple-system,'Segoe UI',Roboto,'Cairo',sans
 img{max-width:100%;display:block}
 a{color:inherit;text-decoration:none}
 
-/* Nav */
-.nav{position:sticky;top:0;z-index:50;background:#fff;border-bottom:1px solid var(--line);display:flex;gap:16px;align-items:center;padding:10px 16px}
+/* ====== الشريط العلوي ====== */
+.nav{position:sticky;top:0;z-index:50;background:#fff;border-bottom:1px solid var(--line);
+     display:flex;gap:16px;align-items:center;padding:10px 16px}
 .nav .brand img{height:40px;width:auto}
-.nav .links{margin-inline-start:auto;display:flex;gap:14px}
+.nav .links{margin-inline-start:auto;display:flex;gap:14px;flex-wrap:wrap}
 .nav .links a{font-weight:700;color:#2b3a43;padding:6px 8px;border-radius:10px}
 .nav .links a[aria-current="page"]{background:#f2f6f9}
 
-/* Containers */
+/* ====== حاوية وعناوين ====== */
 .container{max-width:1120px;margin:0 auto;padding:24px 16px}
 .section-title{margin:10px 0 16px;font-size:clamp(22px,4vw,32px)}
 .brand-text{color:var(--blue);font-weight:800}
 
-/* Buttons */
-.btn{display:inline-block;background:var(--pink);color:#fff;padding:10px 18px;border-radius:999px;font-weight:800;box-shadow:var(--shadow)}
+/* ====== الأزرار ====== */
+.btn{display:inline-block;background:var(--pink);color:#fff;padding:10px 18px;border-radius:999px;
+     font-weight:800;box-shadow:var(--shadow)}
 .btn-primary{background:var(--blue)}
 .btn:hover{opacity:.95}
 
-/* Cards & Grids */
-.card{background:#fff;border-radius:16px;box-shadow:var(--shadow);padding:16px}
+/* ====== بطاقات وشبكات ====== */
+.card{background:var(--card);border-radius:16px;box-shadow:var(--shadow);padding:16px}
 .grid{display:grid;gap:18px}
 .features-grid{grid-template-columns:1fr}
 .products-grid{grid-template-columns:1fr}
@@ -38,9 +41,9 @@ a{color:inherit;text-decoration:none}
   .products-grid{grid-template-columns:repeat(3,1fr)}
 }
 
-/* Hero */
+/* ====== HERO ====== */
 .hero{position:relative;overflow:hidden}
-.hero img{width:100%;height:auto;object-fit:cover}
+.hero img{width:100%;height:auto;object-fit:cover;display:block}
 .hero .hero-content{
   position:absolute; inset:auto 0 10% 0; 
   display:grid; gap:10px; justify-items:center; text-align:center; color:#fff; padding:0 16px;
@@ -51,13 +54,30 @@ a{color:inherit;text-decoration:none}
   .hero .hero-content{inset:20% auto auto 8%; max-width:520px; justify-items:flex-start; text-align:right}
 }
 
-/* Products */
+/* ====== المنتجات ====== */
 .product img{border-radius:12px}
 .product .product-body{display:grid;gap:8px;margin-top:10px}
 .product .bullets{margin:0;padding:0 18px}
 .product .product-cta{display:flex;gap:12px;align-items:center}
 .price{font-weight:900;color:#2b3a43}
 
-/* CTA & Footer */
+/* ====== أقسام أخرى ====== */
 .cta{display:grid;gap:12px;justify-items:center;text-align:center;padding-block:18px}
+.about p{line-height:1.9;color:var(--muted)}
+.contact{display:grid;gap:18px}
+.form{display:grid;gap:12px}
+.form input,.form textarea{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:10px;font:inherit}
+.form button{justify-self:start}
+
+/* ====== الفوتر ====== */
 .footer{padding:22px 16px;text-align:center;border-top:1px solid var(--line);margin-top:24px}
+
+/* ====== زر واتساب العائم (يسار) ====== */
+.whatsapp-float{
+  position:fixed; bottom:20px; left:20px; width:60px; height:60px;
+  display:flex; align-items:center; justify-content:center;
+  background:#25D366; border-radius:50%; box-shadow:0 6px 16px rgba(0,0,0,.2);
+  z-index:1000; transition:transform .15s ease, opacity .15s ease;
+}
+.whatsapp-float:hover{transform:translateY(-2px); opacity:.95}
+.whatsapp-float svg{width:32px; height:32px; display:block}
