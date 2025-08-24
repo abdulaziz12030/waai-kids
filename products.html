@@ -4,66 +4,43 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>المتجر | Waai Kids</title>
-  <link rel="icon" type="image/svg+xml" href="assets/logo-mark.svg">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-<header class="site-header">
-  <div class="container nav">
-    <a class="brand" href="index.html">
-      <img src="assets/logo-lockup.svg" alt="Waai Kids" height="40">
-    </a>
-    <nav class="menu">
-      <a href="index.html">الرئيسية</a>
-      <a class="active" href="products.html">المتجر</a>
-    </nav>
-  </div>
+<header class="header container">
+  <a class="brand" href="index.html">
+    <img src="assets/logo-lockup.svg" alt="Waai Kids" height="40">
+  </a>
 </header>
 
 <main class="container">
-  <h1 class="section-title">بوكسات المواليد</h1>
+  <h1>بوكسات المواليد</h1>
 
-  <div class="grid products-grid">
+  <article class="product-card">
+    <img src="assets/box-boy-wide.jpg" alt="بوكس الأولاد">
+    <h2>بوكس الأولاد</h2>
+    <p class="price">199 ر.س</p>
 
-    <!-- بوكس الأولاد -->
-    <article class="card product" data-product="بوكس الأولاد">
-      <div class="thumb">
-        <img src="assets/box-boy-wide.jpg" alt="بوكس الأولاد">
-        <img class="brand-badge" src="assets/logo-lockup.svg" alt="Waai Kids">
-      </div>
-      <h2>بوكس الأولاد</h2>
-      <span class="price">199 ر.س</span>
-      <label>رسالة الكرت<textarea class="gift-message">نورت الدنيا يا أجمل العطايا</textarea></label>
-      <label>اسم المُهدي<input type="text" class="gift-sender" placeholder="عائلة آل ..."></label>
-      <div class="gift-preview">
-        <div class="gift-card-canvas"><p class="msg"></p><p class="sender"></p></div>
-        <button class="btn preview-btn">معاينة</button>
-      </div>
-      <a class="btn whats-order" href="#">اطلب عبر واتساب</a>
-    </article>
+    <label>رسالة الكرت
+      <textarea class="gift-message">نورت الدنيا يا أجمل العطايا</textarea>
+    </label>
+    <label>اسم المُهدي
+      <input type="text" class="gift-sender" placeholder="عائلة آل...">
+    </label>
 
-    <!-- بوكس البنات -->
-    <article class="card product" data-product="بوكس البنات">
-      <div class="thumb">
-        <img src="assets/box-girl-wide.jpg" alt="بوكس البنات">
-        <img class="brand-badge" src="assets/logo-lockup.svg" alt="Waai Kids">
+    <div class="gift-preview">
+      <div class="card">
+        <p class="msg"></p>
+        <p class="sender"></p>
       </div>
-      <h2>بوكس البنات</h2>
-      <span class="price">199 ر.س</span>
-      <label>رسالة الكرت<textarea class="gift-message">نورت الدنيا يا أجمل العطايا</textarea></label>
-      <label>اسم المُهدي<input type="text" class="gift-sender" placeholder="عائلة آل ..."></label>
-      <div class="gift-preview">
-        <div class="gift-card-canvas"><p class="msg"></p><p class="sender"></p></div>
-        <button class="btn preview-btn">معاينة</button>
-      </div>
-      <a class="btn whats-order" href="#">اطلب عبر واتساب</a>
-    </article>
+    </div>
 
-  </div>
+    <a class="btn whats-order" href="#">اطلب عبر واتساب</a>
+  </article>
+
 </main>
 
-<footer class="footer"><p>© Waai Kids</p></footer>
 <a href="https://wa.me/966570905999" class="whatsapp-float" target="_blank"><svg viewBox="0 0 32 32"><path fill="#fff" d="M19.11..."/></svg></a>
 <script src="scripts.js"></script>
 </body>
