@@ -1,124 +1,29 @@
-/* الأساس */
-:root{
-  --brand-blue:#57c5df; --brand-pink:#f5a8bd; --brand-grad: linear-gradient(135deg,#73e1d0,#f9b6c3 60%,#58c7de);
-  --text:#1f2937; --muted:#6b7280; --bg:#ffffff; --card:#f8fafc;
-  --radius:16px;
-}
-*{box-sizing:border-box}
-html,body{margin:0;padding:0}
-body{font-family:system-ui,-apple-system,Segoe UI,Roboto,'Noto Sans',Tahoma,Arial; color:var(--text); background:#fff;}
-img{max-width:100%;display:block}
-
-/* حاوية عامة */
-.container{width:min(1100px,92%);margin-inline:auto}
-.site-header{position:sticky;top:0;background:#fff;border-bottom:1px solid #eef2f7;z-index:50}
-.nav{display:flex;align-items:center;gap:16px;justify-content:space-between;padding:10px 0}
-.menu a{color:#374151;text-decoration:none;margin-inline:10px}
-.menu a.active,.menu a:hover{color:#111}
-
-/* أزرار */
-.btn{display:inline-block;padding:.65rem 1.1rem;border-radius:999px;border:1px solid #e5e7eb;color:#111;text-decoration:none;background:#fff}
-.btn-primary{background:var(--brand-blue);color:#fff;border:0}
-.btn-primary:hover{filter:brightness(.95)}
-
-/* عناوين */
-.section-title{font-size:1.75rem;margin:28px 0 18px}
-
-/* شبكة */
-.grid{display:grid;gap:18px}
-.products-grid{grid-template-columns:repeat(2,1fr)}
-@media (max-width:900px){.products-grid{grid-template-columns:1fr}}
-
-/* بطاقات */
-.card{background:var(--card);border-radius:var(--radius);padding:14px;border:1px solid #eef2f7}
-
-/* صور المنتجات (عرضي 16:9) */
-.product .thumb{
-  aspect-ratio:16/9; width:100%; overflow:hidden; border-radius:12px; background:#f4f7fa; position:relative;
-}
-.product .thumb img{width:100%;height:100%;object-fit:cover;object-position:center}
-.product .thumb .brand-badge{
-  position:absolute; top:10px; right:10px; width:96px; height:auto;
-  background:rgba(255,255,255,.92); padding:6px 10px; border-radius:999px;
-  box-shadow:0 6px 14px rgba(0,0,0,.12); backdrop-filter:blur(4px);
-}
-@media (max-width:480px){.product .thumb .brand-badge{width:76px;padding:4px 8px}}
-
-/* جسم المنتج */
-.product-body{padding:10px 6px}
-.bullets{margin:10px 0 14px; padding:0 1em; color:#374151}
-.bullets li{margin:.35em 0}
-.product-cta{display:flex;align-items:center;gap:10px}
-.price{font-weight:700;color:#111}
-
-/* كرت الهدية */
-.gift-card{margin-top:10px}
-.check{display:flex;align-items:center;gap:.6rem;margin:.25rem 0}
-.check input{transform:translateY(1px)}
-.gift-message-wrap{display:grid;gap:.6rem}
-.gift-message-wrap label{display:grid;gap:.3rem}
-.gift-message-wrap textarea,.gift-message-wrap input{
-  width:100%; padding:.6rem .8rem; border-radius:10px; border:1px solid #e5e7eb; font:inherit
-}
-.hint{color:var(--muted); font-size:.85rem}
-
-/* معاينة الكرت */
-.gift-preview{margin-top:.6rem; display:grid; gap:.6rem}
-.gift-card-canvas{
-  position:relative; border-radius:14px; padding:26px 22px;
-  background:#fff; border:1px solid #e5e7eb; min-height:160px;
-  background-image: var(--brand-grad);
-  box-shadow: inset 0 0 0 120vmax rgba(255,255,255,.65);
-}
-.brand-chip{
-  position:absolute; top:10px; left:10px; padding:.35rem .65rem; border-radius:999px;
-  background:#fff; color:#111; font-weight:700; box-shadow:0 6px 14px rgba(0,0,0,.1)
-}
-.brand-chip span{color:#ef6697}
-.gift-text .message{font-size:1.1rem; font-weight:700; margin:0 0 .25rem}
-.gift-text .sender{margin:0; color:#374151}
-.pulse{animation:pulse .6s ease}
-@keyframes pulse{from{transform:scale(.99)}to{transform:scale(1)}}
-
-/* سلايدر (16:5) */
-.hero{background:#fff; border-bottom:1px solid #eef2f7}
-.slider{position:relative; overflow:hidden}
-.slide{display:none; position:relative; aspect-ratio:16/5}
+:root{--blue:#57c5df;--pink:#f5a8bd;--text:#111;--bg:#fff;--muted:#6b7280;}
+body{margin:0;font-family:sans-serif;background:var(--bg);color:var(--text);}
+.container{width:min(1100px,92%);margin:auto}
+.nav{display:flex;justify-content:space-between;align-items:center}
+.menu a{margin:0 10px;text-decoration:none;color:#333}
+.menu a.active{color:var(--blue);font-weight:700}
+.btn{padding:.6rem 1rem;border-radius:999px;background:var(--blue);color:#fff;text-decoration:none;border:0}
+.section-title{margin:20px 0;font-size:1.5rem}
+.grid{display:grid;gap:20px}
+.products-grid{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.card{background:#fafafa;padding:16px;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,.05)}
+.thumb{aspect-ratio:16/9;position:relative;overflow:hidden;border-radius:12px}
+.thumb img{width:100%;height:100%;object-fit:cover}
+.brand-badge{position:absolute;top:10px;right:10px;width:80px;background:#fff;border-radius:999px;padding:4px}
+.price{font-weight:700}
+.gift-message,.gift-sender{width:100%;margin:5px 0;padding:.5rem;border-radius:8px;border:1px solid #ddd}
+.gift-card-canvas{border:1px solid #ddd;border-radius:12px;padding:20px;background:#fff}
+.whatsapp-float{position:fixed;bottom:18px;left:18px;width:56px;height:56px;border-radius:50%;background:#25D366;display:grid;place-items:center}
+.whatsapp-float svg{width:28px;height:28px;fill:#fff}
+.hero .slider{position:relative;overflow:hidden}
+.slide{display:none;position:relative;aspect-ratio:16/5}
 .slide.active{display:block}
-.slide img{width:100%;height:100%;object-fit:cover;object-position:center}
-.slide-caption{
-  position:absolute; inset:auto auto 12% 8%; color:#111; max-width:min(520px,60%);
-  background:rgba(255,255,255,.8); padding:14px 16px; border-radius:14px; backdrop-filter:blur(4px)
-}
-.slide-caption h1,.slide-caption h2{margin:.2rem 0 .25rem}
-.slide-arrow{
-  position:absolute; top:50%; transform:translateY(-50%); border:0; background:rgba(255,255,255,.8);
-  width:44px;height:44px;border-radius:999px; cursor:pointer
-}
-.slide-arrow.prev{right:auto; left:14px}
-.slide-arrow.next{right:14px}
-.dots{position:absolute; left:50%; transform:translateX(-50%); bottom:12px; display:flex; gap:6px}
-.dot{width:10px;height:10px;border-radius:50%;background:#e5e7eb;border:0}
-.dot.active{background:#111}
-@media (max-width:640px){
-  .slide{aspect-ratio:16/8}              /* تعميق الارتفاع للجوال */
-  .slide-caption{inset:auto 6% 8% 6%; max-width:90%}
-}
-
-/* المزايا */
-.features{display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin:24px auto}
-.features .feat{background:#fff;border:1px solid #eef2f7;border-radius:14px;padding:16px;text-align:center}
-.features .feat span{font-size:22px}
-@media (max-width:900px){.features{grid-template-columns:1fr}}
-
-/* فوتر */
-.footer{margin:24px 0; text-align:center; color:#6b7280}
-
-/* واتساب عائم يسار */
-.whatsapp-float{
-  position:fixed; bottom:18px; left:18px; z-index:99;
-  width:56px; height:56px; display:grid; place-items:center;
-  background:#25D366; border-radius:50%; color:#fff; text-decoration:none;
-  box-shadow:0 8px 22px rgba(0,0,0,.16)
-}
-.whatsapp-float svg{width:28px;height:28px;display:block}
+.slide img{width:100%;height:100%;object-fit:cover}
+.slide-caption{position:absolute;bottom:15%;left:10%;background:rgba(255,255,255,.8);padding:14px;border-radius:12px}
+.slide-arrow{position:absolute;top:50%;transform:translateY(-50%);background:#fff;border:0;width:40px;height:40px;border-radius:50%}
+.prev{left:10px}.next{right:10px}
+.dots{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);display:flex;gap:8px}
+.dot{width:10px;height:10px;border-radius:50%;background:#ccc}
+.dot.active{background:#333}
