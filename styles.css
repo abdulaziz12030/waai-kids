@@ -50,21 +50,55 @@ a{color:inherit;text-decoration:none}
   .products-grid{grid-template-columns:repeat(3,1fr)}
 }
 
-/* ====== HERO (لو احتجته) ====== */
-.hero{position:relative;overflow:hidden}
-.hero img{width:100%;height:auto;object-fit:cover;display:block}
-.hero .hero-content{
-  position:absolute; inset:auto 0 10% 0; 
+/* ====== (ب) HERO SLIDER ====== */
+.hero-slider{
+  position:relative;
+  /* 1920x600 ≈ نسبة 16:5 */
+  aspect-ratio: 16 / 5;
+  width:100%;
+  overflow:hidden;
+  background:#f4f7fa;
+}
+.hero-slider .slides{ height:100%; position:relative }
+.hero-slider .slide{
+  position:absolute; inset:0; opacity:0; transition:opacity .5s ease;
+}
+.hero-slider .slide.is-active{ opacity:1; z-index:1 }
+.hero-slider .slide img{
+  width:100%; height:100%; object-fit:cover; object-position:center; display:block;
+}
+.hero-slider .caption{
+  position:absolute; inset:auto 0 10% 0;
   display:grid; gap:10px; justify-items:center; text-align:center; color:#fff; padding:0 16px;
+  text-shadow:0 2px 10px rgba(0,0,0,.25);
 }
-.hero h1{margin:0;font-size:clamp(22px,5vw,42px)}
-.hero p{margin:0 0 10px; font-weight:600}
-@media (min-width:768px){
-  .hero .hero-content{inset:20% auto auto 8%; max-width:520px; justify-items:flex-start; text-align:right}
-}
+.hero-slider .caption h1{margin:0;font-size:clamp(22px,5vw,42px)}
+.hero-slider .caption p{margin:0 0 10px; font-weight:600}
 
-/* ====== المنتجات ====== */
-/* نجبر الصور على Landscape عبر حاوية لها نسبة 16:9 وobject-fit:cover */
+/* arrows */
+.hero-slider .nav-arrow{
+  position:absolute; top:50%; transform:translateY(-50%);
+  inline-size:42px; block-size:42px; border-radius:50%;
+  background:rgba(255,255,255,.75); border:none; cursor:pointer;
+  display:grid; place-items:center; font-size:28px; line-height:1; color:#0e1b22;
+  box-shadow:0 8px 18px rgba(0,0,0,.15);
+}
+.hero-slider .nav-arrow:hover{ background:#fff }
+.hero-slider .prev{ right:auto; left:12px }
+.hero-slider .next{ right:12px; left:auto }
+
+/* dots */
+.hero-slider .dots{
+  position:absolute; inset:auto 0 12px 0;
+  display:flex; gap:8px; justify-content:center;
+}
+.hero-slider .dot{
+  inline-size:10px; block-size:10px; border-radius:50%;
+  background:rgba(255,255,255,.6); border:none; cursor:pointer;
+}
+.hero-slider .dot.is-active{ background:#fff }
+
+/* ====== المنتجات (صورة عرضية عبر thumb) ====== */
 .product .thumb{
   aspect-ratio: 16 / 9;
   width: 100%;
@@ -101,52 +135,3 @@ a{color:inherit;text-decoration:none}
 }
 .whatsapp-float:hover{transform:translateY(-2px); opacity:.95}
 .whatsapp-float svg{width:32px; height:32px; display:block}
-
-/* ====== ميزة طباعة الكرت ====== */
-.gift-card{display:grid;gap:12px;margin-top:14px}
-.gift-card .check{display:flex;gap:8px;align-items:center;font-weight:700}
-.gift-card .check input{inline-size:18px; block-size:18px}
-.gift-message-wrap textarea,
-.gift-message-wrap input{
-  width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:10px;font:inherit;background:#fff
-}
-.gift-card .hint{color:var(--muted)}
-
-/* معاينة الكرت — بطاقة بهوية Waai Kids، متجاوبة ومناسبة للجوال */
-.gift-preview{display:grid;gap:10px}
-.gift-card-canvas{
-  --c1:#a0e7f8; --c2:#ffd2e0;
-  background: linear-gradient(135deg, var(--c1), var(--c2));
-  border-radius: 20px; box-shadow: var(--shadow);
-  padding: 18px; color:#0e1b22;
-  display:grid; align-content:center; justify-items:center; gap:6px;
-  min-height: 180px;
-}
-.brand-chip{
-  background: rgba(255,255,255,.8); border-radius: 999px;
-  padding: 6px 12px; font-weight: 900; letter-spacing:.2px;
-}
-.brand-chip span{ color:#ff8fb0; font-weight:900 }
-.gift-text{ text-align:center; display:grid; gap:6px }
-.gift-text .message{
-  font-size: clamp(18px, 4.5vw, 26px);
-  font-weight: 800; margin: 0;
-}
-.gift-text .sender{
-  font-size: clamp(14px, 3.5vw, 16px);
-  color:#44606f; margin: 0;
-}
-
-/* نبضة بسيطة عند الضغط على "معاينة الكرت" */
-.gift-card-canvas.pulse{ animation: pulse .6s ease }
-@keyframes pulse{
-  0%{ transform: scale(1) }
-  50%{ transform: scale(1.02) }
-  100%{ transform: scale(1) }
-}
-.preview-btn{ justify-self:center }
-
-/* تحسينات جوال */
-@media (max-width: 520px){
-  .gift-card-canvas{ min-height: 200px; }
-}
