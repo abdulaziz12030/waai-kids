@@ -15,9 +15,7 @@ a{color:inherit;text-decoration:none}
   display:flex;gap:16px;align-items:center;padding:10px 16px
 }
 .nav .brand img{
-  height:56px;             /* تحسين وضوح اللوقو */
-  width:auto;
-  image-rendering:-webkit-optimize-contrast;
+  height:56px; width:auto; image-rendering:-webkit-optimize-contrast;
 }
 @media (max-width:480px){
   .nav .brand img{ height:48px; }
@@ -52,7 +50,7 @@ a{color:inherit;text-decoration:none}
   .products-grid{grid-template-columns:repeat(3,1fr)}
 }
 
-/* ====== HERO ====== */
+/* ====== HERO (لو احتجته) ====== */
 .hero{position:relative;overflow:hidden}
 .hero img{width:100%;height:auto;object-fit:cover;display:block}
 .hero .hero-content{
@@ -66,7 +64,18 @@ a{color:inherit;text-decoration:none}
 }
 
 /* ====== المنتجات ====== */
-.product img{border-radius:12px}
+/* نجبر الصور على Landscape عبر حاوية لها نسبة 16:9 وobject-fit:cover */
+.product .thumb{
+  aspect-ratio: 16 / 9;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 12px;
+  background: #f4f7fa;
+}
+.product .thumb img{
+  width: 100%; height: 100%;
+  object-fit: cover; object-position: center;
+}
 .product .product-body{display:grid;gap:8px;margin-top:10px}
 .product .bullets{margin:0;padding:0 18px}
 .product .product-cta{display:flex;gap:12px;align-items:center}
@@ -94,11 +103,50 @@ a{color:inherit;text-decoration:none}
 .whatsapp-float svg{width:32px; height:32px; display:block}
 
 /* ====== ميزة طباعة الكرت ====== */
-.gift-card{display:grid;gap:10px;margin-top:12px}
+.gift-card{display:grid;gap:12px;margin-top:14px}
 .gift-card .check{display:flex;gap:8px;align-items:center;font-weight:700}
 .gift-card .check input{inline-size:18px; block-size:18px}
-.gift-message-wrap textarea{
-  width:100%;padding:10px;border:1px solid var(--line);border-radius:10px;font:inherit
+.gift-message-wrap textarea,
+.gift-message-wrap input{
+  width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:10px;font:inherit;background:#fff
 }
 .gift-card .hint{color:var(--muted)}
-.gift-card .whats-order{background:#25D366}
+
+/* معاينة الكرت — بطاقة بهوية Waai Kids، متجاوبة ومناسبة للجوال */
+.gift-preview{display:grid;gap:10px}
+.gift-card-canvas{
+  --c1:#a0e7f8; --c2:#ffd2e0;
+  background: linear-gradient(135deg, var(--c1), var(--c2));
+  border-radius: 20px; box-shadow: var(--shadow);
+  padding: 18px; color:#0e1b22;
+  display:grid; align-content:center; justify-items:center; gap:6px;
+  min-height: 180px;
+}
+.brand-chip{
+  background: rgba(255,255,255,.8); border-radius: 999px;
+  padding: 6px 12px; font-weight: 900; letter-spacing:.2px;
+}
+.brand-chip span{ color:#ff8fb0; font-weight:900 }
+.gift-text{ text-align:center; display:grid; gap:6px }
+.gift-text .message{
+  font-size: clamp(18px, 4.5vw, 26px);
+  font-weight: 800; margin: 0;
+}
+.gift-text .sender{
+  font-size: clamp(14px, 3.5vw, 16px);
+  color:#44606f; margin: 0;
+}
+
+/* نبضة بسيطة عند الضغط على "معاينة الكرت" */
+.gift-card-canvas.pulse{ animation: pulse .6s ease }
+@keyframes pulse{
+  0%{ transform: scale(1) }
+  50%{ transform: scale(1.02) }
+  100%{ transform: scale(1) }
+}
+.preview-btn{ justify-self:center }
+
+/* تحسينات جوال */
+@media (max-width: 520px){
+  .gift-card-canvas{ min-height: 200px; }
+}
