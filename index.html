@@ -1,83 +1,44 @@
 <!doctype html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>  واعي كيدز | بوكسات مواليد</title>
-  <meta name="description" content="بوكسات مواليد فاخرة للأولاد والبنات. توصيل سريع داخل السعودية."/>
-  <link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Readex+Pro:wght@400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/styles.css" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Waai Kids | هدايا مواليد راقية وناعمة</title>
+  <meta name="description" content="Waai Kids: بوكسات مواليد للأولاد والبنات بألوان باستيل راقية، جاهزة للإهداء مع تغليف أنيق.">
+  <meta property="og:title" content="Waai Kids | هدايا مواليد راقية وناعمة">
+  <meta property="og:description" content="بوكس مواليد للأولاد وآخر للبنات — اختيار أنيق وعملي للهدايا.">
+  <meta property="og:image" content="assets/images/meta/og-image.jpg">
+  <link rel="icon" type="image/png" href="assets/images/logo/waai-kids-mark.png">
+  <link rel="apple-touch-icon" href="assets/images/meta/apple-touch-icon.png">
+  <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-  <header class="container" style="display:flex;align-items:center;justify-content:space-between;gap:20px">
-    <div class="brand">
-      <img src="/assets/logo-mark.png" alt="waai kids logo"/>
-      <strong>واعي كيدز</strong>
-    </div>
-    <nav>
-      <a href="/index.html">الرئيسية</a>
-      <a href="/products.html">المتجر</a>
-      <a href="/about.html">من نحن</a>
-      <a href="/contact.html">تواصل</a>
-    </nav>
-  </header>
-
-  <section class="hero">
-    <div class="container">
-      <div class="grid" style="align-items:center">
-        <div>
-          <span class="badge">إطلاق تجريبي</span>
-          <h1 style="margin:10px 0 0 0">أهلاً بك في <strong>واعي كيدز</strong></h1>
-          <p>بوكسات مواليد أنيقة وعملية – خيار مثالي للهدية الأولى. صناديق مخصصة للأولاد وأخرى للبنات.</p>
-          <a class="btn" href="/products.html">تسوق الآن</a>
-        </div>
-        <div class="kv">
-          <img src="/assets/hero-placeholder.jpg" alt="بوكسات مواليد"/>
-        </div>
-      </div>
+<header class="nav">
+  <a href="index.html" class="brand" aria-label="العودة للرئيسية">
+    <img src="assets/images/logo/waai-kids-lockup.svg" alt="Waai Kids"
+         onerror="this.onerror=null;this.src='assets/images/logo/waai-kids-lockup.png'">
+  </a>
+  <nav class="links" aria-label="روابط رئيسية">
+    <a href="index.html" aria-current="page">الرئيسية</a>
+    <a href="products.html">المتجر</a>
+    <a href="about.html">من نحن</a>
+    <a href="contact.html">تواصل</a>
+  </nav>
+</header>
+<main>
+  <section class="hero" aria-label="بانر رئيسي">
+    <picture>
+      <img src="assets/images/hero/hero-placeholder.jpg" alt="مولود مع بالونات" width="1280" height="720">
+    </picture>
+    <div class="hero-content">
+      <h1>هدايا مواليد راقية وناعمة</h1>
+      <p>بوكس للأولاد وآخر للبنات — جاهز للإهداء مع تغليف أنيق.</p>
+      <a class="btn btn-primary" href="products.html">تسوّق الآن</a>
     </div>
   </section>
-
-  <section class="container">
-    <h2>اختياراتنا</h2>
-    <div class="grid">
-      <div class="card">
-        <div class="product">
-          <img src="/assets/box-boy.jpg" alt="بوكس مواليد للأولاد">
-          <div>
-            <h3>بوكس الأولاد</h3>
-            <p class="price">199 ر.س</p>
-            <ul class="clean">
-              <li>بطانية قطنية ناعمة</li>
-              <li>قبعة + قفازات</li>
-              <li>لهاية + منشفة صغيرة</li>
-            </ul>
-            <a class="btn" href="/products.html#boy">اشترِ الآن</a>
-          </div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="product">
-          <img src="/assets/box-girl.jpg" alt="بوكس مواليد للبنات">
-          <div>
-            <h3>بوكس البنات</h3>
-            <p class="price">199 ر.س</p>
-            <ul class="clean">
-              <li>بطانية قطنية ناعمة</li>
-              <li>قبعة + قفازات</li>
-              <li>لهاية + منشفة صغيرة</li>
-            </ul>
-            <a class="btn" href="/products.html#girl">اشترِ الآن</a>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <footer class="container">
-    <p>© 2025 waai kids</p>
-  </footer>
+</main>
+<footer class="footer">
+  <p>© Waai Kids — كل الحقوق محفوظة</p>
+</footer>
 </body>
 </html>
