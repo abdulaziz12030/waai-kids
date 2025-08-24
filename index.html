@@ -29,10 +29,10 @@
 
 <main>
 
-  <!-- ====== HERO SLIDER (بنرات عرضية) ====== -->
+  <!-- ====== (أ) HERO SLIDER: بنرات عرضية 1920×600 ====== -->
   <section class="hero-slider" aria-label="بنرات رئيسية">
     <div class="slides">
-      <div class="slide is-active">
+      <div class="slide is-active" id="slide-1">
         <img src="assets/slide1.jpg" alt="هدايا مواليد — بوكس للأولاد" loading="eager" decoding="async" fetchpriority="high">
         <div class="caption">
           <h1>هدايا مواليد راقية للأولاد</h1>
@@ -40,7 +40,7 @@
           <a class="btn btn-primary" href="products.html#boy">تسوّق الآن</a>
         </div>
       </div>
-      <div class="slide">
+      <div class="slide" id="slide-2">
         <img src="assets/slide2.jpg" alt="هدايا مواليد — بوكس للبنات" loading="lazy" decoding="async">
         <div class="caption">
           <h1>بوكس البنات بتغليف فاخر</h1>
@@ -48,7 +48,7 @@
           <a class="btn btn-primary" href="products.html#girl">تسوّق الآن</a>
         </div>
       </div>
-      <div class="slide">
+      <div class="slide" id="slide-3">
         <img src="assets/slide3.jpg" alt="تهنئة وهدية للمولود" loading="lazy" decoding="async">
         <div class="caption">
           <h1>جاهز للإهداء فورًا</h1>
@@ -89,7 +89,7 @@
     </div>
   </section>
 
-  <!-- ====== TEASER PRODUCTS (عرضية) ====== -->
+  <!-- ====== TEASER PRODUCTS (عرضية بفضل thumb) ====== -->
   <section class="container" aria-label="بوكسات المواليد">
     <h2 class="section-title">بوكسات المواليد</h2>
     <div class="grid products-grid">
@@ -159,7 +159,7 @@
   // dots
   dots.forEach((d,idx)=> d.addEventListener('click', ()=>{ goTo(idx); start(); }));
 
-  // swipe (مفيد للجوال)
+  // swipe (للجوال)
   let sx=0;
   slider.addEventListener('touchstart', e=> sx = e.touches[0].clientX, {passive:true});
   slider.addEventListener('touchend', e=>{
