@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>المتجر | Waai Kids</title>
-  <meta name="description" content="بوكس مواليد للأولاد والبنات من Waai Kids — محتوى عملي بتغليف أنيق ورسالة مطبوعة على كرت الهدية.">
+  <meta name="description" content="بوكس مواليد للأولاد والبنات من Waai Kids — محتوى عملي بتغليف أنيق، مع إمكانية طباعة رسالة على كرت الهدية.">
   <link rel="icon" type="image/png" href="assets/logo-mark.png">
   <link rel="stylesheet" href="styles.css">
 </head>
@@ -27,9 +27,12 @@
   <h1 class="section-title">المتجر</h1>
 
   <section class="grid products-grid">
+
     <!-- BOY -->
     <article id="boy" class="card product">
-      <img src="assets/box-boy.jpg" alt="بوكس مواليد للأولاد" width="800" height="1000" loading="lazy" decoding="async">
+      <div class="thumb">
+        <img src="assets/box-boy.jpg" alt="بوكس مواليد للأولاد" loading="lazy" decoding="async">
+      </div>
       <div class="product-body">
         <h2>بوكس الأولاد</h2>
         <ul class="bullets">
@@ -38,24 +41,40 @@
           <li>لهاية + منشفة صغيرة</li>
           <li>بطاقة إهداء</li>
         </ul>
+
         <div class="product-cta">
           <span class="price">199 ر.س</span>
           <a class="btn btn-primary" href="#">اطلب الآن</a>
         </div>
 
         <!-- Gift Card Printing -->
-        <div class="gift-card">
+        <div class="gift-card" data-product="بوكس الأولاد">
           <label class="check">
-            <input type="checkbox" class="gift-toggle">
+            <input type="checkbox" class="gift-toggle" checked>
             <span>أرغب بطباعة رسالة على الكرت (مجاني)</span>
           </label>
 
-          <div class="gift-message-wrap" hidden>
+          <div class="gift-message-wrap">
             <label>نص الرسالة (يظهر على كرت الهدية)
               <textarea class="gift-message" rows="3" maxlength="200"
-                placeholder="مبروك المولود، جعله الله من مواليد السعادة..."></textarea>
+                placeholder="اكتب رسالتك هنا…">نورت الدنيا يا أجمل العطايا</textarea>
             </label>
-            <small class="hint">حد أقصى 200 حرف — سنطبع الرسالة بخط واضح على كرت الهدية.</small>
+            <label>اسم المُهدي (اختياري)
+              <input type="text" class="gift-sender" maxlength="40" placeholder="مثال: محبكم/ـنّ: عائلة آل …">
+            </label>
+            <small class="hint">تستطيع تعديل النص كما تشاء — الحد الأقصى 200 حرف.</small>
+          </div>
+
+          <!-- معاينة الكرت -->
+          <div class="gift-preview">
+            <div class="gift-card-canvas" aria-label="معاينة كرت الهدية">
+              <div class="brand-chip">Waai <span>Kids</span></div>
+              <div class="gift-text" dir="rtl">
+                <p class="message">نورت الدنيا يا أجمل العطايا</p>
+                <p class="sender" hidden>—</p>
+              </div>
+            </div>
+            <button type="button" class="btn preview-btn">معاينة الكرت</button>
           </div>
 
           <a class="btn whats-order" href="#" target="_blank" rel="noopener">
@@ -68,7 +87,9 @@
 
     <!-- GIRL -->
     <article id="girl" class="card product">
-      <img src="assets/box-girl.jpg" alt="بوكس مواليد للبنات" width="800" height="1000" loading="lazy" decoding="async">
+      <div class="thumb">
+        <img src="assets/box-girl.jpg" alt="بوكس مواليد للبنات" loading="lazy" decoding="async">
+      </div>
       <div class="product-body">
         <h2>بوكس البنات</h2>
         <ul class="bullets">
@@ -77,24 +98,40 @@
           <li>لهاية + منشفة صغيرة</li>
           <li>بطاقة إهداء</li>
         </ul>
+
         <div class="product-cta">
           <span class="price">199 ر.س</span>
           <a class="btn btn-primary" href="#">اطلب الآن</a>
         </div>
 
         <!-- Gift Card Printing -->
-        <div class="gift-card">
+        <div class="gift-card" data-product="بوكس البنات">
           <label class="check">
-            <input type="checkbox" class="gift-toggle">
+            <input type="checkbox" class="gift-toggle" checked>
             <span>أرغب بطباعة رسالة على الكرت (مجاني)</span>
           </label>
 
-          <div class="gift-message-wrap" hidden>
+          <div class="gift-message-wrap">
             <label>نص الرسالة (يظهر على كرت الهدية)
               <textarea class="gift-message" rows="3" maxlength="200"
-                placeholder="مبروك المولودة، جعلها الله قرة عين لوالديها..."></textarea>
+                placeholder="اكتب رسالتك هنا…">نورت الدنيا يا أجمل العطايا</textarea>
             </label>
-            <small class="hint">حد أقصى 200 حرف — سنطبع الرسالة بخط واضح على كرت الهدية.</small>
+            <label>اسم المُهدي (اختياري)
+              <input type="text" class="gift-sender" maxlength="40" placeholder="مثال: محبكم/ـنّ: عائلة آل …">
+            </label>
+            <small class="hint">تستطيع تعديل النص كما تشاء — الحد الأقصى 200 حرف.</small>
+          </div>
+
+          <!-- معاينة الكرت -->
+          <div class="gift-preview">
+            <div class="gift-card-canvas" aria-label="معاينة كرت الهدية">
+              <div class="brand-chip">Waai <span>Kids</span></div>
+              <div class="gift-text" dir="rtl">
+                <p class="message">نورت الدنيا يا أجمل العطايا</p>
+                <p class="sender" hidden>—</p>
+              </div>
+            </div>
+            <button type="button" class="btn preview-btn">معاينة الكرت</button>
           </div>
 
           <a class="btn whats-order" href="#" target="_blank" rel="noopener">
@@ -104,6 +141,7 @@
         <!-- /Gift Card Printing -->
       </div>
     </article>
+
   </section>
 </main>
 
@@ -116,41 +154,72 @@
   <svg viewBox="0 0 32 32" aria-hidden="true"><path fill="#fff" d="M19.11 17.58a4.7 4.7 0 0 1-1.53-.3c-.24-.1-.55-.24-.95-.47-.4-.22-.8-.5-1.21-.86-.4-.35-.79-.77-1.16-1.24-.36-.47-.64-.92-.83-1.33-.2-.41-.33-.78-.4-1.1-.07-.33-.1-.63-.1-.9 0-.3.07-.57.22-.82.14-.25.34-.46.6-.62.26-.17.55-.25.86-.25.12 0 .24.06.37.17.12.1.25.25.38.42l.26.36c.1.14.18.28.25.41.07.13.1.25.1.35 0 .1-.03.22-.1.37-.07.15-.14.29-.22.42-.07.13-.14.25-.2.35-.06.1-.1.2-.1.28 0 .08.03.17.1.27.06.1.14.2.21.3.08.1.17.2.28.3.1.1.2.2.3.3.1.09.21.18.32.27.11.09.21.17.3.24.1.07.18.12.24.16.07.04.13.06.18.06.06 0 .12-.02.2-.07.07-.05.15-.1.23-.16.08-.06.16-.12.25-.19.09-.07.17-.11.25-.11.06 0 .13.02.22.06.08.04.18.08.28.13.1.05.21.1.32.16.1.06.2.11.28.17.07.06.13.11.18.17.04.06.07.11.07.16 0 .2-.05.42-.17.67-.11.25-.23.45-.36.61-.13.17-.28.32-.45.47-.17.15-.34.27-.52.36-.18.1-.35.16-.51.2-.17.03-.3.05-.4.05Z"/><path fill="#25D366" d="M27.57 4.43A13.98 13.98 0 0 0 16 0C7.16 0 0 7.16 0 16c0 2.8.74 5.43 2.02 7.72L0 32l8.5-2.22A15.95 15.95 0 0 0 16 32c8.84 0 16-7.16 16-16 0-3.73-1.3-7.16-3.43-9.57ZM16 29.09c-2.67 0-5.13-.82-7.16-2.22l-.52-.35-5.03 1.31 1.35-4.9-.36-.56A12.95 12.95 0 0 1 3.05 16C3.05 8.81 8.81 3.05 16 3.05S28.95 8.81 28.95 16 23.19 29.09 16 29.09Z"/></svg>
 </a>
 
-<!-- سكربت بناء رسالة الواتساب + إظهار مربع الكرت -->
+<!-- سكربت الصور العرضية + معاينة وواتساب -->
 <script>
 (function(){
-  const PHONE = '966570905999'; // رقم الواتساب الدولي بدون +
-  document.querySelectorAll('.product').forEach(card => {
-    const title   = card.querySelector('h2')?.textContent?.trim() || 'طلب بوكس';
-    const toggle  = card.querySelector('.gift-toggle');
-    const wrapper = card.querySelector('.gift-message-wrap');
-    const message = card.querySelector('.gift-message');
-    const button  = card.querySelector('.whats-order');
+  const PHONE = '966570905999';
 
-    if (toggle && wrapper) {
-      toggle.addEventListener('change', () => {
-        wrapper.hidden = !toggle.checked;
-      });
-    }
+  // تحديث معاينة الكرت + بناء رابط واتساب
+  document.querySelectorAll('.gift-card').forEach(section => {
+    const product   = section.dataset.product || 'طلب بوكس';
+    const toggle    = section.querySelector('.gift-toggle');
+    const wrap      = section.querySelector('.gift-message-wrap');
+    const messageEl = section.querySelector('.gift-message');
+    const senderEl  = section.querySelector('.gift-sender');
+    const preview   = section.querySelector('.gift-card-canvas');
+    const msgNode   = section.querySelector('.gift-card-canvas .message');
+    const senderNode= section.querySelector('.gift-card-canvas .sender');
+    const previewBtn= section.querySelector('.preview-btn');
+    const whatsBtn  = section.querySelector('.whats-order');
 
-    const buildWhatsUrl = () => {
-      const base = `https://wa.me/${PHONE}`;
-      const parts = [
-        `مرحبًا، أود طلب: ${title}`,
+    // إظهار/إخفاء الحقول
+    const syncWrap = () => { wrap.hidden = !toggle.checked; };
+    toggle.addEventListener('change', syncWrap);
+    syncWrap();
+
+    // تحديث المعاينة الحيّة
+    const syncPreview = () => {
+      const text = (messageEl.value || '').trim() || 'نورت الدنيا يا أجمل العطايا';
+      msgNode.textContent = text;
+
+      const sender = (senderEl.value || '').trim();
+      if (sender) {
+        senderNode.textContent = '— ' + sender;
+        senderNode.hidden = false;
+      } else {
+        senderNode.hidden = true;
+      }
+    };
+    messageEl.addEventListener('input', syncPreview);
+    senderEl.addEventListener('input', syncPreview);
+    syncPreview();
+
+    // زر المعاينة — يسلط التركيز على الكرت (مفيد للجوال)
+    previewBtn?.addEventListener('click', () => {
+      preview.scrollIntoView({behavior:'smooth', block:'center'});
+      preview.classList.add('pulse');
+      setTimeout(()=>preview.classList.remove('pulse'), 600);
+    });
+
+    // بناء رابط واتساب
+    const buildWhats = () => {
+      const lines = [
+        `مرحبًا، أود طلب: ${product}`,
         `الكمية: 1`
       ];
-      if (toggle?.checked && message?.value.trim()) {
-        parts.push(`رسالة الكرت: ${message.value.trim()}`);
+      if (toggle.checked) {
+        const txt = (messageEl.value || '').trim() || 'نورت الدنيا يا أجمل العطايا';
+        const sender = (senderEl.value || '').trim();
+        lines.push(`رسالة الكرت: ${txt}`);
+        if (sender) lines.push(`اسم المُهدي: ${sender}`);
       }
-      return `${base}?text=${encodeURIComponent(parts.join('\\n'))}`;
+      const text = encodeURIComponent(lines.join('\n'));
+      return `https://wa.me/${PHONE}?text=${text}`;
     };
-
-    if (button) {
-      button.addEventListener('click', (e) => {
-        e.preventDefault();
-        window.open(buildWhatsUrl(), '_blank');
-      });
-    }
+    whatsBtn?.addEventListener('click', e => {
+      e.preventDefault();
+      window.open(buildWhats(), '_blank');
+    });
   });
 })();
 </script>
