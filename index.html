@@ -10,10 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
   <style>
-    :root{
-      --bg:#4C7AF2; --bg2:#6B8EF7; --acc:#FF7AB6; --muted:#F4F7FF; --text:#1F2333;
-      --white:#fff; --r:20px; --shadow:0 10px 25px rgba(76,122,242,.16);
-    }
+    :root{ --bg:#4C7AF2; --bg2:#6B8EF7; --acc:#FF7AB6; --muted:#F4F7FF; --text:#1F2333; --white:#fff; --r:20px; --shadow:0 10px 25px rgba(76,122,242,.16); }
     *{box-sizing:border-box}
     html,body{margin:0;padding:0;font-family:'Cairo',system-ui,-apple-system,sans-serif;color:var(--text);background:linear-gradient(180deg,#fafcff,#f6f8ff 40%,#fbfcff)}
     a{color:inherit;text-decoration:none}
@@ -109,7 +106,7 @@
       <nav class="links" aria-label="روابط رئيسية">
         <a href="#services">البوكسات</a>
         <a href="orders.html">الطلبات</a>
-        <a href="#contact">تواصل</a>
+        <a href="orders.html#contact">تواصل</a>
       </nav>
     </div>
   </header>
@@ -118,7 +115,7 @@
     <div class="wrap">
       <div class="reveal">
         <h1>هدايا مواليد أنيقة <span style="color:var(--acc)">وبوكسات أولاد/بنات</span></h1>
-        <p class="lead">اختيارات فاخرة للمولود الجديد مع تغليف مبهج وكرت معايدة اختياري من صفحة الطلبات — قريبًا نضيف ألعاب وهدايا للأطفال.</p>
+        <p class="lead">اختيارات فاخرة للمولود الجديد مع تغليف مبهج — بطاقة الإهداء تُضاف اختياريًا من صفحة الطلبات. قريبًا نضيف ألعاب وهدايا للأطفال.</p>
         <div class="hero-actions">
           <a href="#services" class="btn btn-ghost" aria-label="استعرض البوكسات">استعرض البوكسات</a>
           <a href="orders.html" class="btn" aria-label="اذهب لصفحة الطلبات">اذهب لصفحة الطلبات</a>
@@ -135,13 +132,13 @@
       <article class="card reveal">
         <header>
           <h3>بوكس هدية أولاد</h3>
-          <span class="price">السعر: <b id="priceBoy" data-price="199">199</b> ر.س</span>
+          <span class="price">السعر: <b data-price="199">199</b> ر.س</span>
         </header>
         <figure><img loading="lazy" decoding="async" alt="بوكس هدية أولاد" src="https://i.postimg.cc/6qzKXXzQ/boys-box.jpg"></figure>
         <div class="content">
           <p>توليفة مواليد للأولاد مع تغليف أزرق أنيق — مثالي للزيارة الأولى والتهنئة.</p>
           <div class="actions">
-            <a href="orders.html?item=boy" class="btn ask-btn">اطلب الآن</a>
+            <a href="orders.html?item=boy" class="btn">اطلب الآن</a>
           </div>
         </div>
       </article>
@@ -149,13 +146,13 @@
       <article class="card reveal">
         <header>
           <h3>بوكس هدية بنات</h3>
-          <span class="price">السعر: <b id="priceGirl" data-price="209">209</b> ر.س</span>
+          <span class="price">السعر: <b data-price="209">209</b> ر.س</span>
         </header>
         <figure><img loading="lazy" decoding="async" alt="بوكس هدية بنات" src="https://i.postimg.cc/6QyWZ6m8/girls-box.jpg"></figure>
         <div class="content">
           <p>باقة مواليد للبنات بلمسات وردية وزينة لطيفة — هدية تبقى في الذاكرة.</p>
           <div class="actions">
-            <a href="orders.html?item=girl" class="btn ask-btn">اطلب الآن</a>
+            <a href="orders.html?item=girl" class="btn">اطلب الآن</a>
           </div>
         </div>
       </article>
@@ -165,39 +162,22 @@
   <section class="section" id="reviews" aria-label="آراء العملاء">
     <h2 class="reveal">قالوا عن واعي كيدز</h2>
     <div class="reviews">
-      <div class="rev reveal">
-        <div class="stars" aria-label="5 نجوم">
-          <svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 0 0 .95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.802 2.035a1 1 0 0 0-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.802-2.035a1 1 0 0 0-1.176 0l-2.802 2.035c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 0 0-.364-1.118L2.88 8.72c-.783-.57-.38-1.81.588-1.81H6.93a1 1 0 0 0 .951-.69l1.168-3.293Z"/></svg>
-          <svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 0 0 .95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.802 2.035a1 1 0 0 0-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.802-2.035a1 1 0 0 0-1.176 0l-2.802 2.035c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 0 0-.364-1.118L2.88 8.72c-.783-.57-.38-1.81.588-1.81H6.93a1 1 0 0 0 .951-.69l1.168-3.293Z"/></svg>
-          <svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 0 0 .95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.802 2.035a1 1 0 0 0-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.802-2.035a1 1 0 0 0-1.176 0l-2.802 2.035c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 0 0-.364-1.118L2.88 8.72c-.783-.57-.38-1.81.588-1.81H6.93a1 1 0 0 0 .951-.69l1.168-3.293Z"/></svg>
-          <svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 0 0 .95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.802 2.035a1 1 0 0 0-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.802-2.035a1 1 0 0 0-1.176 0l-2.802 2.035c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 0 0-.364-1.118L2.88 8.72c-.783-.57-.38-1.81.588-1.81H6.93a1 1 0 0 0 .951-.69l1.168-3.293Z"/></svg>
-          <svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 0 0 .95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.802 2.035a1 1 0 0 0-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.802-2.035a1 1 0 0 0-1.176 0l-2.802 2.035c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 0 0-.364-1.118L2.88 8.72c-.783-.57-.38-1.81.588-1.81H6.93a1 1 0 0 0 .951-.69l1.168-3.293Z"/></svg>
-        </div>
-        <div class="name">أم مهند</div>
-        <div class="txt">التغليف جميل والكرت زاد الهدية قيمة. شكراً لكم!</div>
+      <div class="rev reveal"><div class="stars" aria-label="5 نجوم">
+        <svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 0 0 .95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.802 2.035a1 1 0 0 0-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.802-2.035a1 1 0 0 0-1.176 0l-2.802 2.035c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 0 0-.364-1.118L2.88 8.72c-.783-.57-.38-1.81.588-1.81H6.93a1 1 0 0 0 .951-.69l1.168-3.293Z"/></svg>
+        <svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 0 0 .95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.802 2.035a1 1 0 0 0-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.802-2.035a1 1 0 0 0-1.176 0l-2.802 2.035c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 0 0-.364-1.118L2.88 8.72c-.783-.57-.38-1.81.588-1.81H6.93a1 1 0 0 0 .951-.69l1.168-3.293Z"/></svg>
+        <svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 0 0 .95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.802 2.035a1 1 0 0 0-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.802-2.035a1 1 0 0 0-1.176 0l-2.802 2.035c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 0 0-.364-1.118L2.88 8.72c-.783-.57-.38-1.81.588-1.81H6.93a1 1 0 0 0 .951-.69l1.168-3.293Z"/></svg>
+        <svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 0 0 .95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.802 2.035a1 1 0 0 0-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.802-2.035a1 1 0 0 0-1.176 0l-2.802 2.035c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 0 0-.364-1.118L2.88 8.72c-.783-.57-.38-1.81.588-1.81H6.93a1 1 0 0 0 .951-.69l1.168-3.293Z"/></svg>
+        <svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 0 0 .95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.802 2.035a1 1 0 0 0-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.802-2.035a1 1 0 0 0-1.176 0l-2.802 2.035c-.784 .57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 0 0-.364-1.118L2.88 8.72c-.783-.57-.38-1.81.588-1.81H6.93a1 1 0 0 0 .951-.69l1.168-3.293Z"/></svg>
       </div>
-      <div class="rev reveal">
-        <div class="stars" aria-label="5 نجوم">
-          <svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 0 0 .95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.802 2.035a1 1 0 0 0-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.802-2.035a1 1 0 0 0-1.176 0l-2.802 2.035c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 0 0-.364-1.118L2.88 8.72c-.783-.57-.38-1.81.588-1.81H6.93a1 1 0 0 0 .951-.69l1.168-3.293Z"/></svg>
-          <svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 0 0 .95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.802 2.035a1 1 0 0 0-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.802-2.035a1 1 0 0 0-1.176 0l-2.802 2.035c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 0 0-.364-1.118L2.88 8.72c-.783-.57-.38-1.81.588-1.81H6.93a1 1 0 0 0 .951-.69l1.168-3.293Z"/></svg>
-          <svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 0 0 .95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.802 2.035a1 1 0 0 0-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.802-2.035a1 1 0 0 0-1.176 0l-2.802 2.035c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 0 0-.364-1.118L2.88 8.72c-.783-.57-.38-1.81.588-1.81H6.93a1 1 0 0 0 .951-.69l1.168-3.293Z"/></svg>
-          <svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 0 0 .95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.802 2.035a1 1 0 0 0-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.802-2.035a1 1 0 0 0-1.176 0l-2.802 2.035c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 0 0-.364-1.118L2.88 8.72c-.783-.57-.38-1.81.588-1.81H6.93a1 1 0 0 0 .951-.69l1.168-3.293Z"/></svg>
-          <svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 0 0 .95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.802 2.035a1 1 0 0 0-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.802-2.035a1 1 0 0 0-1.176 0l-2.802 2.035c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 0 0-.364-1.118L2.88 8.72c-.783-.57-.38-1.81.588-1.81H6.93a1 1 0 0 0 .951-.69l1.168-3.293Z"/></svg>
-        </div>
-        <div class="name">نورة</div>
-        <div class="txt">وصل البوكس بسرعة والتغليف مرررة مرتب 👌</div>
-      </div>
-      <div class="rev reveal">
-        <div class="stars" aria-label="5 نجوم">
-          <svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 0 0 .95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.802 2.035a1 1 0 0 0-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.802-2.035a1 1 0 0 0-1.176 0l-2.802 2.035c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 0 0-.364-1.118L2.88 8.72c-.783-.57-.38-1.81.588-1.81H6.93a1 1 0 0 0 .951-.69l1.168-3.293Z"/></svg>
-          <svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 0 0 .95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.802 2.035a1 1 0 0 0-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.802-2.035a1 1 0 0 0-1.176 0l-2.802 2.035c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 0 0-.364-1.118L2.88 8.72c-.783-.57-.38-1.81.588-1.81H6.93a1 1 0 0 0 .951-.69l1.168-3.293Z"/></svg>
-          <svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 0 0 .95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.802 2.035a1 1 0 0 0-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.802-2.035a1 1 0 0 0-1.176 0l-2.802 2.035c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 0 0-.364-1.118L2.88 8.72c-.783-.57-.38-1.81.588-1.81H6.93a1 1 0 0 0 .951-.69l1.168-3.293Z"/></svg>
-          <svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 0 0 .95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.802 2.035a1 1 0 0 0-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.802-2.035a1 1 0 0 0-1.176 0l-2.802 2.035c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 0 0-.364-1.118L2.88 8.72c-.783-.57-.38-1.81.588-1.81H6.93a1 1 0 0 0 .951-.69l1.168-3.293Z"/></svg>
-          <svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 0 0 .95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.802 2.035a1 1 0 0 0-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.802-2.035a1 1 0 0 0-1.176 0l-2.802 2.035c-.784 .57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 0 0-.364-1.118L2.88 8.72c-.783-.57-.38-1.81.588-1.81H6.93a1 1 0 0 0 .951-.69l1.168-3.293Z"/></svg>
-        </div>
-        <div class="name">مشعل</div>
-        <div class="txt">خدمة ممتازة وتغليف احترافي. أنصح فيه 👍</div>
-      </div>
+      <div class="name">أم مهند</div><div class="txt">التغليف جميل والكرت زاد الهدية قيمة. شكراً لكم!</div></div>
+
+      <div class="rev reveal"><div class="stars" aria-label="5 نجوم">
+        <svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927..."/></svg><svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927..."/></svg><svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927..."/></svg><svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927..."/></svg><svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927..."/></svg>
+      </div><div class="name">نورة</div><div class="txt">وصل البوكس بسرعة والتغليف مرررة مرتب 👌</div></div>
+
+      <div class="rev reveal"><div class="stars" aria-label="5 نجوم">
+        <svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927..."/></svg><svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927..."/></svg><svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927..."/></svg><svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927..."/></svg><svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927..."/></svg>
+      </div><div class="name">مشعل</div><div class="txt">خدمة ممتازة وتغليف احترافي. أنصح فيه 👍</div></div>
     </div>
   </section>
 
@@ -211,87 +191,29 @@
     </div>
   </section>
 
-  <section class="section" id="contact" aria-label="تواصل معنا">
-    <h2 class="reveal">تواصل معنا</h2>
-    <div class="grid" style="grid-template-columns:1.1fr .9fr">
-      <div class="card reveal" style="padding:18px">
-        <h3 style="margin-top:0">من نحن</h3>
-        <p>نهتم بهدايا المواليد ونقدّم بوكسات أولاد/بنات بتغليف أنيق — بطاقة الإهداء تُضاف اختياريًا من صفحة الطلبات.</p>
-        <ul style="line-height:2">
-          <li>الرياض – المملكة العربية السعودية</li>
-          <li>البريد: <strong>hello@waai-kids.com</strong></li>
-          <li>سناب/تيك توك/إنستغرام: <strong>@waai.sa</strong></li>
-        </ul>
-        <img loading="lazy" decoding="async" alt="تغليف هدايا المواليد" src="https://i.postimg.cc/bJ0bS8J0/kids-packaging.jpg" style="border-radius:14px;box-shadow:var(--shadow);margin-top:6px">
-      </div>
-
-      <div class="card reveal" style="padding:18px">
-        <h3 style="margin-top:0">رسالتك لنا</h3>
-        <form id="leadForm" onsubmit="return submitLead(event)" data-endpoint="https://formspree.io/f/yourKidsEndpoint" style="display:grid;gap:10px">
-          <label>اسمك<input name="name" type="text" required placeholder="الاسم" style="border:1px solid #dfe7ff;border-radius:12px;padding:12px 14px"></label>
-          <label>البريد الإلكتروني<input name="email" type="email" required placeholder="example@email.com" style="border:1px solid #dfe7ff;border-radius:12px;padding:12px 14px"></label>
-          <label>رقم الجوال<input name="phone" type="tel" placeholder="05xxxxxxxx" inputmode="tel" style="border:1px solid #dfe7ff;border-radius:12px;padding:12px 14px"></label>
-          <button id="submitBtn" class="btn" type="submit" style="background:linear-gradient(135deg,var(--bg),var(--bg2));">إرسال</button>
-          <div id="okMsg" style="display:none;background:#e8fff7;color:#0a6b52;border:1px solid #baf0df;padding:10px 12px;border-radius:10px;font-weight:700">تم الإرسال بنجاح</div>
-          <div id="noMsg" style="display:none;background:#fff1f1;color:#8b1d1d;border:1px solid #f1cccc;padding:10px 12px;border-radius:10px;font-weight:700">تعذر الإرسال الآن</div>
-        </form>
-      </div>
-    </div>
-  </section>
-
   <footer>
     <div class="wrap">
       <div class="credit">© 2025 واعي كيدز – جميع الحقوق محفوظة</div>
-      <nav class="foot-links"><a href="orders.html">الطلبات</a></nav>
+      <nav class="foot-links">
+        <a href="orders.html">الطلبات</a>
+        <a href="orders.html#contact">تواصل</a>
+      </nav>
     </div>
   </footer>
 
   <div class="wa">
     <a aria-label="تواصل واتساب" href="https://wa.me/966570905999" target="_blank" rel="noopener">
-      <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false">
-        <path fill="#fff" d="M13.601 2.326A7.94 7.94 0 0 0 8.012.003a7.99 7.99 0 0 0-6.94 11.868L.001 16l4.21-1.06A7.99 7.99 0 0 0 8.012 16h.003a7.99 7.99 0 0 0 5.586-13.674ZM8.015 14.5a6.48 6.48 0 0 1-3.307-.91l-.237-.141-2.5.629.667-2.438-.154-.25a6.5 6.5 0 1 1 5.531 3.11Zm3.676-4.842c-.2-.1-1.178-.58-1.36-.646-.182-.066-.315-.1-.448.1-.133.2-.513.646-.628.78-.115.133-.232.15-.432.05-.2-.1-.846-.311-1.612-.992-.595-.53-.997-1.183-1.112-1.383-.115-.2-.012-.307.087-.407.089-.088.2-.23.3-.345.1-.115.133-.2.2-.332.066-.133.033-.25-.011-.35-.045-.1-.46-1.113-.633-1.52-.166-.4-.336-.35-.448-.356l-.382-.007c-.133 0-.35.05-.535.25-.184.2-.7.68-.7 1.65 0 .97.717 1.907.817 2.037.1.13 1.415 2.161 3.428 3.032.479.211.852.338 1.142.432.479.153.913.133 1.255.084.387-.056 1.178-.48 1.345-.94.167-.46.167-.86.117-.94-.05-.084-.185-.137-.395-.237Z"/>
-      </svg>
+      <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path fill="#fff" d="M13.601 2.326..."/></svg>
     </a>
   </div>
 
   <button id="toTop" aria-label="العودة للأعلى">↑</button>
 
   <script>
-    const io = new IntersectionObserver((entries)=>{
-      entries.forEach(e=>{
-        if(e.isIntersecting){ e.target.classList.add('show');
-          if(e.target.querySelector && e.target.querySelector('.counter')) startCounters(e.target);
-          io.unobserve(e.target);
-        }
-      })
-    },{threshold:.2});
+    const io = new IntersectionObserver((entries)=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('show'); if(e.target.querySelector&&e.target.querySelector('.counter')) startCounters(e.target); io.unobserve(e.target);}})},{threshold:.2});
     document.querySelectorAll('.reveal, .stat, .card, .rev').forEach(el=>io.observe(el));
-
-    function startCounters(scope){
-      scope.querySelectorAll('.counter').forEach(el=>{
-        const target = +el.dataset.target; const dur = 1400 + Math.random()*800; const start = performance.now();
-        function tick(t){ const p = Math.min(1,(t-start)/dur); el.textContent = Math.floor(target*p).toLocaleString('en-US'); if(p<1) requestAnimationFrame(tick); }
-        requestAnimationFrame(tick);
-      });
-    }
-
-    const toTop = document.getElementById('toTop');
-    window.addEventListener('scroll', ()=>{ toTop.style.display = (window.scrollY > 400) ? 'block' : 'none'; });
-    toTop.addEventListener('click', ()=> window.scrollTo({top:0, behavior:'smooth'}));
-
-    async function submitLead(ev){
-      ev.preventDefault();
-      const form = ev.target; const endpoint = form.dataset.endpoint; const btn = document.getElementById('submitBtn');
-      const ok = document.getElementById('okMsg'); const no = document.getElementById('noMsg');
-      ok.style.display='none'; no.style.display='none'; if(btn){ btn.disabled = true; btn.textContent = '... جارٍ الإرسال'; }
-      const data = Object.fromEntries(new FormData(form).entries());
-      try{
-        const res = await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify(data)});
-        if(res.ok){ form.reset(); ok.style.display='block'; } else { no.style.display='block'; }
-      }catch(_){ no.style.display='block'; }
-      finally{ if(btn){ btn.disabled=false; btn.textContent='إرسال'; } }
-      return false;
-    }
+    function startCounters(scope){scope.querySelectorAll('.counter').forEach(el=>{const target=+el.dataset.target;const dur=1400+Math.random()*800;const start=performance.now();function tick(t){const p=Math.min(1,(t-start)/dur);el.textContent=Math.floor(target*p).toLocaleString('en-US');if(p<1) requestAnimationFrame(tick);}requestAnimationFrame(tick);});}
+    const toTop=document.getElementById('toTop'); window.addEventListener('scroll',()=>{toTop.style.display=(window.scrollY>400)?'block':'none'}); toTop.addEventListener('click',()=> window.scrollTo({top:0,behavior:'smooth'}));
   </script>
 </body>
 </html>
