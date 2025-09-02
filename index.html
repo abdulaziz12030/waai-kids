@@ -10,10 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
   <style>
-    :root{
-      --bg:#4C7AF2; --bg2:#6B8EF7; --acc:#FF7AB6; --muted:#F4F7FF; --text:#1F2333;
-      --white:#fff; --r:20px; --shadow:0 10px 25px rgba(76,122,242,.16);
-    }
+    :root{ --bg:#4C7AF2; --bg2:#6B8EF7; --acc:#FF7AB6; --muted:#F4F7FF; --text:#1F2333; --white:#fff; --r:20px; --shadow:0 10px 25px rgba(76,122,242,.16); }
     *{box-sizing:border-box}
     html,body{margin:0;padding:0;font-family:'Cairo',system-ui,-apple-system,sans-serif;color:var(--text);background:linear-gradient(180deg,#fafcff,#f6f8ff 40%,#fbfcff)}
     a{color:inherit;text-decoration:none}
@@ -36,13 +33,9 @@
     .btn-ghost:hover{background:rgba(76,122,242,.26)}
 
     .hero{position:relative;color:#fff;min-height:58vh;display:grid;place-items:center}
-    .hero::before{
-      content:"";position:absolute;inset:0;
-      background:
-        linear-gradient(180deg,rgba(76,122,242,.35),rgba(107,142,247,.55)),
-        url('https://i.postimg.cc/k4vGS3Nw/kids-hero.jpg') center/cover no-repeat;
-      background-position:center 35%;
-    }
+    .hero::before{content:"";position:absolute;inset:0;background:
+      linear-gradient(180deg,rgba(76,122,242,.35),rgba(107,142,247,.55)),
+      url('https://i.postimg.cc/k4vGS3Nw/kids-hero.jpg') center/cover no-repeat;background-position:center 35%;}
     .hero .wrap{max-width:1200px;margin:auto;display:grid;grid-template-columns:1fr;gap:28px;padding:56px 18px;position:relative}
     .hero h1{font-size:clamp(26px,4.2vw,48px);line-height:1.25;margin:0 0 10px;font-weight:800}
     .hero p.lead{opacity:.98;margin:0 0 20px;font-weight:700}
@@ -98,12 +91,10 @@
 </head>
 <body id="top">
 
-  <!-- شريط -->
   <div class="news-ticker" role="status" aria-label="إشعار">
     <div class="inner"><span class="ticker-text"> جديدنا: باقات مواليد فاخرة 🎀 | قريبًا: ألعاب وهدايا ممتعة للأطفال — ترقّبوا! </span></div>
   </div>
 
-  <!-- رأس -->
   <header class="nav">
     <div class="wrap">
       <a href="#top" class="brand" aria-label="واعي كيدز">
@@ -118,7 +109,6 @@
     </div>
   </header>
 
-  <!-- هيرو -->
   <section class="hero" aria-label="القسم الترحيبي">
     <div class="wrap">
       <div class="reveal">
@@ -132,45 +122,33 @@
     </div>
   </section>
 
-  <!-- الخدمات -->
   <section class="section" id="services" aria-label="بوكسات الهدايا">
     <h2 class="reveal">بوكسات الهدايا</h2>
     <p class="note reveal">نُبرز هدايا المواليد — وسنضيف لاحقًا ألعابًا وهدايا للأطفال بإذن الله.</p>
 
     <div class="grid">
-      <!-- أولاد -->
       <article class="card reveal">
-        <header>
-          <h3>بوكس هدية أولاد</h3>
-        </header>
+        <header><h3>بوكس هدية أولاد</h3></header>
         <figure><img loading="lazy" decoding="async" alt="بوكس هدية أولاد" src="https://i.postimg.cc/6qzKXXzQ/boys-box.jpg"></figure>
         <div class="content">
           <span class="price">السعر: <b data-price="199">199</b> ر.س</span>
           <p>توليفة مواليد للأولاد مع تغليف أزرق أنيق — مثالي للزيارة الأولى والتهنئة.</p>
-          <div class="actions">
-            <a href="orders.html?item=boy" class="btn">اطلب الآن</a>
-          </div>
+          <div class="actions"><a href="orders.html?item=boy" class="btn">اطلب الآن</a></div>
         </div>
       </article>
 
-      <!-- بنات -->
       <article class="card reveal">
-        <header>
-          <h3>بوكس هدية بنات</h3>
-        </header>
+        <header><h3>بوكس هدية بنات</h3></header>
         <figure><img loading="lazy" decoding="async" alt="بوكس هدية بنات" src="https://i.postimg.cc/6QyWZ6m8/girls-box.jpg"></figure>
         <div class="content">
           <span class="price">السعر: <b data-price="209">209</b> ر.س</span>
           <p>باقة مواليد للبنات بلمسات وردية وزينة لطيفة — هدية تبقى في الذاكرة.</p>
-          <div class="actions">
-            <a href="orders.html?item=girl" class="btn">اطلب الآن</a>
-          </div>
+          <div class="actions"><a href="orders.html?item=girl" class="btn">اطلب الآن</a></div>
         </div>
       </article>
     </div>
   </section>
 
-  <!-- التقييمات -->
   <section class="section" id="reviews" aria-label="آراء العملاء">
     <h2 class="reveal">قالوا عن واعي كيدز</h2>
     <div class="reviews">
@@ -179,32 +157,24 @@
           <svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 0 0 .95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.802 2.035a1 1 0 0 0-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.802-2.035a1 1 0 0 0-1.176 0l-2.802 2.035c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 0 0-.364-1.118L2.88 8.72c-.783-.57-.38-1.81.588-1.81H6.93a1 1 0 0 0 .951-.69l1.168-3.293Z"/></svg>
           <svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927..."/></svg><svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927..."/></svg><svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927..."/></svg><svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927..."/></svg>
         </div>
-        <div class="name">أم مهند</div>
-        <div class="txt">التغليف جميل والكرت زاد الهدية قيمة. شكراً لكم!</div>
+        <div class="name">أم مهند</div><div class="txt">التغليف جميل والكرت زاد الهدية قيمة. شكراً لكم!</div>
       </div>
       <div class="rev reveal">
-        <div class="stars" aria-label="5 نجوم">
-          <svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927..."/></svg><svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927..."/></svg><svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927..."/></svg><svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927..."/></svg><svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927..."/></svg>
-        </div>
-        <div class="name">نورة</div>
-        <div class="txt">وصل البوكس بسرعة والتغليف مرررة مرتب 👌</div>
+        <div class="stars" aria-label="5 نجوم"><svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927..."/></svg><svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927..."/></svg><svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927..."/></svg><svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927..."/></svg><svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927..."/></svg></div>
+        <div class="name">نورة</div><div class="txt">وصل البوكس بسرعة والتغليف مررّة مرتب 👌</div>
       </div>
       <div class="rev reveal">
-        <div class="stars" aria-label="5 نجوم">
-          <svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927..."/></svg><svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927..."/></svg><svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927..."/></svg><svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927..."/></svg><svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927..."/></svg>
-        </div>
-        <div class="name">مشعل</div>
-        <div class="txt">خدمة ممتازة وتغليف احترافي. أنصح فيه 👍</div>
+        <div class="stars" aria-label="5 نجوم"><svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927..."/></svg><svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927..."/></svg><svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927..."/></svg><svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927..."/></svg><svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927..."/></svg></div>
+        <div class="name">مشعل</div><div class="txt">خدمة ممتازة وتغليف احترافي. أنصح فيه 👍</div>
       </div>
     </div>
   </section>
 
-  <!-- معلومات أسفل الصفحة -->
-  <section class="section" id="info" aria-label="معلومات المتجر">
-    <h2 class="reveal">معلومات مهمة</h2>
-    <div class="grid" style="grid-template-columns:1.2fr .8fr">
+  <!-- أسفل الصفحة: من نحن فقط -->
+  <section class="section" id="about" aria-label="من نحن">
+    <h2 class="reveal">من نحن</h2>
+    <div class="grid" style="grid-template-columns:1fr">
       <div class="card reveal" style="padding:18px">
-        <h3 style="margin:0 0 8px">من نحن</h3>
         <p>نهتم بهدايا المواليد ونقدّم بوكسات أولاد/بنات بتغليف أنيق وكرت معايدة اختياري من صفحة الطلبات. رسالتنا تقديم تجربة هدية لطيفة وسهلة.</p>
         <ul style="line-height:2">
           <li>الرياض – المملكة العربية السعودية</li>
@@ -212,30 +182,19 @@
           <li>سناب/تيك توك/إنستغرام: <strong>@waai.sa</strong></li>
         </ul>
       </div>
-      <div class="card reveal" style="padding:18px">
-        <h3 style="margin:0 0 8px">الشحن والخصم</h3>
-        <p><strong>سعر الشحن:</strong> يُضاف عند تأكيد الطلب (اكتب هنا تفاصيل الأسعار المناسبة لكم).</p>
-        <p><strong>كوبون خصم:</strong> سيتم الإعلان عنه قريبًا.</p>
-        <p class="note">ملاحظة: لاحقًا سيتم تفعيل الشراء المباشر من الموقع.</p>
-      </div>
     </div>
   </section>
 
-  <!-- ذيل -->
   <footer>
     <div class="wrap">
       <div class="credit">© 2025 واعي كيدز – جميع الحقوق محفوظة</div>
-      <nav class="foot-links">
-        <a href="orders.html">الطلبات</a>
-        <a href="orders.html#contact">تواصل</a>
-      </nav>
+      <nav class="foot-links"><a href="orders.html">الطلبات</a><a href="orders.html#contact">تواصل</a></nav>
     </div>
   </footer>
 
   <!-- زر واتساب -->
   <div class="wa">
     <a aria-label="تواصل واتساب" href="https://wa.me/966570905999" target="_blank" rel="noopener">
-      <!-- WhatsApp classic bubble logo -->
       <svg viewBox="0 0 32 32" aria-hidden="true" focusable="false">
         <circle cx="16" cy="16" r="16" fill="#25D366"/>
         <path fill="#fff" d="M21.6 10.4a7.3 7.3 0 0 0-12.5 7.2L8 24l6.5-1.1a7.3 7.3 0 0 0 7-12.5Zm-5.5 11.7c-1.2 0-2.4-.3-3.5-.9l-.2-.1-2.1.4.6-2.1-.1-.2a6 6 0 1 1 5.3 2.9Zm3-4.4c-.2-.1-1-.5-1.2-.5-.2-.1-.3 0-.4.2l-.5.7c-.1.1-.2.2-.4.1-.7-.2-2.5-1.2-3.4-3-.1-.2 0-.3.1-.4l.3-.3c.1-.1.1-.2.2-.3 0-.1 0-.2-.1-.4 0-.1-.5-1.3-.7-1.7-.2-.4-.4-.3-.5-.3h-.3c-.1 0-.3.1-.5.3-.2.2-.6.6-.6 1.5s.6 1.8.7 1.9c.1.1 1 1.8 2.6 2.6.9.4 1.6.6 2 .7.5.1.9.1 1.2.1.4-.1 1.1-.4 1.2-.8.1-.4.1-.7.1-.8s-.1-.2-.3-.3Z"/>
@@ -243,34 +202,13 @@
     </a>
   </div>
 
-  <!-- لأعلى -->
   <button id="toTop" aria-label="العودة للأعلى">↑</button>
 
   <script>
-    // Reveal + Counters
-    const io = new IntersectionObserver((entries)=>{
-      entries.forEach(e=>{
-        if(e.isIntersecting){
-          e.target.classList.add('show');
-          if(e.target.querySelector && e.target.querySelector('.counter')) startCounters(e.target);
-          io.unobserve(e.target);
-        }
-      })
-    },{threshold:.2});
+    const io = new IntersectionObserver((entries)=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('show'); if(e.target.querySelector&&e.target.querySelector('.counter')) startCounters(e.target); io.unobserve(e.target);}})},{threshold:.2});
     document.querySelectorAll('.reveal, .stat, .card, .rev').forEach(el=>io.observe(el));
-
-    function startCounters(scope){
-      scope.querySelectorAll('.counter').forEach(el=>{
-        const target = +el.dataset.target; const dur = 1400 + Math.random()*800; const start = performance.now();
-        function tick(t){ const p = Math.min(1,(t-start)/dur); el.textContent = Math.floor(target*p).toLocaleString('en-US'); if(p<1) requestAnimationFrame(tick); }
-        requestAnimationFrame(tick);
-      });
-    }
-
-    // To top
-    const toTop = document.getElementById('toTop');
-    window.addEventListener('scroll', ()=>{ toTop.style.display = (window.scrollY > 400) ? 'block' : 'none'; });
-    toTop.addEventListener('click', ()=> window.scrollTo({top:0, behavior:'smooth'}));
+    function startCounters(scope){scope.querySelectorAll('.counter').forEach(el=>{const target=+el.dataset.target;const dur=1400+Math.random()*800;const start=performance.now();function tick(t){const p=Math.min(1,(t-start)/dur);el.textContent=Math.floor(target*p).toLocaleString('en-US');if(p<1) requestAnimationFrame(tick);}requestAnimationFrame(tick);});}
+    const toTop=document.getElementById('toTop'); window.addEventListener('scroll',()=>{toTop.style.display=(window.scrollY>400)?'block':'none'}); toTop.addEventListener('click',()=> window.scrollTo({top:0,behavior:'smooth'}));
   </script>
 </body>
 </html>
