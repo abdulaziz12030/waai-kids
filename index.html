@@ -37,7 +37,7 @@
       content:"";position:absolute;inset:0;
       background:
         linear-gradient(180deg,rgba(76,122,242,.35),rgba(107,142,247,.55)),
-        url('https://i.postimg.cc/MTB18Lj0/9e3849b1-9ed1-4fb6-b8ce-f5430b54b222.png') center/cover no-repeat;
+        url('https://i.postimg.cc/k4vGS3Nw/kids-hero.jpg') center/cover no-repeat;
       background-position:center 35%;
     }
     .hero .wrap{max-width:1200px;margin:auto;display:grid;grid-template-columns:1fr;gap:28px;padding:56px 18px;position:relative}
@@ -53,11 +53,13 @@
     .card header{padding:14px 16px 0}
     .card h3{margin:0 0 8px;font-size:1.25rem;color:#223}
     .price{display:inline-flex;align-items:center;gap:6px;background:var(--muted);color:#234;padding:6px 10px;border-radius:999px;font-weight:800;font-size:.95rem}
-    .card figure{aspect-ratio:16/9;overflow:hidden}
-    .card figure img{width:100%;height:100%;object-fit:cover;transform:scale(1.06);transition:transform .6s cubic-bezier(.2,.7,.3,1)}
-    .card:hover figure img{transform:scale(1.12)}
     .card .content{padding:12px 16px 16px;display:flex;flex-direction:column;gap:10px}
     .actions{display:flex;gap:8px}
+
+    /* سلايدر الصور داخل البطاقة */
+    .slider{position:relative;aspect-ratio:16/9;overflow:hidden}
+    .slider img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transform:scale(1.06);transition:opacity .8s ease, transform .6s cubic-bezier(.2,.7,.3,1)}
+    .slider img.active{opacity:1;transform:scale(1.12)}
 
     .promo{margin:6px 0 16px; background:#fff; border:1px solid #e9eeff; border-radius:16px; box-shadow:var(--shadow); padding:16px}
     .promo h3{margin:0 0 6px; font-size:clamp(22px,3vw,28px); font-weight:900; color:#223}
@@ -103,7 +105,7 @@
   <header class="nav">
     <div class="wrap">
       <a href="#top" class="brand" aria-label="واعي كيدز">
-        <img loading="lazy" decoding="async" src="https://i.postimg.cc/LXFnj8nf/image.png" alt="شعار واعي كيدز">
+        <img loading="lazy" decoding="async" src="https://i.postimg.cc/d0wfsHqY/waai-kids-logo.png" alt="شعار واعي كيدز">
         <div class="title">واعي كيدز — هدايا مواليد وبوكسات أطفال</div>
       </a>
       <nav class="links" aria-label="روابط رئيسية">
@@ -136,9 +138,17 @@
     </div>
 
     <div class="grid">
+      <!-- بوكس أولاد -->
       <article class="card reveal">
         <header><h3>بوكس هدية أولاد</h3></header>
-        <figure><img loading="lazy" decoding="async" alt="بوكس هدية أولاد" src="https://i.postimg.cc/dQgbqZZJ/image.jpg"></figure>
+        <figure class="slider" data-interval="3000" aria-label="معرض صور بوكس هدية أولاد">
+          <!-- الصورة 1 -->
+          <img class="active" loading="lazy" decoding="async" alt="بوكس هدية أولاد - صورة 1"
+               src="https://i.postimg.cc/6qzKXXzQ/boys-box.jpg">
+          <!-- الصورة 2 (بدّل الرابط بصورة ثانية مناسبة) -->
+          <img loading="lazy" decoding="async" alt="بوكس هدية أولاد - صورة 2"
+               src="https://i.postimg.cc/7Y4Q4t5V/boys-box-2.jpg">
+        </figure>
         <div class="content">
           <span class="price">السعر: <b data-price="199">199</b> ر.س</span>
           <p>توليفة مواليد للأولاد مع تغليف أزرق أنيق — مثالي للزيارة الأولى والتهنئة.</p>
@@ -146,9 +156,17 @@
         </div>
       </article>
 
+      <!-- بوكس بنات -->
       <article class="card reveal">
         <header><h3>بوكس هدية بنات</h3></header>
-        <figure><img loading="lazy" decoding="async" alt="بوكس هدية بنات" src="https://i.postimg.cc/6QyWZ6m8/girls-box.jpg"></figure>
+        <figure class="slider" data-interval="3000" aria-label="معرض صور بوكس هدية بنات">
+          <!-- الصورة 1 -->
+          <img class="active" loading="lazy" decoding="async" alt="بوكس هدية بنات - صورة 1"
+               src="https://i.postimg.cc/6QyWZ6m8/girls-box.jpg">
+          <!-- الصورة 2 (بدّل الرابط بصورة ثانية مناسبة) -->
+          <img loading="lazy" decoding="async" alt="بوكس هدية بنات - صورة 2"
+               src="https://i.postimg.cc/9Fq7Lw8b/girls-box-2.jpg">
+        </figure>
         <div class="content">
           <span class="price">السعر: <b data-price="209">209</b> ر.س</span>
           <p>باقة مواليد للبنات بلمسات وردية وزينة لطيفة — هدية تبقى في الذاكرة.</p>
@@ -207,6 +225,47 @@
     const typeEl = document.getElementById('typeLine');
     let i=0; typeEl.classList.add('show');
     (function type(){ if(i<=text.length){ typeEl.textContent = text.slice(0,i++); setTimeout(type, 28); } })();
+
+    // سلايدر تلقائي لكل بطاقة
+    function setupSliders(){
+      const sliders = document.querySelectorAll('.slider');
+      const visIO = new IntersectionObserver((entries)=>{
+        entries.forEach(entry=>{
+          const slider = entry.target;
+          if(entry.isIntersecting){
+            start(slider);
+          }else{
+            stop(slider);
+          }
+        });
+      },{threshold:0.1});
+
+      sliders.forEach(sl=>{
+        sl.dataset.idx = '0';
+        sl._timer = null;
+        sl.addEventListener('mouseenter', ()=> stop(sl));
+        sl.addEventListener('mouseleave', ()=> start(sl));
+        visIO.observe(sl);
+      });
+
+      function tick(sl){
+        const imgs = sl.querySelectorAll('img');
+        if(imgs.length<2) return;
+        let idx = parseInt(sl.dataset.idx||'0',10);
+        imgs[idx].classList.remove('active');
+        idx = (idx+1) % imgs.length;
+        imgs[idx].classList.add('active');
+        sl.dataset.idx = String(idx);
+      }
+      function start(sl){
+        if(sl._timer || sl.querySelectorAll('img').length<2) return;
+        sl._timer = setInterval(()=> tick(sl), parseInt(sl.dataset.interval||'3000',10));
+      }
+      function stop(sl){
+        if(sl._timer){ clearInterval(sl._timer); sl._timer = null; }
+      }
+    }
+    setupSliders();
   </script>
 </body>
 </html>
