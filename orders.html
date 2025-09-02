@@ -4,13 +4,13 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>الطلبات | واعي كيدز</title>
-  <meta name="description" content="اختر بوكس أولاد أو بنات، حدّد الكمية، أضف بطاقة إهداء واختيار الشحن ثم بيانات التوصيل. يظهر الإجمالي وزر الإجراء في الأسفل." />
+  <meta name="description" content="اختر بوكس أولاد أو بنات، حدّد الكمية، أضف بطاقة إهداء (اختياري)، واختر طريقة الشحن داخل الرياض، ثم أدخل بيانات التوصيل. يظهر الإجمالي وزر الإجراء أسفل الصفحة." />
   <meta name="theme-color" content="#4C7AF2"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
   <style>
-    :root{ --bg:#4C7AF2; --bg2:#6B8EF7; --acc:#FF7AB6; --muted:#F4F7FF; --text:#1F2333; --white:#fff; --r:20px; --shadow:0 10px 25px rgba(76,122,242,.16); }
+    :root{ --bg:#4C7AF2; --bg2:#6B8EF7; --acc:#FF7AB6; --muted:#F4F7FF; --text:#1F2333; --white:#fff; --shadow:0 10px 25px rgba(76,122,242,.16); --cardShadow:0 16px 40px rgba(31,35,51,.10); --r:18px; }
     *{box-sizing:border-box}
     html,body{margin:0;padding:0;font-family:'Cairo',system-ui,-apple-system,sans-serif;color:var(--text);background:linear-gradient(180deg,#fafcff,#f6f8ff 40%,#fbfcff)}
     a{color:inherit;text-decoration:none}
@@ -20,27 +20,26 @@
     .nav .wrap{max-width:1200px;margin:auto;display:flex;align-items:center;gap:12px;padding:12px 18px}
     .brand{display:flex;align-items:center;gap:10px;font-weight:800;color:var(--bg)}
     .brand img{height:36px;width:auto}
-    .brand .title{font-weight:800;color:var(--bg)}
     .links{margin-inline-start:auto;display:flex;gap:18px;font-weight:700}
-    .links a{white-space:nowrap}
     .btn{background:var(--bg);color:#fff;border:none;border-radius:14px;padding:10px 16px;font-weight:800;cursor:pointer;box-shadow:var(--shadow);transition:.25s}
     .btn:hover{transform:translateY(-1px);background:#3f69ea}
     .btn-ghost{background:rgba(76,122,242,.15);border:1px solid rgba(255,255,255,.35);color:#1840b2}
-    .btn-ghost:hover{background:rgba(76,122,242,.26)}
 
     .section{max-width:1200px;margin:30px auto;padding:0 18px}
     .section h1,.section h2{font-size:clamp(22px,3vw,32px);margin:0 0 14px;font-weight:800;color:var(--bg)}
 
     .grid{display:grid;grid-template-columns:1.1fr .9fr;gap:18px}
-    .panel{background:#fff;border-radius:18px;box-shadow:var(--shadow);padding:18px}
+    @media (max-width:1024px){ .grid{grid-template-columns:1fr} }
+
+    .panel{background:#fff;border-radius:var(--r);box-shadow:var(--cardShadow);padding:18px;border:1px solid #eef2ff}
     .line{height:1px;background:#e9eeff;margin:12px 0}
     .muted{color:#5d6a8d}
 
     .cart-item{display:grid;grid-template-columns:120px 1fr auto;gap:12px;align-items:center}
-    /* سلايدر مصغّر للمنتج */
-    .mini-slider{position:relative;aspect-ratio:1/1;border-radius:12px;overflow:hidden}
-    .mini-slider img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transform:scale(1.06);transition:opacity .7s ease, transform .6s cubic-bezier(.2,.7,.3,1)}
-    .mini-slider img.active{opacity:1;transform:scale(1.12)}
+    .mini-slider{position:relative;aspect-ratio:1/1;border-radius:12px;overflow:hidden;background:#f6f8ff}
+    .mini-slider::after{content:"";position:absolute;inset:8px;border-radius:12px;pointer-events:none;box-shadow:inset 0 0 0 1px rgba(76,122,242,.08)}
+    .mini-slider img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transform:scale(1.04);transition:opacity .7s ease,transform .6s cubic-bezier(.2,.7,.3,1)}
+    .mini-slider img.active{opacity:1;transform:scale(1.10)}
 
     .cart-item .name{font-weight:800;color:#223}
     .opt{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
@@ -56,21 +55,10 @@
     .success{background:#e8fff7;color:#0a6b52;border:1px solid #baf0df}
     .error{background:#fff1f1;color:#8b1d1d;border:1px solid #f1cccc}
 
-    .gift-wrap{display:grid;grid-template-columns:1fr 1fr;gap:18px}
-    .preview-wrap{display:grid;place-items:center; background:var(--muted); border-radius:18px; padding:12px}
-    .gift-card{width:min(100%,560px); aspect-ratio:7/4; position:relative; border-radius:18px; padding:22px; display:flex; flex-direction:column; justify-content:space-between; box-shadow:0 18px 40px rgba(76,122,242,.18); overflow:hidden}
-    .gift-card.pattern-boy{background:linear-gradient(135deg,#eaf2ff,#f7f9ff);}
-    .gift-card.pattern-girl{background:linear-gradient(135deg,#fff0f6,#fff7fb);}
-    .gift-card .ribbon{position:absolute; inset:auto 0 0 0; height:10px; background:linear-gradient(90deg,var(--bg),var(--bg2));}
-    .gift-card .brand{display:flex; align-items:center; gap:8px; font-weight:800; color:var(--bg)}
-    .gift-card .title{font-size:clamp(18px,2.3vw,28px); font-weight:800; color:#243; margin:6px 0}
-    .gift-card .body{font-size:clamp(14px,1.6vw,18px); line-height:1.8; color:#334}
-    .gift-card .footer{display:flex; justify-content:space-between; align-items:center; font-weight:800}
-    .gift-card .footer .from{opacity:.9}
-
     /* الشحن */
     .ship{display:grid;gap:12px}
     .ship .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    @media (max-width:1024px){ .ship .row{grid-template-columns:1fr} }
     .chip{display:inline-flex;align-items:center;gap:8px;background:#f2f6ff;border:1px solid #e2e9ff;color:#2643a1;padding:8px 12px;border-radius:999px;font-weight:800}
     .shipOpt{display:flex;gap:12px;align-items:flex-start;border:1px solid #e9eeff;background:#fff;border-radius:14px;padding:12px}
     .shipOpt input{accent-color:var(--bg);margin-top:4px}
@@ -78,17 +66,12 @@
     .shipOpt .title{font-weight:800;color:#1f2a5c}
     .ship-note{background:#f9fbff;border:1px dashed #cfe0ff;border-radius:12px;padding:10px 12px}
 
-    .summary{position:sticky; bottom:0; z-index:50; background:rgba(255,255,255,.98); backdrop-filter:blur(6px); border:1px solid #e6ecff; border-radius:16px; box-shadow:0 12px 28px rgba(76,122,242,.12); padding:12px}
+    /* ملخص أسفل الصفحة */
+    .summary{position:sticky;bottom:0;z-index:50;background:rgba(255,255,255,.98);backdrop-filter:blur(6px);border:1px solid #e6ecff;border-radius:16px;box-shadow:0 12px 28px rgba(76,122,242,.12);padding:12px}
     .summary .row{display:flex;justify-content:space-between;align-items:center;gap:10px}
     .summary .meta{font-weight:800;color:#233}
     .summary .total{font-weight:900;font-size:1.1rem}
     .summary .cta{display:flex;gap:8px;flex-wrap:wrap}
-
-    @media print {
-      body * { visibility: hidden !important; }
-      #cardPrintArea, #cardPrintArea * { visibility: visible !important; }
-      #cardPrintArea { position: fixed; inset: 0; margin: 0; width: 100%; height: auto; padding: 0; box-shadow: none; }
-    }
 
     footer{margin-top:40px;background:#2746b8;color:#e7ecff}
     footer .wrap{max-width:1200px;margin:auto;padding:18px;display:flex;justify-content:space-between;align-items:center;gap:12px}
@@ -96,16 +79,15 @@
     .wa{position:fixed;left:16px;bottom:16px;z-index:70}
     .wa a{display:grid;place-items:center;width:58px;height:58px;border-radius:50%;background:#25D366;box-shadow:0 12px 30px rgba(12,151,79,.28)}
     .wa svg{width:30px;height:30px;display:block}
-
-    @media (max-width:1024px){ .grid{grid-template-columns:1fr} .gift-wrap{grid-template-columns:1fr} .ship .row{grid-template-columns:1fr} }
     @media (max-width:640px){ .links{display:none} }
   </style>
 </head>
 <body>
+  <!-- ترويسة -->
   <header class="nav">
     <div class="wrap">
       <a href="index.html" class="brand" aria-label="العودة للرئيسية">
-        <img src="https://i.postimg.cc/d0wfsHqY/waai-kids-logo.png" alt="شعار واعي كيدز">
+        <img src="assets/logo/waai-kids-logo.png" alt="شعار واعي كيدز" width="160" height="36">
         <div class="title">واعي كيدز — صفحة الطلبات</div>
       </a>
       <nav class="links" aria-label="روابط رئيسية">
@@ -118,15 +100,15 @@
   <main class="section">
     <h1>السلة وبيانات الطلب</h1>
     <div class="grid">
+      <!-- يسار: السلة + الشحن + البطاقة + التوصيل -->
       <div class="panel">
         <h2 style="margin-top:0">سلة الشراء</h2>
 
-        <!-- اختيار المنتج والكمية -->
+        <!-- المنتج + سلايدر مصغّر -->
         <div class="cart-item" id="cartItem">
-          <!-- سلايدر مصغّر حسب نوع البوكس -->
           <div class="mini-slider" id="itemSlider" aria-label="صور المنتج المختار">
-            <img id="imgA" class="active" alt="صورة المنتج 1" src="https://i.postimg.cc/6qzKXXzQ/boys-box.jpg" loading="lazy" decoding="async">
-            <img id="imgB" alt="صورة المنتج 2" src="https://i.postimg.cc/7Y4Q4t5V/boys-box-2.jpg" loading="lazy" decoding="async">
+            <img id="imgA" class="active" alt="بوكس هدية أولاد - صورة 1" src="assets/boxes/boy-1-600.webp" width="600" height="600" loading="lazy" decoding="async">
+            <img id="imgB" alt="بوكس هدية أولاد - صورة 2" src="assets/boxes/boy-2-600.webp" width="600" height="600" loading="lazy" decoding="async">
           </div>
 
           <div>
@@ -136,7 +118,7 @@
               <label><input type="radio" name="variant" value="girl"> بنات (209 ر.س)</label>
             </div>
             <div class="qty"><label>الكمية: <input id="qty" type="number" min="1" value="1" step="1"></label></div>
-            <div class="muted">بطاقة الإهداء أسفل الصفحة (اختياري).</div>
+            <div class="muted">بطاقة الإهداء بالأسفل (اختياري).</div>
           </div>
 
           <div style="text-align:end">
@@ -151,7 +133,7 @@
         <section aria-label="خيارات الشحن داخل الرياض" class="ship">
           <h3 style="margin:4px 0 6px">الشحن داخل الرياض</h3>
           <div class="row">
-            <div class="shipOpt">
+            <label class="shipOpt">
               <input type="radio" name="shipping" value="aramex" id="ship_aramex" checked>
               <div>
                 <div class="title">أرامكس — خلال <b>3 أيام عمل</b></div>
@@ -161,9 +143,9 @@
                   3 أيام عمل
                 </div>
               </div>
-            </div>
+            </label>
 
-            <div class="shipOpt">
+            <label class="shipOpt">
               <input type="radio" name="shipping" value="express" id="ship_express">
               <div>
                 <div class="title">التوصيل السريع — مندوب كيدز خلال <b>24 ساعة</b></div>
@@ -173,7 +155,7 @@
                   خلال 24 ساعة
                 </div>
               </div>
-            </div>
+            </label>
           </div>
 
           <div id="shipNote" class="ship-note">
@@ -185,13 +167,13 @@
         <div class="line"></div>
 
         <!-- بطاقة الإهداء -->
-        <div class="panel" id="gift" style="padding:0; border:none; box-shadow:none;">
+        <div class="panel" id="gift" style="padding:0;border:none;box-shadow:none;">
           <h2 style="margin:0 0 10px">بطاقة الإهداء (اختياري)</h2>
           <label style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
             <input type="checkbox" id="giftToggle"> أريد إضافة بطاقة إهداء ومعاينتها
           </label>
           <div id="giftArea" style="display:none">
-            <div class="gift-wrap">
+            <div class="gift-wrap" style="display:grid;grid-template-columns:1fr 1fr;gap:18px">
               <div>
                 <div class="form">
                   <div class="inp"><label>المستلم<input id="toInput" type="text" placeholder="إلى: أمير/أميرة صغيرة" maxlength="28"></label></div>
@@ -205,17 +187,17 @@
                   <p class="muted">الطباعة تطبع البطاقة فقط بشكل أنيق. جرّب الإيموجي 🎈🎁✨</p>
                 </div>
               </div>
-              <div class="preview-wrap" id="cardPrintArea">
-                <div id="card" class="gift-card pattern-boy" aria-label="معاينة بطاقة الإهداء">
-                  <div class="brand">
-                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 8h18v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8Z" stroke="currentColor" stroke-width="1.5"/><path d="M3 8h18M12 4v16M7.5 4c1.5 0 3 1.5 3 3H4.5c0-1.5 1.5-3 3-3Zm9 0c-1.5 0-3 1.5-3 3h6c0-1.5-1.5-3-3-3Z" stroke="currentColor" stroke-width="1.5"/></svg>
+              <div class="preview-wrap" id="cardPrintArea" style="display:grid;place-items:center;background:var(--muted);border-radius:18px;padding:12px">
+                <div id="card" class="gift-card pattern-boy" style="width:min(100%,560px);aspect-ratio:7/4;position:relative;border-radius:18px;padding:22px;display:flex;flex-direction:column;justify-content:space-between;box-shadow:0 18px 40px rgba(76,122,242,.18);overflow:hidden;background:linear-gradient(135deg,#eaf2ff,#f7f9ff);">
+                  <div class="brand" style="display:flex;align-items:center;gap:8px;font-weight:800;color:var(--bg)">
+                    <svg viewBox="0 0 24 24" fill="none" width="22" height="22"><path d="M3 8h18v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8Z" stroke="currentColor" stroke-width="1.5"/><path d="M3 8h18M12 4v16M7.5 4c1.5 0 3 1.5 3 3H4.5c0-1.5 1.5-3 3-3Zm9 0c-1.5 0-3 1.5-3 3h6c0-1.5-1.5-3-3-3Z" stroke="currentColor" stroke-width="1.5"/></svg>
                     واعي كيدز
                   </div>
-                  <div class="title" id="toTxt">إلى أميرنا الصغير 💙</div>
-                  <div class="body" id="msgTxt">نتمنى لك أيامًا سعيدة مليئة بالمرح! 🎉</div>
-                  <div class="footer">
-                    <div class="from" id="fromTxt">من: عائلتك</div>
-                    <div class="ribbon"></div>
+                  <div class="title" id="toTxt" style="font-size:clamp(18px,2.3vw,28px);font-weight:800;color:#243;margin:6px 0">إلى أميرنا الصغير 💙</div>
+                  <div class="body" id="msgTxt" style="font-size:clamp(14px,1.6vw,18px);line-height:1.8;color:#334">نتمنى لك أيامًا سعيدة مليئة بالمرح! 🎉</div>
+                  <div class="footer" style="display:flex;justify-content:space-between;align-items:center;font-weight:800">
+                    <div class="from" id="fromTxt" style="opacity:.9">من: عائلتك</div>
+                    <div class="ribbon" style="position:absolute;inset:auto 0 0 0;height:10px;background:linear-gradient(90deg,var(--bg),var(--bg2));"></div>
                   </div>
                 </div>
               </div>
@@ -225,7 +207,7 @@
 
         <div class="line"></div>
 
-        <!-- بيانات التوصيل + الملخص -->
+        <!-- بيانات التوصيل -->
         <h3>بيانات التوصيل</h3>
         <form id="orderForm" class="form" onsubmit="return submitOrder(event)" data-endpoint="https://formspree.io/f/yourKidsOrdersEndpoint" novalidate>
           <div class="inp"><label>الاسم الكامل<input name="name" required placeholder="الاسم"></label></div>
@@ -234,7 +216,7 @@
           <div class="inp"><label>رقم الجوال<input name="phone" type="tel" required placeholder="05xxxxxxxx" inputmode="tel" pattern="^05\\d{8}$" title="مثال: 05XXXXXXXX"></label></div>
           <div class="inp"><label>ملاحظات (اختياري)<textarea name="notes" rows="3" placeholder="أي تفاصيل إضافية"></textarea></label></div>
 
-          <!-- حقول خفية -->
+          <!-- حقول خفية للإرسال -->
           <input type="hidden" name="product" id="productField">
           <input type="hidden" name="variant" id="variantField">
           <input type="hidden" name="unit_price" id="unitPriceField">
@@ -261,6 +243,7 @@
         </form>
       </div>
 
+      <!-- يمين: ملاحظات -->
       <div class="panel" style="min-height:120px">
         <h2 style="margin-top:0">ملاحظات سريعة</h2>
         <p class="muted">اختر البوكس، حدِّد الكمية، أضف بطاقة الإهداء (اختياري)، اختر طريقة الشحن وأدخل بيانات التوصيل. الملخص وزر الإجراء بالأسفل.</p>
@@ -275,30 +258,22 @@
     </div>
   </footer>
 
-  <!-- زر واتساب -->
+  <!-- واتساب -->
   <div class="wa">
     <a aria-label="تواصل واتساب" href="https://wa.me/966570905999" target="_blank" rel="noopener">
       <svg viewBox="0 0 32 32" aria-hidden="true" focusable="false">
         <circle cx="16" cy="16" r="16" fill="#25D366"/>
-        <path fill="#fff" d="M21.6 10.4a7.3 7.3 0 0 0-12.5 7.2L8 24l6.5-1.1a7.3 7.3 0 0 0 7-12.5Zm-5.5 11.7c-1.2 0-2.4-.3-3.5-.9l-.2-.1-2.1.4.6-2.1-.1-.2a6 6 0 1 1 5.3 2.9Zm3-4.4c-.2-.1-1-.5-1.2-.5-.2-.1-.3 0-.4.2l-.5.7c-.1.1-.2.2-.4.1-.7-.2-2.5-1.2-3.4-3-.1-.2 0-.3.1-.4l.3-.3c.1-.1.1-.2.2-.3 0-.1 0-.2-.1-.4 0-.1-.5-1.3-.7-1.7-.2-.4-.4-.3-.5-.3h-.3c-.1 0-.3.1-.5.3-.2.2-.6.6-.6 1.5s.6 1.8.7 1.9c.1.1 1 1.8 2.6 2.6.9.4 1.6.6 2 .7.5.1.9.1 1.2.1.4-.1 1.1-.4 1.2-.8.1-.4.1-.7.1-.8s-.1-.2-.3-.3Z"/>
+        <path fill="#fff" d="M21.6 10.4a7.3 7.3 0 0 0-12.5 7.2L8 24l6.5-1.1a7.3 7.3 0 0 0 7-12.5Zm-5.5 11.7c-1.2 0-2.4-.3-3.5-.9l-.2-.1-2.1.4.6-2.1-.1-.2a6 6 0 1 1 5.3 2.9Zm3-4.4c-.2-.1-1-.5-1.2-.5-.2-.1-.3 0-.4.2l-.5.7c-.1.1-.2.2-.4.1-.7-.2-2.5-1.2-3.4-3-.1-.2 0-.3 .1-.4l.3-.3c.1-.1.1-.2.2-.3 0-.1 0-.2-.1-.4 0-.1-.5-1.3-.7-1.7-.2-.4-.4-.3-.5-.3h-.3c-.1 0-.3.1-.5.3-.2.2-.6.6-.6 1.5s.6 1.8.7 1.9c.1.1 1 1.8 2.6 2.6.9.4 1.6.6 2 .7.5.1.9.1 1.2.1.4-.1 1.1-.4 1.2-.8.1-.4.1-.7.1-.8s-.1-.2-.3-.3Z"/>
       </svg>
     </a>
   </div>
 
   <script>
-    // الأسعار
+    // الأسعار/الصور
     const PRICES = { boy:199, girl:209 };
-
-    // روابط الصور (ضع روابط صورتين لكل نوع)
     const IMGS = {
-      boy: [
-        "https://i.postimg.cc/6qzKXXzQ/boys-box.jpg",
-        "https://i.postimg.cc/7Y4Q4t5V/boys-box-2.jpg"
-      ],
-      girl: [
-        "https://i.postimg.cc/6QyWZ6m8/girls-box.jpg",
-        "https://i.postimg.cc/9Fq7Lw8b/girls-box-2.jpg"
-      ]
+      boy: ["assets/boxes/boy-1-600.webp","assets/boxes/boy-2-600.webp"],
+      girl: ["assets/boxes/girl-1-600.webp","assets/boxes/girl-2-600.webp"]
     };
 
     // عناصر أساسية
@@ -310,6 +285,7 @@
     const qtyEl = document.getElementById('qty');
     const summaryTotalEl = document.getElementById('summaryTotal');
     const variantRadios = document.querySelectorAll('input[name="variant"]');
+
     const productField = document.getElementById('productField');
     const variantField = document.getElementById('variantField');
     const unitPriceField = document.getElementById('unitPriceField');
@@ -329,25 +305,11 @@
     const imgA = document.getElementById('imgA');
     const imgB = document.getElementById('imgB');
     let sliderTimer = null, sliderIdx = 0;
-    function startMiniSlider(){
-      stopMiniSlider();
-      sliderTimer = setInterval(()=>{
-        sliderIdx = (sliderIdx+1)%2;
-        if(sliderIdx===0){ imgA.classList.add('active'); imgB.classList.remove('active'); }
-        else{ imgB.classList.add('active'); imgA.classList.remove('active'); }
-      }, 3000);
-    }
+    function startMiniSlider(){ stopMiniSlider(); sliderTimer = setInterval(()=>{ sliderIdx=(sliderIdx+1)%2; if(sliderIdx===0){ imgA.classList.add('active'); imgB.classList.remove('active'); } else { imgB.classList.add('active'); imgA.classList.remove('active'); } }, 3000); }
     function stopMiniSlider(){ if(sliderTimer){ clearInterval(sliderTimer); sliderTimer=null; } }
     slider.addEventListener('mouseenter', stopMiniSlider);
     slider.addEventListener('mouseleave', startMiniSlider);
-
-    function applyVariantImages(v){
-      const [a,b] = IMGS[v];
-      imgA.src = a; imgA.alt = (v==='girl'?'بوكس هدية بنات - صورة 1':'بوكس هدية أولاد - صورة 1');
-      imgB.src = b; imgB.alt = (v==='girl'?'بوكس هدية بنات - صورة 2':'بوكس هدية أولاد - صورة 2');
-      imgA.classList.add('active'); imgB.classList.remove('active'); sliderIdx=0;
-      startMiniSlider();
-    }
+    function applyVariantImages(v){ const [a,b]=IMGS[v]; imgA.src=a; imgB.src=b; imgA.classList.add('active'); imgB.classList.remove('active'); sliderIdx=0; startMiniSlider(); }
 
     function formatSAR(n){ return `${n.toLocaleString('ar-EG')} ر.س`; }
 
@@ -394,14 +356,16 @@
     const toInput = document.getElementById('toInput');
     const msgInput = document.getElementById('msgInput');
     const fromInput = document.getElementById('fromInput');
+    const themeSelect = document.getElementById('themeSelect');
     const toTxt = document.getElementById('toTxt');
     const msgTxt = document.getElementById('msgTxt');
     const fromTxt = document.getElementById('fromTxt');
     const count = document.getElementById('count');
-    const themeSelect = document.getElementById('themeSelect');
     const card = document.getElementById('card');
 
     giftToggle.addEventListener('change', ()=>{ giftArea.style.display = giftToggle.checked ? 'block' : 'none'; });
+    [toInput,msgInput,fromInput].forEach(el=> el && el.addEventListener('input', syncCard));
+    themeSelect && themeSelect.addEventListener('change', applyTheme);
 
     function syncCard(){
       const v = themeSelect.value;
@@ -413,12 +377,9 @@
     }
     function applyTheme(){
       const v = themeSelect.value;
-      card.classList.remove('pattern-boy','pattern-girl');
-      card.classList.add(v==='girl'?'pattern-girl':'pattern-boy');
+      card.style.background = v==='girl' ? 'linear-gradient(135deg,#fff0f6,#fff7fb)' : 'linear-gradient(135deg,#eaf2ff,#f7f9ff)';
       syncCard();
     }
-    [toInput,msgInput,fromInput].forEach(el=> el && el.addEventListener('input', syncCard));
-    themeSelect && themeSelect.addEventListener('change', applyTheme);
 
     // اكتمال البيانات = تحويل الزر إلى "ادفع الآن"
     function formBasicsValid(){
@@ -447,7 +408,7 @@
       updateCTA();
     })();
 
-    // طباعة ونسخ البطاقة
+    // طباعة/نسخ البطاقة
     document.getElementById('printBtn').addEventListener('click', ()=> window.print());
     document.getElementById('copyBtn').addEventListener('click', async ()=>{
       const txt = `${toTxt.textContent}\n\n${msgTxt.textContent}\n\n${fromTxt.textContent}`;
@@ -471,14 +432,11 @@
       document.getElementById('cardMsgField').value  = giftToggle.checked ? msgTxt.textContent  : '';
       document.getElementById('cardFromField').value = giftToggle.checked ? fromTxt.textContent : '';
 
-      if(submitBtn.dataset.mode === 'pay'){
-        return startApplePay(), false;
-      }
+      if(submitBtn.dataset.mode === 'pay'){ return startApplePay(), false; }
 
-      // وضع الإرسال العادي
+      // وضع الإرسال العادي (Formspree/Backend)
       const endpoint = orderForm.dataset.endpoint;
-      const btn = submitBtn;
-      const ok = document.getElementById('okMsg'); const no = document.getElementById('noMsg');
+      const btn = submitBtn, ok = document.getElementById('okMsg'), no = document.getElementById('noMsg');
       ok.style.display='none'; no.style.display='none'; btn.disabled = true; btn.textContent = '... جارٍ الإرسال';
 
       const data = Object.fromEntries(new FormData(orderForm).entries());
