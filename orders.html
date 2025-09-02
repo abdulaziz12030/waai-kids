@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>الطلبات | واعي كيدز</title>
-  <meta name="description" content="سلة واعي كيدز — اختر بوكس أولاد أو بنات، حدّد الكمية، أضف بطاقة إهداء (اختياري)، واختر طريقة الشحن داخل الرياض: أرامكس 3 أيام عمل أو التوصيل السريع خلال 24 ساعة." />
+  <meta name="description" content="سلة واعي كيدز — اختر بوكس أولاد أو بنات، حدّد الكمية، أضف بطاقة إهداء (اختياري)، واختر طريقة الشحن داخل الرياض، ثم أدخل بيانات التوصيل. الإجمالي وزر الإجراء يظهران في الأسفل بعد اكتمال الاختيارات." />
   <meta name="theme-color" content="#4C7AF2"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -22,6 +22,7 @@
     .brand img{height:36px;width:auto}
     .brand .title{font-weight:800;color:var(--bg)}
     .links{margin-inline-start:auto;display:flex;gap:18px;font-weight:700}
+    .links a{white-space:nowrap}
     .btn{background:var(--bg);color:#fff;border:none;border-radius:14px;padding:10px 16px;font-weight:800;cursor:pointer;box-shadow:var(--shadow);transition:.25s}
     .btn:hover{transform:translateY(-1px);background:#3f69ea}
     .btn-ghost{background:rgba(76,122,242,.15);border:1px solid rgba(255,255,255,.35);color:#1840b2}
@@ -63,7 +64,7 @@
     .gift-card .footer{display:flex; justify-content:space-between; align-items:center; font-weight:800}
     .gift-card .footer .from{opacity:.9}
 
-    /* بطاقة مواعيد وطرق الشحن */
+    /* الشحن */
     .ship{display:grid;gap:12px}
     .ship .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
     .chip{display:inline-flex;align-items:center;gap:8px;background:#f2f6ff;border:1px solid #e2e9ff;color:#2643a1;padding:8px 12px;border-radius:999px;font-weight:800}
@@ -72,6 +73,13 @@
     .shipOpt .meta{font-size:.92rem;color:#3a466a}
     .shipOpt .title{font-weight:800;color:#1f2a5c}
     .ship-note{background:#f9fbff;border:1px dashed #cfe0ff;border-radius:12px;padding:10px 12px}
+
+    /* ملخص الطلب في الأسفل */
+    .summary{position:sticky; bottom:0; z-index:50; background:rgba(255,255,255,.98); backdrop-filter:blur(6px); border:1px solid #e6ecff; border-radius:16px; box-shadow:0 12px 28px rgba(76,122,242,.12); padding:12px}
+    .summary .row{display:flex;justify-content:space-between;align-items:center;gap:10px}
+    .summary .meta{font-weight:800;color:#233}
+    .summary .total{font-weight:900;font-size:1.1rem}
+    .summary .cta{display:flex;gap:8px;flex-wrap:wrap}
 
     @media print {
       body * { visibility: hidden !important; }
@@ -100,7 +108,6 @@
       <nav class="links" aria-label="روابط رئيسية">
         <a href="index.html#services">البوكسات</a>
         <a href="#gift">بطاقة الإهداء</a>
-        <a href="#contact">تواصل</a>
       </nav>
     </div>
   </header>
@@ -108,10 +115,11 @@
   <main class="section">
     <h1>السلة وبيانات الطلب</h1>
     <div class="grid">
-      <!-- يسار: السلة + الشحن + نموذج التوصيل -->
+      <!-- يسار: السلة + الشحن + بطاقة الإهداء + نموذج التوصيل -->
       <div class="panel">
         <h2 style="margin-top:0">سلة الشراء</h2>
 
+        <!-- اختيار المنتج والكمية -->
         <div class="cart-item" id="cartItem">
           <img id="itemImg" src="https://i.postimg.cc/6qzKXXzQ/boys-box.jpg" alt="صورة المنتج">
           <div>
@@ -121,19 +129,12 @@
               <label><input type="radio" name="variant" value="girl"> بنات (209 ر.س)</label>
             </div>
             <div class="qty"><label>الكمية: <input id="qty" type="number" min="1" value="1" step="1"></label></div>
-            <div class="muted">بطاقة الإهداء من الأسفل (اختياري).</div>
+            <div class="muted">بطاقة الإهداء أسفل الصفحة (اختياري).</div>
           </div>
           <div style="text-align:end">
             <div style="font-weight:800;color:#243">السعر للوحدة</div>
             <div id="unitPrice" style="font-weight:800">199 ر.س</div>
           </div>
-        </div>
-
-        <div class="line"></div>
-
-        <div style="display:flex;justify-content:space-between;align-items:center">
-          <div style="font-weight:800;color:#223">الإجمالي</div>
-          <div id="total" style="font-weight:900;font-size:1.15rem;color:#1F2333">199 ر.س</div>
         </div>
 
         <div class="line"></div>
@@ -175,12 +176,54 @@
 
         <div class="line"></div>
 
+        <!-- بطاقة الإهداء -->
+        <div class="panel" id="gift" style="padding:0; border:none; box-shadow:none;">
+          <h2 style="margin:0 0 10px">بطاقة الإهداء (اختياري)</h2>
+          <label style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
+            <input type="checkbox" id="giftToggle"> أريد إضافة بطاقة إهداء ومعاينتها
+          </label>
+          <div id="giftArea" style="display:none">
+            <div class="gift-wrap">
+              <div>
+                <div class="form">
+                  <div class="inp"><label>المستلم<input id="toInput" type="text" placeholder="إلى: أمير/أميرة صغيرة" maxlength="28"></label></div>
+                  <div class="inp"><label>رسالة المعايدة<textarea id="msgInput" rows="4" placeholder="اكتب معايدتك الجميلة هنا" maxlength="180"></textarea></label><div class="muted"><span id="count">0</span>/180</div></div>
+                  <div class="inp"><label>المُرسل<input id="fromInput" type="text" placeholder="من: عائلتك/اسمك" maxlength="28"></label></div>
+                  <div class="inp"><label>نمط البطاقة<select id="themeSelect"><option value="boy">أولاد (أزرق)</option><option value="girl">بنات (وردي)</option></select></label></div>
+                  <div style="display:flex;gap:8px;flex-wrap:wrap">
+                    <button type="button" class="btn" id="printBtn">طباعة/حفظ PDF</button>
+                    <button type="button" class="btn btn-ghost" id="copyBtn">نسخ النص</button>
+                  </div>
+                  <p class="muted">الطباعة تطبع البطاقة فقط بشكل أنيق. جرّب الإيموجي 🎈🎁✨</p>
+                </div>
+              </div>
+              <div class="preview-wrap" id="cardPrintArea">
+                <div id="card" class="gift-card pattern-boy" aria-label="معاينة بطاقة الإهداء">
+                  <div class="brand">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 8h18v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8Z" stroke="currentColor" stroke-width="1.5"/><path d="M3 8h18M12 4v16M7.5 4c1.5 0 3 1.5 3 3H4.5c0-1.5 1.5-3 3-3Zm9 0c-1.5 0-3 1.5-3 3h6c0-1.5-1.5-3-3-3Z" stroke="currentColor" stroke-width="1.5"/></svg>
+                    واعي كيدز
+                  </div>
+                  <div class="title" id="toTxt">إلى أميرنا الصغير 💙</div>
+                  <div class="body" id="msgTxt">نتمنى لك أيامًا سعيدة مليئة بالمرح! 🎉</div>
+                  <div class="footer">
+                    <div class="from" id="fromTxt">من: عائلتك</div>
+                    <div class="ribbon"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div> <!-- /giftArea -->
+        </div>
+
+        <div class="line"></div>
+
+        <!-- بيانات التوصيل -->
         <h3>بيانات التوصيل</h3>
         <form id="orderForm" class="form" onsubmit="return submitOrder(event)" data-endpoint="https://formspree.io/f/yourKidsOrdersEndpoint" novalidate>
           <div class="inp"><label>الاسم الكامل<input name="name" required placeholder="الاسم"></label></div>
           <div class="inp"><label>المدينة<input name="city" required placeholder="مثال: الرياض"></label></div>
           <div class="inp"><label>الحي<input name="district" required placeholder="مثال: الياسمين"></label></div>
-          <div class="inp"><label>رقم الجوال<input name="phone" type="tel" required placeholder="05xxxxxxxx" inputmode="tel" pattern="^05\d{8}$" title="مثال: 05XXXXXXXX"></label></div>
+          <div class="inp"><label>رقم الجوال<input name="phone" type="tel" required placeholder="05xxxxxxxx" inputmode="tel" pattern="^05\\d{8}$" title="مثال: 05XXXXXXXX"></label></div>
           <div class="inp"><label>ملاحظات (اختياري)<textarea name="notes" rows="3" placeholder="أي تفاصيل إضافية"></textarea></label></div>
 
           <!-- حقول خفية -->
@@ -189,76 +232,34 @@
           <input type="hidden" name="unit_price" id="unitPriceField">
           <input type="hidden" name="quantity" id="qtyField">
           <input type="hidden" name="total" id="totalField">
-
           <input type="hidden" name="shipping_method" id="shipField">
           <input type="hidden" name="shipping_note" id="shipNoteField">
-
           <input type="hidden" name="card_to" id="cardToField">
           <input type="hidden" name="card_msg" id="cardMsgField">
           <input type="hidden" name="card_from" id="cardFromField">
 
-          <button id="submitBtn" class="btn" type="submit" data-mode="send" style="background:linear-gradient(135deg,var(--bg),var(--bg2));">إرسال الطلب</button>
-          <div class="success" id="okMsg">تم إرسال الطلب بنجاح، سنعود إليك قريبًا.</div>
-          <div class="error" id="noMsg">تعذر الإرسال الآن. جرب لاحقًا أو راسلنا مباشرة.</div>
+          <!-- ملخص + CTA أسفل كل شيء -->
+          <div class="summary" aria-live="polite">
+            <div class="row">
+              <div class="meta">الإجمالي</div>
+              <div id="summaryTotal" class="total">199 ر.س</div>
+            </div>
+            <div class="cta" style="margin-top:10px">
+              <button id="submitBtn" class="btn" type="submit" data-mode="send" style="background:linear-gradient(135deg,var(--bg),var(--bg2));">إرسال الطلب</button>
+              <span class="muted">سيتم تحويل الزر إلى «ادفع الآن» عند اكتمال البيانات.</span>
+            </div>
+            <div class="success" id="okMsg" style="margin-top:8px">تم إرسال الطلب بنجاح، سنعود إليك قريبًا.</div>
+            <div class="error" id="noMsg" style="margin-top:8px">تعذر الإرسال الآن. جرب لاحقًا أو راسلنا عبر واتساب.</div>
+          </div>
         </form>
       </div>
 
-      <!-- يمين: بطاقة الإهداء (اختياري) -->
-      <div class="panel" id="gift">
-        <h2 style="margin-top:0">بطاقة الإهداء (اختياري)</h2>
-        <label style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
-          <input type="checkbox" id="giftToggle"> أريد إضافة بطاقة إهداء ومعاينتها
-        </label>
-        <div id="giftArea" style="display:none">
-          <div class="gift-wrap">
-            <div>
-              <div class="form">
-                <div class="inp"><label>المستلم<input id="toInput" type="text" placeholder="إلى: أمير/أميرة صغيرة" maxlength="28"></label></div>
-                <div class="inp"><label>رسالة المعايدة<textarea id="msgInput" rows="4" placeholder="اكتب معايدتك الجميلة هنا" maxlength="180"></textarea></label><div class="muted"><span id="count">0</span>/180</div></div>
-                <div class="inp"><label>المُرسل<input id="fromInput" type="text" placeholder="من: عائلتك/اسمك" maxlength="28"></label></div>
-                <div class="inp"><label>نمط البطاقة<select id="themeSelect"><option value="boy">أولاد (أزرق)</option><option value="girl">بنات (وردي)</option></select></label></div>
-                <div style="display:flex;gap:8px;flex-wrap:wrap">
-                  <button type="button" class="btn" id="printBtn">طباعة/حفظ PDF</button>
-                  <button type="button" class="btn btn-ghost" id="copyBtn">نسخ النص</button>
-                </div>
-                <p class="muted">الطباعة تطبع البطاقة فقط بشكل أنيق. جرّب الإيموجي 🎈🎁✨</p>
-              </div>
-            </div>
-            <div class="preview-wrap" id="cardPrintArea">
-              <div id="card" class="gift-card pattern-boy" aria-label="معاينة بطاقة الإهداء">
-                <div class="brand">
-                  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 8h18v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8Z" stroke="currentColor" stroke-width="1.5"/><path d="M3 8h18M12 4v16M7.5 4c1.5 0 3 1.5 3 3H4.5c0-1.5 1.5-3 3-3Zm9 0c-1.5 0-3 1.5-3 3h6c0-1.5-1.5-3-3-3Z" stroke="currentColor" stroke-width="1.5"/></svg>
-                  واعي كيدز
-                </div>
-                <div class="title" id="toTxt">إلى أميرنا الصغير 💙</div>
-                <div class="body" id="msgTxt">نتمنى لك أيامًا سعيدة مليئة بالمرح! 🎉</div>
-                <div class="footer">
-                  <div class="from" id="fromTxt">من: عائلتك</div>
-                  <div class="ribbon"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div> <!-- /giftArea -->
+      <!-- يمين: مساحة بيضاء للتوازن (يمكن لاحقًا وضع كوبون/عروض) -->
+      <div class="panel" style="min-height:120px">
+        <h2 style="margin-top:0">ملاحظات سريعة</h2>
+        <p class="muted">اختر البوكس، حدِّد الكمية، أضف بطاقة الإهداء (اختياري)، ثم اختر طريقة الشحن واملأ بيانات التوصيل. يظهر ملخص الإجمالي وزر الإجراء في الأسفل.</p>
       </div>
     </div>
-
-    <!-- تواصل: (أزلت لوحة "عن واعي كيدز") -->
-    <section class="section" id="contact" aria-label="تواصل معنا">
-      <h2>تواصل معنا</h2>
-      <div class="panel">
-        <h3 style="margin-top:0">رسالتك لنا</h3>
-        <form id="contactForm" class="form" onsubmit="return submitContact(event)" data-endpoint="https://formspree.io/f/yourKidsContactEndpoint">
-          <div class="inp"><label>اسمك<input name="name" type="text" required placeholder="الاسم"></label></div>
-          <div class="inp"><label>البريد الإلكتروني<input name="email" type="email" required placeholder="example@email.com"></label></div>
-          <div class="inp"><label>رقم الجوال<input name="phone" type="tel" placeholder="05xxxxxxxx" inputmode="tel"></label></div>
-          <div class="inp"><label>رسالتك<textarea name="message" rows="4" placeholder="اكتب رسالتك هنا"></textarea></label></div>
-          <button id="contactBtn" class="btn" type="submit" style="background:linear-gradient(135deg,var(--bg),var(--bg2));">إرسال</button>
-          <div class="success" id="contactOk">تم الإرسال بنجاح</div>
-          <div class="error" id="contactNo">تعذر الإرسال الآن</div>
-        </form>
-      </div>
-    </section>
   </main>
 
   <footer>
@@ -273,7 +274,7 @@
     <a aria-label="تواصل واتساب" href="https://wa.me/966570905999" target="_blank" rel="noopener">
       <svg viewBox="0 0 32 32" aria-hidden="true" focusable="false">
         <circle cx="16" cy="16" r="16" fill="#25D366"/>
-        <path fill="#fff" d="M21.6 10.4a7.3 7.3 0 0 0-12.5 7.2L8 24l6.5-1.1a7.3 7.3 0 0 0 7-12.5Zm-5.5 11.7c-1.2 0-2.4-.3-3.5-.9l-.2-.1-2.1.4.6-2.1-.1-.2a6 6 0 1 1 5.3 2.9Zm3-4.4c-.2-.1-1-.5-1.2-.5-.2-.1-.3 0-.4.2l-.5.7c-.1.1-.2.2-.4.1-.7-.2-2.5-1.2-3.4-3-.1-.2 0-.3.1-.4l.3-.3c.1-.1.1-.2.2-.3 0-.1 0-.2-.1-.4 0-.1-.5-1.3-.7-1.7-.2-.4-.4-.3-.5-.3h-.3c-.1 0 -.3.1-.5.3-.2.2-.6.6-.6 1.5s.6 1.8.7 1.9c.1.1 1 1.8 2.6 2.6.9.4 1.6.6 2 .7.5.1.9.1 1.2.1.4-.1 1.1-.4 1.2-.8.1-.4.1-.7.1-.8s-.1-.2-.3-.3Z"/>
+        <path fill="#fff" d="M21.6 10.4a7.3 7.3 0 0 0-12.5 7.2L8 24l6.5-1.1a7.3 7.3 0 0 0 7-12.5Zm-5.5 11.7c-1.2 0-2.4-.3-3.5-.9l-.2-.1-2.1.4.6-2.1-.1-.2a6 6 0 1 1 5.3 2.9Zm3-4.4c-.2-.1-1-.5-1.2-.5-.2-.1-.3 0-.4.2l-.5.7c-.1.1-.2.2-.4.1-.7-.2-2.5-1.2-3.4-3-.1-.2 0-.3.1-.4l.3-.3c.1-.1.1-.2.2-.3 0-.1 0-.2-.1-.4 0-.1-.5-1.3-.7-1.7-.2-.4-.4-.3-.5-.3h-.3c-.1 0-.3.1-.5.3-.2.2-.6.6-.6 1.5s.6 1.8.7 1.9c.1.1 1 1.8 2.6 2.6.9.4 1.6.6 2 .7.5.1.9.1 1.2.1.4-.1 1.1-.4 1.2-.8.1-.4.1-.7.1-.8s-.1-.2-.3-.3Z"/>
       </svg>
     </a>
   </div>
@@ -290,7 +291,7 @@
     const itemName = document.getElementById('itemName');
     const unitPriceEl = document.getElementById('unitPrice');
     const qtyEl = document.getElementById('qty');
-    const totalEl = document.getElementById('total');
+    const summaryTotalEl = document.getElementById('summaryTotal');
 
     const variantRadios = document.querySelectorAll('input[name="variant"]');
     const productField = document.getElementById('productField');
@@ -336,7 +337,8 @@
       const q = Math.max(1, parseInt(qtyEl.value||'1',10));
       const unit = PRICES[v];
       const tot = unit * q;
-      totalEl.textContent = formatSAR(tot);
+      summaryTotalEl.textContent = formatSAR(tot);
+      // حقول الإرسال
       productField.value = itemName.textContent;
       variantField.value = v;
       unitPriceField.value = unit;
@@ -359,6 +361,7 @@
       updateCTA();
     }
 
+    // بطاقة الإهداء
     function syncCard(){
       const v = themeSelect.value;
       toTxt.textContent   = toInput.value  ? `إلى ${toInput.value}` : (v==='girl'?'إلى أميرتنا الصغيرة 💖':'إلى أميرنا الصغير 💙');
@@ -374,13 +377,10 @@
       syncCard();
     }
 
-    // تبديل حالة الزر بين "إرسال الطلب" و "ادفع الآن"
+    // اكتمال البيانات = تحويل الزر إلى "ادفع الآن"
     function formBasicsValid(){
-      // تحقق من الحقول المطلوبة
       const reqOk = [...orderForm.querySelectorAll('[required]')].every(i=> i.value && (i.checkValidity?.() ?? true));
-      // كمية ومنتج
       const qtyOk = parseInt(qtyEl.value||'0',10) >= 1;
-      // شحن
       const shipOk = !!document.querySelector('input[name="shipping"]:checked');
       return reqOk && qtyOk && shipOk;
     }
@@ -418,60 +418,40 @@
 
     // Placeholder لتفعيل Apple Pay لاحقًا
     async function startApplePay(){
-      // عند التفعيل الحقيقي: استبدل هذا التابع بتكامل Apple Pay عبر Payment Request API / بوابة الدفع الخاصة بكم.
       if(window.ApplePaySession){
         alert('Apple Pay سيتاح قريبًا — سيتم تحويلك للدفع عند التفعيل ✅');
-        // مثال اندماج لاحق:
-        // const session = new ApplePaySession(6, paymentRequestConfig);
-        // session.begin();
       }else{
         alert('سيتم تفعيل الدفع عبر Apple قريبًا. حاليًا يمكنك إرسال الطلب فقط 🙏');
       }
     }
 
-    // إرسال الطلب
+    // إرسال/دفع
     async function submitOrder(ev){
       ev.preventDefault();
-      // حقول البطاقة إن فعّلها العميل
+
+      // حقول البطاقة إن فُعّلت
       document.getElementById('cardToField').value   = giftToggle.checked ? toTxt.textContent   : '';
       document.getElementById('cardMsgField').value  = giftToggle.checked ? msgTxt.textContent  : '';
       document.getElementById('cardFromField').value = giftToggle.checked ? fromTxt.textContent : '';
 
-      const endpoint = orderForm.dataset.endpoint;
-      const btn = submitBtn;
-      const ok = document.getElementById('okMsg');
-      const no = document.getElementById('noMsg');
-      ok.style.display='none'; no.style.display='none';
-
-      if(btn.dataset.mode === 'pay'){
+      if(submitBtn.dataset.mode === 'pay'){
         // التحويل إلى Apple Pay (placeholder)
         return startApplePay(), false;
       }
 
       // وضع الإرسال العادي
-      btn.disabled = true; btn.textContent = '... جارٍ الإرسال';
+      const endpoint = orderForm.dataset.endpoint;
+      const btn = submitBtn;
+      const ok = document.getElementById('okMsg'); const no = document.getElementById('noMsg');
+      ok.style.display='none'; no.style.display='none'; btn.disabled = true; btn.textContent = '... جارٍ الإرسال';
+
       const data = Object.fromEntries(new FormData(orderForm).entries());
       try{
         const res = await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify(data)});
-        if(res.ok){ orderForm.reset(); ok.style.display='block'; localStorage.removeItem('waaiCartItem'); updateCTA(); }
+        if(res.ok){ orderForm.reset(); ok.style.display='block'; localStorage.removeItem('waaiCartItem'); updateCTA(); summaryTotalEl.textContent = formatSAR(PRICES['boy']); }
         else{ no.style.display='block'; }
       }catch(_){ no.style.display='block'; }
       finally{ btn.disabled=false; updateCTA(); }
-      return false;
-    }
-
-    // تواصل
-    async function submitContact(ev){
-      ev.preventDefault();
-      const form = ev.target; const endpoint = form.dataset.endpoint; const btn = document.getElementById('contactBtn');
-      const ok = document.getElementById('contactOk'); const no = document.getElementById('contactNo');
-      ok.style.display='none'; no.style.display='none'; btn.disabled = true; btn.textContent = '... جارٍ الإرسال';
-      const data = Object.fromEntries(new FormData(form).entries());
-      try{
-        const res = await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify(data)});
-        if(res.ok){ form.reset(); ok.style.display='block'; } else { no.style.display='block'; }
-      }catch(_){ no.style.display='block'; }
-      finally{ btn.disabled=false; btn.textContent='إرسال'; }
       return false;
     }
   </script>
