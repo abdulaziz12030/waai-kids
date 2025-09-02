@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>الطلبات | واعي كيدز</title>
+  <meta name="description" content="سلة واعي كيدز — اختر بوكس أولاد أو بنات، حدّد الكمية، أضف بطاقة إهداء (اختياري) مع معاينة فورية، ثم أدخل بيانات التوصيل." />
+  <meta name="theme-color" content="#4C7AF2"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{ --bg:#4C7AF2; --bg2:#6B8EF7; --acc:#FF7AB6; --muted:#F4F7FF; --text:#1F2333; --white:#fff; --r:20px; --shadow:0 10px 25px rgba(76,122,242,.16); }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;font-family:'Cairo',system-ui,-apple-system,sans-serif;color:var(--text);background:linear-gradient(180deg,#fafcff,#f6f8ff 40%,#fbfcff)}
+    a{color:inherit;text-decoration:none}
+    img{max-width:100%;display:block}
+
+    .nav{position:sticky;top:0;z-index:60;backdrop-filter:saturate(140%) blur(8px);background:rgba(255,255,255,.9);border-bottom:1px solid #e9eeff}
+    .nav .wrap{max-width:1200px;margin:auto;display:flex;align-items:center;gap:12px;padding:12px 18px}
+    .brand{display:flex;align-items:center;gap:10px;font-weight:800;color:var(--bg)}
+    .brand img{height:36px;width:auto}
+    .brand .title{font-weight:800;color:var(--bg)}
+    .links{margin-inline-start:auto;display:flex;gap:18px;font-weight:700}
+    .btn{background:var(--bg);color:#fff;border:none;border-radius:14px;padding:10px 16px;font-weight:800;cursor:pointer;box-shadow:var(--shadow);transition:.25s}
+    .btn:hover{transform:translateY(-1px);background:#3f69ea}
+    .btn-ghost{background:rgba(76,122,242,.15);border:1px solid rgba(255,255,255,.35);color:#1840b2}
+    .btn-ghost:hover{background:rgba(76,122,242,.26)}
+
+    .section{max-width:1200px;margin:30px auto;padding:0 18px}
+    .section h1{font-size:clamp(22px,3vw,32px);margin:0 0 14px;font-weight:800;color:var(--bg)}
+
+    .grid{display:grid;grid-template-columns:1.1fr .9fr;gap:18px}
+    .panel{background:#fff;border-radius:18px;box-shadow:var(--shadow);padding:18px}
+    .line{height:1px;background:#e9eeff;margin:12px 0}
+
+    .cart-item{display:grid;grid-template-columns:92px 1fr auto;gap:12px;align-items:center}
+    .cart-item img{width:92px;height:92px;object-fit:cover;border-radius:12px}
+    .cart-item .name{font-weight:800;color:#223}
+    .opt{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+    .opt input{accent-color:var(--bg)}
+    .qty{display:flex;align-items:center;gap:8px;margin-top:8px}
+    .qty input{width:90px;border:1px solid #dfe7ff;border-radius:10px;padding:8px 10px}
+
+    .form{display:grid;gap:10px}
+    .inp{display:flex;flex-direction:column;gap:6px}
+    .inp input,.inp select,.inp textarea{border:1px solid #dfe7ff;border-radius:12px;padding:12px 14px;font-size:1rem;outline:none;background:#fbfdff}
+    .inp input:focus,.inp select:focus,.inp textarea:focus{border-color:var(--bg)}
+    .note{font-size:.9rem;color:#5d6a8d}
+    .success,.error{display:none;margin-top:8px;padding:10px 12px;border-radius:10px;font-weight:700}
+    .success{background:#e8fff7;color:#0a6b52;border:1px solid #baf0df}
+    .error{background:#fff1f1;color:#8b1d1d;border:1px solid #f1cccc}
+
+    .gift-wrap{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+    .preview-wrap{display:grid;place-items:center; background:var(--muted); border-radius:18px; padding:12px}
+    .gift-card{width:min(100%,560px); aspect-ratio:7/4; position:relative; border-radius:18px; padding:22px; display:flex; flex-direction:column; justify-content:space-between; box-shadow:0 18px 40px rgba(76,122,242,.18); overflow:hidden}
+    .gift-card.pattern-boy{background:linear-gradient(135deg,#eaf2ff,#f7f9ff);}
+    .gift-card.pattern-girl{background:linear-gradient(135deg,#fff0f6,#fff7fb);}
+    .gift-card .ribbon{position:absolute; inset:auto 0 0 0; height:10px; background:linear-gradient(90deg,var(--bg),var(--bg2));}
+    .gift-card .brand{display:flex; align-items:center; gap:8px; font-weight:800; color:var(--bg)}
+    .gift-card .brand svg{width:22px;height:22px}
+    .gift-card .title{font-size:clamp(18px,2.3vw,28px); font-weight:800; color:#243; margin:6px 0}
+    .gift-card .body{font-size:clamp(14px,1.6vw,18px); line-height:1.8; color:#334}
+    .gift-card .footer{display:flex; justify-content:space-between; align-items:center; font-weight:800}
+    .gift-card .footer .from{opacity:.9}
+
+    /* اطبع البطاقة فقط */
+    @media print {
+      body * { visibility: hidden !important; }
+      #cardPrintArea, #cardPrintArea * { visibility: visible !important; }
+      #cardPrintArea { position: fixed; inset: 0; margin: 0; width: 100%; height: auto; padding: 0; box-shadow: none; }
+    }
+
+    footer{margin-top:40px;background:#2746b8;color:#e7ecff}
+    footer .wrap{max-width:1200px;margin:auto;padding:18px;display:flex;justify-content:space-between;align-items:center;gap:12px}
+
+    @media (max-width:1024px){ .grid{grid-template-columns:1fr} .gift-wrap{grid-template-columns:1fr} }
+    @media (max-width:640px){ .links{display:none} }
+  </style>
+</head>
+<body>
+  <header class="nav">
+    <div class="wrap">
+      <a href="index.html" class="brand" aria-label="العودة للرئيسية">
+        <img src="https://i.postimg.cc/d0wfsHqY/waai-kids-logo.png" alt="شعار واعي كيدز">
+        <div class="title">واعي كيدز — صفحة الطلبات</div>
+      </a>
+      <nav class="links" aria-label="روابط رئيسية">
+        <a href="index.html#services">البوكسات</a>
+        <a href="#gift">بطاقة الإهداء</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="section">
+    <h1>السلة وبيانات الطلب</h1>
+    <div class="grid">
+      <!-- يسار: السلة + نموذج التوصيل -->
+      <div class="panel">
+        <h2 style="margin-top:0">سلة الشراء</h2>
+
+        <div class="cart-item" id="cartItem">
+          <img id="itemImg" src="https://i.postimg.cc/6qzKXXzQ/boys-box.jpg" alt="صورة المنتج">
+          <div>
+            <div class="name" id="itemName">بوكس هدية أولاد</div>
+            <div class="opt">
+              <label><input type="radio" name="variant" value="boy" checked> أولاد (199 ر.س)</label>
+              <label><input type="radio" name="variant" value="girl"> بنات (209 ر.س)</label>
+            </div>
+            <div class="qty">
+              <label>الكمية:
+                <input id="qty" type="number" min="1" value="1" step="1">
+              </label>
+            </div>
+            <div class="note">يمكنك إضافة بطاقة الإهداء من القسم بالأسفل (اختياري).</div>
+          </div>
+          <div style="text-align:end">
+            <div style="font-weight:800;color:#243">السعر للوحدة</div>
+            <div id="unitPrice" style="font-weight:800">199 ر.س</div>
+          </div>
+        </div>
+
+        <div class="line"></div>
+
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div style="font-weight:800;color:#223">الإجمالي</div>
+          <div id="total" style="font-weight:900;font-size:1.15rem;color:#1F2333">199 ر.س</div>
+        </div>
+
+        <div class="line"></div>
+
+        <h3>بيانات التوصيل</h3>
+        <form id="orderForm" class="form" onsubmit="return submitOrder(event)" data-endpoint="https://formspree.io/f/yourKidsOrdersEndpoint">
+          <div class="inp"><label>الاسم الكامل<input name="name" required placeholder="الاسم"></label></div>
+          <div class="inp"><label>المدينة<input name="city" required placeholder="مثال: الرياض"></label></div>
+          <div class="inp"><label>الحي<input name="district" required placeholder="مثال: الياسمين"></label></div>
+          <div class="inp"><label>رقم الجوال<input name="phone" type="tel" required placeholder="05xxxxxxxx" inputmode="tel"></label></div>
+          <div class="inp"><label>ملاحظات (اختياري)<textarea name="notes" rows="3" placeholder="أي تفاصيل إضافية"></textarea></label></div>
+
+          <!-- حقول خفية للمنتج والبطاقة -->
+          <input type="hidden" name="product" id="productField">
+          <input type="hidden" name="variant" id="variantField">
+          <input type="hidden" name="unit_price" id="unitPriceField">
+          <input type="hidden" name="quantity" id="qtyField">
+          <input type="hidden" name="total" id="totalField">
+
+          <input type="hidden" name="card_to" id="cardToField">
+          <input type="hidden" name="card_msg" id="cardMsgField">
+          <input type="hidden" name="card_from" id="cardFromField">
+
+          <button id="submitBtn" class="btn" type="submit" style="background:linear-gradient(135deg,var(--bg),var(--bg2));">إرسال الطلب</button>
+          <div class="success" id="okMsg">تم إرسال الطلب بنجاح، سنعود إليك قريبًا.</div>
+          <div class="error" id="noMsg">تعذر الإرسال الآن. جرب لاحقًا أو راسلنا مباشرة.</div>
+        </form>
+      </div>
+
+      <!-- يمين: بطاقة الإهداء (اختياري) -->
+      <div class="panel" id="gift">
+        <h2 style="margin-top:0">بطاقة الإهداء (اختياري)</h2>
+        <label style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
+          <input type="checkbox" id="giftToggle"> أريد إضافة بطاقة إهداء ومعاينتها
+        </label>
+        <div id="giftArea" style="display:none">
+          <div class="gift-wrap">
+            <div>
+              <div class="form">
+                <div class="inp"><label>المستلم<input id="toInput" type="text" placeholder="إلى: أمير/أميرة صغيرة" maxlength="28"></label></div>
+                <div class="inp"><label>رسالة المعايدة<textarea id="msgInput" rows="4" placeholder="اكتب معايدتك الجميلة هنا" maxlength="180"></textarea></label><div class="note"><span id="count">0</span>/180</div></div>
+                <div class="inp"><label>المُرسل<input id="fromInput" type="text" placeholder="من: عائلتك/اسمك" maxlength="28"></label></div>
+                <div class="inp"><label>نمط البطاقة<select id="themeSelect"><option value="boy">أولاد (أزرق)</option><option value="girl">بنات (وردي)</option></select></label></div>
+                <div style="display:flex;gap:8px;flex-wrap:wrap">
+                  <button type="button" class="btn" id="printBtn">طباعة/حفظ PDF</button>
+                  <button type="button" class="btn btn-ghost" id="copyBtn">نسخ النص</button>
+                </div>
+                <p class="note">الطباعة تطبع البطاقة فقط بشكل أنيق. جرّب الإيموجي 🎈🎁✨</p>
+              </div>
+            </div>
+            <div class="preview-wrap" id="cardPrintArea">
+              <div id="card" class="gift-card pattern-boy" aria-label="معاينة بطاقة الإهداء">
+                <div class="brand">
+                  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 8h18v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8Z" stroke="currentColor" stroke-width="1.5"/><path d="M3 8h18M12 4v16M7.5 4c1.5 0 3 1.5 3 3H4.5c0-1.5 1.5-3 3-3Zm9 0c-1.5 0-3 1.5-3 3h6c0-1.5-1.5-3-3-3Z" stroke="currentColor" stroke-width="1.5"/></svg>
+                  واعي كيدز
+                </div>
+                <div class="title" id="toTxt">إلى أميرنا الصغير 💙</div>
+                <div class="body" id="msgTxt">نتمنى لك أيامًا سعيدة مليئة بالمرح! 🎉</div>
+                <div class="footer">
+                  <div class="from" id="fromTxt">من: عائلتك</div>
+                  <div class="ribbon"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div> <!-- /giftArea -->
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <div>© 2025 واعي كيدز – جميع الحقوق محفوظة</div>
+      <nav class="foot-links"><a href="index.html">العودة للرئيسية</a></nav>
+    </div>
+  </footer>
+
+  <script>
+    // الأسعار
+    const PRICES = { boy:199, girl:209 };
+
+    // قراءة المعامل من الرابط/المخزن
+    const params = new URLSearchParams(location.search);
+    const initialItem = params.get('item') || localStorage.getItem('waaiCartItem') || 'boy';
+
+    const itemImg = document.getElementById('itemImg');
+    const itemName = document.getElementById('itemName');
+    const unitPriceEl = document.getElementById('unitPrice');
+    const qtyEl = document.getElementById('qty');
+    const totalEl = document.getElementById('total');
+
+    const variantRadios = document.querySelectorAll('input[name="variant"]');
+    const productField = document.getElementById('productField');
+    const variantField = document.getElementById('variantField');
+    const unitPriceField = document.getElementById('unitPriceField');
+    const qtyField = document.getElementById('qtyField');
+    const totalField = document.getElementById('totalField');
+
+    function formatSAR(n){ return `${n.toLocaleString('ar-EG')} ر.س`; }
+
+    function setVariant(v){
+      const isGirl = v==='girl';
+      itemImg.src = isGirl ? 'https://i.postimg.cc/6QyWZ6m8/girls-box.jpg' : 'https://i.postimg.cc/6qzKXXzQ/boys-box.jpg';
+      itemName.textContent = isGirl ? 'بوكس هدية بنات' : 'بوكس هدية أولاد';
+      unitPriceEl.textContent = formatSAR(PRICES[v]);
+      localStorage.setItem('waaiCartItem', v);
+      updateTotals();
+    }
+
+    function updateTotals(){
+      const v = document.querySelector('input[name="variant"]:checked').value;
+      const q = Math.max(1, parseInt(qtyEl.value||'1',10));
+      const unit = PRICES[v];
+      const tot = unit * q;
+      totalEl.textContent = formatSAR(tot);
+      // حقول الإرسال
+      productField.value = itemName.textContent;
+      variantField.value = v;
+      unitPriceField.value = unit;
+      qtyField.value = q;
+      totalField.value = tot;
+    }
+
+    variantRadios.forEach(r=>{
+      r.addEventListener('change', ()=> setVariant(r.value));
+    });
+    qtyEl.addEventListener('input', updateTotals);
+
+    // تهيئة أولية
+    (function init(){
+      if(initialItem==='girl'){ variantRadios[1].checked = true; }
+      setVariant(initialItem);
+    })();
+
+    // تفعيل بطاقة الإهداء
+    const giftToggle = document.getElementById('giftToggle');
+    const giftArea = document.getElementById('giftArea');
+    giftToggle.addEventListener('change', ()=>{ giftArea.style.display = giftToggle.checked ? 'block' : 'none'; });
+
+    // عناصر البطاقة
+    const toInput = document.getElementById('toInput');
+    const msgInput = document.getElementById('msgInput');
+    const fromInput = document.getElementById('fromInput');
+    const toTxt = document.getElementById('toTxt');
+    const msgTxt = document.getElementById('msgTxt');
+    const fromTxt = document.getElementById('fromTxt');
+    const count = document.getElementById('count');
+    const themeSelect = document.getElementById('themeSelect');
+    const card = document.getElementById('card');
+
+    [toInput,msgInput,fromInput].forEach(el=> el && el.addEventListener('input', syncCard));
+    msgInput && msgInput.addEventListener('input', ()=> count.textContent = msgInput.value.length);
+    themeSelect && themeSelect.addEventListener('change', applyTheme);
+
+    function syncCard(){
+      const v = themeSelect.value;
+      toTxt.textContent = toInput.value ? `إلى ${toInput.value}` : (v==='girl'?'إلى أميرتنا الصغيرة 💖':'إلى أميرنا الصغير 💙');
+      msgTxt.textContent = msgInput.value || 'نتمنى لك أيامًا سعيدة مليئة بالمرح! 🎉';
+      fromTxt.textContent = fromInput.value ? `من: ${fromInput.value}` : 'من: عائلتك';
+    }
+    function applyTheme(){
+      const v = themeSelect.value;
+      card.classList.remove('pattern-boy','pattern-girl');
+      card.classList.add(v==='girl'?'pattern-girl':'pattern-boy');
+      syncCard();
+    }
+
+    // طباعة البطاقة فقط
+    document.getElementById('printBtn').addEventListener('click', ()=>{ window.print(); });
+
+    // نسخ نص البطاقة
+    document.getElementById('copyBtn').addEventListener('click', async ()=>{
+      const txt = `${toTxt.textContent}\n\n${msgTxt.textContent}\n\n${fromTxt.textContent}`;
+      try{ await navigator.clipboard.writeText(txt); alert('تم نسخ النص ✔'); }catch(_){ alert('تعذر النسخ، انسخ يدويًا.'); }
+    });
+
+    // إرسال الطلب
+    async function submitOrder(ev){
+      ev.preventDefault();
+      const form = ev.target; const endpoint = form.dataset.endpoint; const btn = document.getElementById('submitBtn');
+      const ok = document.getElementById('okMsg'); const no = document.getElementById('noMsg');
+      ok.style.display='none'; no.style.display='none'; if(btn){ btn.disabled = true; btn.textContent = '... جارٍ الإرسال'; }
+
+      // حقول البطاقة إن فعّلها العميل
+      document.getElementById('cardToField').value   = giftToggle.checked ? toTxt.textContent   : '';
+      document.getElementById('cardMsgField').value  = giftToggle.checked ? msgTxt.textContent  : '';
+      document.getElementById('cardFromField').value = giftToggle.checked ? fromTxt.textContent : '';
+
+      const data = Object.fromEntries(new FormData(form).entries());
+      try{
+        const res = await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify(data)});
+        if(res.ok){ form.reset(); ok.style.display='block'; localStorage.removeItem('waaiCartItem'); }
+        else{ no.style.display='block'; }
+      }catch(_){ no.style.display='block'; }
+      finally{ if(btn){ btn.disabled=false; btn.textContent='إرسال الطلب'; } }
+      return false;
+    }
+  </script>
+</body>
+</html>
