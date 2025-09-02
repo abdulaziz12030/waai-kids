@@ -3,36 +3,27 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>واعي كيدز | بوكسات هدايا أطفال مع بطاقة إهداء</title>
-  <meta name="description" content="واعي كيدز — بوكسات هدايا أطفال (أولاد/بنات) مع كتابة بطاقة إهداء ومعاينة فورية. توصيل سريع داخل الرياض." />
+  <title>واعي كيدز | هدايا مواليد وبوكسات أولاد/بنات</title>
+  <meta name="description" content="واعي كيدز — هدايا مواليد مميزة وبوكسات أولاد/بنات مع تغليف أنيق. بطاقة إهداء اختيارية من صفحة الطلبات. توصيل داخل الرياض." />
   <meta name="theme-color" content="#4C7AF2"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
   <style>
-    /* ========== ألوان هوية واعي كيدز (Tokens) ========== */
     :root{
-      --bg:#4C7AF2;        /* Primary */
-      --bg2:#6B8EF7;       /* Primary Glow */
-      --acc:#FF7AB6;       /* Accent */
-      --muted:#F4F7FF;     /* Light Surface */
-      --text:#1F2333;      /* Ink */
-      --green:#2ED47A;
-      --white:#fff;
-      --r:20px; --shadow:0 10px 25px rgba(76,122,242,.16);
+      --bg:#4C7AF2; --bg2:#6B8EF7; --acc:#FF7AB6; --muted:#F4F7FF; --text:#1F2333;
+      --white:#fff; --r:20px; --shadow:0 10px 25px rgba(76,122,242,.16);
     }
     *{box-sizing:border-box}
     html,body{margin:0;padding:0;font-family:'Cairo',system-ui,-apple-system,sans-serif;color:var(--text);background:linear-gradient(180deg,#fafcff,#f6f8ff 40%,#fbfcff)}
     a{color:inherit;text-decoration:none}
     img{max-width:100%;display:block}
 
-    /* ===== شريط إخباري ===== */
     .news-ticker{position:sticky;top:0;z-index:80;background:var(--bg);color:#fff}
     .news-ticker .inner{max-width:1200px;margin:auto;padding:8px 18px;overflow:hidden;white-space:nowrap;direction:ltr}
     .news-ticker .ticker-text{display:inline-block;direction:ltr;will-change:transform;animation:tickerLTR 12s linear infinite}
     @keyframes tickerLTR{from{transform:translateX(-100%)}to{transform:translateX(100%)}}
 
-    /* Header */
     .nav{position:sticky;top:0;z-index:60;backdrop-filter:saturate(140%) blur(8px);background:rgba(255,255,255,.9);border-bottom:1px solid #e9eeff}
     .nav .wrap{max-width:1200px;margin:auto;display:flex;align-items:center;gap:12px;padding:12px 18px}
     .brand{display:flex;align-items:center;gap:10px;font-weight:800;color:var(--bg)}
@@ -44,7 +35,6 @@
     .btn-ghost{background:rgba(76,122,242,.15);border:1px solid rgba(255,255,255,.35);color:#1840b2}
     .btn-ghost:hover{background:rgba(76,122,242,.26)}
 
-    /* Hero */
     .hero{position:relative;color:#fff;min-height:58vh;display:grid;place-items:center}
     .hero::before{
       content:"";position:absolute;inset:0;
@@ -58,196 +48,159 @@
     .hero p.lead{opacity:.98;margin:0 0 20px;font-weight:700}
     .hero-actions{display:flex;gap:12px;flex-wrap:wrap}
 
-    /* Sections */
     .section{max-width:1200px;margin:54px auto;padding:0 18px}
     .section h2{font-size:clamp(22px,3vw,32px);margin:0 0 14px;font-weight:800;color:var(--bg)}
+
     .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
     .card{background:#fff;border-radius:18px;box-shadow:var(--shadow);overflow:hidden;display:flex;flex-direction:column}
+    .card header{padding:14px 16px 0}
+    .card h3{margin:0 0 8px;font-size:1.25rem;color:#223}
+    .price{display:inline-flex;align-items:center;gap:6px;background:var(--muted);color:#234;padding:6px 10px;border-radius:999px;font-weight:800;font-size:.95rem}
     .card figure{aspect-ratio:16/9;overflow:hidden}
     .card figure img{width:100%;height:100%;object-fit:cover;transform:scale(1.06);transition:transform .6s cubic-bezier(.2,.7,.3,1)}
     .card:hover figure img{transform:scale(1.12)}
-    .card .content{padding:16px;display:flex;flex-direction:column;gap:8px}
-    .tag{display:inline-flex;align-items:center;gap:6px;background:var(--muted);color:#234; padding:6px 10px;border-radius:999px;font-weight:800;font-size:.9rem}
-    .actions{margin-top:auto;display:flex;gap:8px}
+    .card .content{padding:12px 16px 16px;display:flex;flex-direction:column;gap:10px}
+    .actions{display:flex;gap:8px}
 
-    /* Gift Card Customizer */
-    .gift{display:grid;grid-template-columns:1.1fr .9fr;gap:18px;align-items:stretch}
-    .panel{background:#fff;border-radius:18px;box-shadow:var(--shadow);padding:18px}
-    .lead-form{display:grid;gap:10px}
-    .inp{display:flex;flex-direction:column;gap:6px}
-    .inp input,.inp select,.inp textarea{border:1px solid #dfe7ff;border-radius:12px;padding:12px 14px;font-size:1rem;outline:none;background:#fbfdff}
-    .inp input:focus,.inp select:focus,.inp textarea:focus{border-color:var(--bg)}
-    .note{font-size:.9rem;color:#5d6a8d}
-    .success,.error{display:none;margin-top:8px;padding:10px 12px;border-radius:10px;font-weight:700}
-    .success{background:#e8fff7;color:#0a6b52;border:1px solid #baf0df}
-    .error{background:#fff1f1;color:#8b1d1d;border:1px solid #f1cccc}
+    .reviews{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+    .rev{background:#fff;border:1px solid #e6ecff;border-radius:18px;box-shadow:var(--shadow);padding:14px}
+    .stars{display:flex;gap:2px;margin:4px 0 8px}
+    .stars svg{width:18px;height:18px;color:#f7b500}
+    .rev .name{font-weight:800;color:#243}
+    .rev .txt{color:#3a3f55}
 
-    .preview-wrap{display:grid;place-items:center; background:var(--muted); border-radius:18px; padding:12px}
-    .gift-card{width:min(100%,540px); aspect-ratio:7/4; position:relative; border-radius:18px; padding:22px; display:flex; flex-direction:column; justify-content:space-between; box-shadow:0 18px 40px rgba(76,122,242,.18); overflow:hidden}
-    .gift-card.pattern-boy{background:linear-gradient(135deg,#eaf2ff,#f7f9ff);}
-    .gift-card.pattern-girl{background:linear-gradient(135deg,#fff0f6,#fff7fb);}    
-    .gift-card .ribbon{position:absolute; inset:auto 0 0 0; height:10px; background:linear-gradient(90deg,var(--bg),var(--bg2));}
-    .gift-card .brand{display:flex; align-items:center; gap:8px; font-weight:800; color:var(--bg)}
-    .gift-card .brand svg{width:22px;height:22px}
-    .gift-card .title{font-size:clamp(18px,2.3vw,28px); font-weight:800; color:#243; margin:6px 0}
-    .gift-card .body{font-size:clamp(14px,1.6vw,18px); line-height:1.8; color:#334}
-    .gift-card .footer{display:flex; justify-content:space-between; align-items:center; font-weight:800}
-    .gift-card .footer .from{opacity:.9}
-
-    /* Stats */
     .stats{max-width:1200px;margin:34px auto;display:grid;grid-template-columns:repeat(4,1fr);gap:14px;padding:0 18px}
     .stat{background:rgba(255,255,255,.92);backdrop-filter:blur(4px);border:1px solid #e4ebff;border-radius:16px;box-shadow:var(--shadow);padding:18px;text-align:center}
     .kpi{font-size:clamp(26px,3.5vw,38px);font-weight:800;color:var(--acc)}
     .kpi small{font-size:.55em;color:var(--acc)}
     .stat p{margin:6px 0 0;font-weight:800;color:#3f4b7e}
 
-    /* Footer */
     footer{margin-top:56px;background:#2746b8;color:#e7ecff}
     footer .wrap{max-width:1200px;margin:auto;padding:22px 18px;display:flex;justify-content:space-between;align-items:center;gap:12px}
     .foot-links{display:flex;gap:14px;flex-wrap:wrap}
     .foot-links a{color:#dfe6ff}
     .credit{opacity:.9}
 
-    /* WhatsApp & ToTop */
     .wa{position:fixed;left:16px;bottom:16px;z-index:70}
     .wa a{display:grid;place-items:center;width:58px;height:58px;border-radius:50%;background:#25D366;box-shadow:0 12px 30px rgba(12,151,79,.28)}
     .wa svg{width:32px;height:32px;fill:#fff}
     #toTop{position:fixed;right:16px;bottom:86px;z-index:70;width:52px;height:52px;border:none;border-radius:14px;background:rgba(76,122,242,.95);color:#fff;box-shadow:0 10px 24px rgba(76,122,242,.25);display:none;cursor:pointer;font-size:20px}
 
-    /* Reveal */
     .reveal{opacity:0;transform:translateY(18px);transition:opacity .7s ease, transform .7s ease}
     .reveal.show{opacity:1;transform:none}
 
-    /* Responsive */
-    @media (max-width:1024px){
-      .gift{grid-template-columns:1fr}
-      .grid{grid-template-columns:1fr}
-      .stats{grid-template-columns:repeat(2,1fr)}
-    }
-    @media (max-width:640px){
-      .links{display:none}
-      .stats{grid-template-columns:1fr}
-      .hero::before{background-position:center 45%}
-    }
+    @media (max-width:1024px){ .grid{grid-template-columns:1fr} .reviews{grid-template-columns:1fr 1fr} .stats{grid-template-columns:repeat(2,1fr)} }
+    @media (max-width:640px){ .links{display:none} .reviews{grid-template-columns:1fr} .stats{grid-template-columns:1fr} .hero::before{background-position:center 45%} }
   </style>
   <link rel="preload" as="image" href="https://i.postimg.cc/k4vGS3Nw/kids-hero.jpg">
 </head>
 <body id="top">
 
-  <!-- News Ticker -->
   <div class="news-ticker" role="status" aria-label="إشعار">
-    <div class="inner"><span class="ticker-text"> عروض بوكسات الهدايا مستمرة | أضف بطاقة إهداء مخصّصة مع معاينة فورية 🎁✨ </span></div>
+    <div class="inner"><span class="ticker-text"> جديدنا: باقات مواليد فاخرة 🎀 | قريبًا: ألعاب وهدايا ممتعة للأطفال — ترقّبوا! </span></div>
   </div>
 
-  <!-- Header -->
   <header class="nav">
     <div class="wrap">
       <a href="#top" class="brand" aria-label="واعي كيدز">
         <img loading="lazy" decoding="async" src="https://i.postimg.cc/d0wfsHqY/waai-kids-logo.png" alt="شعار واعي كيدز">
-        <div class="title">واعي كيدز — هدايا أطفال مميزة</div>
+        <div class="title">واعي كيدز — هدايا مواليد وبوكسات أطفال</div>
       </a>
       <nav class="links" aria-label="روابط رئيسية">
         <a href="#services">البوكسات</a>
-        <a href="#giftcard">بطاقة الإهداء</a>
+        <a href="orders.html">الطلبات</a>
         <a href="#contact">تواصل</a>
       </nav>
     </div>
   </header>
 
-  <!-- Hero -->
   <section class="hero" aria-label="القسم الترحيبي">
     <div class="wrap">
       <div class="reveal">
-        <h1>بوكس هدايا أطفال مع <span style="color:var(--acc)">بطاقة إهداء فورية</span></h1>
-        <p class="lead">اختر بوكس أولاد أو بوكس بنات، واكتب رسالتك على البطاقة وشوف المعاينة قبل الطلب.</p>
+        <h1>هدايا مواليد أنيقة <span style="color:var(--acc)">وبوكسات أولاد/بنات</span></h1>
+        <p class="lead">اختيارات فاخرة للمولود الجديد مع تغليف مبهج وكرت معايدة اختياري من صفحة الطلبات — قريبًا نضيف ألعاب وهدايا للأطفال.</p>
         <div class="hero-actions">
           <a href="#services" class="btn btn-ghost" aria-label="استعرض البوكسات">استعرض البوكسات</a>
-          <a href="#giftcard" class="btn" aria-label="جرب بطاقة الإهداء">اكتب بطاقة إهداء</a>
+          <a href="orders.html" class="btn" aria-label="اذهب لصفحة الطلبات">اذهب لصفحة الطلبات</a>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Services (بوكسات) -->
   <section class="section" id="services" aria-label="بوكسات الهدايا">
     <h2 class="reveal">بوكسات الهدايا</h2>
-    <p class="note reveal">بوكسات مختارة بعناية — تغليف أنيق وكرت معايدة مجاني.</p>
+    <p class="note reveal">نُبرز هدايا المواليد — وسنضيف لاحقًا ألعابًا وهدايا للأطفال بإذن الله.</p>
 
     <div class="grid">
       <article class="card reveal">
+        <header>
+          <h3>بوكس هدية أولاد</h3>
+          <span class="price">السعر: <b id="priceBoy" data-price="199">199</b> ر.س</span>
+        </header>
         <figure><img loading="lazy" decoding="async" alt="بوكس هدية أولاد" src="https://i.postimg.cc/6qzKXXzQ/boys-box.jpg"></figure>
         <div class="content">
-          <h3>بوكس هدية أولاد</h3>
-          <div class="tag">Boys Gift Box</div>
-          <p>توليفة ألعاب وإكسسوارات تناسب الأولاد مع تغليف أزرق مبهج.</p>
+          <p>توليفة مواليد للأولاد مع تغليف أزرق أنيق — مثالي للزيارة الأولى والتهنئة.</p>
           <div class="actions">
-            <a href="#leadForm" class="btn ask-btn" data-service="بوكس هدية أولاد">اطلب الآن</a>
-            <a href="#giftcard" class="btn btn-ghost" data-theme="boy">أضف بطاقة إهداء</a>
+            <a href="orders.html?item=boy" class="btn ask-btn">اطلب الآن</a>
           </div>
         </div>
       </article>
 
       <article class="card reveal">
+        <header>
+          <h3>بوكس هدية بنات</h3>
+          <span class="price">السعر: <b id="priceGirl" data-price="209">209</b> ر.س</span>
+        </header>
         <figure><img loading="lazy" decoding="async" alt="بوكس هدية بنات" src="https://i.postimg.cc/6QyWZ6m8/girls-box.jpg"></figure>
         <div class="content">
-          <h3>بوكس هدية بنات</h3>
-          <div class="tag">Girls Gift Box</div>
-          <p>تشكيلة لطيفة تناسب البنات مع تغليف وردي أنيق ولمسات مبهجة.</p>
+          <p>باقة مواليد للبنات بلمسات وردية وزينة لطيفة — هدية تبقى في الذاكرة.</p>
           <div class="actions">
-            <a href="#leadForm" class="btn ask-btn" data-service="بوكس هدية بنات">اطلب الآن</a>
-            <a href="#giftcard" class="btn btn-ghost" data-theme="girl">أضف بطاقة إهداء</a>
+            <a href="orders.html?item=girl" class="btn ask-btn">اطلب الآن</a>
           </div>
         </div>
       </article>
     </div>
   </section>
 
-  <!-- بطاقة الإهداء (Customizer) -->
-  <section class="section" id="giftcard" aria-label="بطاقة الإهداء">
-    <h2 class="reveal">اكتب بطاقة الإهداء — وشاهد المعاينة فورًا</h2>
-    <div class="gift">
-      <div class="panel reveal">
-        <h3 style="margin-top:0">النص والإعدادات</h3>
-        <div class="lead-form">
-          <div class="inp"><label>المستلم</label><input id="toInput" type="text" placeholder="إلى: أمير/أميرة صغيرة" maxlength="28"></div>
-          <div class="inp"><label>رسالة المعايدة</label><textarea id="msgInput" rows="4" placeholder="اكتب معايدتك الجميلة هنا" maxlength="180"></textarea><div class="note"><span id="count">0</span>/180</div></div>
-          <div class="inp"><label>المُرسل</label><input id="fromInput" type="text" placeholder="من: عائلتك/اسمك" maxlength="28"></div>
-          <div class="inp">
-            <label>نمط البطاقة</label>
-            <select id="themeSelect">
-              <option value="boy">أولاد (أزرق)</option>
-              <option value="girl">بنات (وردي)</option>
-            </select>
-          </div>
-          <div style="display:flex;gap:8px;flex-wrap:wrap">
-            <button type="button" class="btn" id="printBtn">طباعة/حفظ PDF</button>
-            <button type="button" class="btn btn-ghost" id="copyBtn">نسخ النص</button>
-          </div>
-          <p class="note">تلميح: جرّب الإيموجي 🎈🎁✨</p>
+  <section class="section" id="reviews" aria-label="آراء العملاء">
+    <h2 class="reveal">قالوا عن واعي كيدز</h2>
+    <div class="reviews">
+      <div class="rev reveal">
+        <div class="stars" aria-label="5 نجوم">
+          <svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 0 0 .95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.802 2.035a1 1 0 0 0-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.802-2.035a1 1 0 0 0-1.176 0l-2.802 2.035c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 0 0-.364-1.118L2.88 8.72c-.783-.57-.38-1.81.588-1.81H6.93a1 1 0 0 0 .951-.69l1.168-3.293Z"/></svg>
+          <svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 0 0 .95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.802 2.035a1 1 0 0 0-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.802-2.035a1 1 0 0 0-1.176 0l-2.802 2.035c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 0 0-.364-1.118L2.88 8.72c-.783-.57-.38-1.81.588-1.81H6.93a1 1 0 0 0 .951-.69l1.168-3.293Z"/></svg>
+          <svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 0 0 .95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.802 2.035a1 1 0 0 0-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.802-2.035a1 1 0 0 0-1.176 0l-2.802 2.035c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 0 0-.364-1.118L2.88 8.72c-.783-.57-.38-1.81.588-1.81H6.93a1 1 0 0 0 .951-.69l1.168-3.293Z"/></svg>
+          <svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 0 0 .95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.802 2.035a1 1 0 0 0-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.802-2.035a1 1 0 0 0-1.176 0l-2.802 2.035c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 0 0-.364-1.118L2.88 8.72c-.783-.57-.38-1.81.588-1.81H6.93a1 1 0 0 0 .951-.69l1.168-3.293Z"/></svg>
+          <svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 0 0 .95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.802 2.035a1 1 0 0 0-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.802-2.035a1 1 0 0 0-1.176 0l-2.802 2.035c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 0 0-.364-1.118L2.88 8.72c-.783-.57-.38-1.81.588-1.81H6.93a1 1 0 0 0 .951-.69l1.168-3.293Z"/></svg>
         </div>
+        <div class="name">أم مهند</div>
+        <div class="txt">التغليف جميل والكرت زاد الهدية قيمة. شكراً لكم!</div>
       </div>
-
-      <div class="panel reveal">
-        <h3 style="margin-top:0">المعاينة</h3>
-        <div class="preview-wrap">
-          <div id="card" class="gift-card pattern-boy" aria-label="معاينة بطاقة الإهداء">
-            <div class="brand">
-              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 8h18v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8Z" stroke="currentColor" stroke-width="1.5"/><path d="M3 8h18M12 4v16M7.5 4c1.5 0 3 1.5 3 3H4.5c0-1.5 1.5-3 3-3Zm9 0c-1.5 0-3 1.5-3 3h6c0-1.5-1.5-3-3-3Z" stroke="currentColor" stroke-width="1.5"/></svg>
-              واعي كيدز
-            </div>
-            <div class="title" id="toTxt">إلى أميرنا الصغير 💙</div>
-            <div class="body" id="msgTxt">نتمنى لك أيامًا سعيدة مليئة بالمرح! 🎉</div>
-            <div class="footer">
-              <div class="from" id="fromTxt">من: عائلتك</div>
-              <div class="ribbon"></div>
-            </div>
-          </div>
+      <div class="rev reveal">
+        <div class="stars" aria-label="5 نجوم">
+          <svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 0 0 .95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.802 2.035a1 1 0 0 0-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.802-2.035a1 1 0 0 0-1.176 0l-2.802 2.035c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 0 0-.364-1.118L2.88 8.72c-.783-.57-.38-1.81.588-1.81H6.93a1 1 0 0 0 .951-.69l1.168-3.293Z"/></svg>
+          <svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 0 0 .95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.802 2.035a1 1 0 0 0-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.802-2.035a1 1 0 0 0-1.176 0l-2.802 2.035c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 0 0-.364-1.118L2.88 8.72c-.783-.57-.38-1.81.588-1.81H6.93a1 1 0 0 0 .951-.69l1.168-3.293Z"/></svg>
+          <svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 0 0 .95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.802 2.035a1 1 0 0 0-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.802-2.035a1 1 0 0 0-1.176 0l-2.802 2.035c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 0 0-.364-1.118L2.88 8.72c-.783-.57-.38-1.81.588-1.81H6.93a1 1 0 0 0 .951-.69l1.168-3.293Z"/></svg>
+          <svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 0 0 .95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.802 2.035a1 1 0 0 0-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.802-2.035a1 1 0 0 0-1.176 0l-2.802 2.035c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 0 0-.364-1.118L2.88 8.72c-.783-.57-.38-1.81.588-1.81H6.93a1 1 0 0 0 .951-.69l1.168-3.293Z"/></svg>
+          <svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 0 0 .95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.802 2.035a1 1 0 0 0-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.802-2.035a1 1 0 0 0-1.176 0l-2.802 2.035c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 0 0-.364-1.118L2.88 8.72c-.783-.57-.38-1.81.588-1.81H6.93a1 1 0 0 0 .951-.69l1.168-3.293Z"/></svg>
         </div>
+        <div class="name">نورة</div>
+        <div class="txt">وصل البوكس بسرعة والتغليف مرررة مرتب 👌</div>
+      </div>
+      <div class="rev reveal">
+        <div class="stars" aria-label="5 نجوم">
+          <svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 0 0 .95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.802 2.035a1 1 0 0 0-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.802-2.035a1 1 0 0 0-1.176 0l-2.802 2.035c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 0 0-.364-1.118L2.88 8.72c-.783-.57-.38-1.81.588-1.81H6.93a1 1 0 0 0 .951-.69l1.168-3.293Z"/></svg>
+          <svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 0 0 .95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.802 2.035a1 1 0 0 0-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.802-2.035a1 1 0 0 0-1.176 0l-2.802 2.035c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 0 0-.364-1.118L2.88 8.72c-.783-.57-.38-1.81.588-1.81H6.93a1 1 0 0 0 .951-.69l1.168-3.293Z"/></svg>
+          <svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 0 0 .95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.802 2.035a1 1 0 0 0-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.802-2.035a1 1 0 0 0-1.176 0l-2.802 2.035c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 0 0-.364-1.118L2.88 8.72c-.783-.57-.38-1.81.588-1.81H6.93a1 1 0 0 0 .951-.69l1.168-3.293Z"/></svg>
+          <svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 0 0 .95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.802 2.035a1 1 0 0 0-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.802-2.035a1 1 0 0 0-1.176 0l-2.802 2.035c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 0 0-.364-1.118L2.88 8.72c-.783-.57-.38-1.81.588-1.81H6.93a1 1 0 0 0 .951-.69l1.168-3.293Z"/></svg>
+          <svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 0 0 .95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.802 2.035a1 1 0 0 0-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.802-2.035a1 1 0 0 0-1.176 0l-2.802 2.035c-.784 .57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 0 0-.364-1.118L2.88 8.72c-.783-.57-.38-1.81.588-1.81H6.93a1 1 0 0 0 .951-.69l1.168-3.293Z"/></svg>
+        </div>
+        <div class="name">مشعل</div>
+        <div class="txt">خدمة ممتازة وتغليف احترافي. أنصح فيه 👍</div>
       </div>
     </div>
   </section>
 
-  <!-- أرقام -->
   <section class="section" id="numbers" aria-label="أرقام تُثبت الأثر">
     <h2 class="reveal">لماذا تختار واعي كيدز؟</h2>
     <div class="stats">
@@ -258,54 +211,41 @@
     </div>
   </section>
 
-  <!-- تواصل -->
   <section class="section" id="contact" aria-label="تواصل معنا">
-    <h2 class="reveal">اطلب البوكس الآن</h2>
-    <div class="gift">
-      <div class="panel reveal">
-        <h3 style="margin-top:0">الطلب السريع</h3>
-        <form id="leadForm" class="lead-form" onsubmit="return submitLead(event)" data-endpoint="https://formspree.io/f/yourKidsEndpoint">
-          <div class="inp"><label>الاسم الكامل</label><input name="name" type="text" required placeholder="الاسم"></div>
-          <div class="inp"><label>البريد الإلكتروني</label><input name="email" type="email" required placeholder="example@email.com"></div>
-          <div class="inp"><label>رقم الجوال</label><input name="phone" type="tel" placeholder="05xxxxxxxx" inputmode="tel"></div>
-          <div class="inp">
-            <label>نوع البوكس</label>
-            <select name="service" id="serviceSelect" required>
-              <option value="" selected disabled>اختر البوكس</option>
-              <option>بوكس هدية أولاد</option>
-              <option>بوكس هدية بنات</option>
-            </select>
-          </div>
-          <div class="inp"><label>نص بطاقة الإهداء (اختياري)</label><textarea name="card_message" rows="3" placeholder="انسخ رسالتك من المعاينة أو اكتبها هنا"></textarea></div>
-          <button id="submitBtn" class="btn" type="submit" style="background:linear-gradient(135deg,var(--bg),var(--bg2));">إرسال الطلب</button>
-          <div class="success" id="okMsg">تم إرسال الطلب بنجاح، سنعود إليك قريبًا.</div>
-          <div class="error" id="noMsg">تعذر الإرسال الآن. جرب لاحقًا أو راسلنا مباشرة.</div>
-          <p class="note">بالإرسال، توافق على التواصل معك بخصوص الطلب.</p>
-        </form>
-      </div>
-
-      <div class="panel reveal">
-        <h3 style="margin-top:0">عن واعي كيدز</h3>
-        <p>نهتم بالتفاصيل من اختيار القطع إلى التغليف والكرت — كل ذلك بهوية طفولية مبهجة.</p>
+    <h2 class="reveal">تواصل معنا</h2>
+    <div class="grid" style="grid-template-columns:1.1fr .9fr">
+      <div class="card reveal" style="padding:18px">
+        <h3 style="margin-top:0">من نحن</h3>
+        <p>نهتم بهدايا المواليد ونقدّم بوكسات أولاد/بنات بتغليف أنيق — بطاقة الإهداء تُضاف اختياريًا من صفحة الطلبات.</p>
         <ul style="line-height:2">
           <li>الرياض – المملكة العربية السعودية</li>
           <li>البريد: <strong>hello@waai-kids.com</strong></li>
           <li>سناب/تيك توك/إنستغرام: <strong>@waai.sa</strong></li>
         </ul>
-        <img loading="lazy" decoding="async" class="reveal" alt="تغليف هدايا الأطفال" src="https://i.postimg.cc/bJ0bS8J0/kids-packaging.jpg" style="border-radius:14px;box-shadow:var(--shadow);margin-top:6px">
+        <img loading="lazy" decoding="async" alt="تغليف هدايا المواليد" src="https://i.postimg.cc/bJ0bS8J0/kids-packaging.jpg" style="border-radius:14px;box-shadow:var(--shadow);margin-top:6px">
+      </div>
+
+      <div class="card reveal" style="padding:18px">
+        <h3 style="margin-top:0">رسالتك لنا</h3>
+        <form id="leadForm" onsubmit="return submitLead(event)" data-endpoint="https://formspree.io/f/yourKidsEndpoint" style="display:grid;gap:10px">
+          <label>اسمك<input name="name" type="text" required placeholder="الاسم" style="border:1px solid #dfe7ff;border-radius:12px;padding:12px 14px"></label>
+          <label>البريد الإلكتروني<input name="email" type="email" required placeholder="example@email.com" style="border:1px solid #dfe7ff;border-radius:12px;padding:12px 14px"></label>
+          <label>رقم الجوال<input name="phone" type="tel" placeholder="05xxxxxxxx" inputmode="tel" style="border:1px solid #dfe7ff;border-radius:12px;padding:12px 14px"></label>
+          <button id="submitBtn" class="btn" type="submit" style="background:linear-gradient(135deg,var(--bg),var(--bg2));">إرسال</button>
+          <div id="okMsg" style="display:none;background:#e8fff7;color:#0a6b52;border:1px solid #baf0df;padding:10px 12px;border-radius:10px;font-weight:700">تم الإرسال بنجاح</div>
+          <div id="noMsg" style="display:none;background:#fff1f1;color:#8b1d1d;border:1px solid #f1cccc;padding:10px 12px;border-radius:10px;font-weight:700">تعذر الإرسال الآن</div>
+        </form>
       </div>
     </div>
   </section>
 
-  <!-- Footer -->
   <footer>
     <div class="wrap">
       <div class="credit">© 2025 واعي كيدز – جميع الحقوق محفوظة</div>
-      <nav class="foot-links"><a href="#contact">تواصل</a></nav>
+      <nav class="foot-links"><a href="orders.html">الطلبات</a></nav>
     </div>
   </footer>
 
-  <!-- WhatsApp Floating -->
   <div class="wa">
     <a aria-label="تواصل واتساب" href="https://wa.me/966570905999" target="_blank" rel="noopener">
       <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false">
@@ -314,141 +254,44 @@
     </a>
   </div>
 
-  <!-- Back to top -->
   <button id="toTop" aria-label="العودة للأعلى">↑</button>
 
-  <!-- Thank You overlay -->
-  <div id="thanks" class="thanks" aria-hidden="true" style="position:fixed;inset:0;background:rgba(76,122,242,.92);color:#fff;display:none;align-items:center;justify-content:center;z-index:80">
-    <div class="box" style="max-width:620px;margin:0 18px;background:linear-gradient(180deg,rgba(255,255,255,.12),rgba(255,255,255,.06));border:1px solid rgba(255,255,255,.25);border-radius:18px;padding:24px;box-shadow:0 20px 50px rgba(0,0,0,.35);text-align:center">
-      <h2>شكرًا! 🎉</h2>
-      <p>وصل طلبك بنجاح وسنتواصل معك قريبًا.</p>
-      <div style="margin-top:14px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
-        <a href="#top" class="btn btn-outline" onclick="hideThanks()">العودة للصفحة الرئيسية</a>
-        <a href="https://wa.me/966570905999" class="btn">تواصل واتساب</a>
-      </div>
-    </div>
-  </div>
-
   <script>
-    // تفعيل أزرار "اطلب الآن" وتحديد نوع البوكس تلقائيًا
-    document.querySelectorAll('.ask-btn').forEach(btn=>{
-      btn.addEventListener('click', ()=>{
-        const serviceText = btn.dataset.service || '';
-        const form = document.getElementById('leadForm');
-        if(form){
-          form.scrollIntoView({behavior:'smooth'});
-          const select = document.getElementById('serviceSelect');
-          if(select){ Array.from(select.options).forEach(o=>{ o.selected = (o.text.trim() === serviceText.trim()); }); }
-          const nameInput = form.querySelector('input[name="name"]');
-          if(nameInput) nameInput.focus();
-        }
-      });
-    });
-
-    // ربط زر "أضف بطاقة إهداء" باختيار النمط
-    document.querySelectorAll('[data-theme]').forEach(a=>{
-      a.addEventListener('click', ()=>{
-        document.getElementById('giftcard').scrollIntoView({behavior:'smooth'});
-        const themeSelect = document.getElementById('themeSelect');
-        if(themeSelect){ themeSelect.value = a.dataset.theme; applyTheme(); }
-      })
-    })
-
-    // Scroll reveal + counters
     const io = new IntersectionObserver((entries)=>{
       entries.forEach(e=>{
-        if(e.isIntersecting){
-          e.target.classList.add('show');
+        if(e.isIntersecting){ e.target.classList.add('show');
           if(e.target.querySelector && e.target.querySelector('.counter')) startCounters(e.target);
           io.unobserve(e.target);
         }
       })
     },{threshold:.2});
-    document.querySelectorAll('.reveal, .stat, .card').forEach(el=>io.observe(el));
+    document.querySelectorAll('.reveal, .stat, .card, .rev').forEach(el=>io.observe(el));
 
     function startCounters(scope){
       scope.querySelectorAll('.counter').forEach(el=>{
-        const target = +el.dataset.target; const dur = 1400 + Math.random()*800;
-        const start = performance.now();
-        function tick(t){
-          const p = Math.min(1,(t-start)/dur);
-          el.textContent = Math.floor(target*p).toLocaleString('en-US');
-          if(p<1) requestAnimationFrame(tick);
-        }
+        const target = +el.dataset.target; const dur = 1400 + Math.random()*800; const start = performance.now();
+        function tick(t){ const p = Math.min(1,(t-start)/dur); el.textContent = Math.floor(target*p).toLocaleString('en-US'); if(p<1) requestAnimationFrame(tick); }
         requestAnimationFrame(tick);
       });
     }
 
-    // Back to top
     const toTop = document.getElementById('toTop');
     window.addEventListener('scroll', ()=>{ toTop.style.display = (window.scrollY > 400) ? 'block' : 'none'; });
     toTop.addEventListener('click', ()=> window.scrollTo({top:0, behavior:'smooth'}));
 
-    // Thank You overlay helpers
-    const thanksEl = document.getElementById('thanks');
-    function showThanks(){ thanksEl.style.display='flex'; thanksEl.setAttribute('aria-hidden','false'); }
-    function hideThanks(){ thanksEl.style.display='none'; thanksEl.setAttribute('aria-hidden','true'); }
-
-    // Submit form (Formspree)
     async function submitLead(ev){
       ev.preventDefault();
-      const form = ev.target;
-      const endpoint = form.dataset.endpoint; // ← حدّث هذا إلى مفتاح waai-kids في Formspree
-      const btn = document.getElementById('submitBtn') || form.querySelector('button[type="submit"]');
-      const ok = document.getElementById('okMsg');
-      const no = document.getElementById('noMsg');
-      ok.style.display='none'; no.style.display='none';
-      if(btn){ btn.disabled = true; btn.textContent = '... جارٍ الإرسال'; }
+      const form = ev.target; const endpoint = form.dataset.endpoint; const btn = document.getElementById('submitBtn');
+      const ok = document.getElementById('okMsg'); const no = document.getElementById('noMsg');
+      ok.style.display='none'; no.style.display='none'; if(btn){ btn.disabled = true; btn.textContent = '... جارٍ الإرسال'; }
       const data = Object.fromEntries(new FormData(form).entries());
       try{
-        const res = await fetch(endpoint, { method:'POST', headers:{'Content-Type':'application/json','Accept':'application/json'}, body: JSON.stringify(data) });
-        if(res.ok){ form.reset(); ok.style.display='block'; showThanks(); setTimeout(()=>{ hideThanks(); }, 7000); }
-        else{ no.style.display='block'; }
+        const res = await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify(data)});
+        if(res.ok){ form.reset(); ok.style.display='block'; } else { no.style.display='block'; }
       }catch(_){ no.style.display='block'; }
-      finally{ if(btn){ btn.disabled=false; btn.textContent='إرسال الطلب'; } }
+      finally{ if(btn){ btn.disabled=false; btn.textContent='إرسال'; } }
       return false;
     }
-
-    // ====== Gift Card customizer logic ======
-    const toInput = document.getElementById('toInput');
-    const msgInput = document.getElementById('msgInput');
-    const fromInput = document.getElementById('fromInput');
-    const toTxt = document.getElementById('toTxt');
-    const msgTxt = document.getElementById('msgTxt');
-    const fromTxt = document.getElementById('fromTxt');
-    const count = document.getElementById('count');
-    const themeSelect = document.getElementById('themeSelect');
-    const card = document.getElementById('card');
-
-    [toInput,msgInput,fromInput].forEach(el=> el && el.addEventListener('input', syncCard));
-    msgInput && msgInput.addEventListener('input', ()=> count.textContent = msgInput.value.length);
-    themeSelect && themeSelect.addEventListener('change', applyTheme);
-
-    function syncCard(){
-      toTxt.textContent = toInput.value ? `إلى ${toInput.value}` : 'إلى أميرنا الصغير 💙';
-      msgTxt.textContent = msgInput.value || 'نتمنى لك أيامًا سعيدة مليئة بالمرح! 🎉';
-      fromTxt.textContent = fromInput.value ? `من: ${fromInput.value}` : 'من: عائلتك';
-    }
-    function applyTheme(){
-      const v = themeSelect.value;
-      card.classList.remove('pattern-boy','pattern-girl');
-      card.classList.add(v==='girl'?'pattern-girl':'pattern-boy');
-    }
-
-    // طباعة/حفظ PDF للبطاقة
-    document.getElementById('printBtn').addEventListener('click', ()=>{
-      window.print();
-    });
-
-    // نسخ نص البطاقة
-    document.getElementById('copyBtn').addEventListener('click', async ()=>{
-      const txt = `${toTxt.textContent}
-
-${msgTxt.textContent}
-
-${fromTxt.textContent}`;
-      try{ await navigator.clipboard.writeText(txt); alert('تم نسخ النص ✔'); }catch(_){ alert('تعذر النسخ، انسخ يدويًا.'); }
-    });
   </script>
 </body>
 </html>
