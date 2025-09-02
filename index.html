@@ -33,9 +33,13 @@
     .btn-ghost:hover{background:rgba(76,122,242,.26)}
 
     .hero{position:relative;color:#fff;min-height:58vh;display:grid;place-items:center}
-    .hero::before{content:"";position:absolute;inset:0;background:
-      linear-gradient(180deg,rgba(76,122,242,.35),rgba(107,142,247,.55)),
-      url('https://i.postimg.cc/k4vGS3Nw/kids-hero.jpg') center/cover no-repeat;background-position:center 35%;}
+    .hero::before{
+      content:"";position:absolute;inset:0;
+      background:
+        linear-gradient(180deg,rgba(76,122,242,.35),rgba(107,142,247,.55)),
+        url('https://i.postimg.cc/k4vGS3Nw/kids-hero.jpg') center/cover no-repeat;
+      background-position:center 35%;
+    }
     .hero .wrap{max-width:1200px;margin:auto;display:grid;grid-template-columns:1fr;gap:28px;padding:56px 18px;position:relative}
     .hero h1{font-size:clamp(26px,4.2vw,48px);line-height:1.25;margin:0 0 10px;font-weight:800}
     .hero p.lead{opacity:.98;margin:0 0 20px;font-weight:700}
@@ -62,19 +66,12 @@
     .rev .name{font-weight:800;color:#243}
     .rev .txt{color:#3a3f55}
 
-    .stats{max-width:1200px;margin:34px auto;display:grid;grid-template-columns:repeat(4,1fr);gap:14px;padding:0 18px}
-    .stat{background:rgba(255,255,255,.92);backdrop-filter:blur(4px);border:1px solid #e4ebff;border-radius:16px;box-shadow:var(--shadow);padding:18px;text-align:center}
-    .kpi{font-size:clamp(26px,3.5vw,38px);font-weight:800;color:var(--acc)}
-    .kpi small{font-size:.55em;color:var(--acc)}
-    .stat p{margin:6px 0 0;font-weight:800;color:#3f4b7e}
-
     footer{margin-top:56px;background:#2746b8;color:#e7ecff}
     footer .wrap{max-width:1200px;margin:auto;padding:22px 18px;display:flex;justify-content:space-between;align-items:center;gap:12px}
     .foot-links{display:flex;gap:14px;flex-wrap:wrap}
     .foot-links a{color:#dfe6ff}
     .credit{opacity:.9}
 
-    /* زر واتساب – الشعار الكلاسيكي */
     .wa{position:fixed;left:16px;bottom:16px;z-index:70}
     .wa a{display:grid;place-items:center;width:58px;height:58px;border-radius:50%;background:#25D366;box-shadow:0 12px 30px rgba(12,151,79,.28)}
     .wa svg{width:30px;height:30px;display:block}
@@ -84,8 +81,8 @@
     .reveal{opacity:0;transform:translateY(18px);transition:opacity .7s ease, transform .7s ease}
     .reveal.show{opacity:1;transform:none}
 
-    @media (max-width:1024px){ .grid{grid-template-columns:1fr} .reviews{grid-template-columns:1fr 1fr} .stats{grid-template-columns:repeat(2,1fr)} }
-    @media (max-width:640px){ .links{display:none} .reviews{grid-template-columns:1fr} .stats{grid-template-columns:1fr} .hero::before{background-position:center 45%} }
+    @media (max-width:1024px){ .grid{grid-template-columns:1fr} .reviews{grid-template-columns:1fr 1fr} }
+    @media (max-width:640px){ .links{display:none} .reviews{grid-template-columns:1fr} .hero::before{background-position:center 45%} }
   </style>
   <link rel="preload" as="image" href="https://i.postimg.cc/k4vGS3Nw/kids-hero.jpg">
 </head>
@@ -149,27 +146,6 @@
     </div>
   </section>
 
-  <section class="section" id="reviews" aria-label="آراء العملاء">
-    <h2 class="reveal">قالوا عن واعي كيدز</h2>
-    <div class="reviews">
-      <div class="rev reveal">
-        <div class="stars" aria-label="5 نجوم">
-          <svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 0 0 .95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.802 2.035a1 1 0 0 0-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.802-2.035a1 1 0 0 0-1.176 0l-2.802 2.035c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 0 0-.364-1.118L2.88 8.72c-.783-.57-.38-1.81.588-1.81H6.93a1 1 0 0 0 .951-.69l1.168-3.293Z"/></svg>
-          <svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927..."/></svg><svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927..."/></svg><svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927..."/></svg><svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927..."/></svg>
-        </div>
-        <div class="name">أم مهند</div><div class="txt">التغليف جميل والكرت زاد الهدية قيمة. شكراً لكم!</div>
-      </div>
-      <div class="rev reveal">
-        <div class="stars" aria-label="5 نجوم"><svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927..."/></svg><svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927..."/></svg><svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927..."/></svg><svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927..."/></svg><svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927..."/></svg></div>
-        <div class="name">نورة</div><div class="txt">وصل البوكس بسرعة والتغليف مررّة مرتب 👌</div>
-      </div>
-      <div class="rev reveal">
-        <div class="stars" aria-label="5 نجوم"><svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927..."/></svg><svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927..."/></svg><svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927..."/></svg><svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927..."/></svg><svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927..."/></svg></div>
-        <div class="name">مشعل</div><div class="txt">خدمة ممتازة وتغليف احترافي. أنصح فيه 👍</div>
-      </div>
-    </div>
-  </section>
-
   <!-- أسفل الصفحة: من نحن فقط -->
   <section class="section" id="about" aria-label="من نحن">
     <h2 class="reveal">من نحن</h2>
@@ -197,7 +173,7 @@
     <a aria-label="تواصل واتساب" href="https://wa.me/966570905999" target="_blank" rel="noopener">
       <svg viewBox="0 0 32 32" aria-hidden="true" focusable="false">
         <circle cx="16" cy="16" r="16" fill="#25D366"/>
-        <path fill="#fff" d="M21.6 10.4a7.3 7.3 0 0 0-12.5 7.2L8 24l6.5-1.1a7.3 7.3 0 0 0 7-12.5Zm-5.5 11.7c-1.2 0-2.4-.3-3.5-.9l-.2-.1-2.1.4.6-2.1-.1-.2a6 6 0 1 1 5.3 2.9Zm3-4.4c-.2-.1-1-.5-1.2-.5-.2-.1-.3 0-.4.2l-.5.7c-.1.1-.2.2-.4.1-.7-.2-2.5-1.2-3.4-3-.1-.2 0-.3.1-.4l.3-.3c.1-.1.1-.2.2-.3 0-.1 0-.2-.1-.4 0-.1-.5-1.3-.7-1.7-.2-.4-.4-.3-.5-.3h-.3c-.1 0-.3.1-.5.3-.2.2-.6.6-.6 1.5s.6 1.8.7 1.9c.1.1 1 1.8 2.6 2.6.9.4 1.6.6 2 .7.5.1.9.1 1.2.1.4-.1 1.1-.4 1.2-.8.1-.4.1-.7.1-.8s-.1-.2-.3-.3Z"/>
+        <path fill="#fff" d="M21.6 10.4a7.3 7.3 0 0 0-12.5 7.2L8 24l6.5-1.1a7.3 7.3 0 0 0 7-12.5Zm-5.5 11.7c-1.2 0-2.4-.3-3.5-.9l-.2-.1-2.1.4.6-2.1-.1-.2a6 6 0 1 1 5.3 2.9Zm3-4.4c-.2-.1-1-.5-1.2-.5-.2-.1-.3 0-.4.2l-.5.7c-.1.1-.2.2-.4.1-.7-.2-2.5-1.2-3.4-3-.1-.2 0-.3.1-.4l.3-.3c.1-.1.1-.2.2-.3 0-.1 0-.2-.1-.4 0-.1-.5-1.3-.7-1.7-.2-.4-.4-.3-.5-.3h-.3c-.1 0 -.3.1-.5.3-.2.2-.6.6-.6 1.5s.6 1.8.7 1.9c.1.1 1 1.8 2.6 2.6.9.4 1.6.6 2 .7.5.1.9.1 1.2.1.4-.1 1.1-.4 1.2-.8.1-.4.1-.7.1-.8s-.1-.2-.3-.3Z"/>
       </svg>
     </a>
   </div>
@@ -205,9 +181,8 @@
   <button id="toTop" aria-label="العودة للأعلى">↑</button>
 
   <script>
-    const io = new IntersectionObserver((entries)=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('show'); if(e.target.querySelector&&e.target.querySelector('.counter')) startCounters(e.target); io.unobserve(e.target);}})},{threshold:.2});
-    document.querySelectorAll('.reveal, .stat, .card, .rev').forEach(el=>io.observe(el));
-    function startCounters(scope){scope.querySelectorAll('.counter').forEach(el=>{const target=+el.dataset.target;const dur=1400+Math.random()*800;const start=performance.now();function tick(t){const p=Math.min(1,(t-start)/dur);el.textContent=Math.floor(target*p).toLocaleString('en-US');if(p<1) requestAnimationFrame(tick);}requestAnimationFrame(tick);});}
+    const io = new IntersectionObserver((entries)=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('show');}})},{threshold:.2});
+    document.querySelectorAll('.reveal, .card').forEach(el=>io.observe(el));
     const toTop=document.getElementById('toTop'); window.addEventListener('scroll',()=>{toTop.style.display=(window.scrollY>400)?'block':'none'}); toTop.addEventListener('click',()=> window.scrollTo({top:0,behavior:'smooth'}));
   </script>
 </body>
