@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>الطلبات | واعي كيدز</title>
-  <meta name="description" content="سلة واعي كيدز — اختر بوكس أولاد أو بنات، حدّد الكمية، أضف بطاقة إهداء (اختياري)، واختر طريقة الشحن داخل الرياض: أرامكس خلال 3 أيام عمل أو التوصيل السريع خلال 24 ساعة." />
+  <meta name="description" content="سلة واعي كيدز — اختر بوكس أولاد أو بنات، حدّد الكمية، أضف بطاقة إهداء (اختياري)، واختر طريقة الشحن داخل الرياض: أرامكس 3 أيام عمل أو التوصيل السريع خلال 24 ساعة." />
   <meta name="theme-color" content="#4C7AF2"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -73,7 +73,6 @@
     .shipOpt .title{font-weight:800;color:#1f2a5c}
     .ship-note{background:#f9fbff;border:1px dashed #cfe0ff;border-radius:12px;padding:10px 12px}
 
-    /* اطبع البطاقة فقط */
     @media print {
       body * { visibility: hidden !important; }
       #cardPrintArea, #cardPrintArea * { visibility: visible !important; }
@@ -83,7 +82,6 @@
     footer{margin-top:40px;background:#2746b8;color:#e7ecff}
     footer .wrap{max-width:1200px;margin:auto;padding:18px;display:flex;justify-content:space-between;align-items:center;gap:12px}
 
-    /* زر واتساب – الشعار الكلاسيكي */
     .wa{position:fixed;left:16px;bottom:16px;z-index:70}
     .wa a{display:grid;place-items:center;width:58px;height:58px;border-radius:50%;background:#25D366;box-shadow:0 12px 30px rgba(12,151,79,.28)}
     .wa svg{width:30px;height:30px;display:block}
@@ -140,7 +138,7 @@
 
         <div class="line"></div>
 
-        <!-- قسم الشحن داخل الرياض -->
+        <!-- الشحن داخل الرياض -->
         <section aria-label="خيارات الشحن داخل الرياض" class="ship">
           <h3 style="margin:4px 0 6px">الشحن داخل الرياض</h3>
           <div class="row">
@@ -148,9 +146,8 @@
               <input type="radio" name="shipping" value="aramex" id="ship_aramex" checked>
               <div>
                 <div class="title">أرامكس — خلال <b>3 أيام عمل</b></div>
-                <div class="meta">تسليم آمن إلى باب البيت. مناسب للطلبات غير العاجلة.</div>
+                <div class="meta">تسليم آمن إلى باب البيت. خيار عملي للطلبات غير العاجلة.</div>
                 <div class="chip" aria-hidden="true">
-                  <!-- ساعة -->
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#2643a1" stroke-width="1.5"/><path d="M12 7v5l3 2" stroke="#2643a1" stroke-width="1.5" stroke-linecap="round"/></svg>
                   3 أيام عمل
                 </div>
@@ -161,9 +158,8 @@
               <input type="radio" name="shipping" value="express" id="ship_express">
               <div>
                 <div class="title">التوصيل السريع — مندوب كيدز خلال <b>24 ساعة</b></div>
-                <div class="meta">الأسرع للمناسبات العاجلة. توصيل مرن داخل الرياض.</div>
+                <div class="meta">للزيارات العاجلة والمناسبات السريعة — تسليم بنفس روح الهدية.</div>
                 <div class="chip" aria-hidden="true">
-                  <!-- صاعقة -->
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M13 2 3 14h7l-1 8 10-12h-7l1-8Z" fill="#2643a1"/></svg>
                   خلال 24 ساعة
                 </div>
@@ -180,11 +176,11 @@
         <div class="line"></div>
 
         <h3>بيانات التوصيل</h3>
-        <form id="orderForm" class="form" onsubmit="return submitOrder(event)" data-endpoint="https://formspree.io/f/yourKidsOrdersEndpoint">
+        <form id="orderForm" class="form" onsubmit="return submitOrder(event)" data-endpoint="https://formspree.io/f/yourKidsOrdersEndpoint" novalidate>
           <div class="inp"><label>الاسم الكامل<input name="name" required placeholder="الاسم"></label></div>
           <div class="inp"><label>المدينة<input name="city" required placeholder="مثال: الرياض"></label></div>
           <div class="inp"><label>الحي<input name="district" required placeholder="مثال: الياسمين"></label></div>
-          <div class="inp"><label>رقم الجوال<input name="phone" type="tel" required placeholder="05xxxxxxxx" inputmode="tel"></label></div>
+          <div class="inp"><label>رقم الجوال<input name="phone" type="tel" required placeholder="05xxxxxxxx" inputmode="tel" pattern="^05\d{8}$" title="مثال: 05XXXXXXXX"></label></div>
           <div class="inp"><label>ملاحظات (اختياري)<textarea name="notes" rows="3" placeholder="أي تفاصيل إضافية"></textarea></label></div>
 
           <!-- حقول خفية -->
@@ -201,7 +197,7 @@
           <input type="hidden" name="card_msg" id="cardMsgField">
           <input type="hidden" name="card_from" id="cardFromField">
 
-          <button id="submitBtn" class="btn" type="submit" style="background:linear-gradient(135deg,var(--bg),var(--bg2));">إرسال الطلب</button>
+          <button id="submitBtn" class="btn" type="submit" data-mode="send" style="background:linear-gradient(135deg,var(--bg),var(--bg2));">إرسال الطلب</button>
           <div class="success" id="okMsg">تم إرسال الطلب بنجاح، سنعود إليك قريبًا.</div>
           <div class="error" id="noMsg">تعذر الإرسال الآن. جرب لاحقًا أو راسلنا مباشرة.</div>
         </form>
@@ -247,32 +243,20 @@
       </div>
     </div>
 
-    <!-- تواصل -->
+    <!-- تواصل: (أزلت لوحة "عن واعي كيدز") -->
     <section class="section" id="contact" aria-label="تواصل معنا">
       <h2>تواصل معنا</h2>
-      <div class="grid" style="grid-template-columns:1.1fr .9fr">
-        <div class="panel">
-          <h3 style="margin-top:0">رسالتك لنا</h3>
-          <form id="contactForm" class="form" onsubmit="return submitContact(event)" data-endpoint="https://formspree.io/f/yourKidsContactEndpoint">
-            <div class="inp"><label>اسمك<input name="name" type="text" required placeholder="الاسم"></label></div>
-            <div class="inp"><label>البريد الإلكتروني<input name="email" type="email" required placeholder="example@email.com"></label></div>
-            <div class="inp"><label>رقم الجوال<input name="phone" type="tel" placeholder="05xxxxxxxx" inputmode="tel"></label></div>
-            <div class="inp"><label>رسالتك<textarea name="message" rows="4" placeholder="اكتب رسالتك هنا"></textarea></label></div>
-            <button id="contactBtn" class="btn" type="submit" style="background:linear-gradient(135deg,var(--bg),var(--bg2));">إرسال</button>
-            <div class="success" id="contactOk">تم الإرسال بنجاح</div>
-            <div class="error" id="contactNo">تعذر الإرسال الآن</div>
-          </form>
-        </div>
-        <div class="panel">
-          <h3 style="margin-top:0">عن واعي كيدز</h3>
-          <p>نهتم بهدايا المواليد ونقدّم بوكسات أولاد/بنات بتغليف أنيق وكرت معايدة اختياري.</p>
-          <ul style="line-height:2">
-            <li>الرياض – المملكة العربية السعودية</li>
-            <li>البريد: <strong>hello@waai-kids.com</strong></li>
-            <li>سناب/تيك توك/إنستغرام: <strong>@waai.sa</strong></li>
-          </ul>
-          <img loading="lazy" decoding="async" alt="تغليف هدايا المواليد" src="https://i.postimg.cc/bJ0bS8J0/kids-packaging.jpg" style="border-radius:14px;box-shadow:var(--shadow);margin-top:6px">
-        </div>
+      <div class="panel">
+        <h3 style="margin-top:0">رسالتك لنا</h3>
+        <form id="contactForm" class="form" onsubmit="return submitContact(event)" data-endpoint="https://formspree.io/f/yourKidsContactEndpoint">
+          <div class="inp"><label>اسمك<input name="name" type="text" required placeholder="الاسم"></label></div>
+          <div class="inp"><label>البريد الإلكتروني<input name="email" type="email" required placeholder="example@email.com"></label></div>
+          <div class="inp"><label>رقم الجوال<input name="phone" type="tel" placeholder="05xxxxxxxx" inputmode="tel"></label></div>
+          <div class="inp"><label>رسالتك<textarea name="message" rows="4" placeholder="اكتب رسالتك هنا"></textarea></label></div>
+          <button id="contactBtn" class="btn" type="submit" style="background:linear-gradient(135deg,var(--bg),var(--bg2));">إرسال</button>
+          <div class="success" id="contactOk">تم الإرسال بنجاح</div>
+          <div class="error" id="contactNo">تعذر الإرسال الآن</div>
+        </form>
       </div>
     </section>
   </main>
@@ -289,7 +273,7 @@
     <a aria-label="تواصل واتساب" href="https://wa.me/966570905999" target="_blank" rel="noopener">
       <svg viewBox="0 0 32 32" aria-hidden="true" focusable="false">
         <circle cx="16" cy="16" r="16" fill="#25D366"/>
-        <path fill="#fff" d="M21.6 10.4a7.3 7.3 0 0 0-12.5 7.2L8 24l6.5-1.1a7.3 7.3 0 0 0 7-12.5Zm-5.5 11.7c-1.2 0-2.4-.3-3.5-.9l-.2-.1-2.1.4.6-2.1-.1-.2a6 6 0 1 1 5.3 2.9Zm3-4.4c-.2-.1-1-.5-1.2-.5-.2-.1-.3 0-.4.2l-.5.7c-.1.1-.2.2-.4.1-.7-.2-2.5-1.2-3.4-3-.1-.2 0-.3.1-.4l.3-.3c.1-.1.1-.2.2-.3 0-.1 0-.2-.1-.4 0-.1-.5-1.3-.7-1.7-.2-.4-.4-.3-.5-.3h-.3c-.1 0-.3.1-.5.3-.2.2-.6.6-.6 1.5s.6 1.8.7 1.9c.1.1 1 1.8 2.6 2.6.9.4 1.6.6 2 .7.5.1.9.1 1.2.1.4-.1 1.1-.4 1.2-.8.1-.4.1-.7.1-.8s-.1-.2-.3-.3Z"/>
+        <path fill="#fff" d="M21.6 10.4a7.3 7.3 0 0 0-12.5 7.2L8 24l6.5-1.1a7.3 7.3 0 0 0 7-12.5Zm-5.5 11.7c-1.2 0-2.4-.3-3.5-.9l-.2-.1-2.1.4.6-2.1-.1-.2a6 6 0 1 1 5.3 2.9Zm3-4.4c-.2-.1-1-.5-1.2-.5-.2-.1-.3 0-.4.2l-.5.7c-.1.1-.2.2-.4.1-.7-.2-2.5-1.2-3.4-3-.1-.2 0-.3.1-.4l.3-.3c.1-.1.1-.2.2-.3 0-.1 0-.2-.1-.4 0-.1-.5-1.3-.7-1.7-.2-.4-.4-.3-.5-.3h-.3c-.1 0 -.3.1-.5.3-.2.2-.6.6-.6 1.5s.6 1.8.7 1.9c.1.1 1 1.8 2.6 2.6.9.4 1.6.6 2 .7.5.1.9.1 1.2.1.4-.1 1.1-.4 1.2-.8.1-.4.1-.7.1-.8s-.1-.2-.3-.3Z"/>
       </svg>
     </a>
   </div>
@@ -298,7 +282,7 @@
     // الأسعار
     const PRICES = { boy:199, girl:209 };
 
-    // قراءة المعامل من الرابط/المخزن
+    // عناصر أساسية
     const params = new URLSearchParams(location.search);
     const initialItem = params.get('item') || localStorage.getItem('waaiCartItem') || 'boy';
 
@@ -315,11 +299,26 @@
     const qtyField = document.getElementById('qtyField');
     const totalField = document.getElementById('totalField');
 
-    // الشحن
     const shipRadios = document.querySelectorAll('input[name="shipping"]');
     const shipNote = document.getElementById('shipNote');
     const shipField = document.getElementById('shipField');
     const shipNoteField = document.getElementById('shipNoteField');
+
+    const orderForm = document.getElementById('orderForm');
+    const submitBtn = document.getElementById('submitBtn');
+
+    // بطاقة الإهداء
+    const giftToggle = document.getElementById('giftToggle');
+    const giftArea = document.getElementById('giftArea');
+    const toInput = document.getElementById('toInput');
+    const msgInput = document.getElementById('msgInput');
+    const fromInput = document.getElementById('fromInput');
+    const toTxt = document.getElementById('toTxt');
+    const msgTxt = document.getElementById('msgTxt');
+    const fromTxt = document.getElementById('fromTxt');
+    const count = document.getElementById('count');
+    const themeSelect = document.getElementById('themeSelect');
+    const card = document.getElementById('card');
 
     function formatSAR(n){ return `${n.toLocaleString('ar-EG')} ر.س`; }
 
@@ -343,6 +342,7 @@
       unitPriceField.value = unit;
       qtyField.value = q;
       totalField.value = tot;
+      updateCTA();
     }
 
     function updateShipping(){
@@ -356,42 +356,16 @@
         shipField.value = 'Kids Express (24h courier)';
         shipNoteField.value = 'الرياض: مندوب كيدز خلال 24 ساعة';
       }
+      updateCTA();
     }
-
-    variantRadios.forEach(r=> r.addEventListener('change', ()=> setVariant(r.value)));
-    qtyEl.addEventListener('input', updateTotals);
-    shipRadios.forEach(r=> r.addEventListener('change', updateShipping));
-
-    (function init(){
-      if(initialItem==='girl'){ variantRadios[1].checked = true; }
-      setVariant(initialItem);
-      updateShipping();
-    })();
-
-    // بطاقة الإهداء
-    const giftToggle = document.getElementById('giftToggle');
-    const giftArea = document.getElementById('giftArea');
-    giftToggle.addEventListener('change', ()=>{ giftArea.style.display = giftToggle.checked ? 'block' : 'none'; });
-
-    const toInput = document.getElementById('toInput');
-    const msgInput = document.getElementById('msgInput');
-    const fromInput = document.getElementById('fromInput');
-    const toTxt = document.getElementById('toTxt');
-    const msgTxt = document.getElementById('msgTxt');
-    const fromTxt = document.getElementById('fromTxt');
-    const count = document.getElementById('count');
-    const themeSelect = document.getElementById('themeSelect');
-    const card = document.getElementById('card');
-
-    [toInput,msgInput,fromInput].forEach(el=> el && el.addEventListener('input', syncCard));
-    msgInput && msgInput.addEventListener('input', ()=> count.textContent = msgInput.value.length);
-    themeSelect && themeSelect.addEventListener('change', applyTheme);
 
     function syncCard(){
       const v = themeSelect.value;
-      toTxt.textContent = toInput.value ? `إلى ${toInput.value}` : (v==='girl'?'إلى أميرتنا الصغيرة 💖':'إلى أميرنا الصغير 💙');
-      msgTxt.textContent = msgInput.value || 'نتمنى لك أيامًا سعيدة مليئة بالمرح! 🎉';
+      toTxt.textContent   = toInput.value  ? `إلى ${toInput.value}` : (v==='girl'?'إلى أميرتنا الصغيرة 💖':'إلى أميرنا الصغير 💙');
+      msgTxt.textContent  = msgInput.value || 'نتمنى لك أيامًا سعيدة مليئة بالمرح! 🎉';
       fromTxt.textContent = fromInput.value ? `من: ${fromInput.value}` : 'من: عائلتك';
+      if(count) count.textContent = msgInput.value.length;
+      updateCTA();
     }
     function applyTheme(){
       const v = themeSelect.value;
@@ -400,34 +374,89 @@
       syncCard();
     }
 
-    // طباعة البطاقة
-    document.getElementById('printBtn').addEventListener('click', ()=>{ window.print(); });
+    // تبديل حالة الزر بين "إرسال الطلب" و "ادفع الآن"
+    function formBasicsValid(){
+      // تحقق من الحقول المطلوبة
+      const reqOk = [...orderForm.querySelectorAll('[required]')].every(i=> i.value && (i.checkValidity?.() ?? true));
+      // كمية ومنتج
+      const qtyOk = parseInt(qtyEl.value||'0',10) >= 1;
+      // شحن
+      const shipOk = !!document.querySelector('input[name="shipping"]:checked');
+      return reqOk && qtyOk && shipOk;
+    }
+    function updateCTA(){
+      if(formBasicsValid()){
+        submitBtn.textContent = 'ادفع الآن';
+        submitBtn.dataset.mode = 'pay';
+      }else{
+        submitBtn.textContent = 'إرسال الطلب';
+        submitBtn.dataset.mode = 'send';
+      }
+    }
 
-    // نسخ نص البطاقة
+    // تهيئة
+    variantRadios.forEach(r=> r.addEventListener('change', ()=> setVariant(r.value)));
+    qtyEl.addEventListener('input', updateTotals);
+    shipRadios.forEach(r=> r.addEventListener('change', updateShipping));
+    [giftToggle,toInput,msgInput,fromInput].forEach(el=> el && el.addEventListener('input', syncCard));
+    themeSelect && themeSelect.addEventListener('change', applyTheme);
+
+    (function init(){
+      if(initialItem==='girl'){ variantRadios[1].checked = true; }
+      setVariant(initialItem);
+      updateShipping();
+      giftToggle.addEventListener('change', ()=>{ giftArea.style.display = giftToggle.checked ? 'block' : 'none'; });
+      updateCTA();
+    })();
+
+    // طباعة ونسخ البطاقة
+    document.getElementById('printBtn').addEventListener('click', ()=> window.print());
     document.getElementById('copyBtn').addEventListener('click', async ()=>{
       const txt = `${toTxt.textContent}\n\n${msgTxt.textContent}\n\n${fromTxt.textContent}`;
       try{ await navigator.clipboard.writeText(txt); alert('تم نسخ النص ✔'); }catch(_){ alert('تعذر النسخ، انسخ يدويًا.'); }
     });
 
+    // Placeholder لتفعيل Apple Pay لاحقًا
+    async function startApplePay(){
+      // عند التفعيل الحقيقي: استبدل هذا التابع بتكامل Apple Pay عبر Payment Request API / بوابة الدفع الخاصة بكم.
+      if(window.ApplePaySession){
+        alert('Apple Pay سيتاح قريبًا — سيتم تحويلك للدفع عند التفعيل ✅');
+        // مثال اندماج لاحق:
+        // const session = new ApplePaySession(6, paymentRequestConfig);
+        // session.begin();
+      }else{
+        alert('سيتم تفعيل الدفع عبر Apple قريبًا. حاليًا يمكنك إرسال الطلب فقط 🙏');
+      }
+    }
+
     // إرسال الطلب
     async function submitOrder(ev){
       ev.preventDefault();
-      const form = ev.target; const endpoint = form.dataset.endpoint; const btn = document.getElementById('submitBtn');
-      const ok = document.getElementById('okMsg'); const no = document.getElementById('noMsg');
-      ok.style.display='none'; no.style.display='none'; if(btn){ btn.disabled = true; btn.textContent = '... جارٍ الإرسال'; }
-
       // حقول البطاقة إن فعّلها العميل
       document.getElementById('cardToField').value   = giftToggle.checked ? toTxt.textContent   : '';
       document.getElementById('cardMsgField').value  = giftToggle.checked ? msgTxt.textContent  : '';
       document.getElementById('cardFromField').value = giftToggle.checked ? fromTxt.textContent : '';
 
-      const data = Object.fromEntries(new FormData(form).entries());
+      const endpoint = orderForm.dataset.endpoint;
+      const btn = submitBtn;
+      const ok = document.getElementById('okMsg');
+      const no = document.getElementById('noMsg');
+      ok.style.display='none'; no.style.display='none';
+
+      if(btn.dataset.mode === 'pay'){
+        // التحويل إلى Apple Pay (placeholder)
+        return startApplePay(), false;
+      }
+
+      // وضع الإرسال العادي
+      btn.disabled = true; btn.textContent = '... جارٍ الإرسال';
+      const data = Object.fromEntries(new FormData(orderForm).entries());
       try{
         const res = await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify(data)});
-        if(res.ok){ form.reset(); ok.style.display='block'; localStorage.removeItem('waaiCartItem'); }
+        if(res.ok){ orderForm.reset(); ok.style.display='block'; localStorage.removeItem('waaiCartItem'); updateCTA(); }
         else{ no.style.display='block'; }
       }catch(_){ no.style.display='block'; }
-      finally{ if(btn){ btn.disabled=false; btn.textContent='إرسال الطلب'; } }
+      finally{ btn.disabled=false; updateCTA(); }
       return false;
     }
 
@@ -436,13 +465,13 @@
       ev.preventDefault();
       const form = ev.target; const endpoint = form.dataset.endpoint; const btn = document.getElementById('contactBtn');
       const ok = document.getElementById('contactOk'); const no = document.getElementById('contactNo');
-      ok.style.display='none'; no.style.display='none'; if(btn){ btn.disabled = true; btn.textContent = '... جارٍ الإرسال'; }
+      ok.style.display='none'; no.style.display='none'; btn.disabled = true; btn.textContent = '... جارٍ الإرسال';
       const data = Object.fromEntries(new FormData(form).entries());
       try{
         const res = await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify(data)});
         if(res.ok){ form.reset(); ok.style.display='block'; } else { no.style.display='block'; }
       }catch(_){ no.style.display='block'; }
-      finally{ if(btn){ btn.disabled=false; btn.textContent='إرسال'; } }
+      finally{ btn.disabled=false; btn.textContent='إرسال'; }
       return false;
     }
   </script>
