@@ -1,3 +1,19 @@
+export default function HomePage() {
+  return (
+    <div className="space-y-10">
+      <section className="card bg-gradient-to-l from-yellow-100 to-blue-100">
+        <h1 className="text-2xl font-bold mb-2">واعي كيدز – متعة التعلم وبهجة الهدايا</h1>
+        <p>هدايا المواليد، ألعاب تعليمية متخصصة، وخدمات الطالب (مطويات، أنشطة، ملخصات).</p>
+      </section>
+
+      <section className="grid sm:grid-cols-3 gap-4">
+        <a href="/gifts" className="card hover:shadow">🎁 هدايا المواليد</a>
+        <a href="/toys" className="card hover:shadow">🧩 ألعاب تعليمية</a>
+        <a href="/services" className="card hover:shadow">📘 خدمات الطالب</a>
+      </section>
+    </div>
+  );
+}
 import Link from "next/link";
 
 export default function HomePage() {
