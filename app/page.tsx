@@ -1,56 +1,29 @@
-export default function HomePage() {
-  return (
-    <div className="space-y-10">
-      <section className="card bg-gradient-to-l from-yellow-100 to-blue-100">
-        <h1 className="text-2xl font-bold mb-2">واعي كيدز – متعة التعلم وبهجة الهدايا</h1>
-        <p>هدايا المواليد، ألعاب تعليمية متخصصة، وخدمات الطالب (مطويات، أنشطة، ملخصات).</p>
-      </section>
-
-      <section className="grid sm:grid-cols-3 gap-4">
-        <a href="/gifts" className="card hover:shadow">🎁 هدايا المواليد</a>
-        <a href="/toys" className="card hover:shadow">🧩 ألعاب تعليمية</a>
-        <a href="/services" className="card hover:shadow">📘 خدمات الطالب</a>
-      </section>
-    </div>
-  );
-}
 import Link from "next/link";
 
-export default function HomePage() {
+export default function Home() {
   return (
-    <div className="space-y-10">
-      <section className="card bg-gradient-to-l from-brand-yellow/40 to-brand-blue/20">
-        <div className="flex flex-col gap-4 items-start">
-          <h1 className="text-3xl font-bold">واعي كيدز – متعة التعلم وبهجة الهدايا</h1>
-          <p>هدايا المواليد، ألعاب تعليمية متخصصة، وخدمات الطالب (مطويات، أنشطة، ملخصات).</p>
-          <div className="flex gap-3">
-            <Link className="btn btn-primary" href="/gifts">هدايا المواليد</Link>
-            <Link className="btn border" href="/toys">ألعاب تعليمية</Link>
-            <Link className="btn border" href="/services">خدمات الطالب</Link>
-          </div>
+    <>
+      <section className="hero">
+        <h1>واعي كيدز – متعة التعلم وبهجة الهدايا</h1>
+        <p>هدايا مواليد راقية، ألعاب تعليمية متخصصة، وخدمات الطالب (مطويات، أنشطة، ملخصات).</p>
+        <div style={{display:"flex",gap:12,marginTop:12}}>
+          <Link className="btn" href="/gifts">هدايا المواليد</Link>
+          <Link className="btn" href="/toys">ألعاب تعليمية</Link>
+          <Link className="btn" href="/services">خدمات الطالب</Link>
         </div>
       </section>
 
-      <section className="grid sm:grid-cols-3 gap-4">
-        {[
-          { href: "/gifts", title: "هدايا المواليد", desc: "صناديق هدايا وشخصنة بالاسم" },
-          { href: "/toys", title: "ألعاب تعليمية", desc: "STEM، بازل، مكعبات حسية" },
-          { href: "/services", title: "خدمات الطالب", desc: "مطويات، أوراق عمل، ملخصات" }
-        ].map((c) => (
-          <Link key={c.href} href={c.href} className="card hover:shadow-md transition">
-            <h3 className="font-semibold">{c.title}</h3>
-            <p className="text-sm text-gray-600">{c.desc}</p>
-          </Link>
-        ))}
+      <section style={{marginTop:24}} className="grid grid-3">
+        <Link className="card" href="/gifts"><strong>🎁 هدايا المواليد</strong><p>صناديق شخصية، بطانيات، إطارات بصمة.</p></Link>
+        <Link className="card" href="/toys"><strong>🧩 ألعاب تعليمية</strong><p>STEM، بازل، مكعبات حسية وإبداع.</p></Link>
+        <Link className="card" href="/services"><strong>📘 خدمات الطالب</strong><p>مطويات، أوراق عمل، ملخصات للابتدائي.</p></Link>
       </section>
 
-      <section className="card">
-        <div className="grid sm:grid-cols-3 gap-4 text-center">
-          <div><div className="text-2xl">🚚</div><div>شحن محلي سريع</div></div>
-          <div><div className="text-2xl">🔒</div><div>دفع آمن</div></div>
-          <div><div className="text-2xl">↩️</div><div>استرجاع سهل</div></div>
-        </div>
+      <section style={{marginTop:24}} className="badges">
+        <div>🚚 شحن محلي سريع</div>
+        <div>🔒 دفع آمن</div>
+        <div>↩️ استرجاع سهل</div>
       </section>
-    </div>
+    </>
   );
 }
