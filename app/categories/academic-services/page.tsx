@@ -1,0 +1,1 @@
+import ProductGrid from '@/components/ProductGrid';import { products } from '@/lib/products';export const metadata={title:'خدمات علمية'};export default function Page(){return (<div className="space-y-4"><h1 className="text-2xl font-bold">خدمات علمية</h1><ProductGrid items={products.filter(p=>p.category==='services')}/></div>);}
