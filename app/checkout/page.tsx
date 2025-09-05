@@ -3,8 +3,6 @@ import { useCart } from "@/components/CartProvider";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-export const metadata = { title: "الدفع" };
-
 export default function CheckoutPage() {
   const { items, total, clear } = useCart();
   const router = useRouter();

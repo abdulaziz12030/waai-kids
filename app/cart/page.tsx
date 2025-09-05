@@ -4,8 +4,6 @@ import Link from "next/link";
 import { useCart } from "@/components/CartProvider";
 import CartSummary from "@/components/CartSummary";
 
-export const metadata = { title: "سلة المشتريات" };
-
 export default function CartPage() {
   const { items, remove, setQty } = useCart();
 
