@@ -19,7 +19,10 @@ export default function CheckoutPage() {
     );
   }
 
-  async function onSubmit(formData: FormData) {
+  async function onSubmitEvent(e: React.FormEvent<HTMLFormElement>) {
+      e.preventDefault();
+      const form = e.currentTarget as HTMLFormElement;
+      const formData = new FormData(form);
     setLoading(true);
     const name = String(formData.get("name") || "");
     const phone = String(formData.get("phone") || "");
@@ -42,7 +45,7 @@ export default function CheckoutPage() {
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
       <div className="lg:col-span-2 card p-6">
         <h1 className="text-2xl font-bold mb-4">بيانات الدفع والشحن</h1>
-        <form action={onSubmit} className="grid grid-cols-1 gap-4">
+        <form onSubmit={onSubmitEvent} className="grid grid-cols-1 gap-4">
           <label className="grid gap-1">
             <span>الاسم الكامل</span>
             <input name="name" required className="rounded border p-2" placeholder="اكتب اسمك" />
