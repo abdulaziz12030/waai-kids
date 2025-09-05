@@ -1,0 +1,28 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --brand: #06b6d4;
+}
+
+html, body {
+  height: 100%;
+  background: #f8fafc;
+}
+
+.btn {
+  @apply inline-flex items-center justify-center rounded-lg px-4 py-2 font-medium transition;
+}
+
+.btn-primary {
+  @apply bg-cyan-600 text-white hover:bg-cyan-700;
+}
+
+.btn-outline {
+  @apply border border-cyan-600 text-cyan-700 hover:bg-cyan-600 hover:text-white;
+}
+
+.card {
+  @apply bg-white rounded-xl shadow-sm border border-gray-100;
+}
