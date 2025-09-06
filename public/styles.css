@@ -1,0 +1,39 @@
+/* Shared styles for waai-kids static site */
+:root{
+  --bg: #fff;
+  --ink: #222;
+  --muted: #666;
+  --brand-a: #AEE3FF;
+  --brand-b: #FFD6E8;
+  --cta: #4C7AF2;
+  --radius: 16px;
+}
+*{box-sizing:border-box}
+html{font-family: system-ui, "Cairo", "Readex Pro", Arial, sans-serif; font-size:16px}
+body{margin:0;color:var(--ink);background:var(--bg);line-height:1.6}
+.container{max-width:1080px;margin:0 auto;padding:24px}
+.btn{display:inline-block;padding:12px 18px;border-radius:12px;background:var(--cta);color:#fff;text-decoration:none;font-weight:700}
+.btn.secondary{background:#333}
+.hero{
+  background: radial-gradient(1200px 400px at 70% -10%, var(--brand-a), transparent),
+              radial-gradient(1200px 400px at -10% 130%, var(--brand-b), transparent);
+  border-bottom:1px solid #eee;
+}
+.card{background:#fff;border-radius:var(--radius);box-shadow:0 8px 28px rgba(0,0,0,.06);padding:20px;border:1px solid #f1f1f1}
+.grid{display:grid;grid-template-columns:1fr;gap:20px}
+@media(min-width:900px){.grid{grid-template-columns:1fr 1fr}}
+.badge{display:inline-block;padding:6px 10px;border-radius:999px;background:#fff;border:1px dashed #ddd;font-size:.85rem;color:var(--muted)}
+footer{border-top:1px solid #eee;color:var(--muted)}
+header .brand{display:flex;align-items:center;gap:12px}
+header img{height:40px}
+nav a{margin-inline:10px;color:#333;text-decoration:none;font-weight:600}
+nav a:hover{text-decoration:underline}
+.rtl{direction:rtl}
+.product{display:flex;gap:20px;align-items:center}
+.product img{width:160px;height:160px;object-fit:cover;border-radius:12px;border:1px solid #eee}
+.price{font-weight:800;font-size:1.2rem}
+.kv{border-radius:24px;overflow:hidden;border:1px solid #eee}
+.kv img{display:block;width:100%;height:auto}
+.note{background:linear-gradient(90deg, #fff 0%, #fff 60%, #fdf6ff 100%);border:1px solid #f2e9ff;border-radius:16px;padding:14px}
+ul.clean{list-style: none; padding-left: 1rem}
+ul.clean li::before{content:"• "; color:#bbb}
