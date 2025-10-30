@@ -1,175 +1,413 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Waai Kids | هدايا مواليد راقية وناعمة</title>
-  <meta name="description" content="Waai Kids: بوكسات مواليد للأولاد والبنات بألوان باستيل راقية، جاهزة للإهداء مع تغليف أنيق.">
-  <meta property="og:title" content="Waai Kids | هدايا مواليد راقية وناعمة">
-  <meta property="og:description" content="بوكس للأولاد وآخر للبنات — اختيار أنيق وعملي للهدايا.">
-  <meta property="og:image" content="assets/slide1.jpg">
-  <link rel="icon" type="image/png" href="assets/logo-mark.png">
-  <link rel="apple-touch-icon" href="assets/logo-mark.png">
-  <link rel="stylesheet" href="styles.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>منصة واعي | حلول إدارية تصنع أثرًا</title>
+  <meta name="description" content="منصة واعي للاستشارات الإدارية والحلول الرقمية: لوحات متابعة، الحوكمة، الخطط التشغيلية، إنشاء مواقع تعريفية ومحتوى إداري — بكوادر سعودية متخصصة." />
+  <meta name="theme-color" content="#0d3b66"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#0d3b66; --bg2:#0f4c81; --acc:#2ec4b6;
+      --muted:#e6eef6; --text:#0f2640; --white:#fff;
+      --r:18px; --shadow:0 10px 25px rgba(13,59,102,.12);
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;font-family:'Cairo',system-ui,-apple-system,sans-serif;color:var(--text);background:linear-gradient(180deg,#f7fbff,#f3f7fc 35%,#f8fbff)}
+    a{color:inherit;text-decoration:none}
+    img{max-width:100%;display:block}
+
+    /* ===== شريط إخباري (يسار ← يمين) ===== */
+    .news-ticker{position:sticky;top:0;z-index:80;background:#0d3b66;color:#fff}
+    .news-ticker .inner{max-width:1200px;margin:auto;padding:8px 18px;overflow:hidden;white-space:nowrap;direction:ltr}
+    .news-ticker .ticker-text{display:inline-block;direction:ltr;will-change:transform;animation:tickerLTR 12s linear infinite}
+    @keyframes tickerLTR{from{transform:translateX(-100%)}to{transform:translateX(100%)}}
+
+    /* Header */
+    .nav{position:sticky;top:0;z-index:60;backdrop-filter:saturate(140%) blur(8px);background:rgba(255,255,255,.9);border-bottom:1px solid #e9f0f7}
+    .nav .wrap{max-width:1200px;margin:auto;display:flex;align-items:center;gap:12px;padding:12px 18px}
+    .brand{display:flex;align-items:center;gap:10px;font-weight:800;color:var(--bg)}
+    .brand img{height:36px;width:auto}
+    .brand .title{font-weight:800;color:#0d3b66}
+    .links{margin-inline-start:auto;display:flex;gap:18px;font-weight:600}
+    .btn{background:var(--bg);color:#fff;border:none;border-radius:12px;padding:10px 16px;font-weight:700;cursor:pointer;box-shadow:var(--shadow);transition:.25s}
+    .btn:hover{transform:translateY(-1px);background:#0b3356}
+    .btn-ghost{background:rgba(13,59,102,.18);border:1px solid rgba(255,255,255,.35);color:#fff}
+    .btn-ghost:hover{background:rgba(13,59,102,.30)}
+
+    /* Hero */
+    .hero{position:relative;color:#fff;min-height:58vh;display:grid;place-items:center}
+    .hero::before{
+      content:"";position:absolute;inset:0;
+      background:
+        linear-gradient(180deg,rgba(13,59,102,.25),rgba(13,59,102,.45)),
+        url('https://i.postimg.cc/15g8vHVX/09382-A4-B-A991-47-E6-8-C0-F-8-FDAB08-C01-EA.png') center/cover no-repeat;
+      background-position:center 35%;
+    }
+    .hero .wrap{max-width:1200px;margin:auto;display:grid;grid-template-columns:1fr;gap:28px;padding:56px 18px;position:relative}
+    .hero h1{font-size:clamp(26px,4.2vw,48px);line-height:1.25;margin:0 0 10px;font-weight:800}
+    .hero p.lead{opacity:.95;margin:0 0 20px;font-weight:600}
+    .hero-actions{display:flex;gap:12px;flex-wrap:wrap}
+
+    /* Sections */
+    .section{max-width:1200px;margin:54px auto;padding:0 18px}
+    .section h2{font-size:clamp(22px,3vw,32px);margin:0 0 14px;font-weight:800;color:var(--bg)}
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+    .card{background:#fff;border-radius:16px;box-shadow:var(--shadow);overflow:hidden;display:flex;flex-direction:column}
+    .card figure{aspect-ratio:16/9;overflow:hidden}
+    .card figure img{width:100%;height:100%;object-fit:cover;transform:scale(1.06);transition:transform .6s cubic-bezier(.2,.7,.3,1)}
+    .card:hover figure img{transform:scale(1.12)}
+    .card .content{padding:16px;display:flex;flex-direction:column;gap:8px}
+    .tag{display:inline-flex;align-items:center;gap:6px;background:var(--muted);color:#1b3956;padding:6px 10px;border-radius:999px;font-weight:700;font-size:.9rem}
+    .actions{margin-top:auto;display:flex;gap:8px}
+
+    /* Stats */
+    .stats{max-width:1200px;margin:34px auto;display:grid;grid-template-columns:repeat(4,1fr);gap:14px;padding:0 18px}
+    .stat{background:rgba(255,255,255,.85);backdrop-filter:blur(4px);border:1px solid #e4eef7;border-radius:16px;box-shadow:var(--shadow);padding:18px;text-align:center}
+    .kpi{font-size:clamp(26px,3.5vw,38px);font-weight:800;color:var(--acc)}
+    .kpi small{font-size:.55em;color:var(--acc)}
+    .stat p{margin:6px 0 0;font-weight:700;color:#355a7e}
+
+    /* Contact */
+    .contact{display:grid;grid-template-columns:1.1fr .9fr;gap:18px;align-items:stretch}
+    .panel{background:#fff;border-radius:16px;box-shadow:var(--shadow);padding:18px}
+    .lead-form{display:grid;gap:10px}
+    .inp{display:flex;flex-direction:column;gap:6px}
+    .inp input,.inp select,.inp textarea{border:1px solid #d9e6f2;border-radius:12px;padding:12px 14px;font-size:1rem;outline:none;background:#fbfdff}
+    .inp input:focus,.inp select:focus,.inp textarea:focus{border-color:var(--bg)}
+    .note{font-size:.9rem;color:#5d748d}
+    .success,.error{display:none;margin-top:8px;padding:10px 12px;border-radius:10px;font-weight:700}
+    .success{background:#e8fff7;color:#0a6b52;border:1px solid #baf0df}
+    .error{background:#fff1f1;color:#8b1d1d;border:1px solid #f1cccc}
+
+    /* Footer */
+    footer{margin-top:56px;background:#0e3c67;color:#cfe3f8}
+    footer .wrap{max-width:1200px;margin:auto;padding:22px 18px;display:flex;justify-content:space-between;align-items:center;gap:12px}
+    .foot-links{display:flex;gap:14px;flex-wrap:wrap}
+    .foot-links a{color:#dce9f7}
+    .credit{opacity:.85}
+
+    /* WhatsApp & ToTop */
+    .wa{position:fixed;left:16px;bottom:16px;z-index:70}
+    .wa a{display:grid;place-items:center;width:58px;height:58px;border-radius:50%;background:#25D366;box-shadow:0 12px 30px rgba(12,151,79,.28)}
+    .wa svg{width:32px;height:32px;fill:#fff}
+    #toTop{position:fixed;right:16px;bottom:86px;z-index:70;width:52px;height:52px;border:none;border-radius:14px;background:rgba(13,59,102,.9);color:#fff;box-shadow:0 10px 24px rgba(13,59,102,.25);display:none;cursor:pointer;font-size:20px}
+
+    /* Reveal */
+    .reveal{opacity:0;transform:translateY(18px);transition:opacity .7s ease, transform .7s ease}
+    .reveal.show{opacity:1;transform:none}
+    .float{animation:float 7s ease-in-out infinite}
+    @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+
+    /* Responsive */
+    @media (max-width:1024px){
+      .contact{grid-template-columns:1fr}
+      .grid{grid-template-columns:repeat(2,1fr)}
+      .stats{grid-template-columns:repeat(2,1fr)}
+    }
+    @media (max-width:640px){
+      .links{display:none}
+      .grid{grid-template-columns:1fr}
+      .stats{grid-template-columns:1fr}
+      .hero::before{background-position:center 45%}
+    }
+  </style>
+<link rel="preload" as="image" href="https://i.postimg.cc/15g8vHVX/09382-A4-B-A991-47-E6-8-C0-F-8-FDAB08-C01-EA.png">
 </head>
-<body>
+<body id="top">
 
-<header class="nav">
-  <a href="index.html" class="brand" aria-label="العودة للرئيسية">
-    <img src="assets/logo-lockup.svg" alt="Waai Kids"
-         onerror="this.onerror=null;this.src='assets/logo-lockup.png'">
-  </a>
-  <nav class="links" aria-label="روابط رئيسية">
-    <a href="index.html" aria-current="page">الرئيسية</a>
-    <a href="products.html">المتجر</a>
-    <a href="about.html">من نحن</a>
-    <a href="contact.html">تواصل</a>
-  </nav>
-</header>
+  <!-- News Ticker -->
+  <div class="news-ticker" role="status" aria-label="إشعار">
+    <div class="inner"><span class="ticker-text"> قريبا الإطلاق الرسمي لمنصة واعي | استشارات إدارية وحلول رقمية🚀 </span></div>
+  </div>
 
-<main>
+  <!-- Header -->
+  <header class="nav">
+    <div class="wrap">
+      <a href="#top" class="brand" aria-label="منصة واعي">
+        <img loading="lazy" decoding="async" src="https://i.postimg.cc/Y9f0wpZK/EE23-D38-C-FE2-F-407-A-8-D7-C-1828-DE1-E0-B7-A.png" alt="شعار منصة واعي">
+        <div class="title">منصة واعي - استشارات إدارية وحلول رقمية.</div>
+      </a>
+      <nav class="links" aria-label="روابط رئيسية">
+        <a href="#services">الخدمات</a>
+        <a href="#impact">أثرنا</a>
+        <a href="#contact">تواصل</a>
+      </nav>
+    </div>
+  </header>
 
-  <!-- ====== (أ) HERO SLIDER: بنرات عرضية 1920×600 ====== -->
-  <section class="hero-slider" aria-label="بنرات رئيسية">
-    <div class="slides">
-      <div class="slide is-active" id="slide-1">
-        <img src="assets/slide1.jpg" alt="هدايا مواليد — بوكس للأولاد" loading="eager" decoding="async" fetchpriority="high">
-        <div class="caption">
-          <h1>هدايا مواليد راقية للأولاد</h1>
-          <p>بوكس أنيق بتفاصيل ناعمة</p>
-          <a class="btn btn-primary" href="products.html#boy">تسوّق الآن</a>
-        </div>
-      </div>
-      <div class="slide" id="slide-2">
-        <img src="assets/slide2.jpg" alt="هدايا مواليد — بوكس للبنات" loading="lazy" decoding="async">
-        <div class="caption">
-          <h1>بوكس البنات بتغليف فاخر</h1>
-          <p>ألوان باستيل ولمسات دافئة</p>
-          <a class="btn btn-primary" href="products.html#girl">تسوّق الآن</a>
-        </div>
-      </div>
-      <div class="slide" id="slide-3">
-        <img src="assets/slide3.jpg" alt="تهنئة وهدية للمولود" loading="lazy" decoding="async">
-        <div class="caption">
-          <h1>جاهز للإهداء فورًا</h1>
-          <p>بطاقة معايدة ولفة أنيقة</p>
-          <a class="btn btn-primary" href="products.html">شاهد جميع البوكسات</a>
+  <!-- Hero -->
+  <section class="hero" aria-label="القسم الترحيبي">
+    <div class="wrap">
+      <div class="reveal">
+        <h1>نصمّم حلولًا إداريّة <span style="color:#2ec4b6">تصنع أثرًا</span></h1>
+        <p class="lead">استشارات، لوحات متابعة، حوكمة، إنشاء مواقع، ومحتوى إداري يعزز أداء منظمتك — بكوادر سعودية متخصصة.</p>
+        <div class="hero-actions">
+          <!-- ضبط اختيار "طلب استشارة" تلقائيًا -->
+          <a href="#leadForm" class="btn btn-ghost ask-btn" data-service="طلب استشارة">اطلب استشارة الآن</a>
+          <a href="#services" class="btn btn-ghost" aria-label="استعرض خدماتنا">استعرض خدماتنا</a>
         </div>
       </div>
     </div>
-
-    <!-- أسهم -->
-    <button class="nav-arrow prev" aria-label="السابق">‹</button>
-    <button class="nav-arrow next" aria-label="التالي">›</button>
-
-    <!-- نقاط -->
-    <div class="dots" role="tablist" aria-label="التنقل بين البنرات">
-      <button class="dot is-active" aria-label="الشريحة 1" aria-controls="slide-1"></button>
-      <button class="dot" aria-label="الشريحة 2" aria-controls="slide-2"></button>
-      <button class="dot" aria-label="الشريحة 3" aria-controls="slide-3"></button>
-    </div>
   </section>
 
-  <!-- ====== FEATURES ====== -->
-  <section class="features container" aria-label="مميزات واعي كيدز">
-    <h2 class="section-title">لماذا تختار <span class="brand-text">Waai Kids</span>؟</h2>
-    <div class="grid features-grid">
-      <article class="card feature">
-        <h3>تغليف فاخر</h3>
-        <p>بوكس أنيق مناسب للإهداء مباشرة مع بطاقة معايدة.</p>
-      </article>
-      <article class="card feature">
-        <h3>اختيار عملي</h3>
-        <p>محتويات مختارة بعناية للمواليد — جودة وخامات ناعمة.</p>
-      </article>
-      <article class="card feature">
-        <h3>توصيل سريع</h3>
-        <p>نجهّز طلبك بسرعة ونوصله لعنوانك أو للمهدى له.</p>
-      </article>
-    </div>
-  </section>
+  <!-- Services -->
+  <section class="section" id="services" aria-label="خدماتنا">
+    <h2 class="reveal">خدماتنا</h2>
+    <p class="note reveal">نُصمم الخدمة بما يوافق احتياجك… من التخطيط إلى التشغيل.</p>
 
-  <!-- ====== TEASER PRODUCTS (عرضية بفضل thumb) ====== -->
-  <section class="container" aria-label="بوكسات المواليد">
-    <h2 class="section-title">بوكسات المواليد</h2>
-    <div class="grid products-grid">
-      <article class="card product">
-        <div class="thumb">
-          <img src="assets/box-boy.jpg" alt="بوكس مواليد للأولاد" loading="lazy" decoding="async">
+    <div class="grid">
+      <article class="card reveal">
+        <figure><img loading="lazy" decoding="async" alt="حوكمة سعودية" src="https://i.postimg.cc/13YWmxqr/B2-AFBABD-C66-B-43-BE-8-EB0-48-F61-CB8-C7-BC.png"></figure>
+        <div class="content">
+          <h3>الحوكمة وبناء الأطر</h3>
+          <div class="tag">سياسات & إجراءات</div>
+          <p>أدلة وسياسات ومصفوفة صلاحيات تعزز الانضباط والوضوح المؤسسي.</p>
+          <div class="actions"><a href="#leadForm" class="btn ask-btn" data-service="حوكمة وسياسات">اطلب الخدمة</a></div>
         </div>
-        <h3>بوكس الأولاد</h3>
-        <a class="btn" href="products.html#boy">شوف التفاصيل</a>
       </article>
-      <article class="card product">
-        <div class="thumb">
-          <img src="assets/box-girl.jpg" alt="بوكس مواليد للبنات" loading="lazy" decoding="async">
+
+      <article class="card reveal">
+        <figure><img loading="lazy" decoding="async" alt="لوحات متابعة سعودية" src="https://i.postimg.cc/FzsFVJHv/022-DFB05-625-C-4-BD8-AF52-495-C5-DB1-D56-B.png"></figure>
+        <div class="content">
+          <h3>لوحات متابعة تفاعلية</h3>
+          <div class="tag">KPI Dashboards</div>
+          <p>تصميم وربط لوحات قياس لصنّاع القرار، مع تقارير تنفيذ تُظهر التقدم.</p>
+          <div class="actions"><a href="#leadForm" class="btn ask-btn" data-service="لوحات متابعة">اطلب الخدمة</a></div>
         </div>
-        <h3>بوكس البنات</h3>
-        <a class="btn" href="products.html#girl">شوف التفاصيل</a>
       </article>
+
+      <article class="card reveal">
+        <figure><img loading="lazy" decoding="async" alt="الخطط التشغيلية" src="https://i.postimg.cc/g23RzDDj/7-E690-EF5-E2-FB-46-EA-8789-91-F72-F14-ABED.png"></figure>
+        <div class="content">
+          <h3>الخطط التشغيلية</h3>
+          <div class="tag">من الإستراتيجية للتنفيذ</div>
+          <p>تحويل الأهداف إلى مبادرات ومؤشرات وجدولة تفصيلية قابلة للقياس.</p>
+          <div class="actions"><a href="#leadForm" class="btn ask-btn" data-service="الخطط التشغيلية">اطلب الخدمة</a></div>
+        </div>
+      </article>
+
+      <article class="card reveal">
+        <figure><img loading="lazy" decoding="async" alt="إنشاء مواقع تعريفية" src="https://i.postimg.cc/hPyVXz4p/713754-EC-A214-45-FD-BBFD-4-CF6-BB978-A2-F.png"></figure>
+        <div class="content">
+          <h3>إنشاء مواقع تعريفية</h3>
+          <div class="tag"> حلول رقمية مبتكرة</div>
+          <p>مواقع تعريفية حديثة سريعة وآمنة ومتوافقة مع الجوال وهوية منظمتك.</p>
+          <div class="actions"><a href="#leadForm" class="btn ask-btn" data-service="مواقع تعريفية">اطلب الخدمة</a></div>
+        </div>
+      </article>
+
+      <!-- جديد: إعداد التقارير والعروض الاحترافية -->
+      <article class="card reveal">
+        <figure><img loading="lazy" decoding="async" alt="إعداد التقارير والعروض الاحترافية" src="https://i.postimg.cc/g2Ld850t/image.png"></figure>
+        <div class="content">
+          <h3>إعداد التقارير والعروض الاحترافية</h3>
+          <div class="tag">تقارير وعروض</div>
+          <p>تصميم وإعداد تقارير احترافية وعروض تقديمية متكاملة تدعم اتخاذ القرار وتعكس هوية منظمتك بصورة مميزة.</p>
+          <div class="actions"><a href="#leadForm" class="btn ask-btn" data-service="إعداد التقارير والعروض الاحترافية">اطلب الخدمة</a></div>
+        </div>
+      </article>
+
+      <!-- جديد: إنشاء وتطوير السيرة الذاتية على لينكدإن -->
+      <article class="card reveal">
+        <figure><img loading="lazy" decoding="async" alt="إنشاء وتحسين السيرة الذاتية " src="https://i.postimg.cc/859xpkR1/image.png"></figure>
+        <div class="content">
+          <h3>إنشاء وتطوير السيرة الذاتية على لينكدإن</h3>
+          <div class="tag">LinkedIn Profile</div>
+          <p>صياغة وتطوير السيرة الذاتية باحترافية، وتحسين ملفك الشخصي على لينكدإن ليعكس خبراتك ويزيد فرصك الوظيفية.</p>
+          <div class="actions"><a href="#leadForm" class="btn ask-btn" data-service="إنشاء وتطوير السيرة الذاتية على لينكدإن">اطلب الخدمة</a></div>
+        </div>
+      </article>
+
     </div>
   </section>
 
-  <!-- ====== CTA ====== -->
-  <section class="cta container" aria-label="دعوة للإجراء">
-    <h2>جاهز تختار الهدية المثالية؟</h2>
-    <a class="btn btn-primary" href="products.html">ابدأ التسوّق</a>
+  <!-- أثرنا (مكان محفوظ إن رغبت لاحقًا) -->
+  <section class="section" id="impact" aria-label="أثرنا">
+    <h2 class="reveal">أثرنا</h2>
+    <p class="note reveal">نماذج مختصرة للأثر الذي صنعناه لعملائنا.</p>
   </section>
-</main>
 
-<footer class="footer">
-  <p>© Waai Kids — كل الحقوق محفوظة</p>
-</footer>
+  <!-- Stats -->
+  <section class="section" id="numbers" aria-label="أرقام تُثبت الأثر">
+    <h2 class="reveal">أرقام تُثبت الأثر</h2>
+    <div class="stats">
+      <div class="stat reveal"><div class="kpi"><span class="counter" data-target="120">0</span><small>+</small></div><p>جهة مستفيدة</p></div>
+      <div class="stat reveal"><div class="kpi"><span class="counter" data-target="85">0</span><small>%</small></div><p>تحسن في سرعة التقارير</p></div>
+      <div class="stat reveal"><div class="kpi"><span class="counter" data-target="40">0</span></div><p>لوحة متابعة مُنفّذة</p></div>
+      <div class="stat reveal"><div class="kpi"><span class="counter" data-target="15">0</span><small>+</small></div><p>سنوات خبرة</p></div>
+    </div>
+  </section>
 
-<!-- زر واتساب عائم (أسفل يسار) -->
-<a href="https://wa.me/966570905999" class="whatsapp-float left" target="_blank" aria-label="تواصل واتساب 0570905999">
-  <svg viewBox="0 0 32 32" aria-hidden="true"><path fill="#fff" d="M19.11 17.58a4.7 4.7 0 0 1-1.53-.3c-.24-.1-.55-.24-.95-.47-.4-.22-.8-.5-1.21-.86-.4-.35-.79-.77-1.16-1.24-.36-.47-.64-.92-.83-1.33-.2-.41-.33-.78-.4-1.1-.07-.33-.1-.63-.1-.9 0-.3.07-.57.22-.82.14-.25.34-.46.6-.62.26-.17.55-.25.86-.25.12 0 .24.06.37.17.12.1.25.25.38.42l.26.36c.1.14.18.28.25.41.07.13.1.25.1.35 0 .1-.03.22-.1.37-.07.15-.14.29-.22.42-.07.13-.14.25-.2.35-.06.1-.1.2-.1.28 0 .08.03.17.1.27.06.1.14.2.21.3.08.1.17.2.28.3.1.1.2.2.3.3.1.09.21.18.32.27.11.09.21.17.3.24.1.07.18.12.24.16.07.04.13.06.18.06.06 0 .12-.02.2-.07.07-.05.15-.1.23-.16.08-.06.16-.12.25-.19.09-.07.17-.11.25-.11.06 0 .13.02.22.06.08.04.18.08.28.13.1.05.21.1.32.16.1.06.2.11.28.17.07.06.13.11.18.17.04.06.07.11.07.16 0 .2-.05.42-.17.67-.11.25-.23.45-.36.61-.13.17-.28.32-.45.47-.17.15-.34.27-.52.36-.18.1-.35.16-.51.2-.17.03-.3.05-.4.05Z"/><path fill="#25D366" d="M27.57 4.43A13.98 13.98 0 0 0 16 0C7.16 0 0 7.16 0 16c0 2.8.74 5.43 2.02 7.72L0 32l8.5-2.22A15.95 15.95 0 0 0 16 32c8.84 0 16-7.16 16-16 0-3.73-1.3-7.16-3.43-9.57ZM16 29.09c-2.67 0-5.13-.82-7.16-2.22l-.52-.35-5.03 1.31 1.35-4.9-.36-.56A12.95 12.95 0 0 1 3.05 16C3.05 8.81 8.81 3.05 16 3.05S28.95 8.81 28.95 16 23.19 29.09 16 29.09Z"/></svg>
-</a>
+  <!-- Contact -->
+  <section class="section" id="contact" aria-label="تواصل معنا">
+    <h2 class="reveal">تواصل معنا</h2>
+    <div class="contact">
+      <div class="panel reveal">
+        <h3 style="margin-top:0">تعرف علينا أكثر</h3>
+        <p>نساعدك على ترتيب الفوضى التشغيلية وتحويلها إلى نتائج قابلة للقياس عبر أدوات تنفيذ ذكية وهوية سعودية معاصرة.</p>
+        <ul style="line-height:2">
+          <li>الرياض – المملكة العربية السعودية</li>
+          <li>البريد: <strong>abdulaziz.algharawi@gmail.com</strong></li>
+          <li>سناب/تيك توك/إنستغرام: <strong>@waai.sa</strong></li>
+        </ul>
+        <img loading="lazy" decoding="async" class="reveal" alt="فريق سعودي يعمل على مشاريع"
+             src="https://i.postimg.cc/HkzjxPfS/D05-FD7-C9-012-B-4244-8762-784680-DD235-F.png"
+             referrerpolicy="no-referrer"
+             onerror="this.src='https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=1600&auto=format&fit=crop'"
+             style="border-radius:14px;box-shadow:var(--shadow);margin-top:6px">
+      </div>
 
-<!-- سكرِبت السلايدر -->
-<script>
-(function(){
-  const slider  = document.querySelector('.hero-slider');
-  const slides  = Array.from(slider.querySelectorAll('.slide'));
-  const dots    = Array.from(slider.querySelectorAll('.dot'));
-  const prevBtn = slider.querySelector('.prev');
-  const nextBtn = slider.querySelector('.next');
+      <div class="panel reveal">
+        <h3 style="margin-top:0">نموذج طلب خدمة</h3>
+        <form id="leadForm" class="lead-form" onsubmit="return submitLead(event)"
+              data-endpoint="https://formspree.io/f/xdkdynbr">
+          <div class="inp"><label>الاسم الكامل</label><input name="name" type="text" required placeholder="الاسم"></div>
+          <div class="inp"><label>البريد الإلكتروني</label><input name="email" type="email" required placeholder="example@email.com"></div>
+          <div class="inp"><label>رقم الجوال</label><input name="phone" type="tel" placeholder="05xxxxxxxx" inputmode="tel"></div>
+          <div class="inp">
+            <label>نوع الخدمة</label>
+            <select name="service" id="serviceSelect" required>
+              <option value="" selected disabled>اختر الخدمة</option>
+              <option>طلب استشارة</option>
+              <option>لوحات متابعة</option>
+              <option>الخطط التشغيلية</option>
+              <option>حوكمة وسياسات</option>
+              <option>مواقع تعريفية</option>
+              <!-- جديد -->
+              <option>إعداد التقارير والعروض الاحترافية</option>
+              <option>إنشاء وتطوير السيرة الذاتية على لينكدإن</option>
+            </select>
+          </div>
+          <div class="inp"><label>وصف مختصر للاحتياج</label><textarea name="message" rows="4" placeholder="عرّف لنا ما الذي تود إنجازه"></textarea></div>
+          <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" style="display:none">
+          <button id="submitBtn" class="btn" type="submit" style="background:linear-gradient(135deg,var(--bg),var(--bg2));">إرسال الطلب</button>
+          <div class="success" id="okMsg">تم إرسال الطلب بنجاح، سنعود إليك قريبًا.</div>
+          <div class="error" id="noMsg">تعذر الإرسال الآن. جرب لاحقًا أو راسلنا مباشرة.</div>
+          <p class="note">بالإرسال، توافق على التواصل معك بخصوص الخدمة.</p>
+        </form>
+      </div>
+    </div>
+  </section>
 
-  let i = 0, timer;
+  <!-- Footer -->
+  <footer>
+    <div class="wrap">
+      <div class="credit">© 2025 منصة واعي – جميع الحقوق محفوظة</div>
+      <nav class="foot-links"><a href="#contact">تواصل</a></nav>
+    </div>
+  </footer>
 
-  function goTo(idx){
-    slides[i].classList.remove('is-active');
-    dots[i].classList.remove('is-active');
-    i = (idx + slides.length) % slides.length;
-    slides[i].classList.add('is-active');
-    dots[i].classList.add('is-active');
-  }
+  <!-- WhatsApp Floating (أيقونة رسمية على اليسار) -->
+  <div class="wa">
+    <a aria-label="تواصل واتساب" href="https://wa.me/966552794082" target="_blank" rel="noopener">
+      <!-- Bootstrap Icons - WhatsApp (مقبول رسميًا) -->
+      <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+        <path fill="#fff" d="M13.601 2.326A7.94 7.94 0 0 0 8.012.003a7.99 7.99 0 0 0-6.94 11.868L.001 16l4.21-1.06A7.99 7.99 0 0 0 8.012 16h.003a7.99 7.99 0 0 0 5.586-13.674ZM8.015 14.5a6.48 6.48 0 0 1-3.307-.91l-.237-.141-2.5.629.667-2.438-.154-.25a6.5 6.5 0 1 1 5.531 3.11Zm3.676-4.842c-.2-.1-1.178-.58-1.36-.646-.182-.066-.315-.1-.448.1-.133.2-.513.646-.628.78-.115.133-.232.15-.432.05-.2-.1-.846-.311-1.612-.992-.595-.53-.997-1.183-1.112-1.383-.115-.2-.012-.307.087-.407.089-.088.2-.23.3-.345.1-.115.133-.2.2-.332.066-.133.033-.25-.011-.35-.045-.1-.46-1.113-.633-1.52-.166-.4-.336-.35-.448-.356l-.382-.007c-.133 0-.35.05-.535.25-.184.2-.7.68-.7 1.65 0 .97.717 1.907.817 2.037.1.13 1.415 2.161 3.428 3.032.479.211.852.338 1.142.432.479.153.913.133 1.255.084.387-.056 1.178-.48 1.345-.94.167-.46.167-.86.117-.94-.05-.084-.185-.137-.395-.237Z"/>
+      </svg>
+    </a>
+  </div>
 
-  function next(){ goTo(i+1); }
-  function prev(){ goTo(i-1); }
+  <!-- Back to top -->
+  <button id="toTop" aria-label="العودة للأعلى">↑</button>
 
-  // autoplay
-  function start(){ stop(); timer = setInterval(next, 5000); }
-  function stop(){ if (timer) clearInterval(timer); }
+  <!-- Thank You overlay -->
+  <div id="thanks" class="thanks" aria-hidden="true" style="position:fixed;inset:0;background:rgba(13,59,102,.9);color:#fff;display:none;align-items:center;justify-content:center;z-index:80">
+    <div class="box" style="max-width:620px;margin:0 18px;background:linear-gradient(180deg,rgba(255,255,255,.12),rgba(255,255,255,.06));border:1px solid rgba(255,255,255,.25);border-radius:18px;padding:24px;box-shadow:0 20px 50px rgba(0,0,0,.35);text-align:center">
+      <h2>شكرًا! 🎉</h2>
+      <p>وصل طلبك بنجاح إلى <strong>abdulaziz.algharawi@gmail.com</strong> وسنتواصل معك قريبًا.</p>
+      <div style="margin-top:14px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+        <a href="#top" class="btn btn-outline" onclick="hideThanks()">العودة للصفحة الرئيسية</a>
+        <a href="https://wa.me/966552794082" class="btn">تواصل واتساب</a>
+      </div>
+    </div>
+  </div>
 
-  // arrows
-  nextBtn.addEventListener('click', ()=>{ next(); start(); });
-  prevBtn.addEventListener('click', ()=>{ prev(); start(); });
+  <script>
+    // تفعيل أزرار "اطلب الخدمة" واختيار الخدمة تلقائيًا
+    document.querySelectorAll('.ask-btn').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const serviceText = btn.dataset.service || 'طلب استشارة';
+        const form = document.getElementById('leadForm');
+        if(form){
+          // اذهب فورًا للنموذج (بدون تمرير ناعم)
+          form.scrollIntoView();
+          const select = document.getElementById('serviceSelect');
+          if(select){
+            Array.from(select.options).forEach(o=>{
+              o.selected = (o.text.trim() === serviceText.trim());
+            });
+          }
+          const nameInput = form.querySelector('input[name="name"]');
+          if(nameInput) nameInput.focus();
+        }
+      });
+    });
 
-  // dots
-  dots.forEach((d,idx)=> d.addEventListener('click', ()=>{ goTo(idx); start(); }));
+    // Scroll reveal + counters
+    const io = new IntersectionObserver((entries)=>{
+      entries.forEach(e=>{
+        if(e.isIntersecting){
+          e.target.classList.add('show');
+          if(e.target.querySelector && e.target.querySelector('.counter')) startCounters(e.target);
+          io.unobserve(e.target);
+        }
+      })
+    },{threshold:.2});
+    document.querySelectorAll('.reveal, .stat, .card').forEach(el=>io.observe(el));
 
-  // swipe (للجوال)
-  let sx=0;
-  slider.addEventListener('touchstart', e=> sx = e.touches[0].clientX, {passive:true});
-  slider.addEventListener('touchend', e=>{
-    const dx = e.changedTouches[0].clientX - sx;
-    if (Math.abs(dx) > 40){ dx<0 ? next() : prev(); start(); }
-  });
+    function startCounters(scope){
+      scope.querySelectorAll('.counter').forEach(el=>{
+        const target = +el.dataset.target; const dur = 1400 + Math.random()*800;
+        const start = performance.now();
+        function tick(t){
+          const p = Math.min(1,(t-start)/dur);
+          el.textContent = Math.floor(target*p).toLocaleString('en-US');
+          if(p<1) requestAnimationFrame(tick);
+        }
+        requestAnimationFrame(tick);
+      });
+    }
 
-  start();
-})();
-</script>
+    // Back to top
+    const toTop = document.getElementById('toTop');
+    window.addEventListener('scroll', ()=>{ toTop.style.display = (window.scrollY > 400) ? 'block' : 'none'; });
+    toTop.addEventListener('click', ()=> window.scrollTo({top:0}));
 
+    // Thank You overlay helpers
+    const thanksEl = document.getElementById('thanks');
+    function showThanks(){ thanksEl.style.display='flex'; thanksEl.setAttribute('aria-hidden','false'); }
+    function hideThanks(){ thanksEl.style.display='none'; thanksEl.setAttribute('aria-hidden','true'); }
+
+    // Submit form (Formspree)
+    async function submitLead(ev){
+      ev.preventDefault();
+      const form = ev.target;
+      const endpoint = form.dataset.endpoint;
+      const btn = document.getElementById('submitBtn') || form.querySelector('button[type="submit"]');
+      const ok = document.getElementById('okMsg');
+      const no = document.getElementById('noMsg');
+      ok.style.display='none'; no.style.display='none';
+      if(btn){ btn.disabled = true; btn.textContent = '... جارٍ الإرسال'; }
+      const data = Object.fromEntries(new FormData(form).entries());
+      try{
+        const res = await fetch(endpoint, {
+          method:'POST', headers:{'Content-Type':'application/json','Accept':'application/json'},
+          body: JSON.stringify(data)
+        });
+        if(res.ok){
+          form.reset(); ok.style.display='block'; showThanks();
+          setTimeout(()=>{ hideThanks(); }, 7000);
+        }else{
+          no.style.display='block';
+        }
+      }catch(_){ no.style.display='block'; }
+      finally{ if(btn){ btn.disabled=false; btn.textContent='إرسال الطلب'; } }
+      return false;
+    }
+  </script>
 </body>
 </html>
