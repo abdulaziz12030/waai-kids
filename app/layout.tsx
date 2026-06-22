@@ -1,12 +1,13 @@
-import type { Metadata } from "next";
-import "./globals.css";
+import type { Metadata } from 'next';
+import './globals.css';
+import './phase3.css';
 
 export const metadata: Metadata = {
-  title: "نماء",
-  description: "منصة تربوية تعليمية للأطفال والطلاب"
+  title: 'نماء',
+  description: 'منصة تربوية تعليمية للأطفال والطلاب'
 };
 
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="ar" dir="rtl">
       <body>{children}</body>
