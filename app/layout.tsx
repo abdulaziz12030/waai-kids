@@ -6,6 +6,7 @@ import './mobile.css';
 import './avatar-controls.css';
 import './dashboard-v2.css';
 import './motion.css';
+import './goals.css';
 
 export const metadata: Metadata = {
   title: 'نماء',
