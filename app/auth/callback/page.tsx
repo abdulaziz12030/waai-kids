@@ -18,7 +18,7 @@ export default function AuthCallbackPage() {
       }
 
       const code = searchParams.get("code");
-      const next = searchParams.get("next") || "/dashboard";
+      const next = searchParams.get("next") || "/onboarding";
 
       if (!code) {
         const { data } = await supabase.auth.getSession();
