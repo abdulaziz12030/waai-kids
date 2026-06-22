@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { supabase } from "../../lib/supabase";
@@ -26,6 +26,18 @@ const avatarSymbols: Record<string, string> = {
   book: "📘",
   moon: "🌙"
 };
+
+function getProfileCompletion(student: Student): number {
+  const profile = student.profile_data || {};
+  const checks = [
+    student.full_name.trim().length >= 2,
+    Boolean(profile.birth_date),
+    Boolean(profile.gender),
+    Boolean(profile.grade_level),
+    Boolean(profile.avatar || profile.photo_path)
+  ];
+  return Math.round((checks.filter(Boolean).length / checks.length) * 100);
+}
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -89,6 +101,12 @@ export default function DashboardPage() {
     loadSession();
   }, [router]);
 
+  const familyProfileCompletion = useMemo(() => {
+    if (students.length === 0) return 0;
+    const total = students.reduce((sum, student) => sum + getProfileCompletion(student), 0);
+    return Math.round(total / students.length);
+  }, [students]);
+
   async function signOut() {
     const client = supabase;
     if (client) await client.auth.signOut();
@@ -117,10 +135,10 @@ export default function DashboardPage() {
 
       <section className="family-metrics" aria-label="ملخص الأسرة">
         <article><span>عدد الأبناء</span><strong>{students.length}</strong><small>ملفات مضافة</small></article>
+        <article><span>اكتمال الملفات</span><strong>{familyProfileCompletion}%</strong><small>متوسط بيانات الأبناء</small></article>
         <article><span>مجموع النقاط</span><strong>0</strong><small>يُفعّل مع نظام النقاط</small></article>
         <article><span>الأهداف النشطة</span><strong>0</strong><small>المرحلة التالية</small></article>
         <article><span>المهام المنتظرة</span><strong>0</strong><small>لا توجد مهام بعد</small></article>
-        <article><span>المكافآت المستحقة</span><strong>0</strong><small>لا توجد مكافآت بعد</small></article>
         <article><span>تقدم القرآن</span><strong>—</strong><small>لم تبدأ خطة بعد</small></article>
       </section>
 
@@ -142,6 +160,7 @@ export default function DashboardPage() {
           <div className="children-grid children-grid-v2">
             {students.map((student) => {
               const profile = student.profile_data || {};
+              const completion = getProfileCompletion(student);
               return (
                 <Link className="child-card child-card-link child-card-summary" href={`/children/${student.id}`} key={student.id}>
                   <div className="child-card-top">
@@ -150,6 +169,12 @@ export default function DashboardPage() {
                     </span>
                     <div><h3>{student.full_name}</h3><p>{profile.grade_level || "الصف غير محدد"}</p></div>
                   </div>
+
+                  <div className="progress-row" aria-label={`اكتمال ملف ${student.full_name} ${completion}%`}>
+                    <div className="progress-row-head"><span>اكتمال الملف</span><strong>{completion}%</strong></div>
+                    <div className="progress-track"><div className="progress-fill" style={{ width: `${completion}%` }} /></div>
+                  </div>
+
                   <div className="child-mini-stats">
                     <span><small>النقاط</small><strong>0</strong></span>
                     <span><small>الهدف الحالي</small><strong>لا يوجد</strong></span>
