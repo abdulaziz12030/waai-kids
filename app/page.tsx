@@ -68,8 +68,8 @@ export default function HomePage() {
         </nav>
 
         <div className="header-actions">
-          <span className="header-status">نسخة تجريبية</span>
-          <a className="header-button" href="#start">ابدأ قريبًا</a>
+          <a className="header-status" href="/login">تسجيل الدخول</a>
+          <a className="header-button" href="/register">إنشاء حساب</a>
         </div>
       </header>
 
@@ -83,11 +83,11 @@ export default function HomePage() {
           </p>
 
           <div className="hero-actions" id="start">
-            <a className="primary-button" href="#pricing">
-              تعرّف على النسخة الأولى
+            <a className="primary-button" href="/register">
+              إنشاء حساب ولي الأمر
             </a>
-            <a className="secondary-button" href="#how">
-              كيف يعمل نماء؟
+            <a className="secondary-button" href="/login">
+              تسجيل الدخول
             </a>
           </div>
 
@@ -225,20 +225,20 @@ export default function HomePage() {
             <li>الأهداف والمهام والنقاط</li>
             <li>القرآن والمكافآت</li>
           </ul>
-          <button className="pricing-button" type="button" disabled>
-            التسجيل يفتح قريبًا
-          </button>
+          <a className="pricing-button link-submit" href="/register">
+            ابدأ إنشاء الحساب
+          </a>
         </article>
       </section>
 
       <section className="next-step-section">
         <div>
-          <span className="section-label">المرحلة التالية</span>
-          <h2>تسجيل ولي الأمر وإنشاء الأسرة</h2>
+          <span className="section-label">ابدأ الآن</span>
+          <h2>سجل حساب ولي الأمر وأنشئ أسرتك</h2>
         </div>
         <p>
-          الخطوة القادمة هي إنشاء صفحات التسجيل والدخول، ثم ربط الحساب بالأسرة
-          وإضافة الأبناء من Supabase.
+          بعد إنشاء الحساب ستنتقل إلى لوحة الأسرة، ثم تبدأ إضافة الأبناء وتنظيم
+          الأهداف والمهام والقرآن.
         </p>
       </section>
 
