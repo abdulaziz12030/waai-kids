@@ -37,12 +37,13 @@ export default function DashboardPage() {
 
   useEffect(() => {
     async function loadSession() {
-      if (!supabase) {
+      const client = supabase;
+      if (!client) {
         router.replace("/login");
         return;
       }
 
-      const { data } = await supabase.auth.getSession();
+      const { data } = await client.auth.getSession();
       const session = data.session;
 
       if (!session) {
@@ -50,7 +51,7 @@ export default function DashboardPage() {
         return;
       }
 
-      const organization = await supabase
+      const organization = await client
         .from("organizations")
         .select("id, name")
         .eq("owner_id", session.user.id)
@@ -62,7 +63,7 @@ export default function DashboardPage() {
         return;
       }
 
-      const studentResult = await supabase
+      const studentResult = await client
         .from("students")
         .select("id, full_name, profile_data")
         .eq("organization_id", organization.data.id)
@@ -74,7 +75,7 @@ export default function DashboardPage() {
         const withPhotos = await Promise.all((studentResult.data || []).map(async (student) => {
           const profile = (student.profile_data || {}) as StudentProfile;
           if (!profile.photo_path) return student;
-          const signed = await supabase.storage.from("child-photos").createSignedUrl(profile.photo_path, 60 * 60);
+          const signed = await client.storage.from("child-photos").createSignedUrl(profile.photo_path, 60 * 60);
           return { ...student, photo_url: signed.data?.signedUrl || "" };
         }));
         setStudents(withPhotos);
@@ -89,7 +90,8 @@ export default function DashboardPage() {
   }, [router]);
 
   async function signOut() {
-    if (supabase) await supabase.auth.signOut();
+    const client = supabase;
+    if (client) await client.auth.signOut();
     router.replace("/login");
     router.refresh();
   }
