@@ -8,6 +8,7 @@ import { supabase } from "../../lib/supabase";
 export default function DashboardPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
+  const [familyName, setFamilyName] = useState("");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -18,12 +19,27 @@ export default function DashboardPage() {
       }
 
       const { data } = await supabase.auth.getSession();
-      if (!data.session) {
+      const session = data.session;
+
+      if (!session) {
         router.replace("/login");
         return;
       }
 
-      setEmail(data.session.user.email || "");
+      const organization = await supabase
+        .from("organizations")
+        .select("id, name")
+        .eq("owner_id", session.user.id)
+        .eq("type", "family")
+        .maybeSingle();
+
+      if (!organization.data) {
+        router.replace("/onboarding");
+        return;
+      }
+
+      setEmail(session.user.email || "");
+      setFamilyName(organization.data.name);
       setLoading(false);
     }
 
@@ -54,16 +70,16 @@ export default function DashboardPage() {
 
       <section className="dashboard-welcome">
         <span className="section-label">لوحة الأسرة</span>
-        <h1>مرحبًا بك في نماء</h1>
+        <h1>{familyName}</h1>
         <p>{email}</p>
       </section>
 
       <section className="dashboard-empty-state">
         <div>
           <span className="empty-icon">+</span>
-          <h2>ابدأ بإنشاء أسرتك</h2>
-          <p>في الخطوة التالية سنضيف نموذج الأسرة ثم بيانات الأبناء.</p>
-          <button className="auth-submit" type="button" disabled>إنشاء الأسرة قريبًا</button>
+          <h2>أضف أول ابن أو ابنة</h2>
+          <p>تم إنشاء الأسرة بنجاح. الخطوة التالية هي إضافة الأبناء وبياناتهم الأساسية.</p>
+          <Link className="auth-submit link-submit" href="/children/new">إضافة ابن أو ابنة</Link>
         </div>
       </section>
     </main>
