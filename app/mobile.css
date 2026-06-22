@@ -4,11 +4,18 @@
 .photo-avatar-preview {
   overflow: hidden;
   background: var(--primary-soft);
+  flex: 0 0 auto;
+  box-sizing: border-box;
 }
 
 .profile-photo-frame {
   width: 96px;
+  min-width: 96px;
+  max-width: 96px;
   height: 96px;
+  min-height: 96px;
+  max-height: 96px;
+  aspect-ratio: 1 / 1;
   display: grid;
   place-items: center;
   border-radius: 30px;
@@ -19,10 +26,16 @@
 .photo-picker-preview img,
 .child-avatar-photo img,
 .photo-avatar-preview img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
+  display: block !important;
+  width: 100% !important;
+  min-width: 100% !important;
+  max-width: 100% !important;
+  height: 100% !important;
+  min-height: 100% !important;
+  max-height: 100% !important;
+  object-fit: cover !important;
+  object-position: center !important;
+  border-radius: inherit;
 }
 
 .photo-picker-card {
@@ -38,10 +51,14 @@
 
 .photo-picker-preview {
   width: 78px;
+  min-width: 78px;
+  max-width: 78px;
   height: 78px;
+  min-height: 78px;
+  max-height: 78px;
+  aspect-ratio: 1 / 1;
   display: grid;
   place-items: center;
-  flex: 0 0 auto;
   border-radius: 22px;
   font-size: 34px;
 }
@@ -74,8 +91,16 @@
 }
 
 .child-avatar-photo {
+  width: 52px;
+  min-width: 52px;
+  max-width: 52px;
+  height: 52px;
+  min-height: 52px;
+  max-height: 52px;
+  aspect-ratio: 1 / 1;
   display: grid;
   place-items: center;
+  border-radius: 18px;
 }
 
 .avatar-options-with-photo {
@@ -84,6 +109,7 @@
 
 .photo-avatar-option {
   position: relative;
+  overflow: hidden;
 }
 
 .photo-avatar-option input[type="file"] {
@@ -93,12 +119,18 @@
   height: 100%;
   opacity: 0;
   cursor: pointer;
+  z-index: 2;
 }
 
 .photo-avatar-preview {
-  width: 42px;
-  height: 42px;
-  display: grid;
+  width: 42px !important;
+  min-width: 42px !important;
+  max-width: 42px !important;
+  height: 42px !important;
+  min-height: 42px !important;
+  max-height: 42px !important;
+  aspect-ratio: 1 / 1;
+  display: grid !important;
   place-items: center;
   border-radius: 14px;
   font-size: 26px !important;
@@ -226,9 +258,14 @@
     border-radius: 18px;
   }
 
-  .child-avatar {
+  .child-avatar,
+  .child-avatar-photo {
     width: 58px;
+    min-width: 58px;
+    max-width: 58px;
     height: 58px;
+    min-height: 58px;
+    max-height: 58px;
     border-radius: 18px;
   }
 
@@ -241,7 +278,11 @@
 
   .profile-photo-frame {
     width: 92px;
+    min-width: 92px;
+    max-width: 92px;
     height: 92px;
+    min-height: 92px;
+    max-height: 92px;
     margin: 0 auto;
     border-radius: 26px;
   }
@@ -268,7 +309,11 @@
   .photo-picker-preview {
     margin: 0 auto;
     width: 96px;
+    min-width: 96px;
+    max-width: 96px;
     height: 96px;
+    min-height: 96px;
+    max-height: 96px;
     border-radius: 26px;
   }
 
