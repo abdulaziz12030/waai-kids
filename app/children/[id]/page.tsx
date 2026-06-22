@@ -129,6 +129,8 @@ export default function ChildProfilePage() {
     return years >= 0 ? years : null;
   }, [birthDate]);
 
+  const hasUploadedPhoto = Boolean(avatar === "photo" || photoPath || photoFile || photoUrl);
+
   function selectPresetAvatar(nextAvatar: string) {
     setAvatar(nextAvatar);
     setPhotoFile(null);
@@ -300,14 +302,21 @@ export default function ChildProfilePage() {
                 ))}
               </div>
 
-              {(photoPath || photoFile || photoUrl) && (
-                <div className="avatar-control-row">
-                  <button className="danger-outline-button" type="button" onClick={removeUploadedPhoto}>
-                    حذف الصورة المرفوعة
-                  </button>
-                  <p>بعد الحذف اختر أي رمز من الأعلى، ثم اضغط حفظ التعديلات.</p>
-                </div>
-              )}
+              <div className="avatar-control-row">
+                <button
+                  className="danger-outline-button"
+                  type="button"
+                  onClick={removeUploadedPhoto}
+                  disabled={!hasUploadedPhoto}
+                >
+                  حذف الصورة المرفوعة
+                </button>
+                <p>
+                  {hasUploadedPhoto
+                    ? "احذف الصورة ثم اختر أي رمز من الأعلى واضغط حفظ التعديلات."
+                    : "لا توجد صورة مرفوعة حاليًا، ويمكنك اختيار أي رمز من الأعلى."}
+                </p>
+              </div>
             </fieldset>
 
             {error && <p className="form-message error-message">{error}</p>}
