@@ -106,7 +106,7 @@ export default function ChildProfilePage() {
       setBirthDate(profile.birth_date || "");
       setGender(profile.gender || "");
       setGradeLevel(profile.grade_level || "");
-      setAvatar(profile.avatar || "leaf");
+      setAvatar(profile.avatar || (profile.photo_path ? "photo" : "leaf"));
       setPhotoPath(profile.photo_path || "");
 
       if (profile.photo_path) {
@@ -129,6 +129,13 @@ export default function ChildProfilePage() {
     return years >= 0 ? years : null;
   }, [birthDate]);
 
+  function selectPresetAvatar(nextAvatar: string) {
+    setAvatar(nextAvatar);
+    setPhotoFile(null);
+    setPhotoUrl("");
+    setError("");
+  }
+
   function handlePhotoChange(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -140,6 +147,7 @@ export default function ChildProfilePage() {
       setError("حجم الصورة كبير. اختر صورة أقل من 8 ميجابايت.");
       return;
     }
+    setAvatar("photo");
     setPhotoFile(file);
     setPhotoUrl(URL.createObjectURL(file));
     setError("");
@@ -157,9 +165,9 @@ export default function ChildProfilePage() {
     }
 
     setSaving(true);
-    let nextPhotoPath = photoPath;
+    let nextPhotoPath = avatar === "photo" ? photoPath : "";
 
-    if (photoFile) {
+    if (avatar === "photo" && photoFile) {
       const { data: userData } = await supabase.auth.getUser();
       if (!userData.user) {
         setSaving(false);
@@ -184,6 +192,10 @@ export default function ChildProfilePage() {
         setError(`تعذر رفع الصورة: ${uploadError instanceof Error ? uploadError.message : "خطأ غير معروف"}`);
         return;
       }
+    }
+
+    if (avatar !== "photo" && photoPath) {
+      await supabase.storage.from("child-photos").remove([photoPath]);
     }
 
     const result = await supabase
@@ -234,7 +246,7 @@ export default function ChildProfilePage() {
 
       <section className="child-profile-hero">
         <div className="profile-photo-frame">
-          {photoUrl ? <img src={photoUrl} alt={`صورة ${fullName}`} /> : <span>{avatarSymbols[avatar] || fullName.slice(0, 1)}</span>}
+          {avatar === "photo" && photoUrl ? <img src={photoUrl} alt={`صورة ${fullName}`} /> : <span>{avatarSymbols[avatar] || fullName.slice(0, 1)}</span>}
         </div>
         <div>
           <span className="section-label">ملف الطفل</span>
@@ -256,21 +268,24 @@ export default function ChildProfilePage() {
             </div>
             <label>الصف الدراسي<input value={gradeLevel} onChange={(event) => setGradeLevel(event.target.value)} required /></label>
 
-            <div className="photo-picker-card">
-              <div className="photo-picker-preview">
-                {photoUrl ? <img src={photoUrl} alt="معاينة الصورة" /> : <span>{avatarSymbols[avatar]}</span>}
-              </div>
-              <div>
-                <strong>صورة الطفل</strong>
-                <p>يمكن الاختيار من ألبوم الصور أو فتح الكاميرا من الجوال.</p>
-                <label className="photo-picker-button">
-                  اختيار صورة
+            <fieldset className="avatar-fieldset">
+              <legend>صورة رمزية للطفل</legend>
+              <div className="avatar-options avatar-options-with-photo">
+                <label className={avatar === "photo" ? "avatar-option photo-avatar-option selected" : "avatar-option photo-avatar-option"}>
                   <input type="file" accept="image/*" onChange={handlePhotoChange} />
+                  <span className="photo-avatar-preview">{photoUrl ? <img src={photoUrl} alt="صورة الطفل" /> : "📷"}</span>
+                  <small>{photoUrl ? "صورة الطفل" : "من الألبوم"}</small>
                 </label>
+                {avatars.map((item) => (
+                  <label className={avatar === item.key ? "avatar-option selected" : "avatar-option"} key={item.key}>
+                    <input type="radio" name="avatar" checked={avatar === item.key} onChange={() => selectPresetAvatar(item.key)} />
+                    <span>{item.symbol}</span>
+                    <small>{item.label}</small>
+                  </label>
+                ))}
               </div>
-            </div>
+            </fieldset>
 
-            <fieldset className="avatar-fieldset"><legend>صورة رمزية بديلة</legend><div className="avatar-options">{avatars.map((item) => <label className={avatar === item.key ? "avatar-option selected" : "avatar-option"} key={item.key}><input type="radio" name="avatar" checked={avatar === item.key} onChange={() => setAvatar(item.key)} /><span>{item.symbol}</span><small>{item.label}</small></label>)}</div></fieldset>
             {error && <p className="form-message error-message">{error}</p>}
             <button className="auth-submit" type="submit" disabled={saving}>{saving ? "جارٍ الحفظ..." : "حفظ التعديلات"}</button>
           </form>
