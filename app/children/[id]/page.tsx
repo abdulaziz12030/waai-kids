@@ -38,7 +38,7 @@ async function compressImage(file: File): Promise<Blob> {
   if (!context) throw new Error("تعذر تجهيز الصورة.");
   context.drawImage(image, 0, 0, canvas.width, canvas.height);
   image.close();
-  return await new Promise((resolve, reject) => {
+  return await new Promise<Blob>((resolve, reject) => {
     canvas.toBlob((blob) => blob ? resolve(blob) : reject(new Error("تعذر ضغط الصورة.")), "image/jpeg", 0.82);
   });
 }
