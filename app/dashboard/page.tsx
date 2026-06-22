@@ -5,11 +5,18 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { supabase } from "../../lib/supabase";
 
+type Student = {
+  id: string;
+  full_name: string;
+};
+
 export default function DashboardPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [familyName, setFamilyName] = useState("");
+  const [students, setStudents] = useState<Student[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     async function loadSession() {
@@ -36,6 +43,18 @@ export default function DashboardPage() {
       if (!organization.data) {
         router.replace("/onboarding");
         return;
+      }
+
+      const studentResult = await supabase
+        .from("students")
+        .select("id, full_name")
+        .eq("organization_id", organization.data.id)
+        .order("created_at", { ascending: true });
+
+      if (studentResult.error) {
+        setError(`تعذر تحميل الأبناء: ${studentResult.error.message}`);
+      } else {
+        setStudents(studentResult.data || []);
       }
 
       setEmail(session.user.email || "");
@@ -72,16 +91,39 @@ export default function DashboardPage() {
         <span className="section-label">لوحة الأسرة</span>
         <h1>{familyName}</h1>
         <p>{email}</p>
+        {error && <p className="form-message error-message dashboard-error">{error}</p>}
       </section>
 
-      <section className="dashboard-empty-state">
-        <div>
-          <span className="empty-icon">+</span>
-          <h2>أضف أول ابن أو ابنة</h2>
-          <p>تم إنشاء الأسرة بنجاح. الخطوة التالية هي إضافة الأبناء وبياناتهم الأساسية.</p>
-          <Link className="auth-submit link-submit" href="/children/new">إضافة ابن أو ابنة</Link>
-        </div>
-      </section>
+      {students.length === 0 ? (
+        <section className="dashboard-empty-state">
+          <div>
+            <span className="empty-icon">+</span>
+            <h2>أضف أول ابن أو ابنة</h2>
+            <p>تم إنشاء الأسرة بنجاح. الخطوة التالية هي إضافة الأبناء وبياناتهم الأساسية.</p>
+            <Link className="auth-submit link-submit" href="/children/new">إضافة ابن أو ابنة</Link>
+          </div>
+        </section>
+      ) : (
+        <section className="children-section">
+          <div className="children-section-head">
+            <div>
+              <span className="section-label">الأبناء</span>
+              <h2>أفراد الأسرة</h2>
+            </div>
+            <Link className="quiet-button link-submit" href="/children/new">إضافة ابن أو ابنة</Link>
+          </div>
+
+          <div className="children-grid">
+            {students.map((student) => (
+              <article className="child-card" key={student.id}>
+                <span className="child-avatar">{student.full_name.slice(0, 1)}</span>
+                <h3>{student.full_name}</h3>
+                <p>الملف جاهز لإضافة الأهداف والمهام والقرآن.</p>
+              </article>
+            ))}
+          </div>
+        </section>
+      )}
     </main>
   );
 }
