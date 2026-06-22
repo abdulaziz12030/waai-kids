@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useEffect, useMemo, useState } from "react";
+import { ChangeEvent, FormEvent, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { supabase } from "../../../lib/supabase";
@@ -24,7 +24,24 @@ type ProfileData = {
   gender?: string;
   grade_level?: string;
   avatar?: string;
+  photo_path?: string;
 };
+
+async function compressImage(file: File): Promise<Blob> {
+  const image = await createImageBitmap(file);
+  const maxSize = 1200;
+  const scale = Math.min(1, maxSize / Math.max(image.width, image.height));
+  const canvas = document.createElement("canvas");
+  canvas.width = Math.round(image.width * scale);
+  canvas.height = Math.round(image.height * scale);
+  const context = canvas.getContext("2d");
+  if (!context) throw new Error("تعذر تجهيز الصورة.");
+  context.drawImage(image, 0, 0, canvas.width, canvas.height);
+  image.close();
+  return await new Promise((resolve, reject) => {
+    canvas.toBlob((blob) => blob ? resolve(blob) : reject(new Error("تعذر ضغط الصورة.")), "image/jpeg", 0.82);
+  });
+}
 
 export default function ChildProfilePage() {
   const params = useParams<{ id: string }>();
@@ -35,6 +52,9 @@ export default function ChildProfilePage() {
   const [gender, setGender] = useState("");
   const [gradeLevel, setGradeLevel] = useState("");
   const [avatar, setAvatar] = useState("leaf");
+  const [photoPath, setPhotoPath] = useState("");
+  const [photoUrl, setPhotoUrl] = useState("");
+  const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [editing, setEditing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -51,7 +71,6 @@ export default function ChildProfilePage() {
 
       const { data: sessionData } = await supabase.auth.getSession();
       const user = sessionData.session?.user;
-
       if (!user) {
         router.replace("/login");
         return;
@@ -88,6 +107,12 @@ export default function ChildProfilePage() {
       setGender(profile.gender || "");
       setGradeLevel(profile.grade_level || "");
       setAvatar(profile.avatar || "leaf");
+      setPhotoPath(profile.photo_path || "");
+
+      if (profile.photo_path) {
+        const signed = await supabase.storage.from("child-photos").createSignedUrl(profile.photo_path, 60 * 60);
+        if (signed.data?.signedUrl) setPhotoUrl(signed.data.signedUrl);
+      }
       setLoading(false);
     }
 
@@ -104,6 +129,22 @@ export default function ChildProfilePage() {
     return years >= 0 ? years : null;
   }, [birthDate]);
 
+  function handlePhotoChange(event: ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      setError("اختر ملف صورة صالحًا.");
+      return;
+    }
+    if (file.size > 8 * 1024 * 1024) {
+      setError("حجم الصورة كبير. اختر صورة أقل من 8 ميجابايت.");
+      return;
+    }
+    setPhotoFile(file);
+    setPhotoUrl(URL.createObjectURL(file));
+    setError("");
+  }
+
   async function handleSave(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError("");
@@ -116,6 +157,35 @@ export default function ChildProfilePage() {
     }
 
     setSaving(true);
+    let nextPhotoPath = photoPath;
+
+    if (photoFile) {
+      const { data: userData } = await supabase.auth.getUser();
+      if (!userData.user) {
+        setSaving(false);
+        setError("انتهت جلسة الدخول. سجل الدخول مرة أخرى.");
+        return;
+      }
+
+      try {
+        const compressed = await compressImage(photoFile);
+        nextPhotoPath = `${userData.user.id}/${studentId}/profile-${Date.now()}.jpg`;
+        const upload = await supabase.storage
+          .from("child-photos")
+          .upload(nextPhotoPath, compressed, { contentType: "image/jpeg", upsert: false });
+
+        if (upload.error) throw upload.error;
+
+        if (photoPath) await supabase.storage.from("child-photos").remove([photoPath]);
+        const signed = await supabase.storage.from("child-photos").createSignedUrl(nextPhotoPath, 60 * 60);
+        if (signed.data?.signedUrl) setPhotoUrl(signed.data.signedUrl);
+      } catch (uploadError) {
+        setSaving(false);
+        setError(`تعذر رفع الصورة: ${uploadError instanceof Error ? uploadError.message : "خطأ غير معروف"}`);
+        return;
+      }
+    }
+
     const result = await supabase
       .from("students")
       .update({
@@ -124,7 +194,8 @@ export default function ChildProfilePage() {
           birth_date: birthDate,
           gender,
           grade_level: gradeLevel.trim(),
-          avatar
+          avatar,
+          photo_path: nextPhotoPath || null
         }
       })
       .eq("id", studentId);
@@ -135,6 +206,8 @@ export default function ChildProfilePage() {
       return;
     }
 
+    setPhotoPath(nextPhotoPath);
+    setPhotoFile(null);
     setSuccess("تم حفظ بيانات الطفل بنجاح.");
     setEditing(false);
   }
@@ -160,7 +233,9 @@ export default function ChildProfilePage() {
       </header>
 
       <section className="child-profile-hero">
-        <span className="profile-avatar-large">{avatarSymbols[avatar] || fullName.slice(0, 1)}</span>
+        <div className="profile-photo-frame">
+          {photoUrl ? <img src={photoUrl} alt={`صورة ${fullName}`} /> : <span>{avatarSymbols[avatar] || fullName.slice(0, 1)}</span>}
+        </div>
         <div>
           <span className="section-label">ملف الطفل</span>
           <h1>{fullName}</h1>
@@ -180,7 +255,22 @@ export default function ChildProfilePage() {
               <label>الجنس<select value={gender} onChange={(event) => setGender(event.target.value)} required><option value="">اختر</option><option value="male">ابن</option><option value="female">ابنة</option></select></label>
             </div>
             <label>الصف الدراسي<input value={gradeLevel} onChange={(event) => setGradeLevel(event.target.value)} required /></label>
-            <fieldset className="avatar-fieldset"><legend>الصورة الرمزية</legend><div className="avatar-options">{avatars.map((item) => <label className={avatar === item.key ? "avatar-option selected" : "avatar-option"} key={item.key}><input type="radio" name="avatar" checked={avatar === item.key} onChange={() => setAvatar(item.key)} /><span>{item.symbol}</span><small>{item.label}</small></label>)}</div></fieldset>
+
+            <div className="photo-picker-card">
+              <div className="photo-picker-preview">
+                {photoUrl ? <img src={photoUrl} alt="معاينة الصورة" /> : <span>{avatarSymbols[avatar]}</span>}
+              </div>
+              <div>
+                <strong>صورة الطفل</strong>
+                <p>يمكن الاختيار من ألبوم الصور أو فتح الكاميرا من الجوال.</p>
+                <label className="photo-picker-button">
+                  اختيار صورة
+                  <input type="file" accept="image/*" onChange={handlePhotoChange} />
+                </label>
+              </div>
+            </div>
+
+            <fieldset className="avatar-fieldset"><legend>صورة رمزية بديلة</legend><div className="avatar-options">{avatars.map((item) => <label className={avatar === item.key ? "avatar-option selected" : "avatar-option"} key={item.key}><input type="radio" name="avatar" checked={avatar === item.key} onChange={() => setAvatar(item.key)} /><span>{item.symbol}</span><small>{item.label}</small></label>)}</div></fieldset>
             {error && <p className="form-message error-message">{error}</p>}
             <button className="auth-submit" type="submit" disabled={saving}>{saving ? "جارٍ الحفظ..." : "حفظ التعديلات"}</button>
           </form>
