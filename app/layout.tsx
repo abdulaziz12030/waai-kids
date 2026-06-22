@@ -3,6 +3,7 @@ import './globals.css';
 import './phase3.css';
 import './children.css';
 import './mobile.css';
+import './avatar-controls.css';
 
 export const metadata: Metadata = {
   title: 'نماء',
