@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { supabase } from "../../../lib/supabase";
 
-export default function AuthCallbackPage() {
+function CallbackContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [message, setMessage] = useState("جارٍ تأكيد الحساب...");
@@ -58,5 +58,26 @@ export default function AuthCallbackPage() {
         <Link className="auth-submit link-submit" href="/login">العودة لتسجيل الدخول</Link>
       </section>
     </main>
+  );
+}
+
+function CallbackLoading() {
+  return (
+    <main className="auth-page compact-auth-page">
+      <section className="auth-panel auth-status-panel">
+        <div className="auth-heading">
+          <span className="section-label">تأكيد آمن</span>
+          <h1>جارٍ تجهيز رابط التأكيد...</h1>
+        </div>
+      </section>
+    </main>
+  );
+}
+
+export default function AuthCallbackPage() {
+  return (
+    <Suspense fallback={<CallbackLoading />}>
+      <CallbackContent />
+    </Suspense>
   );
 }
