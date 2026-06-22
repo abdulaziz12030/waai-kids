@@ -99,17 +99,29 @@ export default function DashboardPage() {
   if (loading) return <main className="dashboard-loading">جارٍ تجهيز لوحة الأسرة...</main>;
 
   return (
-    <main className="dashboard-page">
+    <main className="dashboard-page dashboard-page-v2">
       <header className="dashboard-header">
         <Link className="brand" href="/"><span className="brand-mark">ن</span><span>نماء</span></Link>
         <button className="quiet-button" type="button" onClick={signOut}>تسجيل الخروج</button>
       </header>
 
-      <section className="dashboard-welcome">
-        <span className="section-label">لوحة الأسرة</span>
-        <h1>{familyName}</h1>
-        <p>{email}</p>
+      <section className="dashboard-welcome dashboard-welcome-v2">
+        <div>
+          <span className="section-label">لوحة الأسرة</span>
+          <h1>{familyName}</h1>
+          <p>{email}</p>
+        </div>
+        <Link className="auth-submit link-submit dashboard-primary-action" href="/children/new">إضافة ابن أو ابنة</Link>
         {error && <p className="form-message error-message dashboard-error">{error}</p>}
+      </section>
+
+      <section className="family-metrics" aria-label="ملخص الأسرة">
+        <article><span>عدد الأبناء</span><strong>{students.length}</strong><small>ملفات مضافة</small></article>
+        <article><span>مجموع النقاط</span><strong>0</strong><small>يُفعّل مع نظام النقاط</small></article>
+        <article><span>الأهداف النشطة</span><strong>0</strong><small>المرحلة التالية</small></article>
+        <article><span>المهام المنتظرة</span><strong>0</strong><small>لا توجد مهام بعد</small></article>
+        <article><span>المكافآت المستحقة</span><strong>0</strong><small>لا توجد مكافآت بعد</small></article>
+        <article><span>تقدم القرآن</span><strong>—</strong><small>لم تبدأ خطة بعد</small></article>
       </section>
 
       {students.length === 0 ? (
@@ -122,29 +134,40 @@ export default function DashboardPage() {
           </div>
         </section>
       ) : (
-        <section className="children-section">
+        <section className="children-section children-section-v2">
           <div className="children-section-head">
-            <div><span className="section-label">الأبناء</span><h2>أفراد الأسرة</h2></div>
-            <Link className="quiet-button link-submit" href="/children/new">إضافة ابن أو ابنة</Link>
+            <div><span className="section-label">الأبناء</span><h2>أفراد الأسرة</h2><p>بطاقة مختصرة لكل طفل، وستتحدث تلقائيًا مع الأهداف والمهام والقرآن.</p></div>
           </div>
 
-          <div className="children-grid">
+          <div className="children-grid children-grid-v2">
             {students.map((student) => {
               const profile = student.profile_data || {};
               return (
-                <Link className="child-card child-card-link" href={`/children/${student.id}`} key={student.id}>
-                  <span className="child-avatar child-avatar-photo">
-                    {student.photo_url ? <img src={student.photo_url} alt={`صورة ${student.full_name}`} /> : avatarSymbols[profile.avatar || ""] || student.full_name.slice(0, 1)}
-                  </span>
-                  <h3>{student.full_name}</h3>
-                  <p>{profile.grade_level || "أكمل بيانات الصف الدراسي"}</p>
-                  <span className="child-card-action">عرض الملف ←</span>
+                <Link className="child-card child-card-link child-card-summary" href={`/children/${student.id}`} key={student.id}>
+                  <div className="child-card-top">
+                    <span className="child-avatar child-avatar-photo">
+                      {student.photo_url ? <img src={student.photo_url} alt={`صورة ${student.full_name}`} /> : avatarSymbols[profile.avatar || ""] || student.full_name.slice(0, 1)}
+                    </span>
+                    <div><h3>{student.full_name}</h3><p>{profile.grade_level || "الصف غير محدد"}</p></div>
+                  </div>
+                  <div className="child-mini-stats">
+                    <span><small>النقاط</small><strong>0</strong></span>
+                    <span><small>الهدف الحالي</small><strong>لا يوجد</strong></span>
+                    <span><small>آخر مهمة</small><strong>لا توجد</strong></span>
+                    <span><small>القرآن</small><strong>لم يبدأ</strong></span>
+                  </div>
+                  <span className="child-card-action">فتح ملف الطفل ←</span>
                 </Link>
               );
             })}
           </div>
         </section>
       )}
+
+      <section className="weekly-report-card">
+        <div><span className="section-label">التقرير الأسبوعي</span><h2>ملخص هذا الأسبوع</h2><p>ستظهر هنا النقاط والمهام والأهداف والإنجاز القرآني بعد تفعيل المراحل القادمة.</p></div>
+        <div className="weekly-report-placeholder"><strong>لا توجد بيانات بعد</strong><span>ابدأ بإنشاء أول هدف للطفل في المرحلة التالية.</span></div>
+      </section>
     </main>
   );
 }
