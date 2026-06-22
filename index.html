@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>نماء | منصة إنجاز تربوية</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="hero">
+    <nav>
+      <div class="brand">نماء</div>
+      <div class="nav-links">
+        <a href="#family">الأسرة</a>
+        <a href="#quran">القرآن</a>
+        <a href="#pricing">الاشتراكات</a>
+      </div>
+    </nav>
+    <section class="hero-content">
+      <span class="badge">نسخة الأسرة الأولى</span>
+      <h1>منصة نمو وإنجاز للأطفال والطلاب</h1>
+      <p>نربط القرآن، السلوك، التعليم، الأهداف، النقاط والمكافآت في نظام واحد تحت إشراف ولي الأمر.</p>
+      <div class="hero-actions">
+        <button onclick="showDemo()">استعراض التجربة</button>
+        <a class="secondary" href="#dashboard">لوحة الأسرة</a>
+      </div>
+    </section>
+  </header>
+
+  <main>
+    <section class="cards" id="family">
+      <article>
+        <h3>ملف لكل ابن</h3>
+        <p>نقاط، أهداف، إنجازات، مكافآت مستحقة ومؤجلة.</p>
+      </article>
+      <article>
+        <h3>عقود أسرية</h3>
+        <p>يتفق ولي الأمر والطفل على هدف وشروط ومدة زمنية.</p>
+      </article>
+      <article>
+        <h3>مهلة للمكافآت</h3>
+        <p>إذا استحق الطفل المكافأة يمكن جدولتها أو دفعها جزئيًا.</p>
+      </article>
+    </section>
+
+    <section class="panel" id="dashboard">
+      <div>
+        <h2>لوحة الأسرة</h2>
+        <p>نموذج مبدئي لما سيراه ولي الأمر.</p>
+      </div>
+      <div class="student-grid">
+        <div class="student-card">
+          <h3>عمر</h3>
+          <p>النقاط: <strong>420</strong></p>
+          <p>الهدف: بلايستيشن</p>
+          <progress value="42" max="100"></progress>
+        </div>
+        <div class="student-card">
+          <h3>شهد</h3>
+          <p>النقاط: <strong>610</strong></p>
+          <p>الهدف: حفظ سورة الملك</p>
+          <progress value="61" max="100"></progress>
+        </div>
+        <div class="student-card">
+          <h3>فارس</h3>
+          <p>النقاط: <strong>150</strong></p>
+          <p>الهدف: ترتيب الغرفة 30 يوم</p>
+          <progress value="20" max="100"></progress>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel quran" id="quran">
+      <h2>نظام القرآن</h2>
+      <p>يدعم تحديد السورة، الآيات، نصف وجه، وجه كامل، أو مراجعة. لاحقًا نضيف الرسم العثماني من مصدر موثوق.</p>
+      <div class="quran-box">
+        <span>سورة الملك</span>
+        <strong>من الآية 1 إلى 15</strong>
+        <button>تم التسميع</button>
+      </div>
+    </section>
+
+    <section class="pricing" id="pricing">
+      <h2>الاشتراكات المقترحة</h2>
+      <div class="price-cards">
+        <div>
+          <h3>الأسرة</h3>
+          <p class="price">19 ريال / شهر</p>
+          <p>أو 149 ريال سنويًا</p>
+        </div>
+        <div>
+          <h3>المعلم</h3>
+          <p class="price">49 ريال / شهر</p>
+          <p>حتى 50 طالبًا</p>
+        </div>
+        <div>
+          <h3>الحلقات والمدارس</h3>
+          <p class="price">حسب العدد</p>
+          <p>تبدأ لاحقًا بعد نجاح نسخة الأسرة.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>نماء © منصة تربوية تعليمية</footer>
+  <script src="app.js"></script>
+</body>
+</html>
