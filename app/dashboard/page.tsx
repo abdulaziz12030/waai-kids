@@ -10,12 +10,14 @@ type StudentProfile = {
   gender?: string;
   grade_level?: string;
   avatar?: string;
+  photo_path?: string;
 };
 
 type Student = {
   id: string;
   full_name: string;
   profile_data?: StudentProfile | null;
+  photo_url?: string;
 };
 
 const avatarSymbols: Record<string, string> = {
@@ -69,7 +71,13 @@ export default function DashboardPage() {
       if (studentResult.error) {
         setError(`تعذر تحميل الأبناء: ${studentResult.error.message}`);
       } else {
-        setStudents(studentResult.data || []);
+        const withPhotos = await Promise.all((studentResult.data || []).map(async (student) => {
+          const profile = (student.profile_data || {}) as StudentProfile;
+          if (!profile.photo_path) return student;
+          const signed = await supabase.storage.from("child-photos").createSignedUrl(profile.photo_path, 60 * 60);
+          return { ...student, photo_url: signed.data?.signedUrl || "" };
+        }));
+        setStudents(withPhotos);
       }
 
       setEmail(session.user.email || "");
@@ -123,7 +131,9 @@ export default function DashboardPage() {
               const profile = student.profile_data || {};
               return (
                 <Link className="child-card child-card-link" href={`/children/${student.id}`} key={student.id}>
-                  <span className="child-avatar">{avatarSymbols[profile.avatar || ""] || student.full_name.slice(0, 1)}</span>
+                  <span className="child-avatar child-avatar-photo">
+                    {student.photo_url ? <img src={student.photo_url} alt={`صورة ${student.full_name}`} /> : avatarSymbols[profile.avatar || ""] || student.full_name.slice(0, 1)}
+                  </span>
                   <h3>{student.full_name}</h3>
                   <p>{profile.grade_level || "أكمل بيانات الصف الدراسي"}</p>
                   <span className="child-card-action">عرض الملف ←</span>
