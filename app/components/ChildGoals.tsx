@@ -68,10 +68,43 @@ export default function ChildGoals({ studentId }: { studentId: string }) {
     if (!client) return;
 
     setSavingId(id);
+    setError("");
+
+    let payload: Record<string, unknown> = {
+      ...patch,
+      updated_at: new Date().toISOString()
+    };
+
+    if (patch.status === "approved") {
+      const { data } = await client.auth.getUser();
+      payload = {
+        ...payload,
+        approved_by: data.user?.id || null,
+        approved_at: new Date().toISOString()
+      };
+    }
+
     const result = await client
       .from("goals")
-      .update({ ...patch, updated_at: new Date().toISOString() })
+      .update(payload)
       .eq("id", id);
+
+    setSavingId("");
+
+    if (result.error) {
+      setError(result.error.message);
+      return;
+    }
+    await loadGoals();
+  }
+
+  async function deleteGoal(id: string) {
+    const client = supabase;
+    if (!client) return;
+
+    setSavingId(id);
+    setError("");
+    const result = await client.from("goals").delete().eq("id", id);
     setSavingId("");
 
     if (result.error) {
@@ -98,7 +131,7 @@ export default function ChildGoals({ studentId }: { studentId: string }) {
         </Link>
       </div>
 
-      {error && <p className="form-message error-message">تعذر تحميل الأهداف: {error}</p>}
+      {error && <p className="form-message error-message">تعذر تنفيذ العملية: {error}</p>}
 
       {goals.length === 0 ? (
         <div className="goals-empty-state">
@@ -141,11 +174,21 @@ export default function ChildGoals({ studentId }: { studentId: string }) {
                       <button className="secondary-goal-action" type="button" disabled={savingId === goal.id} onClick={() => updateGoal(goal.id, { status: "rejected" })}>رفض</button>
                     </>
                   )}
+
                   {goal.status === "approved" && (
                     <>
                       <button type="button" disabled={savingId === goal.id || progress >= 100} onClick={() => updateGoal(goal.id, { progress: Math.min(100, progress + 10) })}>+10% إنجاز</button>
+                      <button className="secondary-goal-action" type="button" disabled={savingId === goal.id} onClick={() => updateGoal(goal.id, { status: "paused" })}>إيقاف مؤقت</button>
                       <button className="secondary-goal-action" type="button" disabled={savingId === goal.id} onClick={() => updateGoal(goal.id, { progress: 100, status: "completed" })}>إكمال الهدف</button>
                     </>
+                  )}
+
+                  {goal.status === "paused" && (
+                    <button type="button" disabled={savingId === goal.id} onClick={() => updateGoal(goal.id, { status: "approved" })}>استئناف الهدف</button>
+                  )}
+
+                  {(goal.status === "pending" || goal.status === "rejected") && (
+                    <button className="danger-goal-action" type="button" disabled={savingId === goal.id} onClick={() => deleteGoal(goal.id)}>حذف</button>
                   )}
                 </div>
               </article>
