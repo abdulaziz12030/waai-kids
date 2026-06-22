@@ -87,17 +87,30 @@ export default function OnboardingPage() {
       return;
     }
 
-    const membership = await supabase
+    const existingMembership = await supabase
       .from("memberships")
-      .upsert(
-        {
+      .select("id")
+      .eq("organization_id", organizationId)
+      .eq("user_id", user.id)
+      .maybeSingle();
+
+    if (existingMembership.error) {
+      setError(`تعذر التحقق من عضوية ولي الأمر: ${existingMembership.error.message}`);
+      setSaving(false);
+      return;
+    }
+
+    const membership = existingMembership.data
+      ? await supabase
+          .from("memberships")
+          .update({ role: "owner", display_name: cleanFullName })
+          .eq("id", existingMembership.data.id)
+      : await supabase.from("memberships").insert({
           organization_id: organizationId,
           user_id: user.id,
           role: "owner",
           display_name: cleanFullName
-        },
-        { onConflict: "organization_id,user_id" }
-      );
+        });
 
     if (membership.error) {
       setError(`تعذر إنشاء عضوية ولي الأمر: ${membership.error.message}`);
