@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import './phase3.css';
+import './children.css';
 
 export const metadata: Metadata = {
   title: 'نماء',
