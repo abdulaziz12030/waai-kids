@@ -1,0 +1,47 @@
+.avatar-control-row {
+  margin-top: 14px;
+  padding: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  border: 1px solid #f0c7c1;
+  border-radius: 16px;
+  background: #fff8f6;
+}
+
+.avatar-control-row p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.danger-outline-button {
+  min-height: 42px;
+  padding: 0 16px;
+  border: 1px solid #c85d50;
+  border-radius: 12px;
+  background: #fff;
+  color: #a63f34;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.danger-outline-button:hover {
+  background: #fff0ed;
+}
+
+@media (max-width: 700px) {
+  .avatar-control-row {
+    align-items: stretch;
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .danger-outline-button {
+    width: 100%;
+  }
+}
