@@ -5,9 +5,24 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { supabase } from "../../lib/supabase";
 
+type StudentProfile = {
+  birth_date?: string;
+  gender?: string;
+  grade_level?: string;
+  avatar?: string;
+};
+
 type Student = {
   id: string;
   full_name: string;
+  profile_data?: StudentProfile | null;
+};
+
+const avatarSymbols: Record<string, string> = {
+  leaf: "🌿",
+  star: "⭐",
+  book: "📘",
+  moon: "🌙"
 };
 
 export default function DashboardPage() {
@@ -47,7 +62,7 @@ export default function DashboardPage() {
 
       const studentResult = await supabase
         .from("students")
-        .select("id, full_name")
+        .select("id, full_name, profile_data")
         .eq("organization_id", organization.data.id)
         .order("created_at", { ascending: true });
 
@@ -66,24 +81,17 @@ export default function DashboardPage() {
   }, [router]);
 
   async function signOut() {
-    if (supabase) {
-      await supabase.auth.signOut();
-    }
+    if (supabase) await supabase.auth.signOut();
     router.replace("/login");
     router.refresh();
   }
 
-  if (loading) {
-    return <main className="dashboard-loading">جارٍ تجهيز لوحة الأسرة...</main>;
-  }
+  if (loading) return <main className="dashboard-loading">جارٍ تجهيز لوحة الأسرة...</main>;
 
   return (
     <main className="dashboard-page">
       <header className="dashboard-header">
-        <Link className="brand" href="/">
-          <span className="brand-mark">ن</span>
-          <span>نماء</span>
-        </Link>
+        <Link className="brand" href="/"><span className="brand-mark">ن</span><span>نماء</span></Link>
         <button className="quiet-button" type="button" onClick={signOut}>تسجيل الخروج</button>
       </header>
 
@@ -106,21 +114,22 @@ export default function DashboardPage() {
       ) : (
         <section className="children-section">
           <div className="children-section-head">
-            <div>
-              <span className="section-label">الأبناء</span>
-              <h2>أفراد الأسرة</h2>
-            </div>
+            <div><span className="section-label">الأبناء</span><h2>أفراد الأسرة</h2></div>
             <Link className="quiet-button link-submit" href="/children/new">إضافة ابن أو ابنة</Link>
           </div>
 
           <div className="children-grid">
-            {students.map((student) => (
-              <article className="child-card" key={student.id}>
-                <span className="child-avatar">{student.full_name.slice(0, 1)}</span>
-                <h3>{student.full_name}</h3>
-                <p>الملف جاهز لإضافة الأهداف والمهام والقرآن.</p>
-              </article>
-            ))}
+            {students.map((student) => {
+              const profile = student.profile_data || {};
+              return (
+                <Link className="child-card child-card-link" href={`/children/${student.id}`} key={student.id}>
+                  <span className="child-avatar">{avatarSymbols[profile.avatar || ""] || student.full_name.slice(0, 1)}</span>
+                  <h3>{student.full_name}</h3>
+                  <p>{profile.grade_level || "أكمل بيانات الصف الدراسي"}</p>
+                  <span className="child-card-action">عرض الملف ←</span>
+                </Link>
+              );
+            })}
           </div>
         </section>
       )}
