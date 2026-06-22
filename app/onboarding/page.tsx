@@ -55,52 +55,54 @@ export default function OnboardingPage() {
       return;
     }
 
+    const cleanFullName = fullName.trim();
+    const cleanFamilyName = familyName.trim();
+    const organizationId = user.id;
+
     const profile = await supabase
       .from("profiles")
-      .upsert({ id: user.id, full_name: fullName.trim() }, { onConflict: "id" });
+      .upsert({ id: user.id, full_name: cleanFullName }, { onConflict: "id" });
 
     if (profile.error) {
-      setError("تعذر حفظ ملف ولي الأمر.");
+      setError(`تعذر حفظ ملف ولي الأمر: ${profile.error.message}`);
       setSaving(false);
       return;
     }
 
-    const existing = await supabase
+    const organization = await supabase
       .from("organizations")
-      .select("id")
-      .eq("owner_id", user.id)
-      .eq("type", "family")
-      .maybeSingle();
+      .upsert(
+        {
+          id: organizationId,
+          name: cleanFamilyName,
+          type: "family",
+          owner_id: user.id
+        },
+        { onConflict: "id" }
+      );
 
-    let organizationId = existing.data?.id;
+    if (organization.error) {
+      setError(`تعذر إنشاء الأسرة: ${organization.error.message}`);
+      setSaving(false);
+      return;
+    }
 
-    if (!organizationId) {
-      const created = await supabase
-        .from("organizations")
-        .insert({ name: familyName.trim(), type: "family", owner_id: user.id })
-        .select("id")
-        .single();
+    const membership = await supabase
+      .from("memberships")
+      .upsert(
+        {
+          organization_id: organizationId,
+          user_id: user.id,
+          role: "owner",
+          display_name: cleanFullName
+        },
+        { onConflict: "organization_id,user_id" }
+      );
 
-      if (created.error || !created.data) {
-        setError("تعذر إنشاء الأسرة.");
-        setSaving(false);
-        return;
-      }
-
-      organizationId = created.data.id;
-
-      const membership = await supabase.from("memberships").insert({
-        organization_id: organizationId,
-        user_id: user.id,
-        role: "owner",
-        display_name: fullName.trim()
-      });
-
-      if (membership.error) {
-        setError("تعذر إنشاء عضوية ولي الأمر.");
-        setSaving(false);
-        return;
-      }
+    if (membership.error) {
+      setError(`تعذر إنشاء عضوية ولي الأمر: ${membership.error.message}`);
+      setSaving(false);
+      return;
     }
 
     setSaving(false);
