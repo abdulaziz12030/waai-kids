@@ -134,6 +134,15 @@ export default function ChildProfilePage() {
     setPhotoFile(null);
     setPhotoUrl("");
     setError("");
+    setSuccess("سيتم اعتماد الرمز المختار عند حفظ التعديلات.");
+  }
+
+  function removeUploadedPhoto() {
+    setAvatar("leaf");
+    setPhotoFile(null);
+    setPhotoUrl("");
+    setError("");
+    setSuccess("سيتم حذف الصورة واعتماد رمز الورقة عند حفظ التعديلات.");
   }
 
   function handlePhotoChange(event: ChangeEvent<HTMLInputElement>) {
@@ -151,6 +160,7 @@ export default function ChildProfilePage() {
     setPhotoFile(file);
     setPhotoUrl(URL.createObjectURL(file));
     setError("");
+    setSuccess("تم اختيار الصورة. اضغط حفظ التعديلات لاعتمادها.");
   }
 
   async function handleSave(event: FormEvent<HTMLFormElement>) {
@@ -195,7 +205,12 @@ export default function ChildProfilePage() {
     }
 
     if (avatar !== "photo" && photoPath) {
-      await supabase.storage.from("child-photos").remove([photoPath]);
+      const removal = await supabase.storage.from("child-photos").remove([photoPath]);
+      if (removal.error) {
+        setSaving(false);
+        setError(`تعذر حذف الصورة القديمة: ${removal.error.message}`);
+        return;
+      }
     }
 
     const result = await supabase
@@ -220,7 +235,7 @@ export default function ChildProfilePage() {
 
     setPhotoPath(nextPhotoPath);
     setPhotoFile(null);
-    setSuccess("تم حفظ بيانات الطفل بنجاح.");
+    setSuccess(avatar === "photo" ? "تم حفظ صورة الطفل بنجاح." : "تم حفظ الرمز المختار وحذف الصورة المرفوعة.");
     setEditing(false);
   }
 
@@ -284,9 +299,19 @@ export default function ChildProfilePage() {
                   </label>
                 ))}
               </div>
+
+              {(photoPath || photoFile || photoUrl) && (
+                <div className="avatar-control-row">
+                  <button className="danger-outline-button" type="button" onClick={removeUploadedPhoto}>
+                    حذف الصورة المرفوعة
+                  </button>
+                  <p>بعد الحذف اختر أي رمز من الأعلى، ثم اضغط حفظ التعديلات.</p>
+                </div>
+              )}
             </fieldset>
 
             {error && <p className="form-message error-message">{error}</p>}
+            {success && editing && <p className="form-message success-message">{success}</p>}
             <button className="auth-submit" type="submit" disabled={saving}>{saving ? "جارٍ الحفظ..." : "حفظ التعديلات"}</button>
           </form>
         </section>
@@ -299,7 +324,7 @@ export default function ChildProfilePage() {
         </section>
       )}
 
-      {success && <p className="form-message success-message profile-success">{success}</p>}
+      {success && !editing && <p className="form-message success-message profile-success">{success}</p>}
 
       <section className="profile-next-card">
         <div><span className="section-label">الخطوة القادمة</span><h2>ابدأ أول هدف</h2><p>بعد اكتمال بيانات الطفل سنبدأ نظام الأهداف وفق المرحلة التالية من الخطة.</p></div>
