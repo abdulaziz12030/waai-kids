@@ -9,6 +9,7 @@ import './motion.css';
 import './goals.css';
 import './child-app.css';
 import './home-child-entry.css';
+import './tasks.css';
 
 export const metadata: Metadata = {
   title: 'نماء',
