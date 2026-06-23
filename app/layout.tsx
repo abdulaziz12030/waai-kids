@@ -8,6 +8,7 @@ import './dashboard-v2.css';
 import './motion.css';
 import './goals.css';
 import './child-app.css';
+import './home-child-entry.css';
 
 export const metadata: Metadata = {
   title: 'نماء',
