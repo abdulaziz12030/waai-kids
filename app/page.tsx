@@ -1,3 +1,5 @@
+import ChildEntryCard from "./components/ChildEntryCard";
+
 const features = [
   {
     title: "الأهداف",
@@ -68,7 +70,8 @@ export default function HomePage() {
         </nav>
 
         <div className="header-actions">
-          <a className="header-status" href="/login">تسجيل الدخول</a>
+          <a className="header-child-login" href="/child/login">دخول الطفل</a>
+          <a className="header-status" href="/login">دخول ولي الأمر</a>
           <a className="header-button" href="/register">إنشاء حساب</a>
         </div>
       </header>
@@ -87,13 +90,16 @@ export default function HomePage() {
               إنشاء حساب ولي الأمر
             </a>
             <a className="secondary-button" href="/login">
-              تسجيل الدخول
+              دخول ولي الأمر
+            </a>
+            <a className="child-login-button" href="/child/login">
+              دخول الطفل
             </a>
           </div>
 
           <div className="hero-note">
             <span>•</span>
-            <p>نبدأ بالأسرة، ثم نضيف المعلم والحلقات والمدارس تدريجيًا.</p>
+            <p>للطفل حساب مستقل ومحدود، والموافقات النهائية بيد ولي الأمر.</p>
           </div>
         </div>
 
@@ -128,6 +134,8 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      <ChildEntryCard />
 
       <section className="about-section" id="about">
         <div>
@@ -234,12 +242,12 @@ export default function HomePage() {
       <section className="next-step-section">
         <div>
           <span className="section-label">ابدأ الآن</span>
-          <h2>سجل حساب ولي الأمر وأنشئ أسرتك</h2>
+          <h2>سجل حساب ولي الأمر أو ادخل بحساب الطفل</h2>
         </div>
-        <p>
-          بعد إنشاء الحساب ستنتقل إلى لوحة الأسرة، ثم تبدأ إضافة الأبناء وتنظيم
-          الأهداف والمهام والقرآن.
-        </p>
+        <div className="next-step-actions">
+          <a className="primary-button" href="/register">حساب ولي الأمر</a>
+          <a className="child-login-button" href="/child/login">دخول الطفل</a>
+        </div>
       </section>
 
       <footer>
