@@ -10,6 +10,7 @@ import './goals.css';
 import './child-app.css';
 import './home-child-entry.css';
 import './tasks.css';
+import './ui-refresh.css';
 
 export const metadata: Metadata = {
   title: 'نماء',
