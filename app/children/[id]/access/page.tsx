@@ -11,6 +11,12 @@ type AccessDetails = {
   is_enabled: boolean;
 };
 
+function friendlyError(message: string) {
+  if (message.includes("not authorized") || message.includes("غير مصرح")) return "غير مصرح لك بتنفيذ هذه العملية.";
+  if (message.includes("PIN")) return "الرمز السري يجب أن يتكون من 4 أرقام.";
+  return "تعذر تنفيذ العملية الآن. حاول مرة أخرى.";
+}
+
 export default function ChildAccessPage() {
   const params = useParams<{ id: string }>();
   const router = useRouter();
@@ -19,6 +25,7 @@ export default function ChildAccessPage() {
   const [pin, setPin] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [revoking, setRevoking] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
@@ -34,7 +41,7 @@ export default function ChildAccessPage() {
 
     const result = await client.rpc("get_child_access_details", { p_student_id: studentId });
     if (result.error) {
-      setError(result.error.message);
+      setError(friendlyError(result.error.message));
     } else {
       setDetails(result.data?.[0] || null);
     }
@@ -66,13 +73,32 @@ export default function ChildAccessPage() {
     setSaving(false);
 
     if (result.error) {
-      setError(result.error.message);
+      setError(friendlyError(result.error.message));
       return;
     }
 
     setPin("");
-    setSuccess("تم تفعيل دخول الطفل وتحديث الرمز السري.");
+    setSuccess("تم تحديث الرمز السري وتسجيل خروج الطفل من الأجهزة السابقة.");
     await loadDetails();
+  }
+
+  async function revokeSessions() {
+    const client = supabase;
+    if (!client) return;
+
+    setError("");
+    setSuccess("");
+    setRevoking(true);
+    const result = await client.rpc("revoke_child_sessions", { p_student_id: studentId });
+    setRevoking(false);
+
+    if (result.error) {
+      setError(friendlyError(result.error.message));
+      return;
+    }
+
+    const count = Number(result.data || 0);
+    setSuccess(count > 0 ? `تم تسجيل خروج الطفل من ${count} جلسة.` : "لا توجد جلسات نشطة للطفل حاليًا.");
   }
 
   if (loading) return <main className="dashboard-loading">جارٍ تجهيز بيانات دخول الطفل...</main>;
@@ -101,30 +127,43 @@ export default function ChildAccessPage() {
           </div>
         )}
 
-        <form className="auth-form child-pin-form" onSubmit={handleSubmit}>
-          <label>
-            رمز سري من 4 أرقام
-            <input
-              inputMode="numeric"
-              maxLength={4}
-              value={pin}
-              onChange={(event) => setPin(event.target.value.replace(/\D/g, ""))}
-              placeholder="0000"
-              required
-            />
-          </label>
+        <div className="child-access-grid">
+          <form className="auth-form child-pin-form" onSubmit={handleSubmit}>
+            <label>
+              رمز سري من 4 أرقام
+              <input
+                inputMode="numeric"
+                maxLength={4}
+                value={pin}
+                onChange={(event) => setPin(event.target.value.replace(/\D/g, ""))}
+                placeholder="0000"
+                required
+              />
+            </label>
 
-          {error && <p className="form-message error-message">{error}</p>}
-          {success && <p className="form-message success-message">{success}</p>}
+            {error && <p className="form-message error-message">{error}</p>}
+            {success && <p className="form-message success-message">{success}</p>}
 
-          <button className="auth-submit" type="submit" disabled={saving}>
-            {saving ? "جارٍ الحفظ..." : details?.is_enabled ? "تغيير الرمز السري" : "تفعيل دخول الطفل"}
-          </button>
-        </form>
+            <button className="auth-submit" type="submit" disabled={saving}>
+              {saving ? "جارٍ الحفظ..." : details?.is_enabled ? "تغيير الرمز السري" : "تفعيل دخول الطفل"}
+            </button>
+          </form>
+
+          <aside className="child-session-card">
+            <span className="session-card-icon">🛡️</span>
+            <div>
+              <strong>التحكم في الجلسات</strong>
+              <p>استخدم هذا الخيار عند فقدان الجهاز أو عند الرغبة في إنهاء دخول الطفل من جميع الأجهزة.</p>
+            </div>
+            <button type="button" onClick={revokeSessions} disabled={revoking}>
+              {revoking ? "جارٍ تسجيل الخروج..." : "تسجيل الخروج من كل الأجهزة"}
+            </button>
+          </aside>
+        </div>
 
         <div className="child-access-note">
           <strong>صلاحيات الطفل</strong>
-          <p>عرض أهدافه، متابعة تقدمه، وطلب هدف جديد فقط. لا يستطيع الموافقة أو الرفض أو تعديل النقاط والمكافآت.</p>
+          <p>عرض أهدافه، متابعة تقدمه، تنفيذ المهام وطلب هدف جديد. لا يستطيع الموافقة أو الرفض أو تعديل النقاط والمكافآت.</p>
         </div>
       </section>
     </main>
