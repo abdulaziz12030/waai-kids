@@ -84,11 +84,7 @@ export default function ChildGoals({ studentId }: { studentId: string }) {
       };
     }
 
-    const result = await client
-      .from("goals")
-      .update(payload)
-      .eq("id", id);
-
+    const result = await client.from("goals").update(payload).eq("id", id);
     setSavingId("");
 
     if (result.error) {
@@ -114,9 +110,7 @@ export default function ChildGoals({ studentId }: { studentId: string }) {
     await loadGoals();
   }
 
-  if (loading) {
-    return <section className="goals-panel"><p>جارٍ تحميل الأهداف...</p></section>;
-  }
+  if (loading) return <section className="goals-panel"><p>جارٍ تحميل الأهداف...</p></section>;
 
   return (
     <section className="goals-panel">
@@ -124,21 +118,15 @@ export default function ChildGoals({ studentId }: { studentId: string }) {
         <div>
           <span className="section-label">الأهداف</span>
           <h2>أهداف الطفل</h2>
-          <p>أنشئ هدفًا واضحًا وحدد قيمته ومدته والنقاط المطلوبة.</p>
+          <p>أنشئ هدفًا واضحًا، ثم حوّله إلى مهام يومية قابلة للمتابعة.</p>
         </div>
-        <Link className="auth-submit link-submit goals-add-button" href={`/children/${studentId}/goals/new`}>
-          إضافة هدف
-        </Link>
+        <Link className="auth-submit link-submit goals-add-button" href={`/children/${studentId}/goals/new`}>إضافة هدف</Link>
       </div>
 
       {error && <p className="form-message error-message">تعذر تنفيذ العملية: {error}</p>}
 
       {goals.length === 0 ? (
-        <div className="goals-empty-state">
-          <span>🎯</span>
-          <h3>لا توجد أهداف بعد</h3>
-          <p>ابدأ بهدف تعليمي أو سلوكي أو مالي أو عيني.</p>
-        </div>
+        <div className="goals-empty-state"><span>🎯</span><h3>لا توجد أهداف بعد</h3><p>ابدأ بهدف تعليمي أو سلوكي أو مالي أو عيني.</p></div>
       ) : (
         <div className="goals-list">
           {goals.map((goal) => {
@@ -168,6 +156,10 @@ export default function ChildGoals({ studentId }: { studentId: string }) {
                 </div>
 
                 <div className="goal-actions">
+                  {(goal.status === "approved" || goal.status === "paused" || goal.status === "pending") && (
+                    <Link className="goal-task-link" href={`/children/${studentId}/tasks?goal=${goal.id}`}>تحويل إلى مهام</Link>
+                  )}
+
                   {goal.status === "pending" && (
                     <>
                       <button type="button" disabled={savingId === goal.id} onClick={() => updateGoal(goal.id, { status: "approved" })}>موافقة</button>
@@ -177,15 +169,12 @@ export default function ChildGoals({ studentId }: { studentId: string }) {
 
                   {goal.status === "approved" && (
                     <>
-                      <button type="button" disabled={savingId === goal.id || progress >= 100} onClick={() => updateGoal(goal.id, { progress: Math.min(100, progress + 10) })}>+10% إنجاز</button>
                       <button className="secondary-goal-action" type="button" disabled={savingId === goal.id} onClick={() => updateGoal(goal.id, { status: "paused" })}>إيقاف مؤقت</button>
                       <button className="secondary-goal-action" type="button" disabled={savingId === goal.id} onClick={() => updateGoal(goal.id, { progress: 100, status: "completed" })}>إكمال الهدف</button>
                     </>
                   )}
 
-                  {goal.status === "paused" && (
-                    <button type="button" disabled={savingId === goal.id} onClick={() => updateGoal(goal.id, { status: "approved" })}>استئناف الهدف</button>
-                  )}
+                  {goal.status === "paused" && <button type="button" disabled={savingId === goal.id} onClick={() => updateGoal(goal.id, { status: "approved" })}>استئناف الهدف</button>}
 
                   {(goal.status === "pending" || goal.status === "rejected") && (
                     <button className="danger-goal-action" type="button" disabled={savingId === goal.id} onClick={() => deleteGoal(goal.id)}>حذف</button>
