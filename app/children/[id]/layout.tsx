@@ -12,6 +12,7 @@ export default function ChildLayout({ children }: { children: React.ReactNode })
       <nav className="child-route-toolbar" aria-label="تنقل ملف الطفل">
         <Link href={`/children/${studentId}`}>ملف الطفل</Link>
         <Link href={`/children/${studentId}/goals`}>الأهداف</Link>
+        <Link href={`/children/${studentId}/tasks`}>المهام</Link>
         <Link href={`/children/${studentId}/access`}>دخول الطفل</Link>
         <Link className="child-route-primary" href={`/children/${studentId}/goals/new`}>هدف جديد</Link>
       </nav>
