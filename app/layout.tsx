@@ -12,6 +12,7 @@ import './home-child-entry.css';
 import './tasks.css';
 import './ui-refresh.css';
 import './security-controls.css';
+import './points-v2.css';
 
 export const metadata: Metadata = {
   title: 'نماء',
