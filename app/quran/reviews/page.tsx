@@ -47,7 +47,6 @@ export default function QuranReviewsPage() {
   async function loadQueue() {
     const client = supabase;
     if (!client) return;
-
     const { data: sessionData } = await client.auth.getSession();
     if (!sessionData.session) {
       router.replace("/login");
@@ -87,12 +86,11 @@ export default function QuranReviewsPage() {
   async function review(item: ReviewItem, status: "recited" | "mastered" | "needs_revision") {
     const client = supabase;
     if (!client) return;
-
     const draft = drafts[item.segment_id] || { mistakes: "0", fluency: "", tajweed: "", notes: "" };
+
     setBusyId(item.segment_id);
     setError("");
     setSuccess("");
-
     const result = await client.rpc("review_quran_segment_shared", {
       p_segment_id: item.segment_id,
       p_status: status,
@@ -101,8 +99,8 @@ export default function QuranReviewsPage() {
       p_tajweed_score: draft.tajweed ? Number(draft.tajweed) : null,
       p_notes: draft.notes || null
     });
-
     setBusyId("");
+
     if (result.error) {
       setError("تعذر اعتماد نتيجة التسميع.");
       return;
@@ -115,22 +113,22 @@ export default function QuranReviewsPage() {
   if (loading) return <main className="dashboard-loading">جارٍ تحميل مركز التسميع...</main>;
 
   return (
-    <main className="quran-review-page">
+    <main className="quran-review-page polished-review-page">
       <header className="dashboard-header">
         <Link className="brand" href={portalType === "teacher" ? "/teacher" : "/dashboard"}><span className="brand-mark">ن</span><span>نماء</span></Link>
         <Link className="quiet-button link-submit" href={portalType === "teacher" ? "/teacher" : "/dashboard"}>العودة للوحة</Link>
       </header>
 
       <section className="quran-review-hero">
-        <div><span className="section-label">مركز التسميع</span><h1>{portalType === "teacher" ? "متابعة طلابي" : "متابعة حفظ الأبناء"}</h1><p>تظهر هنا المقاطع التي أرسلها الطالب بعد الضغط على «تم الحفظ».</p></div>
+        <div><span className="section-label">🎙️ مركز التسميع</span><h1>{portalType === "teacher" ? "متابعة طلابي" : "متابعة حفظ الأبناء"}</h1><p>راجع المقطع، دوّن الأخطاء، ثم سجّل النتيجة بخطوات واضحة.</p></div>
         <strong>{waitingCount}<small>بانتظار التسميع</small></strong>
       </section>
 
-      {error && <p className="form-message error-message">{error}</p>}
-      {success && <p className="form-message success-message">{success}</p>}
+      {error && <p className="form-message error-message sticky-review-message">{error}</p>}
+      {success && <p className="form-message success-message sticky-review-message">{success}</p>}
 
       {items.length === 0 ? (
-        <section className="quran-review-empty"><span>🎙️</span><h2>لا توجد مقاطع تنتظر المراجعة</h2><p>عندما يرسل الطالب مقطعًا للحفظ سيظهر هنا تلقائيًا.</p></section>
+        <section className="quran-review-empty"><span>🎧</span><h2>لا توجد مقاطع تنتظر المراجعة</h2><p>عندما يضغط الطالب «تم الحفظ» سيظهر المقطع هنا تلقائيًا.</p></section>
       ) : (
         <section className="quran-review-list">
           {items.map((item) => {
@@ -138,24 +136,33 @@ export default function QuranReviewsPage() {
             return (
               <article className={`quran-review-card status-${item.status}`} key={item.segment_id}>
                 <div className="quran-review-card-head">
-                  <div><span className="quran-plan-status">{statusLabels[item.status] || item.status}</span><h2>{item.student_name}</h2><p>{item.plan_title} · {item.portion_label}</p></div>
-                  <strong>{item.achievement_points} ⭐ {item.reward_points > 0 ? `+ ${item.reward_points} 💎` : ""}</strong>
+                  <div>
+                    <span className="quran-plan-status">{statusLabels[item.status] || item.status}</span>
+                    <h2>{item.student_name}</h2>
+                    <p>{item.plan_title}</p>
+                    <strong className="review-portion-label">{item.portion_label}</strong>
+                  </div>
+                  <div className="review-points-badge"><span>⭐ {item.achievement_points}</span>{item.reward_points > 0 && <span>💎 {item.reward_points}</span>}</div>
                 </div>
 
-                <QuranTextDisplay uthmaniText={item.uthmani_text} readableText={item.readable_text} />
+                <QuranTextDisplay uthmaniText={item.uthmani_text} readableText={item.readable_text} compact initialMode="learning" />
+
                 {item.notes && <div className="task-note review"><strong>ملاحظة الخطة</strong><p>{item.notes}</p></div>}
 
-                <div className="quran-review-fields">
-                  <label>عدد الأخطاء<input type="number" min="0" value={draft.mistakes} onChange={(event) => updateDraft(item.segment_id, "mistakes", event.target.value)} /></label>
-                  <label>الطلاقة من 100<input type="number" min="0" max="100" value={draft.fluency} onChange={(event) => updateDraft(item.segment_id, "fluency", event.target.value)} /></label>
-                  <label>التجويد من 100<input type="number" min="0" max="100" value={draft.tajweed} onChange={(event) => updateDraft(item.segment_id, "tajweed", event.target.value)} /></label>
-                </div>
-                <label className="quran-review-notes">ملاحظات التسميع<textarea rows={3} value={draft.notes} onChange={(event) => updateDraft(item.segment_id, "notes", event.target.value)} placeholder="مثال: مراجعة موضع الوقف في الآية الثالثة" /></label>
+                <section className="review-correction-panel">
+                  <div className="review-panel-heading"><span>✍️</span><div><h3>تسجيل نتيجة التسميع</h3><p>أدخل الملاحظات الأساسية فقط، ويمكن ترك التقييمات فارغة.</p></div></div>
+                  <div className="quran-review-fields">
+                    <label><span>عدد الأخطاء</span><input type="number" min="0" value={draft.mistakes} onChange={(event) => updateDraft(item.segment_id, "mistakes", event.target.value)} /></label>
+                    <label><span>الطلاقة</span><div className="score-field"><input type="number" min="0" max="100" value={draft.fluency} onChange={(event) => updateDraft(item.segment_id, "fluency", event.target.value)} /><small>/ 100</small></div></label>
+                    <label><span>التجويد</span><div className="score-field"><input type="number" min="0" max="100" value={draft.tajweed} onChange={(event) => updateDraft(item.segment_id, "tajweed", event.target.value)} /><small>/ 100</small></div></label>
+                  </div>
+                  <label className="quran-review-notes"><span>ملاحظات التصحيح</span><textarea rows={3} value={draft.notes} onChange={(event) => updateDraft(item.segment_id, "notes", event.target.value)} placeholder="مثال: مراجعة موضع الوقف في الآية الثالثة" /></label>
+                </section>
 
                 <div className="quran-review-buttons">
                   <button type="button" disabled={busyId === item.segment_id} onClick={() => review(item, "recited")}>تسجيل التسميع</button>
-                  <button className="approve" type="button" disabled={busyId === item.segment_id} onClick={() => review(item, "mastered")}>اعتماد الإتقان</button>
-                  <button className="revision" type="button" disabled={busyId === item.segment_id} onClick={() => review(item, "needs_revision")}>إعادة للمراجعة</button>
+                  <button className="approve" type="button" disabled={busyId === item.segment_id} onClick={() => review(item, "mastered")}>✓ اعتماد الإتقان</button>
+                  <button className="revision" type="button" disabled={busyId === item.segment_id} onClick={() => review(item, "needs_revision")}>↩ إعادة للمراجعة</button>
                 </div>
               </article>
             );
