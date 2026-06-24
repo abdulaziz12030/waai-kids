@@ -59,8 +59,85 @@
   cursor: wait;
 }
 
+.simplified-child-login {
+  max-width: 520px;
+}
+
+.child-login-steps {
+  margin: 18px 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.child-login-steps article {
+  min-height: 82px;
+  padding: 12px;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid var(--border);
+  border-radius: 15px;
+  background: #fbfcfa;
+}
+
+.child-login-steps article > span {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 11px;
+  background: #e7f3ea;
+  color: var(--primary-dark);
+  font-weight: 900;
+}
+
+.child-login-steps div {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.child-login-steps small,
+.child-login-help,
+.field-help,
+.simplified-access-codes small {
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.7;
+}
+
+.child-login-help {
+  margin-top: 14px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: #f2f7f3;
+  text-align: center;
+  font-weight: 700;
+}
+
+.simplified-access-codes {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.simplified-access-codes article {
+  min-height: 126px;
+}
+
+.simplified-access-codes strong {
+  font-size: 26px;
+  word-break: break-all;
+}
+
+.field-help {
+  margin: -4px 0 2px;
+}
+
 @media (max-width: 760px) {
-  .child-access-grid {
+  .child-access-grid,
+  .child-login-steps,
+  .simplified-access-codes {
     grid-template-columns: 1fr;
   }
 }
