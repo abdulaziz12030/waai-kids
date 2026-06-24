@@ -21,7 +21,9 @@ type ChildTask = {
   title: string;
   description: string | null;
   category: string;
-  points: number;
+  difficulty: string;
+  achievement_points: number;
+  reward_points: number;
   status: string;
   due_date: string | null;
   child_note: string | null;
@@ -29,11 +31,20 @@ type ChildTask = {
   submitted_at: string | null;
 };
 
+type ChildLevel = {
+  code: string;
+  name: string;
+  icon: string;
+  min: number;
+};
+
 type ChildDashboardData = {
   student: {
     id: string;
     full_name: string;
-    points_balance: number;
+    achievement_points: number;
+    reward_points: number;
+    level: ChildLevel;
     profile_data?: Record<string, unknown> | null;
   };
   goals: ChildGoal[];
@@ -164,7 +175,7 @@ export default function ChildDashboardPage() {
     setSaving(false);
 
     if (result.error) {
-      setError(result.error.message);
+      setError("تعذر إرسال الهدف الآن.");
       return;
     }
 
@@ -195,7 +206,7 @@ export default function ChildDashboardPage() {
     setBusyTaskId("");
 
     if (result.error) {
-      setError(result.error.message);
+      setError("تعذر إرسال المهمة الآن.");
       return;
     }
 
@@ -228,14 +239,20 @@ export default function ChildDashboardPage() {
           <section className="child-hero-card playful-child-hero">
             <div className="hero-decoration hero-star">⭐</div>
             <div className="hero-decoration hero-rocket">🚀</div>
-            <span>رحلتك اليوم</span>
+            <span>{data.student.level.icon} مستوى {data.student.level.name}</span>
             <h2>كل مهمة تنجزها تقربك من هدفك</h2>
-            <p>أنجز، أرسل للمراجعة، واجمع نقاطك خطوة بخطوة.</p>
-            <div className="child-hero-stats">
-              <button type="button" onClick={() => changeTab("goals")}><span>⭐</span><strong>{data.student.points_balance || 0}</strong><small>نقطة</small></button>
+            <p>اجمع نقاط الإنجاز لترتقي، ونقاط المكافآت للوصول إلى أهدافك.</p>
+            <div className="child-hero-stats dual-child-stats">
+              <button type="button" onClick={() => changeTab("goals")}><span>⭐</span><strong>{data.student.achievement_points || 0}</strong><small>نقاط الإنجاز</small></button>
+              <button type="button" onClick={() => changeTab("goals")}><span>💎</span><strong>{data.student.reward_points || 0}</strong><small>نقاط المكافآت</small></button>
               <button type="button" onClick={() => changeTab("tasks")}><span>✅</span><strong>{actionableTasks.length}</strong><small>مهام اليوم</small></button>
-              <button type="button" onClick={() => changeTab("tasks")}><span>⏳</span><strong>{waitingTasks.length}</strong><small>تنتظر المراجعة</small></button>
             </div>
+          </section>
+
+          <section className="child-level-card">
+            <div className="level-icon">{data.student.level.icon}</div>
+            <div><span className="section-label">مستواي الحالي</span><h2>{data.student.level.name}</h2><p>استمر في جمع نقاط الإنجاز للانتقال إلى المستوى التالي.</p></div>
+            <strong>{data.student.achievement_points} ⭐</strong>
           </section>
 
           <section className="child-focus-card">
@@ -243,7 +260,7 @@ export default function ChildDashboardPage() {
             {currentGoal ? (
               <>
                 <p>{currentGoal.description || "استمر في إنجاز مهامك للوصول إلى هذا الهدف."}</p>
-                <div className="progress-row"><div className="progress-row-head"><span>تقدمك</span><strong>{currentGoal.progress || 0}%</strong></div><div className="progress-track"><div className="progress-fill" style={{ width: `${Math.min(100, Math.max(0, Number(currentGoal.progress || 0)))}%` }} /></div></div>
+                <div className="progress-row"><div className="progress-row-head"><span>تقدمك بنقاط المكافآت</span><strong>{currentGoal.progress || 0}%</strong></div><div className="progress-track"><div className="progress-fill" style={{ width: `${Math.min(100, Math.max(0, Number(currentGoal.progress || 0)))}%` }} /></div></div>
                 <button className="soft-action-button" type="button" onClick={() => changeTab("goals")}>عرض كل الأهداف</button>
               </>
             ) : (
@@ -258,7 +275,7 @@ export default function ChildDashboardPage() {
             ) : (
               <div className="child-preview-grid">
                 {actionableTasks.slice(0, 3).map((task) => (
-                  <button className="preview-task-card" type="button" onClick={() => changeTab("tasks")} key={task.id}><span>{taskIcons[task.category] || "✨"}</span><div><strong>{task.title}</strong><small>{task.points} نقطة</small></div><b>←</b></button>
+                  <button className="preview-task-card" type="button" onClick={() => changeTab("tasks")} key={task.id}><span>{taskIcons[task.category] || "✨"}</span><div><strong>{task.title}</strong><small>{task.achievement_points} ⭐ + {task.reward_points} 💎</small></div><b>←</b></button>
                 ))}
               </div>
             )}
@@ -277,7 +294,7 @@ export default function ChildDashboardPage() {
                 <article className={`child-task-card interactive-child-card task-${task.status}`} key={task.id}>
                   <div className="child-task-head">
                     <span className={`task-round-icon category-${task.category}`}>{taskIcons[task.category] || "✨"}</span>
-                    <div><span className={`task-status task-status-${task.status}`}>{taskStatusLabels[task.status] || task.status}</span><h3>{task.title}</h3><p>⭐ {task.points} نقطة</p></div>
+                    <div><span className={`task-status task-status-${task.status}`}>{taskStatusLabels[task.status] || task.status}</span><h3>{task.title}</h3><p>{task.achievement_points} ⭐ إنجاز · {task.reward_points} 💎 مكافآت</p></div>
                     {task.due_date && <time>{task.due_date}</time>}
                   </div>
                   {task.description && <p className="task-description">{task.description}</p>}
@@ -286,7 +303,7 @@ export default function ChildDashboardPage() {
                     <div className="child-task-submit-box"><textarea rows={2} value={taskNotes[task.id] || ""} onChange={(event) => setTaskNotes((current) => ({ ...current, [task.id]: event.target.value }))} placeholder="اكتب ملاحظة بسيطة عن إنجازك" /><button type="button" disabled={busyTaskId === task.id} onClick={() => submitTask(task.id)}>{busyTaskId === task.id ? "جارٍ الإرسال..." : "تم الإنجاز ✓"}</button></div>
                   )}
                   {task.status === "submitted" && <div className="child-goal-note">⏳ تنتظر مراجعة ولي الأمر.</div>}
-                  {task.status === "approved" && <div className="child-goal-note success">🎉 تمت إضافة {task.points} نقطة.</div>}
+                  {task.status === "approved" && <div className="child-goal-note success">🎉 تمت إضافة {task.achievement_points} ⭐ و{task.reward_points} 💎.</div>}
                 </article>
               ))}
             </div>
@@ -299,7 +316,7 @@ export default function ChildDashboardPage() {
           <div className="child-section-head"><div><span className="section-label">أهدافي</span><h2>الأهداف الحالية</h2><p>تابع تقدمك أو اطلب هدفًا جديدًا.</p></div><button className="color-add-button" type="button" onClick={() => setShowGoalForm((value) => !value)}>{showGoalForm ? "إغلاق" : "+ هدف جديد"}</button></div>
 
           {showGoalForm && (
-            <div className="child-goal-request-card embedded-goal-form"><h2>ما الهدف الذي تحلم به؟ 🌟</h2><form className="auth-form" onSubmit={requestGoal}><label>عنوان الهدف<input value={title} onChange={(event) => setTitle(event.target.value)} placeholder="مثال: أريد شراء دراجة" required /></label><label>الوصف<textarea value={description} onChange={(event) => setDescription(event.target.value)} rows={3} placeholder="لماذا تريد هذا الهدف؟" /></label><label>نوع الهدف<select value={goalType} onChange={(event) => setGoalType(event.target.value)}><option value="educational">🎓 تعليمي</option><option value="behavioral">🌱 سلوكي</option><option value="financial">💰 مالي</option><option value="material">🎁 عيني</option></select></label><div className="form-grid-two"><label>القيمة المتوقعة<input type="number" min="0" step="0.01" value={targetValue} onChange={(event) => setTargetValue(event.target.value)} /></label><label>النقاط المقترحة<input type="number" min="0" step="1" value={requiredPoints} onChange={(event) => setRequiredPoints(event.target.value)} /></label></div><label>التاريخ المقترح<input type="date" value={dueDate} onChange={(event) => setDueDate(event.target.value)} /></label><button className="auth-submit" type="submit" disabled={saving}>{saving ? "جارٍ الإرسال..." : "إرسال لولي الأمر"}</button></form></div>
+            <div className="child-goal-request-card embedded-goal-form"><h2>ما الهدف الذي تحلم به؟ 🌟</h2><form className="auth-form" onSubmit={requestGoal}><label>عنوان الهدف<input value={title} onChange={(event) => setTitle(event.target.value)} placeholder="مثال: أريد شراء دراجة" required /></label><label>الوصف<textarea value={description} onChange={(event) => setDescription(event.target.value)} rows={3} placeholder="لماذا تريد هذا الهدف؟" /></label><label>نوع الهدف<select value={goalType} onChange={(event) => setGoalType(event.target.value)}><option value="educational">🎓 تعليمي</option><option value="behavioral">🌱 سلوكي</option><option value="financial">💰 مالي</option><option value="material">🎁 عيني</option></select></label><div className="form-grid-two"><label>القيمة المتوقعة<input type="number" min="0" step="0.01" value={targetValue} onChange={(event) => setTargetValue(event.target.value)} /></label><label>نقاط المكافآت المطلوبة<input type="number" min="0" step="1" value={requiredPoints} onChange={(event) => setRequiredPoints(event.target.value)} /></label></div><label>التاريخ المقترح<input type="date" value={dueDate} onChange={(event) => setDueDate(event.target.value)} /></label><button className="auth-submit" type="submit" disabled={saving}>{saving ? "جارٍ الإرسال..." : "إرسال لولي الأمر"}</button></form></div>
           )}
 
           {data.goals.length === 0 ? (
@@ -312,8 +329,8 @@ export default function ChildDashboardPage() {
                   <article className="goal-card child-goal-card interactive-child-card" key={goal.id}>
                     <div className="goal-card-head"><div className="goal-title-with-icon"><span className={`goal-round-icon goal-${goal.goal_type}`}>{goalIcons[goal.goal_type] || "🎯"}</span><div><span className={`goal-status goal-status-${goal.status}`}>{goalStatusLabels[goal.status] || goal.status}</span><h3>{goal.title || "هدف بدون عنوان"}</h3></div></div>{goal.due_date && <time>{goal.due_date}</time>}</div>
                     {goal.description && <p className="goal-description">{goal.description}</p>}
-                    <div className="progress-row"><div className="progress-row-head"><span>تقدمك</span><strong>{progress}%</strong></div><div className="progress-track"><div className="progress-fill" style={{ width: `${progress}%` }} /></div></div>
-                    <div className="child-goal-note">✨ يتحدث التقدم بعد اعتماد المهام المرتبطة.</div>
+                    <div className="progress-row"><div className="progress-row-head"><span>تقدمك بنقاط المكافآت</span><strong>{progress}%</strong></div><div className="progress-track"><div className="progress-fill" style={{ width: `${progress}%` }} /></div></div>
+                    <div className="child-goal-note">💎 نقاط المكافآت هي التي تقربك من هذا الهدف.</div>
                   </article>
                 );
               })}
