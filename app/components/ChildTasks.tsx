@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { supabase } from "../../lib/supabase";
 
@@ -41,6 +42,13 @@ const categoryLabels: Record<string, string> = {
   other: "أخرى"
 };
 
+const difficultyLabels: Record<string, string> = {
+  easy: "سهل",
+  medium: "متوسط",
+  hard: "صعب",
+  major: "إنجاز كبير"
+};
+
 export default function ChildTasks({ studentId }: { studentId: string }) {
   const searchParams = useSearchParams();
   const goalFromUrl = searchParams.get("goal") || "";
@@ -50,7 +58,10 @@ export default function ChildTasks({ studentId }: { studentId: string }) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("behavior");
-  const [points, setPoints] = useState("10");
+  const [difficulty, setDifficulty] = useState("medium");
+  const [pointsMode, setPointsMode] = useState<"automatic" | "manual">("automatic");
+  const [achievementPoints, setAchievementPoints] = useState("10");
+  const [rewardPoints, setRewardPoints] = useState("1");
   const [dueDate, setDueDate] = useState("");
   const [recurrence, setRecurrence] = useState("once");
   const [reviewNotes, setReviewNotes] = useState<Record<string, string>>({});
@@ -74,11 +85,28 @@ export default function ChildTasks({ studentId }: { studentId: string }) {
         .order("created_at", { ascending: false })
     ]);
 
-    if (taskResult.error) setError(taskResult.error.message);
+    if (taskResult.error) setError("تعذر تحميل المهام الآن.");
     else setTasks(taskResult.data || []);
 
     if (!goalResult.error) setGoals(goalResult.data || []);
     setLoading(false);
+  }
+
+  async function loadSuggestedPoints(nextCategory = category, nextDifficulty = difficulty) {
+    if (pointsMode !== "automatic") return;
+    const client = supabase;
+    if (!client) return;
+
+    const result = await client.rpc("suggest_task_points", {
+      p_student_id: studentId,
+      p_category: nextCategory,
+      p_difficulty: nextDifficulty
+    });
+
+    if (!result.error && result.data?.[0]) {
+      setAchievementPoints(String(result.data[0].achievement_points || 0));
+      setRewardPoints(String(result.data[0].reward_points || 0));
+    }
   }
 
   useEffect(() => {
@@ -88,6 +116,10 @@ export default function ChildTasks({ studentId }: { studentId: string }) {
   useEffect(() => {
     if (goalFromUrl) setGoalId(goalFromUrl);
   }, [goalFromUrl]);
+
+  useEffect(() => {
+    loadSuggestedPoints();
+  }, [category, difficulty, pointsMode]);
 
   const submittedCount = useMemo(
     () => tasks.filter((task) => task.status === "submitted").length,
@@ -108,30 +140,35 @@ export default function ChildTasks({ studentId }: { studentId: string }) {
     if (!client) return;
 
     setSaving(true);
-    const result = await client.rpc("create_task_for_child", {
+    const result = await client.rpc("create_task_for_child_v2", {
       p_student_id: studentId,
       p_goal_id: goalId || null,
       p_title: title.trim(),
       p_description: description.trim(),
       p_category: category,
-      p_points: Number(points || 0),
+      p_difficulty: difficulty,
+      p_achievement_points: Number(achievementPoints || 0),
+      p_reward_points: Number(rewardPoints || 0),
+      p_points_mode: pointsMode,
       p_due_date: dueDate || null,
       p_recurrence: recurrence
     });
     setSaving(false);
 
     if (result.error) {
-      setError(result.error.message);
+      setError("تعذر إسناد المهمة. تحقق من البيانات وحاول مرة أخرى.");
       return;
     }
 
     setTitle("");
     setDescription("");
     setCategory("behavior");
-    setPoints("10");
+    setDifficulty("medium");
+    setPointsMode("automatic");
     setDueDate("");
     setRecurrence("once");
     setSuccess("تم إسناد المهمة وستظهر في حساب الطفل.");
+    await loadSuggestedPoints("behavior", "medium");
     await loadData();
   }
 
@@ -149,12 +186,12 @@ export default function ChildTasks({ studentId }: { studentId: string }) {
     setBusyId("");
 
     if (result.error) {
-      setError(result.error.message);
+      setError("تعذر مراجعة المهمة الآن.");
       return;
     }
 
     setReviewNotes((current) => ({ ...current, [taskId]: "" }));
-    setSuccess(decision === "approved" ? "تم اعتماد المهمة وإضافة النقاط." : "تمت إعادة المهمة للطفل مع الملاحظة.");
+    setSuccess(decision === "approved" ? "تم اعتماد المهمة وإضافة نقاط الإنجاز والمكافآت." : "تمت إعادة المهمة للطفل مع الملاحظة.");
     await loadData();
   }
 
@@ -163,21 +200,38 @@ export default function ChildTasks({ studentId }: { studentId: string }) {
   return (
     <section className="tasks-workspace">
       <div className="tasks-summary-card">
-        <div><span className="section-label">المهام والنقاط</span><h1>إسناد ومراجعة المهام</h1><p>اربط المهمة بهدف، ثم يعتمد الطفل الإنجاز ويُراجع ولي الأمر النتيجة.</p></div>
+        <div><span className="section-label">المهام والنقاط</span><h1>إسناد ومراجعة المهام</h1><p>النقاط تقترح تلقائيًا حسب نوع المهمة وصعوبتها، ويمكنك تعديلها عند الحاجة.</p></div>
         <strong>{submittedCount}<small>تنتظر المراجعة</small></strong>
       </div>
 
       <div className="tasks-layout">
         <section className="task-create-card">
-          <h2>مهمة جديدة</h2>
+          <div className="task-create-head">
+            <h2>مهمة جديدة</h2>
+            <Link href="/settings/points">سياسات النقاط</Link>
+          </div>
           <form className="auth-form" onSubmit={createTask}>
             <label>الهدف المرتبط<select value={goalId} onChange={(event) => setGoalId(event.target.value)}><option value="">مهمة عامة بدون هدف</option>{goals.map((goal) => <option value={goal.id} key={goal.id}>{goal.title}</option>)}</select></label>
             <label>عنوان المهمة<input value={title} onChange={(event) => setTitle(event.target.value)} placeholder="مثال: قراءة 20 دقيقة" required /></label>
             <label>الوصف<textarea value={description} onChange={(event) => setDescription(event.target.value)} rows={3} placeholder="اشرح المطلوب للطفل" /></label>
+
             <div className="form-grid-two">
-              <label>التصنيف<select value={category} onChange={(event) => setCategory(event.target.value)}><option value="behavior">سلوكية</option><option value="educational">تعليمية</option><option value="quran">قرآن</option><option value="home">منزلية</option><option value="other">أخرى</option></select></label>
-              <label>النقاط<input type="number" min="0" step="1" value={points} onChange={(event) => setPoints(event.target.value)} /></label>
+              <label>التصنيف<select value={category} onChange={(event) => setCategory(event.target.value)}><option value="behavior">🌟 سلوكية</option><option value="educational">📚 تعليمية</option><option value="quran">📖 قرآن</option><option value="home">🏠 منزلية</option><option value="other">✨ أخرى</option></select></label>
+              <label>درجة الصعوبة<select value={difficulty} onChange={(event) => setDifficulty(event.target.value)}><option value="easy">سهل · 5 نقاط افتراضيًا</option><option value="medium">متوسط · 10 نقاط افتراضيًا</option><option value="hard">صعب · 20 نقطة افتراضيًا</option><option value="major">إنجاز كبير · 50 نقطة افتراضيًا</option></select></label>
             </div>
+
+            <div className="points-mode-switch" role="group" aria-label="طريقة احتساب النقاط">
+              <button className={pointsMode === "automatic" ? "active" : ""} type="button" onClick={() => setPointsMode("automatic")}>تلقائي</button>
+              <button className={pointsMode === "manual" ? "active" : ""} type="button" onClick={() => setPointsMode("manual")}>يدوي</button>
+            </div>
+
+            <div className="dual-points-grid">
+              <label className="achievement-point-field"><span>⭐ نقاط الإنجاز</span><input type="number" min="0" step="1" value={achievementPoints} onChange={(event) => setAchievementPoints(event.target.value)} disabled={pointsMode === "automatic"} /><small>للمستوى والرتبة</small></label>
+              <label className="reward-point-field"><span>💎 نقاط المكافآت</span><input type="number" min="0" step="1" value={rewardPoints} onChange={(event) => setRewardPoints(event.target.value)} disabled={pointsMode === "automatic"} /><small>للأهداف والجوائز</small></label>
+            </div>
+
+            <p className="points-suggestion-note">اقتراح نماء: {difficultyLabels[difficulty]} · {achievementPoints} ⭐ + {rewardPoints} 💎</p>
+
             <div className="form-grid-two">
               <label>تاريخ الاستحقاق<input type="date" value={dueDate} onChange={(event) => setDueDate(event.target.value)} /></label>
               <label>التكرار<select value={recurrence} onChange={(event) => setRecurrence(event.target.value)}><option value="once">مرة واحدة</option><option value="daily">يومي</option><option value="weekly">أسبوعي</option></select></label>
@@ -194,7 +248,7 @@ export default function ChildTasks({ studentId }: { studentId: string }) {
             <div className="parent-task-list">
               {tasks.map((task) => (
                 <article className={`parent-task-card task-${task.status}`} key={task.id}>
-                  <div className="parent-task-head"><div><span className={`task-status task-status-${task.status}`}>{statusLabels[task.status] || task.status}</span><h3>{task.title}</h3><p>{categoryLabels[task.category] || task.category} · {task.points} نقطة</p></div>{task.due_date && <time>{task.due_date}</time>}</div>
+                  <div className="parent-task-head"><div><span className={`task-status task-status-${task.status}`}>{statusLabels[task.status] || task.status}</span><h3>{task.title}</h3><p>{categoryLabels[task.category] || task.category} · {task.points} نقطة إجمالية</p></div>{task.due_date && <time>{task.due_date}</time>}</div>
                   {task.description && <p className="task-description">{task.description}</p>}
                   {task.child_note && <div className="task-note"><strong>ملاحظة الطفل</strong><p>{task.child_note}</p></div>}
                   {task.review_note && <div className="task-note review"><strong>ملاحظة ولي الأمر</strong><p>{task.review_note}</p></div>}
