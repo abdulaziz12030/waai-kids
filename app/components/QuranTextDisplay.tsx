@@ -5,6 +5,8 @@ import { useMemo, useState } from "react";
 type Props = {
   uthmaniText?: string | null;
   readableText?: string | null;
+  compact?: boolean;
+  initialMode?: "mushaf" | "learning";
 };
 
 function splitVerses(text: string) {
@@ -13,8 +15,8 @@ function splitVerses(text: string) {
   return [text.trim()].filter(Boolean);
 }
 
-export default function QuranTextDisplay({ uthmaniText, readableText }: Props) {
-  const [mode, setMode] = useState<"mushaf" | "learning">("mushaf");
+export default function QuranTextDisplay({ uthmaniText, readableText, compact = false, initialMode = "mushaf" }: Props) {
+  const [mode, setMode] = useState<"mushaf" | "learning">(initialMode);
   const verses = useMemo(() => splitVerses(readableText || ""), [readableText]);
 
   if (!uthmaniText && !readableText) {
@@ -22,7 +24,7 @@ export default function QuranTextDisplay({ uthmaniText, readableText }: Props) {
   }
 
   return (
-    <section className="quran-display">
+    <section className={compact ? "quran-display compact" : "quran-display"}>
       <div className="quran-mode-switch" role="group" aria-label="طريقة عرض القرآن">
         <button type="button" className={mode === "mushaf" ? "active" : ""} onClick={() => setMode("mushaf")}>مصحف</button>
         <button type="button" className={mode === "learning" ? "active" : ""} onClick={() => setMode("learning")}>تعلم</button>
@@ -36,7 +38,7 @@ export default function QuranTextDisplay({ uthmaniText, readableText }: Props) {
         </div>
       )}
 
-      {mode === "learning" && <p className="quran-learning-note">الألوان تفصل بين الآيات لتسهيل الحفظ، وليست ترميزًا لأحكام التجويد.</p>}
+      {mode === "learning" && <p className="quran-learning-note">الألوان تفصل بين الآيات لتسهيل المراجعة، وليست ترميزًا لأحكام التجويد.</p>}
     </section>
   );
 }
