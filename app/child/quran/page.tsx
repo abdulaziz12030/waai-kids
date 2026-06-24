@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "../../../lib/supabase";
+import QuranTextDisplay from "../../components/QuranTextDisplay";
 
 type QuranPlan = {
   id: string;
@@ -150,7 +151,7 @@ export default function ChildQuranPage() {
                       <span className="task-round-icon category-quran">📖</span>
                       <div><span className={`task-status task-status-${segment.status}`}>{statusLabels[segment.status] || segment.status}</span><h3>{segment.portion_label || "مقطع قرآن"}</h3><p>{segment.achievement_points} ⭐ {segment.reward_points > 0 ? `· ${segment.reward_points} 💎` : ""}</p></div>
                     </div>
-                    {segment.readable_text ? <p className="child-readable-quran-text">{segment.readable_text}</p> : <p className="quran-text-pending">تعذر تحميل نص المقطع.</p>}
+                    <QuranTextDisplay uthmaniText={segment.uthmani_text} readableText={segment.readable_text} />
                     {segment.notes && <div className="task-note review"><strong>ملاحظة ولي الأمر</strong><p>{segment.notes}</p></div>}
                     {["assigned", "needs_revision"].includes(segment.status) && (
                       <button className="child-quran-submit" type="button" disabled={busyId === segment.id} onClick={() => markMemorized(segment.id)}>{busyId === segment.id ? "جارٍ الإرسال..." : "تم الحفظ ✓"}</button>
