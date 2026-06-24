@@ -1,0 +1,120 @@
+@font-face {
+  font-family: "HafsSmart08";
+  src: url("https://raw.githubusercontent.com/Ahmad-B-Mahmoud/al-meerath/b0e0d781ee4af99977172fed87868375f0acf3b9/public/fonts/HafsSmart_08.ttf") format("truetype");
+  font-display: swap;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.quran-display {
+  margin: 16px 0;
+}
+
+.quran-mode-switch {
+  width: fit-content;
+  margin: 0 auto 12px;
+  padding: 5px;
+  display: flex;
+  gap: 5px;
+  border-radius: 14px;
+  background: #eef3ef;
+}
+
+.quran-mode-switch button {
+  min-height: 38px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: #607168;
+  font: inherit;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.quran-mode-switch button.active {
+  background: #fff;
+  color: #0d6f48;
+  box-shadow: 0 5px 14px rgba(48, 73, 59, .1);
+}
+
+.quran-mushaf-text {
+  margin: 0;
+  padding: 22px;
+  border: 1px solid #e2e7e3;
+  border-radius: 16px;
+  background: #fffdf8;
+  color: #162f27;
+  font-family: "HafsSmart08", serif;
+  font-size: clamp(30px, 4vw, 46px);
+  font-weight: 400;
+  line-height: 2.15;
+  text-align: center;
+  direction: rtl;
+  unicode-bidi: plaintext;
+}
+
+.quran-learning-text {
+  margin: 0;
+  padding: 18px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px 8px;
+  border: 1px solid #e2e7e3;
+  border-radius: 16px;
+  background: #fffdf8;
+  direction: rtl;
+}
+
+.quran-learning-verse {
+  padding: 7px 11px;
+  border-radius: 12px;
+  font-family: "Amiri Quran", "Noto Naskh Arabic", "Traditional Arabic", serif;
+  font-size: clamp(21px, 3vw, 29px);
+  line-height: 1.95;
+}
+
+.quran-learning-verse:nth-child(4n + 1) {
+  background: #eef8f1;
+  color: #174c37;
+}
+
+.quran-learning-verse:nth-child(4n + 2) {
+  background: #fff6dd;
+  color: #654b10;
+}
+
+.quran-learning-verse:nth-child(4n + 3) {
+  background: #eef4ff;
+  color: #244f86;
+}
+
+.quran-learning-verse:nth-child(4n) {
+  background: #f5efff;
+  color: #5f438d;
+}
+
+.quran-learning-note {
+  margin: 10px 0 0;
+  color: #7b867f;
+  font-size: 11px;
+  text-align: center;
+  line-height: 1.7;
+}
+
+@media (max-width: 640px) {
+  .quran-mushaf-text {
+    padding: 16px;
+    font-size: 34px;
+    line-height: 2;
+  }
+
+  .quran-learning-text {
+    padding: 12px;
+  }
+
+  .quran-learning-verse {
+    font-size: 22px;
+  }
+}
