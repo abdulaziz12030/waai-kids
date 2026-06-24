@@ -17,6 +17,7 @@ type QuranSegment = {
   plan_id: string;
   portion_label: string | null;
   uthmani_text: string | null;
+  readable_text: string | null;
   status: string;
   achievement_points: number;
   reward_points: number;
@@ -149,7 +150,7 @@ export default function ChildQuranPage() {
                       <span className="task-round-icon category-quran">📖</span>
                       <div><span className={`task-status task-status-${segment.status}`}>{statusLabels[segment.status] || segment.status}</span><h3>{segment.portion_label || "مقطع قرآن"}</h3><p>{segment.achievement_points} ⭐ {segment.reward_points > 0 ? `· ${segment.reward_points} 💎` : ""}</p></div>
                     </div>
-                    {segment.uthmani_text ? <p className="child-uthmani-text">{segment.uthmani_text}</p> : <p className="quran-text-pending">سيظهر النص العثماني هنا بعد استيراد ملف المجمع الرسمي.</p>}
+                    {segment.readable_text ? <p className="child-readable-quran-text">{segment.readable_text}</p> : <p className="quran-text-pending">تعذر تحميل نص المقطع.</p>}
                     {segment.notes && <div className="task-note review"><strong>ملاحظة ولي الأمر</strong><p>{segment.notes}</p></div>}
                     {["assigned", "needs_revision"].includes(segment.status) && (
                       <button className="child-quran-submit" type="button" disabled={busyId === segment.id} onClick={() => markMemorized(segment.id)}>{busyId === segment.id ? "جارٍ الإرسال..." : "تم الحفظ ✓"}</button>
