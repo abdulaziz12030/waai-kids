@@ -8,7 +8,8 @@ import { supabase } from "../../lib/supabase";
 export default function OnboardingPage() {
   const router = useRouter();
   const [fullName, setFullName] = useState("");
-  const [familyName, setFamilyName] = useState("");
+  const [organizationName, setOrganizationName] = useState("");
+  const [accountType, setAccountType] = useState<"family" | "teacher">("family");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
@@ -23,7 +24,6 @@ export default function OnboardingPage() {
 
       const { data } = await supabase.auth.getSession();
       const user = data.session?.user;
-
       if (!user) {
         router.replace("/login");
         return;
@@ -32,7 +32,7 @@ export default function OnboardingPage() {
       const savedName = String(user.user_metadata?.full_name || "");
       const savedFamily = String(user.user_metadata?.family_name || "");
       setFullName(savedName);
-      setFamilyName(savedFamily || (savedName ? `أسرة ${savedName.split(" ")[0]}` : ""));
+      setOrganizationName(savedFamily || (savedName ? `أسرة ${savedName.split(" ")[0]}` : ""));
       setLoading(false);
     }
 
@@ -42,13 +42,11 @@ export default function OnboardingPage() {
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError("");
-
     if (!supabase) return;
 
     setSaving(true);
     const { data } = await supabase.auth.getUser();
     const user = data.user;
-
     if (!user) {
       setSaving(false);
       router.replace("/login");
@@ -56,7 +54,7 @@ export default function OnboardingPage() {
     }
 
     const cleanFullName = fullName.trim();
-    const cleanFamilyName = familyName.trim();
+    const cleanOrganizationName = organizationName.trim();
     const organizationId = user.id;
 
     const profile = await supabase
@@ -64,25 +62,22 @@ export default function OnboardingPage() {
       .upsert({ id: user.id, full_name: cleanFullName }, { onConflict: "id" });
 
     if (profile.error) {
-      setError(`تعذر حفظ ملف ولي الأمر: ${profile.error.message}`);
+      setError(`تعذر حفظ الملف: ${profile.error.message}`);
       setSaving(false);
       return;
     }
 
     const organization = await supabase
       .from("organizations")
-      .upsert(
-        {
-          id: organizationId,
-          name: cleanFamilyName,
-          type: "family",
-          owner_id: user.id
-        },
-        { onConflict: "id" }
-      );
+      .upsert({
+        id: organizationId,
+        name: cleanOrganizationName,
+        type: accountType === "teacher" ? "independent_teacher" : "family",
+        owner_id: user.id
+      }, { onConflict: "id" });
 
     if (organization.error) {
-      setError(`تعذر إنشاء الأسرة: ${organization.error.message}`);
+      setError(`تعذر إنشاء الحساب: ${organization.error.message}`);
       setSaving(false);
       return;
     }
@@ -95,67 +90,50 @@ export default function OnboardingPage() {
       .maybeSingle();
 
     if (existingMembership.error) {
-      setError(`تعذر التحقق من عضوية ولي الأمر: ${existingMembership.error.message}`);
+      setError(`تعذر التحقق من العضوية: ${existingMembership.error.message}`);
       setSaving(false);
       return;
     }
 
+    const role = accountType === "teacher" ? "teacher" : "owner";
     const membership = existingMembership.data
-      ? await supabase
-          .from("memberships")
-          .update({ role: "owner", display_name: cleanFullName })
-          .eq("id", existingMembership.data.id)
-      : await supabase.from("memberships").insert({
-          organization_id: organizationId,
-          user_id: user.id,
-          role: "owner",
-          display_name: cleanFullName
-        });
+      ? await supabase.from("memberships").update({ role, display_name: cleanFullName, is_active: true }).eq("id", existingMembership.data.id)
+      : await supabase.from("memberships").insert({ organization_id: organizationId, user_id: user.id, role, display_name: cleanFullName });
 
     if (membership.error) {
-      setError(`تعذر إنشاء عضوية ولي الأمر: ${membership.error.message}`);
+      setError(`تعذر إنشاء العضوية: ${membership.error.message}`);
       setSaving(false);
       return;
     }
 
     setSaving(false);
-    router.push("/dashboard");
+    router.push(accountType === "teacher" ? "/teacher" : "/dashboard");
     router.refresh();
   }
 
-  if (loading) {
-    return <main className="dashboard-loading">جارٍ تجهيز الأسرة...</main>;
-  }
+  if (loading) return <main className="dashboard-loading">جارٍ تجهيز الحساب...</main>;
 
   return (
     <main className="auth-page compact-auth-page">
-      <section className="auth-panel">
-        <Link className="auth-brand" href="/">
-          <span className="brand-mark">ن</span>
-          <span>نماء</span>
-        </Link>
+      <section className="auth-panel onboarding-role-panel">
+        <Link className="auth-brand" href="/"><span className="brand-mark">ن</span><span>نماء</span></Link>
 
         <div className="auth-heading">
-          <span className="section-label">إعداد الأسرة</span>
-          <h1>أكمل بيانات أسرتك</h1>
-          <p>سننشئ ملف ولي الأمر والأسرة مرة واحدة فقط.</p>
+          <span className="section-label">إعداد الحساب</span>
+          <h1>كيف ستستخدم نماء؟</h1>
+          <p>اختر نوع الحساب ثم أكمل بياناتك.</p>
+        </div>
+
+        <div className="account-type-switch">
+          <button type="button" className={accountType === "family" ? "active" : ""} onClick={() => { setAccountType("family"); setOrganizationName(fullName ? `أسرة ${fullName.split(" ")[0]}` : ""); }}><span>👨‍👩‍👧‍👦</span><strong>ولي أمر</strong><small>متابعة الأبناء والأسرة</small></button>
+          <button type="button" className={accountType === "teacher" ? "active" : ""} onClick={() => { setAccountType("teacher"); setOrganizationName(fullName ? `حلقة ${fullName}` : ""); }}><span>👨‍🏫</span><strong>معلم قرآن</strong><small>متابعة الطلاب والتسميع</small></button>
         </div>
 
         <form className="auth-form" onSubmit={handleSubmit}>
-          <label>
-            اسم ولي الأمر
-            <input value={fullName} onChange={(event) => setFullName(event.target.value)} required />
-          </label>
-          <label>
-            اسم الأسرة
-            <input value={familyName} onChange={(event) => setFamilyName(event.target.value)} required />
-          </label>
-
+          <label>الاسم الكامل<input value={fullName} onChange={(event) => setFullName(event.target.value)} required /></label>
+          <label>{accountType === "teacher" ? "اسم الحلقة أو اسم المعلم" : "اسم الأسرة"}<input value={organizationName} onChange={(event) => setOrganizationName(event.target.value)} required /></label>
           {error && <p className="form-message error-message">{error}</p>}
-
-          <button className="auth-submit" type="submit" disabled={saving}>
-            {saving ? "جارٍ إنشاء الأسرة..." : "إنشاء الأسرة والمتابعة"}
-          </button>
+          <button className="auth-submit" type="submit" disabled={saving}>{saving ? "جارٍ إنشاء الحساب..." : accountType === "teacher" ? "إنشاء حساب المعلم" : "إنشاء الأسرة والمتابعة"}</button>
         </form>
       </section>
     </main>
