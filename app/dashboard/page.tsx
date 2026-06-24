@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { supabase } from "../../lib/supabase";
@@ -16,7 +16,8 @@ type StudentProfile = {
 type Student = {
   id: string;
   full_name: string;
-  points_balance?: number;
+  achievement_points?: number;
+  reward_points?: number;
   profile_data?: StudentProfile | null;
   photo_url?: string;
 };
@@ -65,7 +66,6 @@ export default function DashboardPage() {
 
       const { data } = await client.auth.getSession();
       const session = data.session;
-
       if (!session) {
         router.replace("/login");
         return;
@@ -73,7 +73,7 @@ export default function DashboardPage() {
 
       const organization = await client
         .from("organizations")
-        .select("id, name")
+        .select("id, name, family_title")
         .eq("owner_id", session.user.id)
         .eq("type", "family")
         .maybeSingle();
@@ -86,7 +86,7 @@ export default function DashboardPage() {
       const [studentResult, goalsResult, tasksResult] = await Promise.all([
         client
           .from("students")
-          .select("id, full_name, points_balance, profile_data")
+          .select("id, full_name, achievement_points, reward_points, profile_data")
           .eq("organization_id", organization.data.id)
           .order("created_at", { ascending: true }),
         client
@@ -102,35 +102,29 @@ export default function DashboardPage() {
       ]);
 
       if (studentResult.error) {
-        setError(`تعذر تحميل الأبناء: ${studentResult.error.message}`);
+        setError("تعذر تحميل بيانات الأبناء.");
       } else {
         const withPhotos = await Promise.all((studentResult.data || []).map(async (student) => {
           const profile = (student.profile_data || {}) as StudentProfile;
           if (!profile.photo_path) return student;
-          const signed = await client.storage.from("child-photos").createSignedUrl(profile.photo_path, 60 * 60);
+          const signed = await client.storage.from("child-photos").createSignedUrl(profile.photo_path, 3600);
           return { ...student, photo_url: signed.data?.signedUrl || "" };
         }));
         setStudents(withPhotos);
         setMetrics({
           activeGoals: goalsResult.count || 0,
           pendingTasks: tasksResult.count || 0,
-          totalPoints: withPhotos.reduce((sum, student) => sum + Number(student.points_balance || 0), 0)
+          totalPoints: withPhotos.reduce((sum, student) => sum + Number(student.achievement_points || 0), 0)
         });
       }
 
       setEmail(session.user.email || "");
-      setFamilyName(organization.data.name);
+      setFamilyName(organization.data.family_title || organization.data.name);
       setLoading(false);
     }
 
     loadSession();
   }, [router]);
-
-  const familyProfileCompletion = useMemo(() => {
-    if (students.length === 0) return 0;
-    const total = students.reduce((sum, student) => sum + getProfileCompletion(student), 0);
-    return Math.round(total / students.length);
-  }, [students]);
 
   async function signOut() {
     const client = supabase;
@@ -145,7 +139,10 @@ export default function DashboardPage() {
     <main className="dashboard-page dashboard-page-v2 parent-dashboard-refresh">
       <header className="dashboard-header">
         <Link className="brand" href="/"><span className="brand-mark">ن</span><span>نماء</span></Link>
-        <button className="quiet-button" type="button" onClick={signOut}>تسجيل الخروج</button>
+        <div className="dashboard-header-actions">
+          <Link className="quiet-button link-submit" href="/settings/family">إعدادات الأسرة</Link>
+          <button className="quiet-button" type="button" onClick={signOut}>تسجيل الخروج</button>
+        </div>
       </header>
 
       <section className="dashboard-welcome dashboard-welcome-v2 parent-welcome-card">
@@ -154,7 +151,10 @@ export default function DashboardPage() {
           <h1>مرحبًا بك في {familyName}</h1>
           <p>{email}</p>
         </div>
-        <Link className="auth-submit link-submit dashboard-primary-action" href="/children/new">+ إضافة طفل</Link>
+        <div className="dashboard-welcome-actions">
+          <Link className="quiet-button link-submit" href="/settings/family">تعديل ملف الأسرة</Link>
+          <Link className="auth-submit link-submit dashboard-primary-action" href="/children/new">+ إضافة طفل</Link>
+        </div>
         {error && <p className="form-message error-message dashboard-error">{error}</p>}
       </section>
 
@@ -162,17 +162,16 @@ export default function DashboardPage() {
         <article className="metric-card metric-children"><span className="metric-icon">👨‍👩‍👧‍👦</span><div><span>الأبناء</span><strong>{students.length}</strong><small>ملفات مضافة</small></div></article>
         <article className="metric-card metric-review"><span className="metric-icon">✅</span><div><span>تنتظر المراجعة</span><strong>{metrics.pendingTasks}</strong><small>مهام أرسلها الأبناء</small></div></article>
         <article className="metric-card metric-goals"><span className="metric-icon">🎯</span><div><span>أهداف نشطة</span><strong>{metrics.activeGoals}</strong><small>قيد التقدم</small></div></article>
-        <article className="metric-card metric-points"><span className="metric-icon">⭐</span><div><span>مجموع النقاط</span><strong>{metrics.totalPoints}</strong><small>رصيد الأسرة</small></div></article>
+        <article className="metric-card metric-points"><span className="metric-icon">⭐</span><div><span>نقاط الإنجاز</span><strong>{metrics.totalPoints}</strong><small>مجموع الأسرة</small></div></article>
       </section>
 
       {students.length === 0 ? (
         <section className="dashboard-empty-state">
-          <div><span className="empty-icon">👋</span><h2>ابدأ بإضافة أول طفل</h2><p>بعد الإضافة ستتمكن من إنشاء الأهداف وإسناد المهام وتفعيل الدخول المستقل.</p><Link className="auth-submit link-submit" href="/children/new">إضافة طفل</Link></div>
+          <div><span className="empty-icon">👋</span><h2>ابدأ بإضافة أول طفل</h2><p>بعد الإضافة ستتمكن من إنشاء الأهداف والمهام وبرامج الحفظ.</p><Link className="auth-submit link-submit" href="/children/new">إضافة طفل</Link></div>
         </section>
       ) : (
         <section className="children-section children-section-v2">
-          <div className="children-section-head"><div><span className="section-label">الأبناء</span><h2>اختر الطفل الذي تريد متابعته</h2><p>كل بطاقة تقودك مباشرة إلى الملف والأهداف والمهام دون تشعب.</p></div></div>
-
+          <div className="children-section-head"><div><span className="section-label">الأبناء</span><h2>اختر الطفل الذي تريد متابعته</h2><p>الأهداف والمهام والحفظ ودخول الطفل في مكان واحد.</p></div></div>
           <div className="children-grid children-grid-v2 refreshed-children-grid">
             {students.map((student, index) => {
               const profile = student.profile_data || {};
@@ -185,12 +184,13 @@ export default function DashboardPage() {
                       <span className="child-avatar child-avatar-photo">{student.photo_url ? <img src={student.photo_url} alt={`صورة ${student.full_name}`} /> : avatarSymbols[profile.avatar || ""] || student.full_name.slice(0, 1)}</span>
                       <div><span className="child-color-icon">{icon}</span><h3>{student.full_name}</h3><p>{profile.grade_level || "الصف غير محدد"}</p></div>
                     </div>
-                    <div className="progress-row" aria-label={`اكتمال ملف ${student.full_name} ${completion}%`}><div className="progress-row-head"><span>اكتمال الملف</span><strong>{completion}%</strong></div><div className="progress-track"><div className="progress-fill" style={{ width: `${completion}%` }} /></div></div>
-                    <div className="child-points-pill"><span>⭐</span><strong>{student.points_balance || 0}</strong><small>نقطة</small></div>
+                    <div className="progress-row"><div className="progress-row-head"><span>اكتمال الملف</span><strong>{completion}%</strong></div><div className="progress-track"><div className="progress-fill" style={{ width: `${completion}%` }} /></div></div>
+                    <div className="child-points-row"><div className="child-points-pill"><span>⭐</span><strong>{student.achievement_points || 0}</strong><small>إنجاز</small></div><div className="child-points-pill reward"><span>💎</span><strong>{student.reward_points || 0}</strong><small>مكافآت</small></div></div>
                   </Link>
-                  <div className="child-quick-actions">
+                  <div className="child-quick-actions child-quick-actions-four">
                     <Link href={`/children/${student.id}/goals`}><span>🎯</span>الأهداف</Link>
                     <Link href={`/children/${student.id}/tasks`}><span>✅</span>المهام</Link>
+                    <Link href={`/children/${student.id}/quran`}><span>📖</span>الحفظ</Link>
                     <Link href={`/children/${student.id}/access`}><span>🔐</span>الدخول</Link>
                   </div>
                 </article>
@@ -201,8 +201,8 @@ export default function DashboardPage() {
       )}
 
       <section className="weekly-report-card simplified-report-card">
-        <div><span className="section-label">اقتراح اليوم</span><h2>راجع المهام المنتظرة أولًا</h2><p>اعتماد إنجازات الطفل يضيف النقاط ويحدّث تقدم أهدافه تلقائيًا.</p></div>
-        <div className="weekly-report-placeholder"><strong>{metrics.pendingTasks}</strong><span>مهمة تنتظر قرارك</span></div>
+        <div><span className="section-label">اقتراح اليوم</span><h2>ابدأ خطة حفظ منزلية</h2><p>اختر أحد الأبناء ثم افتح قسم الحفظ لإنشاء أول برنامج متابعة.</p></div>
+        <div className="weekly-report-placeholder"><strong>📖</strong><span>الحفظ والتسميع</span></div>
       </section>
     </main>
   );
