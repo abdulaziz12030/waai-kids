@@ -2,12 +2,11 @@
 
 import { FormEvent, useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { supabase } from "../../lib/supabase";
 
 export default function RegisterPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [accountType, setAccountType] = useState<"family" | "teacher">("family");
   const [fullName, setFullName] = useState("");
   const [organizationName, setOrganizationName] = useState("");
@@ -18,8 +17,9 @@ export default function RegisterPage() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    if (searchParams.get("type") === "teacher") setAccountType("teacher");
-  }, [searchParams]);
+    const type = new URLSearchParams(window.location.search).get("type");
+    if (type === "teacher") setAccountType("teacher");
+  }, []);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
