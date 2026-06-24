@@ -13,6 +13,7 @@ import './tasks.css';
 import './ui-refresh.css';
 import './security-controls.css';
 import './points-v2.css';
+import './landing-v2.css';
 
 export const metadata: Metadata = {
   title: 'نماء',
