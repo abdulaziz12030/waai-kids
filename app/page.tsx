@@ -1,263 +1,119 @@
-import ChildEntryCard from "./components/ChildEntryCard";
-
 const features = [
-  {
-    title: "الأهداف",
-    description: "ساعد ابنك على اختيار هدف واضح، ثم قسّمه إلى خطوات صغيرة قابلة للإنجاز."
-  },
-  {
-    title: "المهام والنقاط",
-    description: "حوّل العادات والمهام اليومية إلى نقاط وإنجازات بسيطة ومشجعة."
-  },
-  {
-    title: "القرآن",
-    description: "نظّم الحفظ والمراجعة والتسميع، وتابع التقدم بطريقة سهلة وواضحة."
-  },
-  {
-    title: "المكافآت",
-    description: "اربط الإنجاز بمكافأة عادلة مع إمكانية الصرف أو الجدولة أو التأجيل."
-  }
+  { icon: "🔒", title: "آمن وموثوق", description: "خصوصية عالية وصلاحيات منفصلة لكل فرد." },
+  { icon: "👨‍👩‍👧‍👦", title: "متابعة ذكية", description: "ملخص واضح لتقدم الأبناء ومهامهم." },
+  { icon: "📋", title: "مهام يومية", description: "مهام بسيطة تبني العادات خطوة بخطوة." },
+  { icon: "🎯", title: "أهداف واضحة", description: "يختار الطفل هدفه ويعمل عليه بوضوح." },
+  { icon: "⭐", title: "نقاط محفزة", description: "نظام إنجاز ومكافآت يشجع الاستمرار." }
 ];
 
 const steps = [
-  {
-    title: "أنشئ الأسرة",
-    description: "يسجل ولي الأمر حسابه ويضيف أبناءه في دقائق."
-  },
-  {
-    title: "حدد الهدف",
-    description: "اختر هدفًا أو مهمة أو خطة حفظ مناسبة لكل ابن."
-  },
-  {
-    title: "تابع الإنجاز",
-    description: "اعتمد المهام والتسميع وأضف النقاط عند الإنجاز."
-  },
-  {
-    title: "كافئ بوضوح",
-    description: "تظهر المكافأة المستحقة ويُحدد وقت تسليمها بوضوح."
-  }
-];
-
-const audiences = [
-  {
-    title: "للأسرة الآن",
-    description: "لوحة بسيطة لولي الأمر والأبناء، وهي أول نسخة معتمدة من نماء."
-  },
-  {
-    title: "للمعلم لاحقًا",
-    description: "متابعة الحفظ والتسميع دون الاطلاع على بيانات الأسرة الخاصة."
-  },
-  {
-    title: "للحلقات والمدارس مستقبلًا",
-    description: "إدارة مجموعات ومعلمين وطلاب وصلاحيات من نفس الأساس التقني."
-  }
+  { number: "1", icon: "👨‍👩‍👧", title: "أنشئ حسابك", description: "سجل كولي أمر وأضف أبناءك خلال دقائق." },
+  { number: "2", icon: "🎯", title: "حدد الأهداف والمهام", description: "اختر هدفًا واضحًا وحدد المهام المناسبة." },
+  { number: "3", icon: "🎁", title: "تابع الإنجاز وكافئهم", description: "راجع الإنجازات وأضف النقاط والمكافآت." }
 ];
 
 export default function HomePage() {
   return (
-    <main>
-      <header className="site-header">
-        <a className="brand" href="#top" aria-label="نماء - الصفحة الرئيسية">
-          <span className="brand-mark">ن</span>
-          <span>نماء</span>
+    <main className="landing-v2" id="top">
+      <header className="landing-header">
+        <a className="landing-brand" href="#top" aria-label="نماء - الصفحة الرئيسية">
+          <span className="landing-brand-icon">🌿</span>
+          <span><strong>نماء</strong><small>ينمو بوعي وإيجابية</small></span>
         </a>
 
-        <nav className="nav-links" aria-label="التنقل الرئيسي">
-          <a href="#about">عن نماء</a>
+        <nav className="landing-nav" aria-label="التنقل الرئيسي">
           <a href="#features">المزايا</a>
           <a href="#how">كيف يعمل؟</a>
-          <a href="#pricing">الاشتراك</a>
+          <a href="#about">عن نماء</a>
         </nav>
 
-        <div className="header-actions">
-          <a className="header-child-login" href="/child/login">دخول الطفل</a>
-          <a className="header-status" href="/login">دخول ولي الأمر</a>
-          <a className="header-button" href="/register">إنشاء حساب</a>
+        <div className="landing-actions">
+          <a className="landing-login" href="/login">تسجيل الدخول</a>
+          <a className="landing-start" href="/register">ابدأ الآن</a>
         </div>
       </header>
 
-      <section className="hero" id="top">
-        <div className="hero-content">
-          <span className="eyebrow">نمو هادئ بخطوات واضحة</span>
-          <h1>نساعد أبناءنا على بناء العادات وتحقيق الأهداف بثقة.</h1>
-          <p>
-            نماء منصة تربوية تعليمية تجمع الأهداف والقرآن والمهام والنقاط
-            والمكافآت في تجربة واحدة بسيطة وهادئة للأسرة.
-          </p>
+      <section className="landing-hero">
+        <div className="landing-hero-copy">
+          <span className="landing-eyebrow">💚 منصة تربوية إسلامية للعائلة</span>
+          <h1>نساعد أطفالك<br />على <span>النمو</span> و<strong>الإنجاز</strong></h1>
+          <p>نماء منصة تساعدك على بناء عادات إيجابية لدى أطفالك من خلال الأهداف والمهام والنقاط بطريقة ممتعة وهادفة.</p>
 
-          <div className="hero-actions" id="start">
-            <a className="primary-button" href="/register">
-              إنشاء حساب ولي الأمر
+          <div className="landing-role-actions">
+            <a className="parent-entry" href="/login">
+              <span>👤</span>
+              <div><strong>دخول ولي الأمر</strong><small>إدارة ومتابعة الأبناء</small></div>
             </a>
-            <a className="secondary-button" href="/login">
-              دخول ولي الأمر
-            </a>
-            <a className="child-login-button" href="/child/login">
-              دخول الطفل
+            <a className="child-entry" href="/child/login">
+              <span>🧒</span>
+              <div><strong>دخول الطفل</strong><small>إنجاز المهام وكسب النقاط</small></div>
             </a>
           </div>
 
-          <div className="hero-note">
-            <span>•</span>
-            <p>للطفل حساب مستقل ومحدود، والموافقات النهائية بيد ولي الأمر.</p>
-          </div>
+          <div className="landing-security-note">🔒 بياناتك آمنة ومشفرة</div>
         </div>
 
-        <div className="hero-card" aria-label="نموذج بطاقة إنجاز">
-          <div className="hero-card-head">
-            <div>
-              <span className="card-kicker">ملخص أسبوعي</span>
-              <h2>تقدّم عمر</h2>
-            </div>
-            <strong>72٪</strong>
-          </div>
-          <div className="progress-track" aria-hidden="true">
-            <span className="progress-value" />
-          </div>
-          <div className="mini-list">
-            <div>
-              <span className="mini-icon">✓</span>
-              <p>تمت مراجعة سورة الملك</p>
-            </div>
-            <div>
-              <span className="mini-icon">✓</span>
-              <p>اكتملت 4 مهام تربوية</p>
-            </div>
-            <div>
-              <span className="mini-icon muted">•</span>
-              <p>تبقى 80 نقطة للهدف القادم</p>
-            </div>
-          </div>
-          <div className="card-footer-row">
-            <span>الرصيد الحالي</span>
-            <strong>420 نقطة</strong>
+        <div className="landing-hero-visual" aria-label="طفل يحقق إنجازًا">
+          <div className="visual-orbit orbit-one">✓</div>
+          <div className="visual-orbit orbit-two">🎯</div>
+          <div className="visual-orbit orbit-three">⭐</div>
+          <div className="visual-glow" />
+          <div className="hero-child">🧒🏻</div>
+          <div className="hero-trophy">🏆</div>
+          <div className="points-card">
+            <small>نقاطي اليوم</small>
+            <strong>120 ⭐</strong>
+            <span><i style={{ width: "72%" }} /></span>
           </div>
         </div>
       </section>
 
-      <ChildEntryCard />
-
-      <section className="about-section" id="about">
-        <div>
-          <span className="section-label">عن نماء</span>
-          <h2>ليس تطبيقًا للمكافآت فقط، بل مساحة للنمو.</h2>
-        </div>
-        <div className="about-copy">
-          <p>
-            يساعد نماء الطفل على الصبر والتخطيط وتحمل المسؤولية، ويمنح ولي
-            الأمر طريقة هادئة للمتابعة والتحفيز دون تعقيد.
-          </p>
-          <p>
-            الهدف هو أن يفهم الطفل العلاقة بين الجهد والإنجاز، لا أن تتحول كل
-            مهمة إلى مقابل مالي.
-          </p>
-        </div>
+      <section className="landing-features" id="features">
+        {features.map((feature, index) => (
+          <article key={feature.title} style={{ animationDelay: `${index * 80}ms` }}>
+            <span>{feature.icon}</span>
+            <h3>{feature.title}</h3>
+            <p>{feature.description}</p>
+          </article>
+        ))}
       </section>
 
-      <section className="features-section" id="features">
-        <div className="section-heading">
-          <span className="section-label">النسخة الأولى</span>
-          <h2>أساس واضح للأسرة</h2>
-          <p>نبدأ بالمزايا الأكثر فائدة، ثم نضيف البقية بعد اختبار التجربة.</p>
+      <section className="landing-how" id="how">
+        <div className="landing-section-head">
+          <span>🌱 خطوات بسيطة لبناء جيل متميز</span>
+          <h2>كيف يعمل نماء؟</h2>
         </div>
 
-        <div className="features-grid">
-          {features.map((feature, index) => (
-            <article className="feature-card" key={feature.title}>
-              <span className="feature-number">0{index + 1}</span>
-              <h3>{feature.title}</h3>
-              <p>{feature.description}</p>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section className="how-section" id="how">
-        <div className="section-heading centered-heading">
-          <span className="section-label">كيف يعمل؟</span>
-          <h2>أربع خطوات بسيطة</h2>
-          <p>تجربة سهلة لولي الأمر، وواضحة للطفل.</p>
-        </div>
-
-        <div className="steps-grid">
+        <div className="landing-steps">
           {steps.map((step, index) => (
-            <article className="step-card" key={step.title}>
-              <span className="step-number">{index + 1}</span>
+            <article key={step.number} className="landing-step">
+              <b>{step.number}</b>
+              <div className="step-visual">{step.icon}</div>
               <h3>{step.title}</h3>
               <p>{step.description}</p>
+              {index < steps.length - 1 && <span className="step-arrow">←</span>}
             </article>
           ))}
         </div>
+
+        <a className="landing-journey" href="/register">🚀 ابدأ رحلتكم الآن</a>
       </section>
 
-      <section className="audience-section">
-        <div className="section-heading">
-          <span className="section-label">توسع مدروس</span>
-          <h2>منصة واحدة تتوسع تدريجيًا</h2>
-          <p>البنية واحدة، لكن كل فئة ترى ما يناسب صلاحياتها فقط.</p>
-        </div>
-
-        <div className="audience-grid">
-          {audiences.map((audience) => (
-            <article className="audience-card" key={audience.title}>
-              <h3>{audience.title}</h3>
-              <p>{audience.description}</p>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section className="pricing-section" id="pricing">
-        <div className="pricing-copy">
-          <span className="section-label">الاشتراك المقترح</span>
-          <h2>باقة أسرة بسيطة وواضحة</h2>
-          <p>
-            سيتم تفعيل الاشتراكات بعد اكتمال الوظائف الأساسية وتجربة النسخة
-            الأولى مع عدد محدود من الأسر.
-          </p>
-        </div>
-
-        <article className="pricing-card">
-          <span className="pricing-badge">نسخة الأسرة</span>
-          <div className="price-row">
-            <strong>19</strong>
-            <div>
-              <span>ريال</span>
-              <p>شهريًا</p>
-            </div>
-          </div>
-          <p className="annual-price">أو 149 ريال سنويًا</p>
-          <ul>
-            <li>حتى 6 أبناء</li>
-            <li>ولي أمر إضافي</li>
-            <li>الأهداف والمهام والنقاط</li>
-            <li>القرآن والمكافآت</li>
-          </ul>
-          <a className="pricing-button link-submit" href="/register">
-            ابدأ إنشاء الحساب
-          </a>
-        </article>
-      </section>
-
-      <section className="next-step-section">
+      <section className="landing-about" id="about">
         <div>
-          <span className="section-label">ابدأ الآن</span>
-          <h2>سجل حساب ولي الأمر أو ادخل بحساب الطفل</h2>
+          <span className="landing-eyebrow">عن نماء</span>
+          <h2>أكثر من تطبيق نقاط</h2>
         </div>
-        <div className="next-step-actions">
-          <a className="primary-button" href="/register">حساب ولي الأمر</a>
-          <a className="child-login-button" href="/child/login">دخول الطفل</a>
-        </div>
+        <p>نماء مساحة تربوية تساعد الطفل على فهم العلاقة بين الجهد والإنجاز، وتمنح ولي الأمر متابعة هادئة وواضحة دون تعقيد.</p>
       </section>
 
-      <footer>
-        <div className="footer-brand">
-          <span className="brand-mark small">ن</span>
-          <div>
-            <strong>نماء</strong>
-            <p>منصة تربوية تعليمية للأطفال والطلاب.</p>
-          </div>
-        </div>
+      <section className="landing-final-cta">
+        <div><span>✨ ابدأ بخطوة صغيرة اليوم</span><h2>ساعد أبناءك على بناء عادات تدوم</h2></div>
+        <a href="/register">إنشاء حساب الأسرة</a>
+      </section>
+
+      <footer className="landing-footer">
+        <div className="landing-brand"><span className="landing-brand-icon">🌿</span><span><strong>نماء</strong><small>منصة تربوية تعليمية</small></span></div>
         <p>الإصدار التجريبي للأسرة</p>
       </footer>
     </main>
