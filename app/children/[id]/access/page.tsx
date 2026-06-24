@@ -7,13 +7,14 @@ import { supabase } from "../../../../lib/supabase";
 
 type AccessDetails = {
   family_code: string;
-  child_code: string;
+  child_code?: string;
   is_enabled: boolean;
 };
 
 function friendlyError(message: string) {
-  if (message.includes("not authorized") || message.includes("غير مصرح")) return "غير مصرح لك بتنفيذ هذه العملية.";
-  if (message.includes("PIN")) return "الرمز السري يجب أن يتكون من 4 أرقام.";
+  if (message.includes("مستخدم لطفل آخر")) return "هذا الرقم السري مستخدم لطفل آخر في الأسرة.";
+  if (message.includes("6 أرقام")) return "الرقم السري يجب أن يتكون من 6 أرقام.";
+  if (message.includes("غير مصرح") || message.includes("not authorized")) return "غير مصرح لك بتنفيذ هذه العملية.";
   return "تعذر تنفيذ العملية الآن. حاول مرة أخرى.";
 }
 
@@ -32,19 +33,14 @@ export default function ChildAccessPage() {
   async function loadDetails() {
     const client = supabase;
     if (!client) return;
-
     const { data: sessionData } = await client.auth.getSession();
     if (!sessionData.session) {
       router.replace("/login");
       return;
     }
-
     const result = await client.rpc("get_child_access_details", { p_student_id: studentId });
-    if (result.error) {
-      setError(friendlyError(result.error.message));
-    } else {
-      setDetails(result.data?.[0] || null);
-    }
+    if (result.error) setError(friendlyError(result.error.message));
+    else setDetails(result.data?.[0] || null);
     setLoading(false);
   }
 
@@ -56,47 +52,36 @@ export default function ChildAccessPage() {
     event.preventDefault();
     setError("");
     setSuccess("");
-
-    if (!/^\d{4}$/.test(pin)) {
-      setError("الرمز السري يجب أن يتكون من 4 أرقام.");
+    if (!/^\d{6}$/.test(pin)) {
+      setError("الرقم السري يجب أن يتكون من 6 أرقام.");
       return;
     }
-
     const client = supabase;
     if (!client) return;
-
     setSaving(true);
-    const result = await client.rpc("set_child_access_pin", {
-      p_student_id: studentId,
-      p_pin: pin
-    });
+    const result = await client.rpc("set_child_access_pin", { p_student_id: studentId, p_pin: pin });
     setSaving(false);
-
     if (result.error) {
       setError(friendlyError(result.error.message));
       return;
     }
-
     setPin("");
-    setSuccess("تم تحديث الرمز السري وتسجيل خروج الطفل من الأجهزة السابقة.");
+    setSuccess("تم تحديث الرقم السري وتسجيل خروج الطفل من الأجهزة السابقة.");
     await loadDetails();
   }
 
   async function revokeSessions() {
     const client = supabase;
     if (!client) return;
-
     setError("");
     setSuccess("");
     setRevoking(true);
     const result = await client.rpc("revoke_child_sessions", { p_student_id: studentId });
     setRevoking(false);
-
     if (result.error) {
       setError(friendlyError(result.error.message));
       return;
     }
-
     const count = Number(result.data || 0);
     setSuccess(count > 0 ? `تم تسجيل خروج الطفل من ${count} جلسة.` : "لا توجد جلسات نشطة للطفل حاليًا.");
   }
@@ -110,60 +95,44 @@ export default function ChildAccessPage() {
         <Link className="quiet-button link-submit" href={`/children/${studentId}`}>ملف الطفل</Link>
       </header>
 
-      <section className="goals-panel child-access-panel">
+      <section className="goals-panel child-access-panel simplified-access-panel">
         <div className="goals-panel-head">
           <div>
             <span className="section-label">دخول الطفل</span>
-            <h2>إعداد الحساب المحدود</h2>
-            <p>هذه البيانات مخصصة للطفل، ولا تمنحه صلاحيات ولي الأمر.</p>
+            <h2>دخول أسهل وأكثر أمانًا</h2>
+            <p>رمز أسرة ثابت لجميع الأبناء، ورقم سري مستقل لكل طفل.</p>
           </div>
         </div>
 
         {details && (
-          <div className="child-access-codes">
-            <article><span>رمز الأسرة</span><strong>{details.family_code}</strong></article>
-            <article><span>رمز الطفل</span><strong>{details.child_code}</strong></article>
-            <article><span>الحالة</span><strong>{details.is_enabled ? "مفعّل" : "غير مفعّل"}</strong></article>
+          <div className="child-access-codes simplified-access-codes">
+            <article><span>رمز الأسرة الثابت</span><strong>{details.family_code}</strong><small>يستخدمه جميع أطفال الأسرة</small></article>
+            <article><span>الحالة</span><strong>{details.is_enabled ? "مفعّل" : "غير مفعّل"}</strong><small>لا يوجد رمز طفل إضافي</small></article>
           </div>
         )}
 
         <div className="child-access-grid">
           <form className="auth-form child-pin-form" onSubmit={handleSubmit}>
             <label>
-              رمز سري من 4 أرقام
-              <input
-                inputMode="numeric"
-                maxLength={4}
-                value={pin}
-                onChange={(event) => setPin(event.target.value.replace(/\D/g, ""))}
-                placeholder="0000"
-                required
-              />
+              الرقم السري الخاص بالطفل
+              <input inputMode="numeric" maxLength={6} value={pin} onChange={(event) => setPin(event.target.value.replace(/\D/g, ""))} placeholder="000000" autoComplete="new-password" required />
             </label>
-
+            <p className="field-help">6 أرقام، ويجب أن يكون مختلفًا عن أرقام بقية الأطفال.</p>
             {error && <p className="form-message error-message">{error}</p>}
             {success && <p className="form-message success-message">{success}</p>}
-
-            <button className="auth-submit" type="submit" disabled={saving}>
-              {saving ? "جارٍ الحفظ..." : details?.is_enabled ? "تغيير الرمز السري" : "تفعيل دخول الطفل"}
-            </button>
+            <button className="auth-submit" type="submit" disabled={saving}>{saving ? "جارٍ الحفظ..." : details?.is_enabled ? "تغيير الرقم السري" : "تفعيل دخول الطفل"}</button>
           </form>
 
           <aside className="child-session-card">
             <span className="session-card-icon">🛡️</span>
-            <div>
-              <strong>التحكم في الجلسات</strong>
-              <p>استخدم هذا الخيار عند فقدان الجهاز أو عند الرغبة في إنهاء دخول الطفل من جميع الأجهزة.</p>
-            </div>
-            <button type="button" onClick={revokeSessions} disabled={revoking}>
-              {revoking ? "جارٍ تسجيل الخروج..." : "تسجيل الخروج من كل الأجهزة"}
-            </button>
+            <div><strong>التحكم في الجلسات</strong><p>يمكنك إنهاء دخول الطفل من جميع الأجهزة عند الحاجة.</p></div>
+            <button type="button" onClick={revokeSessions} disabled={revoking}>{revoking ? "جارٍ تسجيل الخروج..." : "تسجيل الخروج من كل الأجهزة"}</button>
           </aside>
         </div>
 
         <div className="child-access-note">
-          <strong>صلاحيات الطفل</strong>
-          <p>عرض أهدافه، متابعة تقدمه، تنفيذ المهام وطلب هدف جديد. لا يستطيع الموافقة أو الرفض أو تعديل النقاط والمكافآت.</p>
+          <strong>طريقة الدخول</strong>
+          <p>يدخل الطفل برمز الأسرة والرقم السري فقط، ويتعرف نماء على حسابه تلقائيًا.</p>
         </div>
       </section>
     </main>
