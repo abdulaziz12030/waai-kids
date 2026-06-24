@@ -26,6 +26,7 @@ type QuranSegment = {
   to_ayah: number | null;
   portion_label: string | null;
   uthmani_text: string | null;
+  readable_text: string | null;
   status: string;
   achievement_points: number;
   reward_points: number;
@@ -77,7 +78,7 @@ export default function ChildQuranPage() {
     }
     const result = await client
       .from("quran_segments")
-      .select("id,plan_id,surah_number,from_ayah,to_ayah,portion_label,uthmani_text,status,achievement_points,reward_points,notes")
+      .select("id,plan_id,surah_number,from_ayah,to_ayah,portion_label,uthmani_text,readable_text,status,achievement_points,reward_points,notes")
       .eq("plan_id", planId)
       .order("created_at", { ascending: true });
     if (!result.error) setSegments((result.data || []) as QuranSegment[]);
@@ -196,11 +197,11 @@ export default function ChildQuranPage() {
       </header>
 
       <section className="quran-program-hero">
-        <div className="quran-hero-copy"><span className="section-label">📖 الحفظ والتسميع</span><h1>برنامج حفظ {studentName || "الطفل"}</h1><p>أنشئ الخطة، حدد السورة ومقطع الآيات، ثم تابع الحفظ والتسميع والإتقان.</p><div className="quran-source-badge"><span>✓</span><div><strong>المصدر المعتمد</strong><small>الرسم العثماني — حفص عن عاصم — مجمع الملك فهد</small></div></div></div>
+        <div className="quran-hero-copy"><span className="section-label">📖 الحفظ والتسميع</span><h1>برنامج حفظ {studentName || "الطفل"}</h1><p>أنشئ الخطة، حدد السورة ومقطع الآيات، ثم تابع الحفظ والتسميع والإتقان.</p><div className="quran-source-badge"><span>✓</span><div><strong>المصدر المعتمد</strong><small>بيانات مجمع الملك فهد — رواية حفص عن عاصم</small></div></div></div>
         <div className="quran-hero-icon">۞</div>
       </section>
 
-      <section className={`quran-source-status ${sourceCount > 0 ? "ready" : "preparing"}`}><span>{sourceCount > 0 ? "✅" : "🛡️"}</span><div><strong>{sourceCount > 0 ? "النص القرآني الرسمي جاهز" : "فهرس السور جاهز والنص محمي"}</strong><p>{sourceCount > 0 ? `تم تحميل ${sourceCount} آية بالرسم العثماني.` : "يمكن إنشاء الخطط والمقاطع الآن، ولن يظهر نص آية حتى يُستورد ملف المجمع الرسمي."}</p></div></section>
+      <section className={`quran-source-status ${sourceCount > 0 ? "ready" : "preparing"}`}><span>{sourceCount > 0 ? "✅" : "🛡️"}</span><div><strong>{sourceCount > 0 ? "النص القرآني الرسمي جاهز" : "فهرس السور جاهز"}</strong><p>{sourceCount > 0 ? `تم تحميل ${sourceCount} آية من المصدر الرسمي.` : "يمكن إنشاء الخطط والمقاطع الآن."}</p></div></section>
       {error && <p className="form-message error-message">{error}</p>}
       {success && <p className="form-message success-message">{success}</p>}
 
@@ -226,7 +227,7 @@ export default function ChildQuranPage() {
 
       <section className="quran-plans-card quran-full-card">
         <div className="quran-card-head"><div><span className="section-label">المتابعة</span><h2>مقاطع الحفظ والتسميع</h2></div><span>{segments.length}</span></div>
-        {segments.length === 0 ? <div className="quran-empty-state"><span>📖</span><h3>لا توجد مقاطع بعد</h3><p>اختر الخطة والسورة ثم أضف أول مقطع.</p></div> : <div className="quran-segments-grid">{segments.map((segment) => <article className={`quran-segment-card status-${segment.status}`} key={segment.id}><div className="quran-plan-item-head"><div><span className="quran-plan-status">{statusLabels[segment.status] || segment.status}</span><h3>{segment.portion_label}</h3></div><strong>{segment.achievement_points} ⭐ {segment.reward_points > 0 ? `+ ${segment.reward_points} 💎` : ""}</strong></div>{segment.uthmani_text ? <p className="quran-uthmani-text">{segment.uthmani_text}</p> : <p className="quran-text-pending">سيظهر النص العثماني هنا بعد استيراد ملف المجمع الرسمي.</p>}{segment.notes && <p className="quran-segment-note">ملاحظة: {segment.notes}</p>}<div className="quran-review-actions"><button type="button" onClick={() => reviewSegment(segment, "memorized")}>تم الحفظ</button><button type="button" onClick={() => reviewSegment(segment, "recited")}>تم التسميع</button><button className="approve" type="button" onClick={() => reviewSegment(segment, "mastered")}>اعتماد الإتقان</button><button className="revision" type="button" onClick={() => reviewSegment(segment, "needs_revision")}>يحتاج مراجعة</button><button className="delete" type="button" onClick={() => deleteSegment(segment.id)}>حذف</button></div></article>)}</div>}
+        {segments.length === 0 ? <div className="quran-empty-state"><span>📖</span><h3>لا توجد مقاطع بعد</h3><p>اختر الخطة والسورة ثم أضف أول مقطع.</p></div> : <div className="quran-segments-grid">{segments.map((segment) => <article className={`quran-segment-card status-${segment.status}`} key={segment.id}><div className="quran-plan-item-head"><div><span className="quran-plan-status">{statusLabels[segment.status] || segment.status}</span><h3>{segment.portion_label}</h3></div><strong>{segment.achievement_points} ⭐ {segment.reward_points > 0 ? `+ ${segment.reward_points} 💎` : ""}</strong></div>{segment.readable_text ? <p className="quran-readable-text">{segment.readable_text}</p> : <p className="quran-text-pending">تعذر تحميل نص المقطع.</p>}{segment.notes && <p className="quran-segment-note">ملاحظة: {segment.notes}</p>}<div className="quran-review-actions"><button type="button" onClick={() => reviewSegment(segment, "memorized")}>تم الحفظ</button><button type="button" onClick={() => reviewSegment(segment, "recited")}>تم التسميع</button><button className="approve" type="button" onClick={() => reviewSegment(segment, "mastered")}>اعتماد الإتقان</button><button className="revision" type="button" onClick={() => reviewSegment(segment, "needs_revision")}>يحتاج مراجعة</button><button className="delete" type="button" onClick={() => deleteSegment(segment.id)}>حذف</button></div></article>)}</div>}
       </section>
     </main>
   );
