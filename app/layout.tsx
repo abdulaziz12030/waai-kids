@@ -17,6 +17,7 @@ import './landing-v2.css';
 import './family-quran.css';
 import './child-quran.css';
 import './quran-readable.css';
+import './quran-display.css';
 
 export const metadata: Metadata = {
   title: 'نماء',
