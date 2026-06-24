@@ -30,9 +30,11 @@ export default function OnboardingPage() {
       }
 
       const savedName = String(user.user_metadata?.full_name || "");
-      const savedFamily = String(user.user_metadata?.family_name || "");
+      const savedOrganization = String(user.user_metadata?.family_name || "");
+      const savedType = String(user.user_metadata?.account_type || "family") === "teacher" ? "teacher" : "family";
       setFullName(savedName);
-      setOrganizationName(savedFamily || (savedName ? `أسرة ${savedName.split(" ")[0]}` : ""));
+      setAccountType(savedType);
+      setOrganizationName(savedOrganization || (savedType === "teacher" ? `حلقة ${savedName}` : savedName ? `أسرة ${savedName.split(" ")[0]}` : ""));
       setLoading(false);
     }
 
@@ -57,24 +59,19 @@ export default function OnboardingPage() {
     const cleanOrganizationName = organizationName.trim();
     const organizationId = user.id;
 
-    const profile = await supabase
-      .from("profiles")
-      .upsert({ id: user.id, full_name: cleanFullName }, { onConflict: "id" });
-
+    const profile = await supabase.from("profiles").upsert({ id: user.id, full_name: cleanFullName }, { onConflict: "id" });
     if (profile.error) {
       setError(`تعذر حفظ الملف: ${profile.error.message}`);
       setSaving(false);
       return;
     }
 
-    const organization = await supabase
-      .from("organizations")
-      .upsert({
-        id: organizationId,
-        name: cleanOrganizationName,
-        type: accountType === "teacher" ? "independent_teacher" : "family",
-        owner_id: user.id
-      }, { onConflict: "id" });
+    const organization = await supabase.from("organizations").upsert({
+      id: organizationId,
+      name: cleanOrganizationName,
+      type: accountType === "teacher" ? "independent_teacher" : "family",
+      owner_id: user.id
+    }, { onConflict: "id" });
 
     if (organization.error) {
       setError(`تعذر إنشاء الحساب: ${organization.error.message}`);
@@ -106,6 +103,7 @@ export default function OnboardingPage() {
       return;
     }
 
+    await supabase.auth.updateUser({ data: { full_name: cleanFullName, family_name: cleanOrganizationName, account_type: accountType } });
     setSaving(false);
     router.push(accountType === "teacher" ? "/teacher" : "/dashboard");
     router.refresh();
@@ -117,12 +115,7 @@ export default function OnboardingPage() {
     <main className="auth-page compact-auth-page">
       <section className="auth-panel onboarding-role-panel">
         <Link className="auth-brand" href="/"><span className="brand-mark">ن</span><span>نماء</span></Link>
-
-        <div className="auth-heading">
-          <span className="section-label">إعداد الحساب</span>
-          <h1>كيف ستستخدم نماء؟</h1>
-          <p>اختر نوع الحساب ثم أكمل بياناتك.</p>
-        </div>
+        <div className="auth-heading"><span className="section-label">إعداد الحساب</span><h1>كيف ستستخدم نماء؟</h1><p>اختر نوع الحساب ثم أكمل بياناتك.</p></div>
 
         <div className="account-type-switch">
           <button type="button" className={accountType === "family" ? "active" : ""} onClick={() => { setAccountType("family"); setOrganizationName(fullName ? `أسرة ${fullName.split(" ")[0]}` : ""); }}><span>👨‍👩‍👧‍👦</span><strong>ولي أمر</strong><small>متابعة الأبناء والأسرة</small></button>
