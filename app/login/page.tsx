@@ -40,7 +40,7 @@ export default function LoginPage() {
     <main className="auth-page compact-auth-page">
       <section className="auth-panel">
         <Link className="auth-brand" href="/"><span className="brand-mark">ن</span><span>نماء</span></Link>
-        <div className="auth-heading"><span className="section-label">مرحبًا بعودتك</span><h1>تسجيل الدخول</h1><p>ادخل إلى لوحة الأسرة أو حساب المعلم.</p></div>
+        <div className="auth-heading"><span className="section-label">مرحبًا بعودتك</span><h1>تسجيل الدخول</h1><p>يستخدم ولي الأمر والمعلم صفحة الدخول نفسها.</p></div>
         <form className="auth-form" onSubmit={handleSubmit}>
           <label>البريد الإلكتروني<input type="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="name@example.com" autoComplete="email" required /></label>
           <label>كلمة المرور<input type="password" value={password} onChange={(event) => setPassword(event.target.value)} placeholder="كلمة المرور" autoComplete="current-password" required /></label>
@@ -48,7 +48,14 @@ export default function LoginPage() {
           {error && <p className="form-message error-message">{error}</p>}
           <button className="auth-submit" type="submit" disabled={loading}>{loading ? "جارٍ تسجيل الدخول..." : "تسجيل الدخول"}</button>
         </form>
-        <p className="auth-switch">ليس لديك حساب؟ <Link href="/register">إنشاء حساب جديد</Link></p>
+
+        <div className="login-account-options">
+          <span>ليس لديك حساب؟</span>
+          <div>
+            <Link href="/register">إنشاء حساب ولي أمر</Link>
+            <Link className="teacher-register-link" href="/register?type=teacher">إنشاء حساب معلم قرآن</Link>
+          </div>
+        </div>
       </section>
     </main>
   );
