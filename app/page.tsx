@@ -9,7 +9,7 @@ const features = [
 const steps = [
   { number: "1", icon: "👨‍👩‍👧", title: "أنشئ حسابك", description: "سجل كولي أمر أو معلم، ثم اربط الأبناء والطلاب." },
   { number: "2", icon: "🎯", title: "حدد الأهداف والمهام", description: "اختر هدفًا واضحًا وحدد المهام وخطط الحفظ المناسبة." },
-  { number: "3", icon: "🎁", title: "تابع الإنجاز وكافئهم", description: "راجع الإنجازات والتسميع وأضف النقاط والمكافآت." }
+  { number: "3", icon: "🎁", title: "تابع الإنجاز وكافئهم", description: "يتابع ولي الأمر النتائج، ويقيّم المعلم الحفظ والتسميع." }
 ];
 
 export default function HomePage() {
@@ -40,17 +40,17 @@ export default function HomePage() {
           <p>نماء منصة تجمع الأسرة والطفل والمعلم لبناء العادات، ومتابعة الأهداف والمهام وحفظ القرآن بطريقة ممتعة وهادفة.</p>
 
           <div className="landing-role-actions">
-            <a className="parent-entry" href="/login">
+            <a className="parent-entry" href="/login?type=family">
               <span>👤</span>
-              <div><strong>دخول ولي الأمر</strong><small>إدارة ومتابعة الأبناء</small></div>
+              <div><strong>دخول ولي الأمر</strong><small>متابعة الأبناء والنتائج</small></div>
             </a>
             <a className="child-entry" href="/child/login">
               <span>🧒</span>
               <div><strong>دخول الطفل</strong><small>إنجاز المهام وكسب النقاط</small></div>
             </a>
-            <a className="teacher-entry" href="/login">
+            <a className="teacher-entry" href="/login?type=teacher">
               <span>👨‍🏫</span>
-              <div><strong>دخول المعلم</strong><small>متابعة الطلاب والتسميع</small></div>
+              <div><strong>دخول المعلم</strong><small>إدارة الحفظ ومركز التسميع</small></div>
             </a>
           </div>
 
