@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { supabase } from "../../lib/supabase";
+import TeacherWorkspaceNav from "./TeacherWorkspaceNav";
 
 type TeacherStudent = {
   student_id: string;
@@ -36,8 +37,19 @@ export default function TeacherDashboardPage() {
   const [plans, setPlans] = useState<TeacherPlan[]>([]);
   const [loading, setLoading] = useState(true);
   const [busyPlanId, setBusyPlanId] = useState("");
+  const [copied, setCopied] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+
+  const waitingCount = useMemo(
+    () => students.reduce((sum, student) => sum + Number(student.waiting_segments || 0), 0),
+    [students]
+  );
+
+  const masteredCount = useMemo(
+    () => students.reduce((sum, student) => sum + Number(student.mastered_segments || 0), 0),
+    [students]
+  );
 
   async function loadData() {
     const client = supabase;
@@ -72,6 +84,17 @@ export default function TeacherDashboardPage() {
     loadData();
   }, []);
 
+  async function copyTeacherCode() {
+    if (!teacherCode) return;
+    try {
+      await window.navigator.clipboard.writeText(teacherCode);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1800);
+    } catch {
+      setError("تعذر نسخ الرمز تلقائيًا. يمكنك تحديده ونسخه يدويًا.");
+    }
+  }
+
   async function deletePlan(plan: TeacherPlan) {
     const confirmed = window.confirm(`حذف خطة "${plan.title}" للطالب ${plan.student_name}؟ سيتم حذف المقاطع التابعة لها إذا لم تُحتسب نقاطها.`);
     if (!confirmed) return;
@@ -102,41 +125,85 @@ export default function TeacherDashboardPage() {
   if (loading) return <main className="dashboard-loading">جارٍ تجهيز حساب المعلم...</main>;
 
   return (
-    <main className="teacher-dashboard-page">
-      <header className="dashboard-header">
+    <main className="teacher-dashboard-page teacher-role-theme teacher-page-shell">
+      <header className="dashboard-header role-aware-header teacher-role-header">
         <Link className="brand" href="/"><span className="brand-mark">ن</span><span>نماء</span></Link>
-        <button className="quiet-button" type="button" onClick={signOut}>تسجيل الخروج</button>
+        <div className="role-header-actions">
+          <span className="role-identity-badge teacher"><b>المعلم</b><small>إدارة مهنية</small></span>
+          <button className="quiet-button" type="button" onClick={signOut}>تسجيل الخروج</button>
+        </div>
       </header>
 
-      <section className="teacher-hero">
-        <div><span className="section-label">الحساب المهني للمعلم</span><h1>إدارة الحفظ والتسميع</h1><p>أنشئ خطط الحفظ، تابع الطلاب، قيّم التسجيلات، واعتمد الإتقان أو أعد المقطع للتصحيح.</p></div>
-        <div className="teacher-code-card"><span>رمز المعلم</span><strong>{teacherCode || "—"}</strong><small>يرسله المعلم لولي الأمر لتفويضه بمتابعة الطالب</small></div>
+      <TeacherWorkspaceNav />
+
+      <section className="teacher-hero teacher-dashboard-hero">
+        <div className="teacher-hero-content">
+          <span className="section-label">المساحة المهنية للمعلم</span>
+          <h1>إدارة الحفظ والتسميع</h1>
+          <p>مساحة واحدة مرتبة لإنشاء الخطط، متابعة الطلاب، مراجعة التسجيلات، واعتماد الإتقان بوضوح وسرعة.</p>
+          <div className="teacher-hero-actions">
+            <Link className="primary" href="/teacher/quran/reviews"><span>🎙️</span>فتح مركز التسميع</Link>
+            <Link className="secondary" href="#teacher-students"><span>👥</span>عرض الطلاب</Link>
+          </div>
+        </div>
+
+        <div className="teacher-code-card">
+          <span>رمز المعلم</span>
+          <strong>{teacherCode || "—"}</strong>
+          <small>شاركه مع ولي الأمر لتفويضك بالطالب</small>
+          <button className={`teacher-code-copy ${copied ? "copied" : ""}`} type="button" onClick={copyTeacherCode} disabled={!teacherCode}>
+            {copied ? "✓ تم نسخ الرمز" : "نسخ الرمز"}
+          </button>
+        </div>
       </section>
 
       {error && <p className="form-message error-message">{error}</p>}
       {success && <p className="form-message success-message">{success}</p>}
 
       <section className="teacher-authority-note">
-        <span>🛡️</span><div><strong>صلاحيتك المهنية</strong><p>المعلم هو المسؤول عن إنشاء الخطة، تحديد الورد، تقييم الأخطاء والطلاقة والتجويد، اعتماد الإتقان، وإعادة المقطع للتصحيح. ولي الأمر يشاهد النتائج ويتابع التقدم فقط.</p></div>
+        <span>🛡️</span>
+        <div>
+          <strong>صلاحية مهنية واضحة</strong>
+          <p>أنت المسؤول عن خطة الحفظ والتقييم والاعتماد والتصحيح، بينما يطّلع ولي الأمر على التقدم والنتائج فقط.</p>
+        </div>
       </section>
 
-      <section className="teacher-actions-grid">
-        <Link href="/teacher/quran/reviews"><span>🎙️</span><strong>مركز التسميع والاعتماد</strong><small>خاص بالمعلم لتقييم التسجيلات واتخاذ القرار</small></Link>
-        <article><span>👥</span><strong>{students.length}</strong><small>طلاب مرتبطون</small></article>
-        <article><span>⏳</span><strong>{students.reduce((sum, student) => sum + Number(student.waiting_segments || 0), 0)}</strong><small>محاولات تنتظر تقييمك</small></article>
+      <section className="teacher-dashboard-overview" aria-label="ملخص حساب المعلم">
+        <Link className="review-cta" href="/teacher/quran/reviews">
+          <span className="metric-icon">🎙️</span>
+          <div><strong>{waitingCount}</strong><small>محاولات تنتظر قرارك</small></div>
+        </Link>
+        <article><span className="metric-icon">👥</span><div><strong>{students.length}</strong><small>طلاب مرتبطون</small></div></article>
+        <article><span className="metric-icon">📘</span><div><strong>{plans.length}</strong><small>خطط حفظ مرتبطة</small></div></article>
+        <article><span className="metric-icon">✅</span><div><strong>{masteredCount}</strong><small>مقاطع متقنة</small></div></article>
       </section>
 
-      <section className="teacher-students-section">
-        <div className="teacher-section-head"><div><span className="section-label">طلابي</span><h2>الطلاب المرتبطون</h2><p>اختر الطالب لإدارة برنامج الحفظ الخاص به.</p></div></div>
+      <section className="teacher-students-section" id="teacher-students">
+        <div className="teacher-section-head">
+          <div><span className="section-label">طلابي</span><h2>الطلاب المرتبطون</h2><p>اختر الطالب للوصول إلى خطته اليومية أو فتح مركز التسميع.</p></div>
+        </div>
+
         {students.length === 0 ? (
           <div className="teacher-empty"><span>🔗</span><h3>لا يوجد طلاب مرتبطون بعد</h3><p>شارك رمز المعلم مع ولي الأمر، وبعد موافقته سيظهر الطالب هنا.</p></div>
         ) : (
           <div className="teacher-students-grid">
             {students.map((student) => (
               <article key={student.student_id} className="teacher-student-management-card">
-                <div><span>🧒</span><h3>{student.student_name}</h3><p>{student.family_name}</p></div>
-                <div className="teacher-student-stats"><span><strong>{student.active_plans}</strong><small>خطط نشطة</small></span><span><strong>{student.waiting_segments}</strong><small>تنتظر التقييم</small></span><span><strong>{student.mastered_segments}</strong><small>متقنة</small></span></div>
-                <div className="teacher-student-actions"><Link href={`/teacher/students/${student.student_id}/quran`}>إدارة برنامج الحفظ</Link><Link href="/teacher/quran/reviews">فتح مركز التسميع</Link></div>
+                <div className="teacher-student-card-head">
+                  <span className="teacher-student-avatar">{student.student_name.trim().slice(0, 1)}</span>
+                  <div><h3>{student.student_name}</h3><p>{student.family_name}</p></div>
+                </div>
+
+                <div className="teacher-student-stats">
+                  <span><strong>{student.active_plans}</strong><small>خطط نشطة</small></span>
+                  <span><strong>{student.waiting_segments}</strong><small>تنتظر التقييم</small></span>
+                  <span><strong>{student.mastered_segments}</strong><small>متقنة</small></span>
+                </div>
+
+                <div className="teacher-student-actions">
+                  <Link href={`/teacher/students/${student.student_id}/quran`}>إدارة برنامج الحفظ</Link>
+                  <Link href="/teacher/quran/reviews">فتح مركز التسميع</Link>
+                </div>
               </article>
             ))}
           </div>
@@ -144,17 +211,39 @@ export default function TeacherDashboardPage() {
       </section>
 
       <section className="teacher-students-section quran-plan-control-section">
-        <div className="teacher-section-head"><div><span className="section-label">إدارة الحفظ</span><h2>خطط الحفظ المرتبطة</h2></div></div>
+        <div className="teacher-section-head">
+          <div><span className="section-label">إدارة الحفظ</span><h2>خطط الحفظ المرتبطة</h2><p>عرض سريع لتقدم كل خطة مع إمكانية إدارتها مباشرة.</p></div>
+        </div>
+
         {plans.length === 0 ? (
           <div className="teacher-empty compact"><span>📖</span><h3>لا توجد خطط حفظ</h3><p>اختر أحد الطلاب وأنشئ له أول خطة حفظ.</p></div>
         ) : (
           <div className="quran-plan-control-list">
-            {plans.map((plan) => (
-              <article key={plan.plan_id}>
-                <div><span>📘</span><div><strong>{plan.title}</strong><small>{plan.student_name} · {plan.family_name} · {plan.segments_count} مقاطع · {plan.mastered_count} متقنة</small></div></div>
-                <div className="teacher-plan-actions"><Link href={`/teacher/students/${plan.student_id}/quran`}>إدارة الخطة</Link><button type="button" disabled={busyPlanId === plan.plan_id || plan.has_points} onClick={() => deletePlan(plan)}>{plan.has_points ? "احتُسبت نقاط" : busyPlanId === plan.plan_id ? "جارٍ الحذف..." : "حذف الخطة"}</button></div>
-              </article>
-            ))}
+            {plans.map((plan) => {
+              const progress = plan.segments_count ? Math.round((plan.mastered_count / plan.segments_count) * 100) : 0;
+              return (
+                <article className="teacher-plan-row" key={plan.plan_id}>
+                  <div className="teacher-plan-main">
+                    <span className="teacher-plan-icon">📘</span>
+                    <div className="teacher-plan-copy">
+                      <strong>{plan.title}</strong>
+                      <small>{plan.student_name} · {plan.family_name} · {plan.segments_count} مقاطع</small>
+                      <div className="teacher-plan-progress">
+                        <div className="teacher-plan-progress-head"><span>التقدم</span><b>{progress}%</b></div>
+                        <div className="teacher-plan-progress-track"><span style={{ width: `${progress}%` }} /></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="teacher-plan-actions">
+                    <Link href={`/teacher/students/${plan.student_id}/quran`}>إدارة الخطة</Link>
+                    <button type="button" disabled={busyPlanId === plan.plan_id || plan.has_points} onClick={() => deletePlan(plan)}>
+                      {plan.has_points ? "احتُسبت نقاط" : busyPlanId === plan.plan_id ? "جارٍ الحذف..." : "حذف الخطة"}
+                    </button>
+                  </div>
+                </article>
+              );
+            })}
           </div>
         )}
       </section>
