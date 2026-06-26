@@ -26,6 +26,7 @@ import './parent-review-pipeline.css';
 import './quran-role-separation.css';
 import './login-roles.css';
 import './teacher-workspace.css';
+import './teacher-review-polish.css';
 
 export const metadata: Metadata = {
   title: 'نماء',
