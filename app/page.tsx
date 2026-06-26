@@ -7,9 +7,9 @@ const features = [
 ];
 
 const steps = [
-  { number: "1", icon: "👨‍👩‍👧", title: "أنشئ حسابك", description: "سجل كولي أمر وأضف أبناءك خلال دقائق." },
-  { number: "2", icon: "🎯", title: "حدد الأهداف والمهام", description: "اختر هدفًا واضحًا وحدد المهام المناسبة." },
-  { number: "3", icon: "🎁", title: "تابع الإنجاز وكافئهم", description: "راجع الإنجازات وأضف النقاط والمكافآت." }
+  { number: "1", icon: "👨‍👩‍👧", title: "أنشئ حسابك", description: "سجل كولي أمر أو معلم، ثم اربط الأبناء والطلاب." },
+  { number: "2", icon: "🎯", title: "حدد الأهداف والمهام", description: "اختر هدفًا واضحًا وحدد المهام وخطط الحفظ المناسبة." },
+  { number: "3", icon: "🎁", title: "تابع الإنجاز وكافئهم", description: "راجع الإنجازات والتسميع وأضف النقاط والمكافآت." }
 ];
 
 export default function HomePage() {
@@ -35,9 +35,9 @@ export default function HomePage() {
 
       <section className="landing-hero">
         <div className="landing-hero-copy">
-          <span className="landing-eyebrow">💚 منصة تربوية إسلامية للعائلة</span>
-          <h1>نساعد أطفالك<br />على <span>النمو</span> و<strong>الإنجاز</strong></h1>
-          <p>نماء منصة تساعدك على بناء عادات إيجابية لدى أطفالك من خلال الأهداف والمهام والنقاط بطريقة ممتعة وهادفة.</p>
+          <span className="landing-eyebrow">💚 منصة تربوية إسلامية للعائلة والمعلم</span>
+          <h1>نساعد أبناءك<br />على <span>النمو</span> و<strong>الإنجاز</strong></h1>
+          <p>نماء منصة تجمع الأسرة والطفل والمعلم لبناء العادات، ومتابعة الأهداف والمهام وحفظ القرآن بطريقة ممتعة وهادفة.</p>
 
           <div className="landing-role-actions">
             <a className="parent-entry" href="/login">
@@ -47,6 +47,10 @@ export default function HomePage() {
             <a className="child-entry" href="/child/login">
               <span>🧒</span>
               <div><strong>دخول الطفل</strong><small>إنجاز المهام وكسب النقاط</small></div>
+            </a>
+            <a className="teacher-entry" href="/login">
+              <span>👨‍🏫</span>
+              <div><strong>دخول المعلم</strong><small>متابعة الطلاب والتسميع</small></div>
             </a>
           </div>
 
@@ -104,17 +108,17 @@ export default function HomePage() {
           <span className="landing-eyebrow">عن نماء</span>
           <h2>أكثر من تطبيق نقاط</h2>
         </div>
-        <p>نماء مساحة تربوية تساعد الطفل على فهم العلاقة بين الجهد والإنجاز، وتمنح ولي الأمر متابعة هادئة وواضحة دون تعقيد.</p>
+        <p>نماء مساحة تربوية تجمع الطفل وولي الأمر والمعلم، وتوضح العلاقة بين الجهد والإنجاز والحفظ والمتابعة دون تعقيد.</p>
       </section>
 
       <section className="landing-final-cta">
-        <div><span>✨ ابدأ بخطوة صغيرة اليوم</span><h2>ساعد أبناءك على بناء عادات تدوم</h2></div>
-        <a href="/register">إنشاء حساب الأسرة</a>
+        <div><span>✨ ابدأ بخطوة صغيرة اليوم</span><h2>ساعد أبناءك وطلابك على بناء عادات تدوم</h2></div>
+        <a href="/register">إنشاء حساب جديد</a>
       </section>
 
       <footer className="landing-footer">
         <div className="landing-brand"><span className="landing-brand-icon">🌿</span><span><strong>نماء</strong><small>منصة تربوية تعليمية</small></span></div>
-        <p>الإصدار التجريبي للأسرة</p>
+        <p>الإصدار التجريبي للأسرة والمعلم</p>
       </footer>
     </main>
   );
