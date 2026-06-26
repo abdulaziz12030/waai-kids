@@ -244,19 +244,27 @@ export default function QuranReviewsPage() {
 
   if (loading) return <main className="dashboard-loading">جارٍ تحميل مركز التسميع...</main>;
 
-  return (
-    <main className="quran-review-page polished-review-page">
-      <header className="dashboard-header"><Link className="brand" href={portalType === "teacher" ? "/teacher" : "/dashboard"}><span className="brand-mark">ن</span><span>نماء</span></Link><Link className="quiet-button link-submit" href={portalType === "teacher" ? "/teacher" : "/dashboard"}>العودة للوحة</Link></header>
+  const isTeacher = portalType === "teacher";
 
-      <section className="quran-review-hero">
-        <div><span className="section-label">🎙️ {portalType === "teacher" ? "المركز المهني" : "المتابعة الإشرافية"}</span><h1>{portalType === "teacher" ? "التسميع والتقييم والاعتماد" : "متابعة التسميع والنتائج"}</h1><p>{portalType === "teacher" ? "أنت المسؤول عن القرار المهني: اعتماد الإتقان أو إعادة المقطع للتصحيح." : "شاهد تسجيلات الطفل ونتائج المعلم دون تعديل أو اعتماد."}</p></div>
-        <strong>{portalType === "teacher" ? teacherItems.length : pendingItems.length}<small>{portalType === "teacher" ? "تنتظر قرارك" : "قيد تقييم المعلم"}</small></strong>
+  return (
+    <main className={`quran-review-page polished-review-page ${isTeacher ? "teacher-role-theme teacher-review-workspace" : "parent-role-theme parent-review-workspace"}`}>
+      <header className={`dashboard-header role-aware-header ${isTeacher ? "teacher-role-header" : "parent-role-header"}`}>
+        <Link className="brand" href={isTeacher ? "/teacher" : "/dashboard"}><span className="brand-mark">ن</span><span>نماء</span></Link>
+        <div className="role-header-actions">
+          <span className={`role-identity-badge ${isTeacher ? "teacher" : "parent"}`}><b>{isTeacher ? "المعلم" : "ولي الأمر"}</b><small>{isTeacher ? "تقييم واعتماد" : "متابعة وإشراف"}</small></span>
+          <Link className="quiet-button link-submit" href={isTeacher ? "/teacher" : "/dashboard"}>العودة للوحة</Link>
+        </div>
+      </header>
+
+      <section className={`quran-review-hero role-distinct-hero ${isTeacher ? "teacher-management-hero" : "parent-supervision-hero"}`}>
+        <div><span className="section-label">🎙️ {isTeacher ? "المركز المهني للمعلم" : "المتابعة الإشرافية لولي الأمر"}</span><h1>{isTeacher ? "التسميع والتقييم والاعتماد" : "متابعة التسميع والنتائج"}</h1><p>{isTeacher ? "أنت المسؤول عن القرار المهني: اعتماد الإتقان أو إعادة المقطع للتصحيح." : "شاهد تسجيلات الطفل ونتائج المعلم دون تعديل أو اعتماد."}</p></div>
+        <strong>{isTeacher ? teacherItems.length : pendingItems.length}<small>{isTeacher ? "تنتظر قرارك" : "قيد تقييم المعلم"}</small></strong>
       </section>
 
       {error && <p className="form-message error-message sticky-review-message">{error}</p>}
       {success && <p className="form-message success-message sticky-review-message">{success}</p>}
 
-      {portalType === "teacher" ? (
+      {isTeacher ? (
         <section className="parent-review-section teacher-section">
           <div className="parent-review-section-head"><span>👨‍🏫</span><div><h2>محاولات تنتظر تقييمك</h2><p>استمع، قيّم، ثم اتخذ القرار النهائي.</p></div><strong>{teacherItems.length}</strong></div>
           {teacherItems.length ? <div className="quran-review-list">{teacherItems.map((item) => <TeacherCard item={item} key={item.segment_id} />)}</div> : <div className="parent-review-section-empty">لا توجد محاولات جديدة بانتظار التقييم.</div>}
