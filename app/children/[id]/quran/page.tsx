@@ -62,6 +62,7 @@ export default function ChildQuranPage() {
   const [notes, setNotes] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [busyPlanId, setBusyPlanId] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
@@ -104,7 +105,7 @@ export default function ChildQuranPage() {
     else {
       const loadedPlans = (plansResult.data || []) as QuranPlan[];
       setPlans(loadedPlans);
-      const planId = selectedPlanId || loadedPlans[0]?.id || "";
+      const planId = loadedPlans.some((plan) => plan.id === selectedPlanId) ? selectedPlanId : loadedPlans[0]?.id || "";
       setSelectedPlanId(planId);
       await loadSegments(planId);
     }
@@ -162,6 +163,23 @@ export default function ChildQuranPage() {
     await loadData();
   }
 
+  async function deletePlan(plan: QuranPlan) {
+    const confirmed = window.confirm(`حذف خطة "${plan.title}"؟ سيتم حذف كل مقاطعها إذا لم تُحتسب نقاطها.`);
+    if (!confirmed) return;
+    const client = supabase;
+    if (!client) return;
+    setBusyPlanId(plan.id);
+    setError(""); setSuccess("");
+    const result = await client.rpc("delete_quran_plan_shared", { p_plan_id: plan.id });
+    setBusyPlanId("");
+    if (result.error) {
+      setError(result.error.message.includes("نقاط") ? "لا يمكن حذف خطة احتُسبت نقاط أحد مقاطعها." : "تعذر حذف خطة الحفظ.");
+      return;
+    }
+    setSuccess("تم حذف خطة الحفظ ومقاطعها التابعة.");
+    await loadData();
+  }
+
   async function reviewSegment(segment: QuranSegment, status: string) {
     const client = supabase;
     if (!client) return;
@@ -204,6 +222,11 @@ export default function ChildQuranPage() {
       <section className={`quran-source-status ${sourceCount > 0 ? "ready" : "preparing"}`}><span>{sourceCount > 0 ? "✅" : "🛡️"}</span><div><strong>{sourceCount > 0 ? "النص القرآني الرسمي جاهز" : "فهرس السور جاهز"}</strong><p>{sourceCount > 0 ? `تم تحميل ${sourceCount} آية من المصدر الرسمي.` : "يمكن إنشاء الخطط والمقاطع الآن."}</p></div></section>
       {error && <p className="form-message error-message">{error}</p>}
       {success && <p className="form-message success-message">{success}</p>}
+
+      <section className="quran-plan-manager-card">
+        <div><span className="section-label">التحكم بالخطط</span><h2>خطط الحفظ الحالية</h2></div>
+        {plans.length === 0 ? <p className="quran-text-pending">لا توجد خطط حفظ حاليًا.</p> : <div className="quran-plan-control-list">{plans.map((plan) => <article key={plan.id} className={selectedPlanId === plan.id ? "active" : ""}><button type="button" onClick={() => setSelectedPlanId(plan.id)}><span>📘</span><div><strong>{plan.title}</strong><small>{plan.segments_count} مقاطع · {plan.mastered_count} متقنة</small></div></button><button className="delete-plan-button" type="button" disabled={busyPlanId === plan.id} onClick={() => deletePlan(plan)}>{busyPlanId === plan.id ? "جارٍ الحذف..." : "حذف الخطة"}</button></article>)}</div>}
+      </section>
 
       <section className="quran-program-layout">
         <form className="quran-plan-form auth-form" onSubmit={createPlan}>
