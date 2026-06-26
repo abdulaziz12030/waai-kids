@@ -76,12 +76,12 @@ export default function RegisterPage() {
         <div className="auth-heading">
           <span className="section-label">إنشاء حساب جديد</span>
           <h1>{accountType === "teacher" ? "حساب معلم القرآن" : "حساب ولي الأمر"}</h1>
-          <p>{accountType === "teacher" ? "أنشئ حسابك لمتابعة الطلاب والتسميع." : "أنشئ حساب الأسرة لمتابعة الأبناء."}</p>
+          <p>{accountType === "teacher" ? "أنشئ حسابًا مهنيًا لإدارة الطلاب ومركز التسميع والاعتماد." : "أنشئ حساب الأسرة لمتابعة الأبناء والخطط والنتائج."}</p>
         </div>
 
         <div className="account-type-switch">
-          <button type="button" className={accountType === "family" ? "active" : ""} onClick={() => setAccountType("family")}><span>👨‍👩‍👧‍👦</span><strong>ولي أمر</strong><small>إدارة الأسرة والأبناء</small></button>
-          <button type="button" className={accountType === "teacher" ? "active" : ""} onClick={() => setAccountType("teacher")}><span>👨‍🏫</span><strong>معلم قرآن</strong><small>الطلاب والتسميع</small></button>
+          <button type="button" className={accountType === "family" ? "active" : ""} onClick={() => setAccountType("family")}><span>👨‍👩‍👧‍👦</span><strong>ولي أمر</strong><small>متابعة الأسرة والأبناء</small></button>
+          <button type="button" className={accountType === "teacher" ? "active" : ""} onClick={() => setAccountType("teacher")}><span>👨‍🏫</span><strong>معلم قرآن</strong><small>إدارة الطلاب والتسميع</small></button>
         </div>
 
         <form className="auth-form" onSubmit={handleSubmit}>
@@ -94,14 +94,14 @@ export default function RegisterPage() {
           <button className="auth-submit" type="submit" disabled={loading}>{loading ? "جارٍ إنشاء الحساب..." : accountType === "teacher" ? "إنشاء حساب المعلم" : "إنشاء حساب ولي الأمر"}</button>
         </form>
 
-        <p className="auth-switch">لديك حساب؟ <Link href="/login">تسجيل الدخول</Link></p>
+        <p className="auth-switch">لديك حساب؟ <Link href={`/login?type=${accountType}`}>تسجيل الدخول إلى حسابك</Link></p>
       </section>
 
       <aside className="auth-side-card">
-        <span className="section-label">{accountType === "teacher" ? "حساب المعلم" : "نسخة الأسرة"}</span>
-        <h2>{accountType === "teacher" ? "تابع الحفظ والتسميع بوضوح." : "ابدأ بهدوء، وتابع التقدم بوضوح."}</h2>
+        <span className="section-label">{accountType === "teacher" ? "حساب المعلم" : "حساب ولي الأمر"}</span>
+        <h2>{accountType === "teacher" ? "إدارة مهنية للحفظ والتسميع." : "متابعة أسرية هادئة وواضحة."}</h2>
         <ul>
-          {accountType === "teacher" ? <><li>طلاب مرتبطون فقط</li><li>مركز تسميع موحد</li><li>تسجيل الأخطاء والطلاقة والتجويد</li><li>تقارير الحفظ والإتقان</li></> : <><li>ملف مستقل لكل ابن</li><li>أهداف ومهام ونقاط</li><li>خطط حفظ ومراجعة القرآن</li><li>ربط الطفل بمعلمه</li></>}
+          {accountType === "teacher" ? <><li>طلاب مفوّضون فقط</li><li>مركز تسميع خاص بالمعلم</li><li>تسجيل الأخطاء والطلاقة والتجويد</li><li>اعتماد الإتقان أو الإعادة للتصحيح</li></> : <><li>ملف مستقل لكل ابن</li><li>أهداف ومهام ونقاط</li><li>متابعة خطط الحفظ ونتائج المعلم</li><li>تفويض المعلم وإدارة الربط</li></>}
         </ul>
       </aside>
     </main>
