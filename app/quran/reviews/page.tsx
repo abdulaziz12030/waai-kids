@@ -19,6 +19,9 @@ type ReviewItem = {
   reward_points: number;
   notes: string | null;
   memorized_at: string | null;
+  has_audio: boolean;
+  audio_submitted_at: string | null;
+  audio_duration_seconds: number | null;
 };
 
 type ReviewDraft = {
@@ -34,11 +37,20 @@ const statusLabels: Record<string, string> = {
   needs_revision: "يحتاج مراجعة"
 };
 
+function formatSeconds(value: number | null) {
+  if (!value) return "";
+  const minutes = Math.floor(value / 60);
+  const seconds = value % 60;
+  return `${minutes}:${seconds.toString().padStart(2, "0")}`;
+}
+
 export default function QuranReviewsPage() {
   const router = useRouter();
   const [items, setItems] = useState<ReviewItem[]>([]);
   const [portalType, setPortalType] = useState<"family" | "teacher" | "new">("new");
   const [drafts, setDrafts] = useState<Record<string, ReviewDraft>>({});
+  const [audioUrls, setAudioUrls] = useState<Record<string, string>>({});
+  const [audioBusyId, setAudioBusyId] = useState("");
   const [loading, setLoading] = useState(true);
   const [busyId, setBusyId] = useState("");
   const [error, setError] = useState("");
@@ -83,6 +95,25 @@ export default function QuranReviewsPage() {
     }));
   }
 
+  async function loadAudio(item: ReviewItem) {
+    const client = supabase;
+    if (!client || !item.has_audio) return;
+
+    setAudioBusyId(item.segment_id);
+    setError("");
+    const result = await client.functions.invoke("quran-audio", {
+      body: { action: "reviewer-url", segment_id: item.segment_id }
+    });
+    setAudioBusyId("");
+
+    if (result.error || !result.data?.signedUrl) {
+      setError(result.data?.error || "تعذر تشغيل تسجيل الطالب.");
+      return;
+    }
+
+    setAudioUrls((current) => ({ ...current, [item.segment_id]: result.data.signedUrl }));
+  }
+
   async function review(item: ReviewItem, status: "recited" | "mastered" | "needs_revision") {
     const client = supabase;
     if (!client) return;
@@ -106,7 +137,7 @@ export default function QuranReviewsPage() {
       return;
     }
 
-    setSuccess(status === "mastered" ? "تم اعتماد الإتقان وإضافة النقاط." : status === "needs_revision" ? "تمت إعادة المقطع للمراجعة." : "تم تسجيل التسميع.");
+    setSuccess(status === "mastered" ? "تم اعتماد الإتقان وإضافة النقاط." : status === "needs_revision" ? "تمت إعادة المقطع للمراجعة، ويمكن للطالب إرسال تسجيل جديد." : "تم تسجيل التسميع.");
     await loadQueue();
   }
 
@@ -120,7 +151,7 @@ export default function QuranReviewsPage() {
       </header>
 
       <section className="quran-review-hero">
-        <div><span className="section-label">🎙️ مركز التسميع</span><h1>{portalType === "teacher" ? "متابعة طلابي" : "متابعة حفظ الأبناء"}</h1><p>راجع المقطع، دوّن الأخطاء، ثم سجّل النتيجة بخطوات واضحة.</p></div>
+        <div><span className="section-label">🎙️ مركز التسميع</span><h1>{portalType === "teacher" ? "متابعة طلابي" : "متابعة حفظ الأبناء"}</h1><p>استمع إلى تسجيل الطالب إن وُجد، ودوّن الأخطاء، ثم سجّل النتيجة.</p></div>
         <strong>{waitingCount}<small>بانتظار التسميع</small></strong>
       </section>
 
@@ -128,11 +159,12 @@ export default function QuranReviewsPage() {
       {success && <p className="form-message success-message sticky-review-message">{success}</p>}
 
       {items.length === 0 ? (
-        <section className="quran-review-empty"><span>🎧</span><h2>لا توجد مقاطع تنتظر المراجعة</h2><p>عندما يضغط الطالب «تم الحفظ» سيظهر المقطع هنا تلقائيًا.</p></section>
+        <section className="quran-review-empty"><span>🎧</span><h2>لا توجد مقاطع تنتظر المراجعة</h2><p>عندما يرسل الطالب المقطع سيظهر هنا تلقائيًا.</p></section>
       ) : (
         <section className="quran-review-list">
           {items.map((item) => {
             const draft = drafts[item.segment_id] || { mistakes: "0", fluency: "", tajweed: "", notes: "" };
+            const audioUrl = audioUrls[item.segment_id];
             return (
               <article className={`quran-review-card status-${item.status}`} key={item.segment_id}>
                 <div className="quran-review-card-head">
@@ -148,6 +180,22 @@ export default function QuranReviewsPage() {
                 <QuranTextDisplay uthmaniText={item.uthmani_text} readableText={item.readable_text} compact initialMode="learning" />
 
                 {item.notes && <div className="task-note review"><strong>ملاحظة الخطة</strong><p>{item.notes}</p></div>}
+
+                <section className={`review-audio-panel ${item.has_audio ? "has-audio" : "no-audio"}`}>
+                  <div className="review-panel-heading">
+                    <span>{item.has_audio ? "🎧" : "🔇"}</span>
+                    <div>
+                      <h3>{item.has_audio ? "تسجيل الطالب الصوتي" : "أُرسل المقطع دون تسجيل"}</h3>
+                      <p>{item.has_audio ? `استمع إلى التسميع قبل اعتماد النتيجة${item.audio_duration_seconds ? ` — المدة ${formatSeconds(item.audio_duration_seconds)}` : ""}.` : "يمكن إجراء التسميع المباشر ثم تسجيل النتيجة أدناه."}</p>
+                    </div>
+                  </div>
+                  {item.has_audio && !audioUrl && (
+                    <button className="load-review-audio" type="button" disabled={audioBusyId === item.segment_id} onClick={() => loadAudio(item)}>
+                      {audioBusyId === item.segment_id ? "جارٍ تجهيز التسجيل..." : "تشغيل تسجيل الطالب"}
+                    </button>
+                  )}
+                  {item.has_audio && audioUrl && <audio className="review-audio-player" controls preload="metadata" src={audioUrl} />}
+                </section>
 
                 <section className="review-correction-panel">
                   <div className="review-panel-heading"><span>✍️</span><div><h3>تسجيل نتيجة التسميع</h3><p>أدخل الملاحظات الأساسية فقط، ويمكن ترك التقييمات فارغة.</p></div></div>
