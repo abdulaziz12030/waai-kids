@@ -1,0 +1,221 @@
+.parent-review-summary {
+  margin: -2px 0 22px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.parent-review-summary article {
+  min-height: 112px;
+  padding: 18px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 10px 26px rgba(61, 82, 70, .05);
+}
+
+.parent-review-summary article > span {
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  border-radius: 15px;
+  font-size: 23px;
+}
+
+.parent-review-summary article.ready > span { background: #e8f6ec; }
+.parent-review-summary article.waiting > span { background: #fff5db; }
+.parent-review-summary article.revision > span { background: #fff0e7; }
+
+.parent-review-summary div {
+  display: grid;
+  gap: 3px;
+}
+
+.parent-review-summary strong {
+  font-size: 30px;
+  line-height: 1;
+}
+
+.parent-review-summary small {
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.parent-review-pipeline {
+  display: grid;
+  gap: 24px;
+}
+
+.parent-review-section {
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: 23px;
+  background: rgba(255,255,255,.72);
+}
+
+.parent-review-section.ready-section {
+  border-color: #b9d9c5;
+  background: linear-gradient(180deg, #f4fbf6, rgba(255,255,255,.9));
+}
+
+.parent-review-section.waiting-section {
+  border-color: #ead9a7;
+  background: linear-gradient(180deg, #fffaf0, rgba(255,255,255,.9));
+}
+
+.parent-review-section.revision-section {
+  border-color: #ebc8b2;
+  background: linear-gradient(180deg, #fff8f3, rgba(255,255,255,.9));
+}
+
+.parent-review-section-head {
+  margin-bottom: 16px;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 12px;
+}
+
+.parent-review-section-head > span {
+  width: 46px;
+  height: 46px;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+  background: #fff;
+  border: 1px solid var(--border);
+  font-size: 22px;
+}
+
+.parent-review-section-head h2 {
+  margin: 0 0 4px;
+  font-size: 24px;
+}
+
+.parent-review-section-head p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.7;
+  font-size: 13px;
+}
+
+.parent-review-section-head > strong {
+  min-width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 13px;
+  background: #fff;
+  border: 1px solid var(--border);
+  font-size: 19px;
+}
+
+.parent-review-section-empty {
+  min-height: 90px;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  border: 1px dashed #d8dfda;
+  border-radius: 15px;
+  background: rgba(255,255,255,.75);
+  color: var(--muted);
+  text-align: center;
+}
+
+.review-stage-notice {
+  margin-top: 16px;
+  padding: 16px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  border-radius: 16px;
+}
+
+.review-stage-notice.waiting {
+  border: 1px solid #ead9a7;
+  background: #fff9e9;
+}
+
+.review-stage-notice.revision {
+  border: 1px solid #ebc8b2;
+  background: #fff6f0;
+}
+
+.review-stage-notice > span {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  border-radius: 13px;
+  background: #fff;
+  font-size: 20px;
+}
+
+.review-stage-notice strong {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.review-stage-notice p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.8;
+}
+
+.review-stage-notice .stage-last-note {
+  margin-top: 8px;
+  color: #7b563d;
+}
+
+.review-schedule-meta {
+  display: block;
+  margin-top: 7px;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.review-mode-badge.mode-parent_waiting_teacher {
+  background: #fff3cd;
+  color: #8b6813;
+}
+
+.review-mode-badge.mode-parent_revision {
+  background: #fff0e6;
+  color: #9a571f;
+}
+
+.quran-review-card.mode-parent_waiting_teacher {
+  border-color: #ead9a7;
+}
+
+.quran-review-card.mode-parent_revision {
+  border-color: #ebc8b2;
+}
+
+@media (max-width: 720px) {
+  .parent-review-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .parent-review-summary article {
+    min-height: 88px;
+  }
+
+  .parent-review-section {
+    padding: 13px;
+  }
+
+  .parent-review-section-head {
+    align-items: flex-start;
+  }
+
+  .parent-review-section-head h2 {
+    font-size: 20px;
+  }
+}
