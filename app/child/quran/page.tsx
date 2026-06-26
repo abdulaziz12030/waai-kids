@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "../../../lib/supabase";
 import QuranTextDisplay from "../../components/QuranTextDisplay";
+import QuranAudioRecorder from "../../components/QuranAudioRecorder";
 
 type QuranPlan = {
   id: string;
@@ -31,6 +32,9 @@ type QuranSegment = {
   from_ayah: number | null;
   to_ayah: number | null;
   surah_number: number | null;
+  has_audio: boolean;
+  audio_submitted_at: string | null;
+  audio_duration_seconds: number | null;
 };
 
 type QuranData = {
@@ -92,11 +96,6 @@ export default function ChildQuranPage() {
     loadData();
   }, []);
 
-  const pendingSegments = useMemo(
-    () => data.segments.filter((segment) => ["assigned", "needs_revision"].includes(segment.status)),
-    [data.segments]
-  );
-
   const todaySegments = useMemo(() => {
     const today = localToday();
     return data.segments.filter((segment) => segment.scheduled_date === today && ["assigned", "needs_revision"].includes(segment.status));
@@ -131,7 +130,7 @@ export default function ChildQuranPage() {
       return;
     }
 
-    setSuccess("أحسنت! تم إرسال المقطع لولي الأمر للتسميع.");
+    setSuccess("أحسنت! تم إرسال المقطع للتسميع بدون تسجيل صوتي.");
     await loadData();
   }
 
@@ -147,7 +146,7 @@ export default function ChildQuranPage() {
       {success && <p className="form-message success-message floating-message">{success}</p>}
 
       <section className="child-quran-hero">
-        <div><span>🌙</span><h2>{todaySegments.length > 0 ? "ورد اليوم جاهز" : "خطوة صغيرة كل يوم"}</h2><p>{todaySegments.length > 0 ? "ابدأ بمقطع اليوم، وبعد حفظه أرسله للتسميع." : "اتبع الجدول اليومي، واحفظ كل مقطع في موعده."}</p></div>
+        <div><span>🌙</span><h2>{todaySegments.length > 0 ? "ورد اليوم جاهز" : "خطوة صغيرة كل يوم"}</h2><p>{todaySegments.length > 0 ? "احفظ مقطع اليوم، ثم سجّل تسميعك أو أرسله بدون تسجيل." : "اتبع الجدول اليومي، واحفظ كل مقطع في موعده."}</p></div>
         <div className="child-quran-stats">
           <article><strong>{todaySegments.length}</strong><small>مقاطع اليوم</small></article>
           <article><strong>{memorizedSegments.length}</strong><small>بانتظار التسميع</small></article>
@@ -181,10 +180,20 @@ export default function ChildQuranPage() {
                     </div>
                     <QuranTextDisplay uthmaniText={segment.uthmani_text} readableText={segment.readable_text} />
                     {segment.notes && <div className="task-note review"><strong>تعليمات الحفظ</strong><p>{segment.notes}</p></div>}
-                    {["assigned", "needs_revision"].includes(segment.status) && (
-                      <button className="child-quran-submit" type="button" disabled={busyId === segment.id} onClick={() => markMemorized(segment.id)}>{busyId === segment.id ? "جارٍ الإرسال..." : "تم الحفظ ✓"}</button>
+
+                    {["assigned", "needs_revision", "memorized"].includes(segment.status) && (
+                      <QuranAudioRecorder
+                        segmentId={segment.id}
+                        hasAudio={Boolean(segment.has_audio)}
+                        audioDurationSeconds={segment.audio_duration_seconds}
+                        onUploaded={loadData}
+                      />
                     )}
-                    {segment.status === "memorized" && <div className="child-goal-note">⏳ ينتظر التسميع واعتماد ولي الأمر.</div>}
+
+                    {["assigned", "needs_revision"].includes(segment.status) && (
+                      <button className="child-quran-submit secondary-submit" type="button" disabled={busyId === segment.id} onClick={() => markMemorized(segment.id)}>{busyId === segment.id ? "جارٍ الإرسال..." : "تم الحفظ — إرسال بدون تسجيل"}</button>
+                    )}
+                    {segment.status === "memorized" && <div className="child-goal-note">⏳ ينتظر التسميع واعتماد ولي الأمر أو المعلم{segment.has_audio ? "، والتسجيل الصوتي مرفق." : "."}</div>}
                     {segment.status === "mastered" && <div className="child-goal-note success">🎉 مقطع متقن وتمت إضافة نقاطه.</div>}
                   </article>
                 ))}
