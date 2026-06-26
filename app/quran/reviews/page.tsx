@@ -6,7 +6,12 @@ import { useRouter } from "next/navigation";
 import { supabase } from "../../../lib/supabase";
 import QuranTextDisplay from "../../components/QuranTextDisplay";
 
-type ReviewMode = "teacher" | "parent_final" | "parent_full";
+type ReviewMode =
+  | "teacher"
+  | "parent_final"
+  | "parent_full"
+  | "parent_waiting_teacher"
+  | "parent_revision";
 
 type ReviewItem = {
   segment_id: string;
@@ -17,6 +22,8 @@ type ReviewItem = {
   uthmani_text: string | null;
   readable_text: string | null;
   status: string;
+  scheduled_date: string | null;
+  day_number: number | null;
   achievement_points: number;
   reward_points: number;
   notes: string | null;
@@ -47,9 +54,9 @@ type ReviewDraft = {
 };
 
 const statusLabels: Record<string, string> = {
-  memorized: "بانتظار تقييم التسميع",
-  recited: "اجتاز تقييم التسميع",
-  needs_revision: "يحتاج مراجعة"
+  memorized: "أرسل الطفل التسميع",
+  recited: "اجتاز تقييم المعلم",
+  needs_revision: "أعيد للطالب للمراجعة"
 };
 
 function formatSeconds(value: number | null) {
@@ -57,6 +64,15 @@ function formatSeconds(value: number | null) {
   const minutes = Math.floor(value / 60);
   const seconds = value % 60;
   return `${minutes}:${seconds.toString().padStart(2, "0")}`;
+}
+
+function formatDate(value: string | null) {
+  if (!value) return "";
+  return new Intl.DateTimeFormat("ar-SA-u-ca-gregory", {
+    day: "numeric",
+    month: "long",
+    year: "numeric"
+  }).format(new Date(`${value}T00:00:00`));
 }
 
 function initialDraft(item: ReviewItem): ReviewDraft {
@@ -68,26 +84,12 @@ function initialDraft(item: ReviewItem): ReviewDraft {
   };
 }
 
-function modeCopy(mode: ReviewMode) {
-  if (mode === "teacher") {
-    return {
-      badge: "دور المعلم",
-      title: "تقييم تسميع الطالب",
-      description: "استمع، سجّل الأخطاء والطلاقة والتجويد، ثم أرسل نتيجة الاجتياز لولي الأمر أو أعد المقطع للطالب."
-    };
-  }
-  if (mode === "parent_final") {
-    return {
-      badge: "دور ولي الأمر",
-      title: "الاعتماد النهائي",
-      description: "راجع تقييم المعلم، ثم اعتمد الإتقان وإضافة النقاط أو أعد المقطع للمراجعة."
-    };
-  }
-  return {
-    badge: "دور ولي الأمر",
-    title: "التسميع والاعتماد",
-    description: "لا يوجد معلم مرتبط؛ لذلك يستطيع ولي الأمر تقييم التسميع واعتماد الإتقان أو إعادة المقطع."
-  };
+function modeLabel(mode: ReviewMode) {
+  if (mode === "teacher") return "مطلوب من المعلم";
+  if (mode === "parent_final") return "جاهز لاعتماد ولي الأمر";
+  if (mode === "parent_waiting_teacher") return "بانتظار تقييم المعلم";
+  if (mode === "parent_revision") return "بانتظار محاولة جديدة";
+  return "مطلوب من ولي الأمر";
 }
 
 export default function QuranReviewsPage() {
@@ -117,11 +119,8 @@ export default function QuranReviewsPage() {
     ]);
 
     if (!typeResult.error) setPortalType((typeResult.data || "new") as "family" | "teacher" | "new");
-    if (queueResult.error) {
-      setError(queueResult.error.message || "تعذر تحميل مقاطع التسميع الآن.");
-    } else {
-      setItems((queueResult.data || []) as ReviewItem[]);
-    }
+    if (queueResult.error) setError(queueResult.error.message || "تعذر تحميل مقاطع التسميع الآن.");
+    else setItems((queueResult.data || []) as ReviewItem[]);
     setLoading(false);
   }
 
@@ -129,9 +128,19 @@ export default function QuranReviewsPage() {
     loadQueue();
   }, []);
 
-  const actionCount = useMemo(() => items.length, [items]);
-  const primaryMode = items[0]?.review_mode || (portalType === "teacher" ? "teacher" : "parent_full");
-  const heroCopy = modeCopy(primaryMode);
+  const teacherItems = useMemo(() => items.filter((item) => item.review_mode === "teacher"), [items]);
+  const readyItems = useMemo(
+    () => items.filter((item) => ["parent_final", "parent_full"].includes(item.review_mode)),
+    [items]
+  );
+  const waitingTeacherItems = useMemo(
+    () => items.filter((item) => item.review_mode === "parent_waiting_teacher"),
+    [items]
+  );
+  const revisionItems = useMemo(
+    () => items.filter((item) => item.review_mode === "parent_revision"),
+    [items]
+  );
 
   function updateDraft(item: ReviewItem, field: keyof ReviewDraft, value: string) {
     setDrafts((current) => ({
@@ -186,17 +195,141 @@ export default function QuranReviewsPage() {
       return;
     }
 
-    if (status === "mastered") {
-      setSuccess("تم اعتماد الإتقان وإضافة النقاط بنجاح.");
-    } else if (status === "needs_revision") {
-      setSuccess("تمت إعادة المقطع للطالب للمراجعة، وسيظهر مجددًا بعد إرسال محاولة جديدة.");
-    } else if (item.review_mode === "teacher") {
-      setSuccess("تم حفظ تقييم المعلم وإرسال المقطع لولي الأمر للاعتماد النهائي.");
-    } else {
-      setSuccess("تم حفظ نتيجة التسميع، ويمكن اعتماد الإتقان لاحقًا.");
-    }
+    if (status === "mastered") setSuccess("تم اعتماد الإتقان وإضافة النقاط بنجاح.");
+    else if (status === "needs_revision") setSuccess("تمت إعادة المقطع للطالب للمراجعة.");
+    else if (item.review_mode === "teacher") setSuccess("تم إرسال تقييم المعلم لولي الأمر للاعتماد النهائي.");
+    else setSuccess("تم حفظ نتيجة التسميع.");
 
     await loadQueue();
+  }
+
+  function renderCard(item: ReviewItem) {
+    const draft = drafts[item.segment_id] || initialDraft(item);
+    const audioUrl = audioUrls[item.segment_id];
+    const isWaitingTeacher = item.review_mode === "parent_waiting_teacher";
+    const isRevision = item.review_mode === "parent_revision";
+    const showEvaluationForm = ["teacher", "parent_full"].includes(item.review_mode) && item.status === "memorized";
+    const showTeacherResult = item.review_mode === "parent_final";
+    const showAudio = !isRevision;
+
+    return (
+      <article className={`quran-review-card status-${item.status} mode-${item.review_mode}`} key={item.segment_id}>
+        <div className="quran-review-card-head">
+          <div>
+            <div className="review-mode-row">
+              <span className="quran-plan-status">{statusLabels[item.status] || item.status}</span>
+              <span className={`review-mode-badge mode-${item.review_mode}`}>{modeLabel(item.review_mode)}</span>
+            </div>
+            <h2>{item.student_name}</h2>
+            <p>{item.plan_title}</p>
+            <strong className="review-portion-label">{item.portion_label}</strong>
+            {(item.scheduled_date || item.day_number) && (
+              <small className="review-schedule-meta">
+                {item.day_number ? `اليوم ${item.day_number}` : ""}
+                {item.day_number && item.scheduled_date ? " · " : ""}
+                {item.scheduled_date ? formatDate(item.scheduled_date) : ""}
+              </small>
+            )}
+          </div>
+          <div className="review-points-badge"><span>⭐ {item.achievement_points}</span>{item.reward_points > 0 && <span>💎 {item.reward_points}</span>}</div>
+        </div>
+
+        <QuranTextDisplay uthmaniText={item.uthmani_text} readableText={item.readable_text} compact initialMode="learning" />
+        {item.notes && <div className="task-note review"><strong>تعليمات الخطة</strong><p>{item.notes}</p></div>}
+
+        {showAudio && (
+          <section className={`review-audio-panel ${item.has_audio ? "has-audio" : "no-audio"}`}>
+            <div className="review-panel-heading">
+              <span>{item.has_audio ? "🎧" : "🔇"}</span>
+              <div>
+                <h3>{item.has_audio ? "تسجيل الطالب الصوتي" : "أُرسل المقطع دون تسجيل"}</h3>
+                <p>{item.has_audio ? `يمكن الاستماع إلى التسميع${item.audio_duration_seconds ? ` — المدة ${formatSeconds(item.audio_duration_seconds)}` : ""}.` : "يمكن إجراء التسميع المباشر عند الحاجة."}</p>
+              </div>
+            </div>
+            {item.has_audio && !audioUrl && (
+              <button className="load-review-audio" type="button" disabled={audioBusyId === item.segment_id} onClick={() => loadAudio(item)}>
+                {audioBusyId === item.segment_id ? "جارٍ تجهيز التسجيل..." : "تشغيل تسجيل الطالب"}
+              </button>
+            )}
+            {item.has_audio && audioUrl && <audio className="review-audio-player" controls preload="metadata" src={audioUrl} />}
+          </section>
+        )}
+
+        {isWaitingTeacher && (
+          <div className="review-stage-notice waiting">
+            <span>⏳</span><div><strong>المقطع عند المعلم الآن</strong><p>لا يلزم منك إجراء حاليًا. بعد اجتياز تقييم المعلم سينتقل تلقائيًا إلى قسم «جاهز لاعتمادك».</p></div>
+          </div>
+        )}
+
+        {isRevision && (
+          <div className="review-stage-notice revision">
+            <span>🔄</span><div><strong>بانتظار محاولة جديدة من الطفل</strong><p>أعيد هذا المقطع للمراجعة، وسيظهر مجددًا عند المعلم بعد أن يسجل الطفل أو يرسل محاولة جديدة.</p>{item.latest_review_notes && <p className="stage-last-note"><b>آخر ملاحظة:</b> {item.latest_review_notes}</p>}</div>
+          </div>
+        )}
+
+        {showTeacherResult && (
+          <section className="teacher-result-summary">
+            <div className="review-panel-heading"><span>📋</span><div><h3>نتيجة تقييم المعلم</h3><p>راجع النتيجة ثم اعتمد الإتقان أو أعد المقطع للمراجعة.</p></div></div>
+            <div className="teacher-result-grid">
+              <article><small>عدد الأخطاء</small><strong>{item.teacher_mistakes_count ?? 0}</strong></article>
+              <article><small>الطلاقة</small><strong>{item.teacher_fluency_score ?? "—"}{item.teacher_fluency_score !== null ? "/100" : ""}</strong></article>
+              <article><small>التجويد</small><strong>{item.teacher_tajweed_score ?? "—"}{item.teacher_tajweed_score !== null ? "/100" : ""}</strong></article>
+            </div>
+            {item.teacher_review_notes && <div className="teacher-review-note"><strong>ملاحظات المعلم</strong><p>{item.teacher_review_notes}</p></div>}
+          </section>
+        )}
+
+        {showEvaluationForm && (
+          <section className="review-correction-panel">
+            <div className="review-panel-heading"><span>✍️</span><div><h3>{item.review_mode === "teacher" ? "تقييم المعلم" : "تسجيل نتيجة التسميع"}</h3><p>{item.review_mode === "teacher" ? "سجّل التقييم العلمي ثم مرره لولي الأمر." : "لا يوجد معلم مرتبط؛ يمكنك تقييم التسميع واعتماده مباشرة."}</p></div></div>
+            <div className="quran-review-fields">
+              <label><span>عدد الأخطاء</span><input type="number" min="0" value={draft.mistakes} onChange={(event) => updateDraft(item, "mistakes", event.target.value)} /></label>
+              <label><span>الطلاقة</span><div className="score-field"><input type="number" min="0" max="100" value={draft.fluency} onChange={(event) => updateDraft(item, "fluency", event.target.value)} /><small>/ 100</small></div></label>
+              <label><span>التجويد</span><div className="score-field"><input type="number" min="0" max="100" value={draft.tajweed} onChange={(event) => updateDraft(item, "tajweed", event.target.value)} /><small>/ 100</small></div></label>
+            </div>
+            <label className="quran-review-notes"><span>ملاحظات التصحيح</span><textarea rows={3} value={draft.notes} onChange={(event) => updateDraft(item, "notes", event.target.value)} placeholder="مثال: مراجعة موضع الوقف في الآية الثالثة" /></label>
+          </section>
+        )}
+
+        {item.review_mode === "teacher" && (
+          <div className="quran-review-buttons two-actions">
+            <button className="approve" type="button" disabled={busyId === item.segment_id} onClick={() => review(item, "recited")}>✓ اجتاز التسميع وإرساله لولي الأمر</button>
+            <button className="revision" type="button" disabled={busyId === item.segment_id} onClick={() => review(item, "needs_revision")}>↩ إعادة للطالب للمراجعة</button>
+          </div>
+        )}
+
+        {item.review_mode === "parent_final" && (
+          <div className="quran-review-buttons two-actions">
+            <button className="approve" type="button" disabled={busyId === item.segment_id} onClick={() => review(item, "mastered")}>✓ اعتماد الإتقان وإضافة النقاط</button>
+            <button className="revision" type="button" disabled={busyId === item.segment_id} onClick={() => review(item, "needs_revision")}>↩ إعادة للمراجعة</button>
+          </div>
+        )}
+
+        {item.review_mode === "parent_full" && item.status === "memorized" && (
+          <div className="quran-review-buttons">
+            <button type="button" disabled={busyId === item.segment_id} onClick={() => review(item, "recited")}>حفظ نتيجة التسميع</button>
+            <button className="approve" type="button" disabled={busyId === item.segment_id} onClick={() => review(item, "mastered")}>✓ اعتماد الإتقان مباشرة</button>
+            <button className="revision" type="button" disabled={busyId === item.segment_id} onClick={() => review(item, "needs_revision")}>↩ إعادة للطالب للمراجعة</button>
+          </div>
+        )}
+
+        {item.review_mode === "parent_full" && item.status === "recited" && (
+          <div className="quran-review-buttons two-actions">
+            <button className="approve" type="button" disabled={busyId === item.segment_id} onClick={() => review(item, "mastered")}>✓ اعتماد الإتقان وإضافة النقاط</button>
+            <button className="revision" type="button" disabled={busyId === item.segment_id} onClick={() => review(item, "needs_revision")}>↩ إعادة للمراجعة</button>
+          </div>
+        )}
+      </article>
+    );
+  }
+
+  function renderSection(title: string, description: string, icon: string, sectionItems: ReviewItem[], emptyText: string, className: string) {
+    return (
+      <section className={`parent-review-section ${className}`}>
+        <div className="parent-review-section-head"><span>{icon}</span><div><h2>{title}</h2><p>{description}</p></div><strong>{sectionItems.length}</strong></div>
+        {sectionItems.length > 0 ? <div className="quran-review-list">{sectionItems.map(renderCard)}</div> : <div className="parent-review-section-empty">{emptyText}</div>}
+      </section>
+    );
   }
 
   if (loading) return <main className="dashboard-loading">جارٍ تحميل مركز التسميع...</main>;
@@ -209,117 +342,29 @@ export default function QuranReviewsPage() {
       </header>
 
       <section className="quran-review-hero">
-        <div><span className="section-label">🎙️ مركز التسميع</span><h1>{heroCopy.title}</h1><p>{heroCopy.description}</p></div>
-        <strong>{actionCount}<small>إجراء مطلوب</small></strong>
+        <div><span className="section-label">🎙️ مركز التسميع</span><h1>{portalType === "teacher" ? "تقييم تسميع الطلاب" : "التسميع والاعتماد"}</h1><p>{portalType === "teacher" ? "راجع المحاولات الجديدة، ثم مرّر المجتاز منها لولي الأمر." : "تابع كل مقطع من إرسال الطفل حتى تقييم المعلم ثم اعتماد الإتقان."}</p></div>
+        <strong>{portalType === "teacher" ? teacherItems.length : readyItems.length}<small>{portalType === "teacher" ? "بانتظار تقييمك" : "جاهز لاعتمادك"}</small></strong>
       </section>
 
-      <section className="review-role-guide">
-        <article><span>👨‍🏫</span><div><strong>المعلم</strong><p>يقيّم الأداء العلمي: الأخطاء والطلاقة والتجويد، ثم يمرر النتيجة لولي الأمر.</p></div></article>
-        <article><span>👨‍👩‍👦</span><div><strong>ولي الأمر</strong><p>يعتمد الإتقان النهائي ويمنح النقاط، أو يعيد المقطع للمراجعة. ويتولى التقييم أيضًا عند عدم وجود معلم.</p></div></article>
-      </section>
+      {portalType === "family" && (
+        <section className="parent-review-summary">
+          <article className="ready"><span>✅</span><div><strong>{readyItems.length}</strong><small>جاهز لاعتمادك</small></div></article>
+          <article className="waiting"><span>⏳</span><div><strong>{waitingTeacherItems.length}</strong><small>بانتظار المعلم</small></div></article>
+          <article className="revision"><span>🔄</span><div><strong>{revisionItems.length}</strong><small>معاد للطالب</small></div></article>
+        </section>
+      )}
 
       {error && <p className="form-message error-message sticky-review-message">{error}</p>}
       {success && <p className="form-message success-message sticky-review-message">{success}</p>}
 
-      {items.length === 0 ? (
-        <section className="quran-review-empty"><span>🎧</span><h2>لا توجد إجراءات تسميع معلقة</h2><p>{portalType === "teacher" ? "ستظهر هنا محاولات الطلاب الجديدة فقط." : "ستظهر هنا نتائج المعلم الجاهزة للاعتماد، أو محاولات الطفل عند عدم وجود معلم."}</p></section>
+      {portalType === "teacher" ? (
+        renderSection("محاولات تنتظر تقييمك", "استمع إلى التسجيل وسجّل النتيجة العلمية.", "👨‍🏫", teacherItems, "لا توجد محاولات جديدة بانتظار تقييمك.", "teacher-section")
       ) : (
-        <section className="quran-review-list">
-          {items.map((item) => {
-            const draft = drafts[item.segment_id] || initialDraft(item);
-            const audioUrl = audioUrls[item.segment_id];
-            const copy = modeCopy(item.review_mode);
-            const showEvaluationForm = item.review_mode !== "parent_final" && item.status === "memorized";
-            const showTeacherResult = item.review_mode === "parent_final";
-
-            return (
-              <article className={`quran-review-card status-${item.status}`} key={item.segment_id}>
-                <div className="quran-review-card-head">
-                  <div>
-                    <div className="review-mode-row"><span className="quran-plan-status">{statusLabels[item.status] || item.status}</span><span className={`review-mode-badge mode-${item.review_mode}`}>{copy.badge}</span></div>
-                    <h2>{item.student_name}</h2>
-                    <p>{item.plan_title}</p>
-                    <strong className="review-portion-label">{item.portion_label}</strong>
-                  </div>
-                  <div className="review-points-badge"><span>⭐ {item.achievement_points}</span>{item.reward_points > 0 && <span>💎 {item.reward_points}</span>}</div>
-                </div>
-
-                <QuranTextDisplay uthmaniText={item.uthmani_text} readableText={item.readable_text} compact initialMode="learning" />
-
-                {item.notes && <div className="task-note review"><strong>تعليمات الخطة</strong><p>{item.notes}</p></div>}
-
-                <section className={`review-audio-panel ${item.has_audio ? "has-audio" : "no-audio"}`}>
-                  <div className="review-panel-heading">
-                    <span>{item.has_audio ? "🎧" : "🔇"}</span>
-                    <div>
-                      <h3>{item.has_audio ? "تسجيل الطالب الصوتي" : "أُرسل المقطع دون تسجيل"}</h3>
-                      <p>{item.has_audio ? `استمع إلى التسميع قبل اتخاذ الإجراء${item.audio_duration_seconds ? ` — المدة ${formatSeconds(item.audio_duration_seconds)}` : ""}.` : "يمكن إجراء التسميع المباشر عند الحاجة."}</p>
-                    </div>
-                  </div>
-                  {item.has_audio && !audioUrl && (
-                    <button className="load-review-audio" type="button" disabled={audioBusyId === item.segment_id} onClick={() => loadAudio(item)}>
-                      {audioBusyId === item.segment_id ? "جارٍ تجهيز التسجيل..." : "تشغيل تسجيل الطالب"}
-                    </button>
-                  )}
-                  {item.has_audio && audioUrl && <audio className="review-audio-player" controls preload="metadata" src={audioUrl} />}
-                </section>
-
-                {showTeacherResult && (
-                  <section className="teacher-result-summary">
-                    <div className="review-panel-heading"><span>📋</span><div><h3>نتيجة تقييم المعلم</h3><p>هذه البيانات للعرض فقط، وقرار ولي الأمر هو الاعتماد النهائي أو الإعادة للمراجعة.</p></div></div>
-                    <div className="teacher-result-grid">
-                      <article><small>عدد الأخطاء</small><strong>{item.teacher_mistakes_count ?? 0}</strong></article>
-                      <article><small>الطلاقة</small><strong>{item.teacher_fluency_score ?? "—"}{item.teacher_fluency_score !== null ? "/100" : ""}</strong></article>
-                      <article><small>التجويد</small><strong>{item.teacher_tajweed_score ?? "—"}{item.teacher_tajweed_score !== null ? "/100" : ""}</strong></article>
-                    </div>
-                    {item.teacher_review_notes && <div className="teacher-review-note"><strong>ملاحظات المعلم</strong><p>{item.teacher_review_notes}</p></div>}
-                  </section>
-                )}
-
-                {showEvaluationForm && (
-                  <section className="review-correction-panel">
-                    <div className="review-panel-heading"><span>✍️</span><div><h3>{item.review_mode === "teacher" ? "تقييم المعلم" : "تسجيل نتيجة التسميع"}</h3><p>{item.review_mode === "teacher" ? "سجّل التقييم العلمي، ولا تُضاف النقاط إلا بعد اعتماد ولي الأمر." : "يمكن حفظ النتيجة أولًا أو اعتماد الإتقان مباشرة."}</p></div></div>
-                    <div className="quran-review-fields">
-                      <label><span>عدد الأخطاء</span><input type="number" min="0" value={draft.mistakes} onChange={(event) => updateDraft(item, "mistakes", event.target.value)} /></label>
-                      <label><span>الطلاقة</span><div className="score-field"><input type="number" min="0" max="100" value={draft.fluency} onChange={(event) => updateDraft(item, "fluency", event.target.value)} /><small>/ 100</small></div></label>
-                      <label><span>التجويد</span><div className="score-field"><input type="number" min="0" max="100" value={draft.tajweed} onChange={(event) => updateDraft(item, "tajweed", event.target.value)} /><small>/ 100</small></div></label>
-                    </div>
-                    <label className="quran-review-notes"><span>ملاحظات التصحيح</span><textarea rows={3} value={draft.notes} onChange={(event) => updateDraft(item, "notes", event.target.value)} placeholder="مثال: مراجعة موضع الوقف في الآية الثالثة" /></label>
-                  </section>
-                )}
-
-                {item.review_mode === "teacher" && (
-                  <div className="quran-review-buttons two-actions">
-                    <button className="approve" type="button" disabled={busyId === item.segment_id} onClick={() => review(item, "recited")}>✓ اجتاز التسميع وإرساله لولي الأمر</button>
-                    <button className="revision" type="button" disabled={busyId === item.segment_id} onClick={() => review(item, "needs_revision")}>↩ إعادة للطالب للمراجعة</button>
-                  </div>
-                )}
-
-                {item.review_mode === "parent_final" && (
-                  <div className="quran-review-buttons two-actions">
-                    <button className="approve" type="button" disabled={busyId === item.segment_id} onClick={() => review(item, "mastered")}>✓ اعتماد الإتقان وإضافة النقاط</button>
-                    <button className="revision" type="button" disabled={busyId === item.segment_id} onClick={() => review(item, "needs_revision")}>↩ إعادة للمراجعة</button>
-                  </div>
-                )}
-
-                {item.review_mode === "parent_full" && item.status === "memorized" && (
-                  <div className="quran-review-buttons">
-                    <button type="button" disabled={busyId === item.segment_id} onClick={() => review(item, "recited")}>حفظ نتيجة التسميع</button>
-                    <button className="approve" type="button" disabled={busyId === item.segment_id} onClick={() => review(item, "mastered")}>✓ اعتماد الإتقان مباشرة</button>
-                    <button className="revision" type="button" disabled={busyId === item.segment_id} onClick={() => review(item, "needs_revision")}>↩ إعادة للطالب للمراجعة</button>
-                  </div>
-                )}
-
-                {item.review_mode === "parent_full" && item.status === "recited" && (
-                  <div className="quran-review-buttons two-actions">
-                    <button className="approve" type="button" disabled={busyId === item.segment_id} onClick={() => review(item, "mastered")}>✓ اعتماد الإتقان وإضافة النقاط</button>
-                    <button className="revision" type="button" disabled={busyId === item.segment_id} onClick={() => review(item, "needs_revision")}>↩ إعادة للمراجعة</button>
-                  </div>
-                )}
-              </article>
-            );
-          })}
-        </section>
+        <div className="parent-review-pipeline">
+          {renderSection("جاهز لاعتمادك", "هذه المقاطع اجتازت تقييم المعلم، أو لا يوجد لها معلم مرتبط.", "✅", readyItems, "لا توجد مقاطع جاهزة لاعتمادك الآن.", "ready-section")}
+          {renderSection("بانتظار تقييم المعلم", "يمكنك متابعة المقطع والاستماع إليه، لكن لا يلزم منك إجراء حتى ينهي المعلم تقييمه.", "⏳", waitingTeacherItems, "لا توجد مقاطع معلقة عند المعلم.", "waiting-section")}
+          {renderSection("أعيدت للطالب للمراجعة", "هذه المقاطع تنتظر أن يرسل الطفل محاولة جديدة.", "🔄", revisionItems, "لا توجد مقاطع معادة للمراجعة.", "revision-section")}
+        </div>
       )}
     </main>
   );
