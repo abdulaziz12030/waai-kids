@@ -64,29 +64,31 @@ export default function ChildTeacherPage() {
     setSaving(false);
 
     if (result.error) {
-      setError(result.error.message.includes("رمز المعلم") ? "رمز المعلم غير صحيح." : "تعذر ربط المعلم الآن.");
+      setError(result.error.message.includes("رمز المعلم") ? "رمز المعلم غير صحيح." : "تعذر تفويض المعلم الآن.");
       return;
     }
 
     setTeacherCode("");
-    setSuccess(`تم ربط ${String(result.data || "المعلم")} بالطالب.`);
+    setSuccess(`تم تفويض ${String(result.data || "المعلم")} لإدارة برنامج الحفظ.`);
     await loadData();
   }
 
   async function unlinkTeacher(linkId: string) {
+    const confirmed = window.confirm("إلغاء تفويض المعلم؟ سيتوقف وصوله إلى خطط الحفظ والتسميع الخاصة بالطالب.");
+    if (!confirmed) return;
     const client = supabase;
     if (!client) return;
     setError("");
     const result = await client.rpc("unlink_teacher_from_student", { p_link_id: linkId });
     if (result.error) {
-      setError("تعذر إلغاء ربط المعلم.");
+      setError("تعذر إلغاء تفويض المعلم.");
       return;
     }
-    setSuccess("تم إلغاء ربط المعلم بالطالب.");
+    setSuccess("تم إلغاء تفويض المعلم.");
     await loadData();
   }
 
-  if (loading) return <main className="dashboard-loading">جارٍ تحميل إعدادات المعلم...</main>;
+  if (loading) return <main className="dashboard-loading">جارٍ تحميل تفويض المعلم...</main>;
 
   return (
     <main className="child-teacher-page">
@@ -96,8 +98,14 @@ export default function ChildTeacherPage() {
       </header>
 
       <section className="teacher-link-hero">
-        <div><span className="section-label">ربط المعلم</span><h1>معلم {studentName || "الطالب"}</h1><p>أدخل رمز المعلم ليتمكن من رؤية خطط الحفظ ومقاطع التسميع الخاصة بهذا الطالب فقط.</p></div>
+        <div><span className="section-label">تفويض المعلم</span><h1>معلم {studentName || "الطالب"}</h1><p>يقدّم المعلم رمزه، ويوافق ولي الأمر على التفويض حمايةً لخصوصية الطفل. بعد التفويض يتولى المعلم إنشاء الخطط والتقييم والاعتماد والتصحيح.</p></div>
         <span className="teacher-link-icon">👨‍🏫</span>
+      </section>
+
+      <section className="teacher-authorization-guide">
+        <article><span>1</span><div><strong>المعلم يرسل رمزه</strong><p>يظهر الرمز في لوحة المعلم.</p></div></article>
+        <article><span>2</span><div><strong>ولي الأمر يوافق</strong><p>الموافقة هنا تفويض بالوصول المهني للطالب.</p></div></article>
+        <article><span>3</span><div><strong>المعلم يدير الحفظ</strong><p>الخطط والتسميع والاعتماد والتصحيح من حسابه.</p></div></article>
       </section>
 
       {error && <p className="form-message error-message">{error}</p>}
@@ -105,19 +113,19 @@ export default function ChildTeacherPage() {
 
       <section className="teacher-link-layout">
         <form className="teacher-link-form auth-form" onSubmit={linkTeacher}>
-          <div><span className="section-label">إضافة معلم</span><h2>رمز المعلم</h2><p>يظهر الرمز داخل لوحة حساب المعلم.</p></div>
+          <div><span className="section-label">تفويض معلم</span><h2>رمز المعلم</h2><p>أدخل الرمز بعد الاتفاق مع المعلم.</p></div>
           <label>رمز المعلم<input value={teacherCode} onChange={(event) => setTeacherCode(event.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ""))} maxLength={10} placeholder="مثال: A1B2C3D4E5" required /></label>
-          <button className="auth-submit" type="submit" disabled={saving}>{saving ? "جارٍ الربط..." : "ربط المعلم بالطالب"}</button>
+          <button className="auth-submit" type="submit" disabled={saving}>{saving ? "جارٍ التفويض..." : "الموافقة على تفويض المعلم"}</button>
         </form>
 
         <section className="linked-teachers-card">
-          <div><span className="section-label">المعلمون</span><h2>المعلمون المرتبطون</h2></div>
+          <div><span className="section-label">المعلم المسؤول</span><h2>التفويضات الحالية</h2></div>
           {links.length === 0 ? (
-            <div className="teacher-empty compact"><span>🔗</span><strong>لا يوجد معلم مرتبط</strong><p>أدخل رمز المعلم من النموذج المجاور.</p></div>
+            <div className="teacher-empty compact"><span>🔗</span><strong>لا يوجد معلم مفوّض</strong><p>أدخل رمز المعلم من النموذج المجاور.</p></div>
           ) : (
             <div className="linked-teachers-list">
               {links.map((link) => (
-                <article key={link.id}><div><span>👨‍🏫</span><strong>{link.teacher_name}</strong><small>{link.status === "active" ? "مرتبط ونشط" : link.status}</small></div><button type="button" onClick={() => unlinkTeacher(link.id)}>إلغاء الربط</button></article>
+                <article key={link.id}><div><span>👨‍🏫</span><strong>{link.teacher_name}</strong><small>{link.status === "active" ? "مفوّض ونشط" : link.status}</small></div><button type="button" onClick={() => unlinkTeacher(link.id)}>إلغاء التفويض</button></article>
               ))}
             </div>
           )}
