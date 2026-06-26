@@ -60,14 +60,14 @@ export default function DashboardPage() {
     async function loadSession() {
       const client = supabase;
       if (!client) {
-        router.replace("/login");
+        router.replace("/login?type=family");
         return;
       }
 
       const { data } = await client.auth.getSession();
       const session = data.session;
       if (!session) {
-        router.replace("/login");
+        router.replace("/login?type=family");
         return;
       }
 
@@ -129,7 +129,7 @@ export default function DashboardPage() {
   async function signOut() {
     const client = supabase;
     if (client) await client.auth.signOut();
-    router.replace("/login");
+    router.replace("/login?type=family");
     router.refresh();
   }
 
@@ -140,6 +140,7 @@ export default function DashboardPage() {
       <header className="dashboard-header">
         <Link className="brand" href="/"><span className="brand-mark">ن</span><span>نماء</span></Link>
         <div className="dashboard-header-actions">
+          <span className="role-identity-badge parent"><b>ولي الأمر</b><small>متابعة وإشراف</small></span>
           <Link className="quiet-button link-submit" href="/settings/family">إعدادات الأسرة</Link>
           <button className="quiet-button" type="button" onClick={signOut}>تسجيل الخروج</button>
         </div>
@@ -147,7 +148,7 @@ export default function DashboardPage() {
 
       <section className="dashboard-welcome dashboard-welcome-v2 parent-welcome-card">
         <div>
-          <span className="section-label">لوحة الأسرة</span>
+          <span className="section-label">لوحة ولي الأمر</span>
           <h1>مرحبًا بك في {familyName}</h1>
           <p>{email}</p>
         </div>
@@ -160,18 +161,18 @@ export default function DashboardPage() {
 
       <section className="family-metrics focused-metrics" aria-label="ملخص الأسرة">
         <article className="metric-card metric-children"><span className="metric-icon">👨‍👩‍👧‍👦</span><div><span>الأبناء</span><strong>{students.length}</strong><small>ملفات مضافة</small></div></article>
-        <article className="metric-card metric-review"><span className="metric-icon">✅</span><div><span>تنتظر المراجعة</span><strong>{metrics.pendingTasks}</strong><small>مهام أرسلها الأبناء</small></div></article>
+        <article className="metric-card metric-review"><span className="metric-icon">✅</span><div><span>تنتظر المتابعة</span><strong>{metrics.pendingTasks}</strong><small>مهام أرسلها الأبناء</small></div></article>
         <article className="metric-card metric-goals"><span className="metric-icon">🎯</span><div><span>أهداف نشطة</span><strong>{metrics.activeGoals}</strong><small>قيد التقدم</small></div></article>
         <article className="metric-card metric-points"><span className="metric-icon">⭐</span><div><span>نقاط الإنجاز</span><strong>{metrics.totalPoints}</strong><small>مجموع الأسرة</small></div></article>
       </section>
 
       {students.length === 0 ? (
         <section className="dashboard-empty-state">
-          <div><span className="empty-icon">👋</span><h2>ابدأ بإضافة أول طفل</h2><p>بعد الإضافة ستتمكن من إنشاء الأهداف والمهام وبرامج الحفظ.</p><Link className="auth-submit link-submit" href="/children/new">إضافة طفل</Link></div>
+          <div><span className="empty-icon">👋</span><h2>ابدأ بإضافة أول طفل</h2><p>بعد الإضافة ستتمكن من متابعة الأهداف والمهام وبرامج الحفظ.</p><Link className="auth-submit link-submit" href="/children/new">إضافة طفل</Link></div>
         </section>
       ) : (
         <section className="children-section children-section-v2">
-          <div className="children-section-head"><div><span className="section-label">الأبناء</span><h2>اختر الطفل الذي تريد متابعته</h2><p>الأهداف والمهام والحفظ ودخول الطفل في مكان واحد.</p></div></div>
+          <div className="children-section-head"><div><span className="section-label">الأبناء</span><h2>اختر الطفل الذي تريد متابعته</h2><p>الأهداف والمهام ومتابعة الحفظ ودخول الطفل في مكان واحد.</p></div></div>
           <div className="children-grid children-grid-v2 refreshed-children-grid">
             {students.map((student, index) => {
               const profile = student.profile_data || {};
@@ -190,7 +191,7 @@ export default function DashboardPage() {
                   <div className="child-quick-actions child-quick-actions-four">
                     <Link href={`/children/${student.id}/goals`}><span>🎯</span>الأهداف</Link>
                     <Link href={`/children/${student.id}/tasks`}><span>✅</span>المهام</Link>
-                    <Link href={`/children/${student.id}/quran`}><span>📖</span>الحفظ</Link>
+                    <Link href={`/children/${student.id}/quran`}><span>📖</span>متابعة الحفظ</Link>
                     <Link href={`/children/${student.id}/access`}><span>🔐</span>الدخول</Link>
                   </div>
                 </article>
@@ -201,8 +202,8 @@ export default function DashboardPage() {
       )}
 
       <section className="weekly-report-card simplified-report-card">
-        <div><span className="section-label">اقتراح اليوم</span><h2>ابدأ خطة حفظ منزلية</h2><p>اختر أحد الأبناء ثم افتح قسم الحفظ لإنشاء أول برنامج متابعة.</p></div>
-        <div className="weekly-report-placeholder"><strong>📖</strong><span>الحفظ والتسميع</span></div>
+        <div><span className="section-label">اقتراح اليوم</span><h2>تابع برنامج الحفظ</h2><p>اختر أحد الأبناء ثم افتح «متابعة الحفظ» للاطلاع على الخطة ونتائج المعلم.</p></div>
+        <div className="weekly-report-placeholder"><strong>📖</strong><span>متابعة الحفظ والنتائج</span></div>
       </section>
     </main>
   );
