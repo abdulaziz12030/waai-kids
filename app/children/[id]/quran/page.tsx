@@ -5,7 +5,6 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { supabase } from "../../../../lib/supabase";
 
-
 type QuranPlan = {
   id: string;
   title: string;
@@ -45,6 +44,8 @@ type TeacherLink = {
   status: string;
 };
 
+type ParentSegmentFilter = "current" | "revision" | "mastered" | "all";
+
 const statusLabels: Record<string, string> = {
   assigned: "بانتظار الحفظ",
   memorized: "أرسل للتسميع",
@@ -52,6 +53,12 @@ const statusLabels: Record<string, string> = {
   mastered: "متقن ومعتمد",
   needs_revision: "أعيد للتصحيح"
 };
+
+function localToday() {
+  const date = new Date();
+  const offset = date.getTimezoneOffset();
+  return new Date(date.getTime() - offset * 60_000).toISOString().slice(0, 10);
+}
 
 function formatDate(value: string | null) {
   if (!value) return "—";
@@ -62,15 +69,21 @@ function formatDate(value: string | null) {
   }).format(new Date(`${value}T00:00:00`));
 }
 
+function isFutureAssigned(segment: QuranSegment, today: string) {
+  return segment.status === "assigned" && Boolean(segment.scheduled_date && segment.scheduled_date > today);
+}
+
 export default function ParentQuranSupervisionPage() {
   const params = useParams<{ id: string }>();
   const router = useRouter();
   const studentId = params.id;
+  const today = localToday();
   const [studentName, setStudentName] = useState("");
   const [plans, setPlans] = useState<QuranPlan[]>([]);
   const [segments, setSegments] = useState<QuranSegment[]>([]);
   const [teacherLinks, setTeacherLinks] = useState<TeacherLink[]>([]);
   const [selectedPlanId, setSelectedPlanId] = useState("");
+  const [segmentFilter, setSegmentFilter] = useState<ParentSegmentFilter>("current");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -129,7 +142,7 @@ export default function ParentQuranSupervisionPage() {
   const totalSegments = plans.reduce((sum, plan) => sum + Number(plan.segments_count || 0), 0);
   const masteredSegments = plans.reduce((sum, plan) => sum + Number(plan.mastered_count || 0), 0);
   const waitingSegments = plans.reduce((sum, plan) => sum + Number(plan.waiting_count || 0), 0);
-  const revisionSegments = plans.reduce((sum, plan) => sum + Number(plan.revision_count || 0), 0);
+  const revisionSegmentsCount = plans.reduce((sum, plan) => sum + Number(plan.revision_count || 0), 0);
   const progress = selectedPlan?.segments_count
     ? Math.round((selectedPlan.mastered_count / selectedPlan.segments_count) * 100)
     : 0;
@@ -139,20 +152,93 @@ export default function ParentQuranSupervisionPage() {
     [segments]
   );
 
+  const upcomingSegments = useMemo(
+    () => sortedSegments.filter((segment) => isFutureAssigned(segment, today)),
+    [sortedSegments, today]
+  );
+
+  const currentSegments = useMemo(
+    () => sortedSegments.filter((segment) => !isFutureAssigned(segment, today) && !["mastered", "needs_revision"].includes(segment.status)),
+    [sortedSegments, today]
+  );
+
+  const revisionSegments = useMemo(
+    () => sortedSegments.filter((segment) => segment.status === "needs_revision"),
+    [sortedSegments]
+  );
+
+  const completedSegments = useMemo(
+    () => [...sortedSegments].filter((segment) => segment.status === "mastered").reverse(),
+    [sortedSegments]
+  );
+
+  const visibleSegments = useMemo(() => {
+    if (segmentFilter === "current") return currentSegments;
+    if (segmentFilter === "revision") return revisionSegments;
+    if (segmentFilter === "mastered") return completedSegments;
+    return [...currentSegments, ...revisionSegments, ...completedSegments];
+  }, [segmentFilter, currentSegments, revisionSegments, completedSegments]);
+
+  function renderSegment(segment: QuranSegment, index: number) {
+    const isToday = segment.scheduled_date === today;
+    const isOpenByDefault = segmentFilter === "current" && (isToday || index === 0);
+    return (
+      <details className={`quran-segment-accordion parent-segment-accordion status-${segment.status}`} key={segment.id} open={isOpenByDefault}>
+        <summary>
+          <div className="segment-summary-main">
+            <span className="segment-day-badge">{segment.day_number ? `اليوم ${segment.day_number}` : "مقطع"}</span>
+            <div>
+              <strong>{segment.portion_label}</strong>
+              <small>{segment.scheduled_date ? formatDate(segment.scheduled_date) : "دون تاريخ"}</small>
+            </div>
+          </div>
+          <div className="segment-summary-side">
+            <span className="quran-plan-status">{statusLabels[segment.status] || segment.status}</span>
+            <b>{segment.achievement_points} ⭐</b>
+            <span className="segment-chevron">⌄</span>
+          </div>
+        </summary>
+        <div className="segment-accordion-body">
+          {segment.readable_text && <p className="quran-readable-text">{segment.readable_text}</p>}
+          {segment.latest_reviewed_at ? (
+            <div className="parent-teacher-result-inline">
+              <strong>آخر تقييم للمعلم</strong>
+              <div>
+                <span>الأخطاء: {segment.latest_mistakes_count ?? 0}</span>
+                <span>الطلاقة: {segment.latest_fluency_score ?? "—"}</span>
+                <span>التجويد: {segment.latest_tajweed_score ?? "—"}</span>
+              </div>
+              {segment.latest_review_notes && <p>{segment.latest_review_notes}</p>}
+            </div>
+          ) : (
+            <div className="parent-observation-note">
+              <span>👁️</span>
+              <p>{segment.status === "assigned" ? "لم يرسل الطفل هذا المقطع للتسميع بعد." : "المقطع لدى المعلم الآن، ولا يلزم من ولي الأمر إجراء."}</p>
+            </div>
+          )}
+        </div>
+      </details>
+    );
+  }
+
   if (loading) return <main className="dashboard-loading">جارٍ تجهيز متابعة الحفظ...</main>;
 
   return (
-    <main className="quran-program-page parent-quran-supervision-page">
-      <header className="dashboard-header">
+    <main className="quran-program-page parent-quran-supervision-page parent-role-theme">
+      <header className="dashboard-header role-aware-header parent-role-header">
         <Link className="brand" href="/dashboard"><span className="brand-mark">ن</span><span>نماء</span></Link>
-        <Link className="quiet-button link-submit" href={`/children/${studentId}`}>ملف الطفل</Link>
+        <div className="role-header-actions">
+          <span className="role-identity-badge parent"><b>ولي الأمر</b><small>متابعة وإشراف</small></span>
+          <Link className="quiet-button link-submit" href={`/children/${studentId}`}>ملف الطفل</Link>
+        </div>
       </header>
 
-      <section className="quran-program-hero parent-supervision-hero">
+      <section className="quran-program-hero parent-supervision-hero role-distinct-hero">
         <div className="quran-hero-copy">
-          <span className="section-label">👁️ متابعة ولي الأمر</span>
+          <span className="section-label">👁️ لوحة ولي الأمر</span>
           <h1>متابعة حفظ {studentName || "الطفل"}</h1>
-          <p>هذه الصفحة إشرافية لعرض الخطة والتقدم ونتائج المعلم. إنشاء الخطط والتقييم والاعتماد والتصحيح من صلاحيات المعلم.</p>
+          <p>عرض مبسط للخطة والتقدم ونتائج المعلم دون أدوات مهنية أو أزرار اعتماد.</p>
+          <div className="role-scope-strip"><span>عرض الخطة</span><span>متابعة التقدم</span><span>نتائج المعلم</span><span>سجل الإنجاز</span></div>
         </div>
         <div className="quran-hero-icon">📊</div>
       </section>
@@ -163,7 +249,7 @@ export default function ParentQuranSupervisionPage() {
         <span>{activeTeacher ? "👨‍🏫" : "🔗"}</span>
         <div>
           <strong>{activeTeacher ? `المعلم المسؤول: ${activeTeacher.teacher_name}` : "لا يوجد معلم مرتبط بالطالب"}</strong>
-          <p>{activeTeacher ? "المعلم يدير خطط الحفظ ويقيّم التسميع ويعتمد الإتقان أو يعيد المقطع للتصحيح." : "يلزم تفويض معلم حتى يتمكن من إنشاء خطة الحفظ ومتابعة التسميع واعتماده."}</p>
+          <p>{activeTeacher ? "المعلم يدير الخطة والتسميع والاعتماد، وأنت تتابع النتائج والتقدم." : "يلزم تفويض معلم حتى يبدأ البرنامج المهني للحفظ والتسميع."}</p>
         </div>
         <Link href={`/children/${studentId}/teacher`}>{activeTeacher ? "إدارة التفويض" : "تفويض معلم"}</Link>
       </section>
@@ -172,7 +258,7 @@ export default function ParentQuranSupervisionPage() {
         <article><span>📚</span><div><strong>{plans.length}</strong><small>خطط الحفظ</small></div></article>
         <article><span>📖</span><div><strong>{totalSegments}</strong><small>إجمالي المقاطع</small></div></article>
         <article><span>⏳</span><div><strong>{waitingSegments}</strong><small>بانتظار المعلم</small></div></article>
-        <article><span>🔄</span><div><strong>{revisionSegments}</strong><small>للتصحيح</small></div></article>
+        <article><span>🔄</span><div><strong>{revisionSegmentsCount}</strong><small>للتصحيح</small></div></article>
         <article><span>✅</span><div><strong>{masteredSegments}</strong><small>متقنة ومعتمدة</small></div></article>
       </section>
 
@@ -202,30 +288,44 @@ export default function ParentQuranSupervisionPage() {
             <div className="parent-progress-track"><span style={{ width: `${progress}%` }} /></div>
           </section>
 
-          <section className="quran-plans-card quran-full-card">
-            <div className="quran-card-head"><div><span className="section-label">الجدول اليومي</span><h2>المقاطع ونتائج المعلم</h2></div><span>{segments.length}</span></div>
-            {sortedSegments.length === 0 ? (
-              <div className="quran-empty-state"><span>📖</span><h3>لا توجد مقاطع</h3></div>
+          <section className="quran-plans-card quran-full-card organized-segments-card">
+            <div className="quran-card-head">
+              <div><span className="section-label">متابعة مرتبة</span><h2>المقاطع ونتائج المعلم</h2><p>اختر التصنيف المناسب، والمقاطع المستقبلية مطوية تلقائيًا.</p></div>
+              <span>{segments.length}</span>
+            </div>
+
+            <div className="segment-filter-bar" role="tablist" aria-label="فرز مقاطع الحفظ">
+              <button className={segmentFilter === "current" ? "active" : ""} type="button" onClick={() => setSegmentFilter("current")}><span>الآن</span><b>{currentSegments.length}</b></button>
+              <button className={segmentFilter === "revision" ? "active" : ""} type="button" onClick={() => setSegmentFilter("revision")}><span>للتصحيح</span><b>{revisionSegments.length}</b></button>
+              <button className={segmentFilter === "mastered" ? "active" : ""} type="button" onClick={() => setSegmentFilter("mastered")}><span>المتقنة</span><b>{completedSegments.length}</b></button>
+              <button className={segmentFilter === "all" ? "active" : ""} type="button" onClick={() => setSegmentFilter("all")}><span>السجل</span><b>{currentSegments.length + revisionSegments.length + completedSegments.length}</b></button>
+            </div>
+
+            {visibleSegments.length === 0 ? (
+              <div className="quran-empty-state compact"><span>✨</span><h3>لا توجد مقاطع في هذا التصنيف</h3><p>اختر تصنيفًا آخر أو افتح المقاطع القادمة.</p></div>
             ) : (
-              <div className="quran-segments-grid parent-segments-readonly">
-                {sortedSegments.map((segment) => (
-                  <article className={`quran-segment-card status-${segment.status}`} key={segment.id}>
-                    <div className="quran-plan-item-head">
-                      <div><span className="quran-plan-status">{statusLabels[segment.status] || segment.status}</span><h3>{segment.portion_label}</h3>{segment.scheduled_date && <small>📅 {formatDate(segment.scheduled_date)}</small>}</div>
-                      <strong>{segment.achievement_points} ⭐</strong>
-                    </div>
-                    {segment.readable_text && <p className="quran-readable-text">{segment.readable_text}</p>}
-                    {segment.latest_reviewed_at && (
-                      <div className="parent-teacher-result-inline">
-                        <strong>آخر تقييم للمعلم</strong>
-                        <div><span>الأخطاء: {segment.latest_mistakes_count ?? 0}</span><span>الطلاقة: {segment.latest_fluency_score ?? "—"}</span><span>التجويد: {segment.latest_tajweed_score ?? "—"}</span></div>
-                        {segment.latest_review_notes && <p>{segment.latest_review_notes}</p>}
-                      </div>
-                    )}
-                  </article>
-                ))}
-              </div>
+              <div className="organized-segment-list">{visibleSegments.map(renderSegment)}</div>
             )}
+
+            <details className="future-segments-fold">
+              <summary>
+                <div><span>🗓️</span><div><strong>المقاطع القادمة</strong><small>لم يحن موعدها بعد، لذلك بقيت مطوية لتقليل التكدس.</small></div></div>
+                <b>{upcomingSegments.length}</b>
+              </summary>
+              {upcomingSegments.length === 0 ? (
+                <div className="future-empty">لا توجد مقاطع مستقبلية في هذه الخطة.</div>
+              ) : (
+                <div className="future-segment-list">
+                  {upcomingSegments.map((segment) => (
+                    <article key={segment.id}>
+                      <span className="segment-day-badge">{segment.day_number ? `اليوم ${segment.day_number}` : "مقطع"}</span>
+                      <div><strong>{segment.portion_label}</strong><small>{formatDate(segment.scheduled_date)}</small></div>
+                      <span className="future-lock">مجدول</span>
+                    </article>
+                  ))}
+                </div>
+              )}
+            </details>
           </section>
         </>
       )}
