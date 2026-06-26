@@ -1,0 +1,69 @@
+.landing-role-actions {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.teacher-entry {
+  min-height: 88px;
+  padding: 14px 16px;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid #ded8f2;
+  border-radius: 20px;
+  background: linear-gradient(135deg, #f5f0ff, #ffffff);
+  color: #4d3f7d;
+  box-shadow: 0 12px 28px rgba(75, 58, 120, .09);
+  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+}
+
+.teacher-entry:hover {
+  transform: translateY(-3px) scale(1.01);
+  border-color: #b7a9df;
+  box-shadow: 0 16px 32px rgba(75, 58, 120, .14);
+}
+
+.teacher-entry > span {
+  width: 52px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  border-radius: 16px;
+  background: #ece5ff;
+  font-size: 25px;
+}
+
+.teacher-entry div {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.teacher-entry strong {
+  font-size: 18px;
+}
+
+.teacher-entry small {
+  opacity: .78;
+  font-size: 11px;
+}
+
+@media (max-width: 1050px) {
+  .landing-role-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .teacher-entry {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 680px) {
+  .landing-role-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .teacher-entry {
+    grid-column: auto;
+  }
+}
