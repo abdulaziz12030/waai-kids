@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { supabase } from "../../../../../lib/supabase";
 import { quranSurahs } from "../../../../../lib/quran-surahs";
+import TeacherWorkspaceNav from "../../../TeacherWorkspaceNav";
 
 type QuranPlan = {
   id: string;
@@ -312,7 +313,7 @@ export default function TeacherStudentQuranPage() {
   if (loading) return <main className="dashboard-loading">جارٍ تجهيز إدارة الحفظ...</main>;
 
   return (
-    <main className="quran-program-page teacher-quran-management-page teacher-role-theme">
+    <main className="quran-program-page teacher-quran-management-page teacher-role-theme teacher-page-shell">
       <header className="dashboard-header role-aware-header teacher-role-header">
         <Link className="brand" href="/teacher"><span className="brand-mark">ن</span><span>نماء</span></Link>
         <div className="role-header-actions">
@@ -321,14 +322,20 @@ export default function TeacherStudentQuranPage() {
         </div>
       </header>
 
+      <TeacherWorkspaceNav studentId={studentId} />
+
       <section className="quran-program-hero teacher-management-hero role-distinct-hero">
-        <div className="quran-hero-copy">
-          <span className="section-label">👨‍🏫 لوحة المعلم</span>
-          <h1>إدارة حفظ {studentName}</h1>
-          <p>{familyName} · أنشئ الخطة وحدد الورد وراجع التسميع واعتمد الإتقان من حساب مهني مستقل.</p>
-          <div className="role-scope-strip"><span>إنشاء الخطط</span><span>تحديد الورد</span><span>تقييم التسميع</span><span>الاعتماد والتصحيح</span></div>
+        <div className="quran-hero-copy teacher-hero-content">
+          <span className="section-label">إدارة برنامج الطالب</span>
+          <h1>حفظ {studentName}</h1>
+          <p>{familyName} · أنشئ الخطة وحدد الورد وتابع الحالة اليومية من مساحة واضحة ومهنية.</p>
+          <div className="role-scope-strip"><span>إنشاء الخطط</span><span>تحديد الورد</span><span>متابعة المحاولات</span><span>الاعتماد والتصحيح</span></div>
         </div>
-        <div className="quran-hero-icon">📖</div>
+        <Link className="teacher-hero-side-card" href="/teacher/quran/reviews">
+          <span>🎙️ مركز التسميع</span>
+          <strong>{actionSegments.length}</strong>
+          <small>محاولات تنتظر قرارك</small>
+        </Link>
       </section>
 
       {error && <p className="form-message error-message">{error}</p>}
@@ -343,7 +350,7 @@ export default function TeacherStudentQuranPage() {
       </section>
 
       <section className="quran-plan-manager-card teacher-plan-manager-card">
-        <div><span className="section-label">خطط الطالب</span><h2>إدارة خطط الحفظ</h2></div>
+        <div className="teacher-section-head"><div><span className="section-label">خطط الطالب</span><h2>إدارة خطط الحفظ</h2><p>اختر الخطة لعرض وردها اليومي وحالات المقاطع.</p></div></div>
         {plans.length === 0 ? <p className="quran-text-pending">لا توجد خطط بعد.</p> : <div className="quran-plan-control-list">{plans.map((plan) => <article key={plan.id} className={selectedPlanId === plan.id ? "active" : ""}><button type="button" onClick={() => setSelectedPlanId(plan.id)}><span>📘</span><div><strong>{plan.title}</strong><small>{plan.mastered_count} من {plan.segments_count} متقنة · {plan.waiting_count} تنتظر تقييمك · {plan.revision_count} للتصحيح</small></div></button><button className="delete-plan-button" type="button" disabled={busyId === plan.id} onClick={() => deletePlan(plan)}>{busyId === plan.id ? "جارٍ الحذف..." : "حذف الخطة"}</button></article>)}</div>}
       </section>
 
