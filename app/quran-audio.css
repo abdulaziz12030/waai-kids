@@ -178,9 +178,154 @@
   font-size: 13px;
 }
 
+.review-role-guide {
+  margin: 0 0 20px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.review-role-guide article {
+  padding: 16px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  border: 1px solid #dfe8e1;
+  border-radius: 17px;
+  background: #fff;
+}
+
+.review-role-guide article > span {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  border-radius: 13px;
+  background: #edf6ef;
+  font-size: 21px;
+}
+
+.review-role-guide strong {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.review-role-guide p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.7;
+  font-size: 13px;
+}
+
+.review-mode-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.review-mode-badge {
+  padding: 7px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.review-mode-badge.mode-teacher {
+  background: #e8f0fb;
+  color: #315f91;
+}
+
+.review-mode-badge.mode-parent_final,
+.review-mode-badge.mode-parent_full {
+  background: #f3ecff;
+  color: #6d4996;
+}
+
+.teacher-result-summary {
+  margin-top: 18px;
+  padding: 18px;
+  border: 1px solid #e4d9f0;
+  border-radius: 18px;
+  background: linear-gradient(180deg, #fbf8ff, #fff);
+}
+
+.teacher-result-summary .review-panel-heading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 15px;
+}
+
+.teacher-result-summary .review-panel-heading > span {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  border-radius: 13px;
+  background: #efe7f8;
+  font-size: 21px;
+}
+
+.teacher-result-summary h3 {
+  margin: 0 0 4px;
+}
+
+.teacher-result-summary .review-panel-heading p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.7;
+  font-size: 13px;
+}
+
+.teacher-result-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.teacher-result-grid article {
+  padding: 14px;
+  display: grid;
+  gap: 6px;
+  border: 1px solid #eadff3;
+  border-radius: 13px;
+  background: #fff;
+  text-align: center;
+}
+
+.teacher-result-grid small {
+  color: var(--muted);
+}
+
+.teacher-result-grid strong {
+  font-size: 22px;
+}
+
+.teacher-review-note {
+  margin-top: 12px;
+  padding: 13px;
+  border-radius: 13px;
+  background: #fff;
+  border: 1px solid #eadff3;
+}
+
+.teacher-review-note p {
+  margin: 6px 0 0;
+  color: var(--muted);
+  line-height: 1.8;
+}
+
+.quran-review-buttons.two-actions {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
 @media (max-width: 640px) {
   .quran-audio-recorder,
-  .review-audio-panel {
+  .review-audio-panel,
+  .teacher-result-summary {
     padding: 13px;
   }
 
@@ -189,7 +334,10 @@
     flex-wrap: wrap;
   }
 
-  .quran-audio-actions {
+  .quran-audio-actions,
+  .review-role-guide,
+  .teacher-result-grid,
+  .quran-review-buttons.two-actions {
     display: grid;
     grid-template-columns: 1fr;
   }
