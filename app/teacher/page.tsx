@@ -27,6 +27,8 @@ type TeacherPlan = {
   has_points: boolean;
 };
 
+type PortalAccess = { teacher?: boolean; family?: boolean };
+
 export default function TeacherDashboardPage() {
   const router = useRouter();
   const [teacherCode, setTeacherCode] = useState("");
@@ -42,19 +44,20 @@ export default function TeacherDashboardPage() {
     if (!client) return;
     const { data: sessionData } = await client.auth.getSession();
     if (!sessionData.session) {
-      router.replace("/login");
+      router.replace("/login?type=teacher");
       return;
     }
 
-    const [typeResult, codeResult, studentsResult, plansResult] = await Promise.all([
-      client.rpc("get_my_portal_type"),
+    const [accessResult, codeResult, studentsResult, plansResult] = await Promise.all([
+      client.rpc("get_my_portal_access"),
       client.rpc("get_teacher_code"),
       client.rpc("get_teacher_students"),
       client.rpc("get_teacher_quran_plans")
     ]);
 
-    if (typeResult.data !== "teacher") {
-      router.replace(typeResult.data === "family" ? "/dashboard" : "/onboarding");
+    const access = (accessResult.data || {}) as PortalAccess;
+    if (!access.teacher) {
+      router.replace(access.family ? "/dashboard" : "/onboarding");
       return;
     }
 
@@ -93,7 +96,7 @@ export default function TeacherDashboardPage() {
   async function signOut() {
     const client = supabase;
     if (client) await client.auth.signOut();
-    router.replace("/login");
+    router.replace("/login?type=teacher");
   }
 
   if (loading) return <main className="dashboard-loading">جارٍ تجهيز حساب المعلم...</main>;
@@ -118,7 +121,7 @@ export default function TeacherDashboardPage() {
       </section>
 
       <section className="teacher-actions-grid">
-        <Link href="/quran/reviews"><span>🎙️</span><strong>مركز التسميع والاعتماد</strong><small>تقييم التسجيلات واعتمادها أو إعادتها</small></Link>
+        <Link href="/teacher/quran/reviews"><span>🎙️</span><strong>مركز التسميع والاعتماد</strong><small>خاص بالمعلم لتقييم التسجيلات واتخاذ القرار</small></Link>
         <article><span>👥</span><strong>{students.length}</strong><small>طلاب مرتبطون</small></article>
         <article><span>⏳</span><strong>{students.reduce((sum, student) => sum + Number(student.waiting_segments || 0), 0)}</strong><small>محاولات تنتظر تقييمك</small></article>
       </section>
@@ -133,7 +136,7 @@ export default function TeacherDashboardPage() {
               <article key={student.student_id} className="teacher-student-management-card">
                 <div><span>🧒</span><h3>{student.student_name}</h3><p>{student.family_name}</p></div>
                 <div className="teacher-student-stats"><span><strong>{student.active_plans}</strong><small>خطط نشطة</small></span><span><strong>{student.waiting_segments}</strong><small>تنتظر التقييم</small></span><span><strong>{student.mastered_segments}</strong><small>متقنة</small></span></div>
-                <div className="teacher-student-actions"><Link href={`/teacher/students/${student.student_id}/quran`}>إدارة برنامج الحفظ</Link><Link href="/quran/reviews">فتح مركز التسميع</Link></div>
+                <div className="teacher-student-actions"><Link href={`/teacher/students/${student.student_id}/quran`}>إدارة برنامج الحفظ</Link><Link href="/teacher/quran/reviews">فتح مركز التسميع</Link></div>
               </article>
             ))}
           </div>
