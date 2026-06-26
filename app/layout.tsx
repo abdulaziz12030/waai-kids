@@ -20,6 +20,7 @@ import './child-quran.css';
 import './quran-readable.css';
 import './quran-display.css';
 import './teacher-quran.css';
+import './quran-plan-controls.css';
 
 export const metadata: Metadata = {
   title: 'نماء',
