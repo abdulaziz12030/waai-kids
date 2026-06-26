@@ -1,0 +1,70 @@
+.teacher-review-summary {
+  width: 100%;
+  min-height: 94px;
+  padding: 16px 18px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: right;
+  cursor: pointer;
+  transition: background 180ms ease, transform 180ms ease;
+}
+
+.teacher-review-summary:hover {
+  background: #f7fbf8;
+}
+
+.teacher-review-summary:active {
+  transform: scale(.995);
+}
+
+.teacher-review-accordion.open {
+  border-color: #a9cdb6;
+  box-shadow: 0 20px 46px rgba(18, 73, 48, .1);
+}
+
+.teacher-review-accordion.open .teacher-review-summary {
+  background: linear-gradient(180deg, #f4faf6, #fff);
+}
+
+.teacher-review-accordion.open .segment-chevron {
+  transform: rotate(180deg);
+  background: #e2f0e7;
+  color: #145f3e;
+}
+
+.teacher-review-body {
+  animation: teacher-rise-in 360ms cubic-bezier(.22, 1, .36, 1) both;
+}
+
+.teacher-review-summary:focus-visible,
+.teacher-workspace-nav a:focus-visible,
+.teacher-code-copy:focus-visible,
+.teacher-review-filter button:focus-visible {
+  outline: 3px solid rgba(184, 138, 53, .26);
+  outline-offset: 2px;
+}
+
+@media (max-width: 760px) {
+  .teacher-review-summary {
+    min-height: 88px;
+    padding: 13px;
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+}
+
+@media (hover: none) {
+  .teacher-review-summary:hover {
+    background: transparent;
+  }
+
+  .teacher-review-accordion.open .teacher-review-summary:hover {
+    background: linear-gradient(180deg, #f4faf6, #fff);
+  }
+}
