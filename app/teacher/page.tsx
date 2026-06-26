@@ -14,12 +14,28 @@ type TeacherStudent = {
   mastered_segments: number;
 };
 
+type TeacherPlan = {
+  plan_id: string;
+  title: string;
+  student_id: string;
+  student_name: string;
+  family_name: string;
+  status: string;
+  daily_target: number;
+  segments_count: number;
+  mastered_count: number;
+  has_points: boolean;
+};
+
 export default function TeacherDashboardPage() {
   const router = useRouter();
   const [teacherCode, setTeacherCode] = useState("");
   const [students, setStudents] = useState<TeacherStudent[]>([]);
+  const [plans, setPlans] = useState<TeacherPlan[]>([]);
   const [loading, setLoading] = useState(true);
+  const [busyPlanId, setBusyPlanId] = useState("");
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   async function loadData() {
     const client = supabase;
@@ -30,10 +46,11 @@ export default function TeacherDashboardPage() {
       return;
     }
 
-    const [typeResult, codeResult, studentsResult] = await Promise.all([
+    const [typeResult, codeResult, studentsResult, plansResult] = await Promise.all([
       client.rpc("get_my_portal_type"),
       client.rpc("get_teacher_code"),
-      client.rpc("get_teacher_students")
+      client.rpc("get_teacher_students"),
+      client.rpc("get_teacher_quran_plans")
     ]);
 
     if (typeResult.data !== "teacher") {
@@ -44,12 +61,34 @@ export default function TeacherDashboardPage() {
     if (codeResult.error) setError("تعذر تحميل رمز المعلم.");
     else setTeacherCode(String(codeResult.data || ""));
     if (!studentsResult.error) setStudents((studentsResult.data || []) as TeacherStudent[]);
+    if (!plansResult.error) setPlans((plansResult.data || []) as TeacherPlan[]);
     setLoading(false);
   }
 
   useEffect(() => {
     loadData();
   }, []);
+
+  async function deletePlan(plan: TeacherPlan) {
+    const confirmed = window.confirm(`حذف خطة "${plan.title}" للطالب ${plan.student_name}؟ سيتم حذف المقاطع التابعة لها إذا لم تُحتسب نقاطها.`);
+    if (!confirmed) return;
+
+    const client = supabase;
+    if (!client) return;
+    setBusyPlanId(plan.plan_id);
+    setError("");
+    setSuccess("");
+    const result = await client.rpc("delete_quran_plan_shared", { p_plan_id: plan.plan_id });
+    setBusyPlanId("");
+
+    if (result.error) {
+      setError(result.error.message.includes("نقاط") ? "لا يمكن حذف خطة احتُسبت نقاط أحد مقاطعها." : "تعذر حذف خطة الحفظ.");
+      return;
+    }
+
+    setSuccess("تم حذف خطة الحفظ ومقاطعها التابعة.");
+    await loadData();
+  }
 
   async function signOut() {
     const client = supabase;
@@ -72,6 +111,7 @@ export default function TeacherDashboardPage() {
       </section>
 
       {error && <p className="form-message error-message">{error}</p>}
+      {success && <p className="form-message success-message">{success}</p>}
 
       <section className="teacher-actions-grid">
         <Link href="/quran/reviews"><span>🎙️</span><strong>مركز التسميع</strong><small>مراجعة المقاطع المرسلة من الطلاب</small></Link>
@@ -89,6 +129,22 @@ export default function TeacherDashboardPage() {
               <article key={student.student_id}>
                 <div><span>🧒</span><h3>{student.student_name}</h3><p>{student.family_name}</p></div>
                 <div className="teacher-student-stats"><span><strong>{student.active_plans}</strong><small>خطط نشطة</small></span><span><strong>{student.waiting_segments}</strong><small>تنتظر التسميع</small></span><span><strong>{student.mastered_segments}</strong><small>متقنة</small></span></div>
+              </article>
+            ))}
+          </div>
+        )}
+      </section>
+
+      <section className="teacher-students-section quran-plan-control-section">
+        <div className="teacher-section-head"><div><span className="section-label">إدارة الحفظ</span><h2>خطط الحفظ المرتبطة</h2></div></div>
+        {plans.length === 0 ? (
+          <div className="teacher-empty compact"><span>📖</span><h3>لا توجد خطط حفظ</h3><p>عند إنشاء خطة للطالب المرتبط ستظهر هنا للتحكم بها.</p></div>
+        ) : (
+          <div className="quran-plan-control-list">
+            {plans.map((plan) => (
+              <article key={plan.plan_id}>
+                <div><span>📘</span><div><strong>{plan.title}</strong><small>{plan.student_name} · {plan.family_name} · {plan.segments_count} مقاطع · {plan.mastered_count} متقنة</small></div></div>
+                <button type="button" disabled={busyPlanId === plan.plan_id || plan.has_points} onClick={() => deletePlan(plan)}>{plan.has_points ? "احتُسبت نقاط" : busyPlanId === plan.plan_id ? "جارٍ الحذف..." : "حذف الخطة"}</button>
               </article>
             ))}
           </div>
