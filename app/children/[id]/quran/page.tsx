@@ -36,6 +36,7 @@ type QuranSegment = {
   latest_fluency_score: number | null;
   latest_tajweed_score: number | null;
   latest_review_notes: string | null;
+  latest_reviewed_at: string | null;
 };
 
 type TeacherLink = {
