@@ -14,6 +14,7 @@ import './ui-refresh.css';
 import './security-controls.css';
 import './points-v2.css';
 import './landing-v2.css';
+import './landing-teacher-entry.css';
 import './family-quran.css';
 import './child-quran.css';
 import './quran-readable.css';
