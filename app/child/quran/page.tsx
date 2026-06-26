@@ -190,7 +190,7 @@ export default function ChildQuranPage() {
                       />
                     )}
 
-                    {["assigned", "needs_revision"].includes(segment.status) && (
+                    {["assigned", "needs_revision"].includes(segment.status) && !(segment.status === "needs_revision" && segment.has_audio) && (
                       <button className="child-quran-submit secondary-submit" type="button" disabled={busyId === segment.id} onClick={() => markMemorized(segment.id)}>{busyId === segment.id ? "جارٍ الإرسال..." : "تم الحفظ — إرسال بدون تسجيل"}</button>
                     )}
                     {segment.status === "memorized" && <div className="child-goal-note">⏳ ينتظر التسميع واعتماد ولي الأمر أو المعلم{segment.has_audio ? "، والتسجيل الصوتي مرفق." : "."}</div>}
