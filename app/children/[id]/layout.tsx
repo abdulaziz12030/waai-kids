@@ -12,9 +12,8 @@ export default function ChildLayout({ children }: { children: React.ReactNode })
     ["ملف الطفل", `/children/${studentId}`],
     ["الأهداف", `/children/${studentId}/goals`],
     ["المهام", `/children/${studentId}/tasks`],
-    ["الحفظ", `/children/${studentId}/quran`],
-    ["التسميع", "/quran/reviews"],
-    ["المعلم", `/children/${studentId}/teacher`],
+    ["متابعة الحفظ", `/children/${studentId}/quran`],
+    ["تفويض المعلم", `/children/${studentId}/teacher`],
     ["دخول الطفل", `/children/${studentId}/access`]
   ];
 
