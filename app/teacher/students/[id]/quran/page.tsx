@@ -45,6 +45,7 @@ type ScheduledPlanResult = {
   daily_max: number;
 };
 
+type PortalAccess = { teacher?: boolean; family?: boolean };
 type TeacherSegmentFilter = "action" | "due" | "revision" | "mastered" | "all";
 
 const statusLabels: Record<string, string> = {
@@ -139,15 +140,16 @@ export default function TeacherStudentQuranPage() {
     const client = supabase;
     if (!client) return;
     const { data: sessionData } = await client.auth.getSession();
-    if (!sessionData.session) return router.replace("/login");
+    if (!sessionData.session) return router.replace("/login?type=teacher");
 
-    const [typeResult, studentsResult, plansResult] = await Promise.all([
-      client.rpc("get_my_portal_type"),
+    const [accessResult, studentsResult, plansResult] = await Promise.all([
+      client.rpc("get_my_portal_access"),
       client.rpc("get_teacher_students"),
       client.rpc("get_student_quran_plans_shared", { p_student_id: studentId })
     ]);
 
-    if (typeResult.data !== "teacher") return router.replace(typeResult.data === "family" ? "/dashboard" : "/onboarding");
+    const access = (accessResult.data || {}) as PortalAccess;
+    if (!access.teacher) return router.replace(access.family ? "/dashboard" : "/onboarding");
     const student = ((studentsResult.data || []) as Array<{ student_id: string; student_name: string; family_name: string }>).find((item) => item.student_id === studentId);
     if (!student) return router.replace("/teacher");
     setStudentName(student.student_name);
@@ -299,7 +301,7 @@ export default function TeacherStudentQuranPage() {
           {segment.readable_text && <p className="quran-readable-text">{segment.readable_text}</p>}
           {segment.notes && <p className="quran-segment-note">ملاحظة: {segment.notes}</p>}
           <div className="teacher-segment-actions">
-            {requiresAction && <Link href="/quran/reviews">فتح في مركز التسميع والاعتماد</Link>}
+            {requiresAction && <Link href="/teacher/quran/reviews">فتح في مركز التسميع والاعتماد</Link>}
             <button type="button" disabled={busyId === segment.id || segment.status === "mastered"} onClick={() => deleteSegment(segment)}>{segment.status === "mastered" ? "مقطع معتمد" : busyId === segment.id ? "جارٍ الحذف..." : "حذف المقطع"}</button>
           </div>
         </div>
@@ -315,7 +317,7 @@ export default function TeacherStudentQuranPage() {
         <Link className="brand" href="/teacher"><span className="brand-mark">ن</span><span>نماء</span></Link>
         <div className="role-header-actions">
           <span className="role-identity-badge teacher"><b>المعلم</b><small>إدارة مهنية</small></span>
-          <Link className="quiet-button link-submit" href="/quran/reviews">مركز التسميع</Link>
+          <Link className="quiet-button link-submit" href="/teacher/quran/reviews">مركز التسميع</Link>
         </div>
       </header>
 
