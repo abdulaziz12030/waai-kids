@@ -1,0 +1,201 @@
+.quran-audio-recorder {
+  margin-top: 16px;
+  padding: 16px;
+  border: 1px solid #d8e6dd;
+  border-radius: 16px;
+  background: linear-gradient(180deg, #f7fbf8, #fff);
+}
+
+.quran-audio-heading,
+.quran-recording-live,
+.quran-audio-actions,
+.review-audio-panel .review-panel-heading {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+
+.quran-audio-heading > span {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  border-radius: 14px;
+  background: #e7f4eb;
+  font-size: 21px;
+}
+
+.quran-audio-heading div {
+  display: grid;
+  gap: 4px;
+}
+
+.quran-audio-heading small {
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.quran-audio-actions {
+  margin-top: 14px;
+  flex-wrap: wrap;
+}
+
+.quran-audio-actions button,
+.quran-recording-live button,
+.load-review-audio {
+  min-height: 42px;
+  padding: 0 15px;
+  border: 1px solid #cfded4;
+  border-radius: 12px;
+  background: #fff;
+  color: #28563f;
+  font: inherit;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.quran-audio-actions .record-button,
+.quran-audio-actions .send-audio-button,
+.load-review-audio {
+  border-color: #14764d;
+  background: #14764d;
+  color: #fff;
+}
+
+.quran-audio-actions button:disabled,
+.quran-recording-live button:disabled,
+.load-review-audio:disabled {
+  opacity: .6;
+  cursor: wait;
+}
+
+.quran-recording-live {
+  margin-top: 14px;
+  padding: 12px;
+  justify-content: space-between;
+  border-radius: 13px;
+  background: #fff0ee;
+  color: #9a4036;
+}
+
+.recording-dot {
+  width: 12px;
+  height: 12px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: #d74436;
+  box-shadow: 0 0 0 0 rgba(215, 68, 54, .45);
+  animation: quran-recording-pulse 1.3s infinite;
+}
+
+@keyframes quran-recording-pulse {
+  70% { box-shadow: 0 0 0 9px rgba(215, 68, 54, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(215, 68, 54, 0); }
+}
+
+.quran-audio-preview {
+  margin-top: 14px;
+  padding: 13px;
+  display: grid;
+  gap: 10px;
+  border: 1px solid #dce6df;
+  border-radius: 13px;
+  background: #fff;
+}
+
+.quran-audio-preview.saved {
+  background: #f1f8f3;
+}
+
+.quran-audio-preview audio,
+.review-audio-player {
+  width: 100%;
+  min-height: 44px;
+}
+
+.quran-audio-message {
+  margin: 12px 0 0;
+  padding: 10px 12px;
+  border-radius: 11px;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.quran-audio-message.error {
+  background: #fff0ee;
+  color: #9a4036;
+}
+
+.quran-audio-message.success {
+  background: #eaf7ee;
+  color: #246b42;
+}
+
+.child-quran-submit.secondary-submit {
+  margin-top: 10px;
+  border: 1px solid #b8d1c2;
+  background: #fff;
+  color: #246544;
+}
+
+.review-audio-panel {
+  margin-top: 18px;
+  padding: 18px;
+  border: 1px solid #dce7df;
+  border-radius: 18px;
+  background: linear-gradient(180deg, #f7fbf8, #fff);
+}
+
+.review-audio-panel.no-audio {
+  border-style: dashed;
+  background: #fafbfa;
+}
+
+.review-audio-panel .review-panel-heading {
+  margin-bottom: 12px;
+}
+
+.review-audio-panel .review-panel-heading > span {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  border-radius: 13px;
+  background: #e7f3ea;
+  font-size: 21px;
+}
+
+.review-audio-panel h3 {
+  margin: 0 0 4px;
+}
+
+.review-audio-panel p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.7;
+  font-size: 13px;
+}
+
+@media (max-width: 640px) {
+  .quran-audio-recorder,
+  .review-audio-panel {
+    padding: 13px;
+  }
+
+  .quran-recording-live {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .quran-audio-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .quran-audio-actions button,
+  .load-review-audio {
+    width: 100%;
+  }
+}
