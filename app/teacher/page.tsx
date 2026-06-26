@@ -33,6 +33,7 @@ type PortalAccess = { teacher?: boolean; family?: boolean };
 export default function TeacherDashboardPage() {
   const router = useRouter();
   const [teacherCode, setTeacherCode] = useState("");
+  const [hasFamilyPortal, setHasFamilyPortal] = useState(false);
   const [students, setStudents] = useState<TeacherStudent[]>([]);
   const [plans, setPlans] = useState<TeacherPlan[]>([]);
   const [loading, setLoading] = useState(true);
@@ -73,6 +74,7 @@ export default function TeacherDashboardPage() {
       return;
     }
 
+    setHasFamilyPortal(Boolean(access.family));
     if (codeResult.error) setError("تعذر تحميل رمز المعلم.");
     else setTeacherCode(String(codeResult.data || ""));
     if (!studentsResult.error) setStudents((studentsResult.data || []) as TeacherStudent[]);
@@ -96,7 +98,7 @@ export default function TeacherDashboardPage() {
   }
 
   async function deletePlan(plan: TeacherPlan) {
-    const confirmed = window.confirm(`حذف خطة "${plan.title}" للطالب ${plan.student_name}؟ سيتم حذف المقاطع التابعة لها إذا لم تُحتسب نقاطها.`);
+    const confirmed = window.confirm(`حذف خطة «${plan.title}» للطالب ${plan.student_name}؟\n\nسيتم حذف جميع مقاطعها ومحاولاتها، وإرجاع نقاط القرآن المحتسبة منها حتى تبدأ بخطة جديدة.`);
     if (!confirmed) return;
 
     const client = supabase;
@@ -108,11 +110,11 @@ export default function TeacherDashboardPage() {
     setBusyPlanId("");
 
     if (result.error) {
-      setError(result.error.message.includes("نقاط") ? "لا يمكن حذف خطة احتُسبت نقاط أحد مقاطعها." : result.error.message || "تعذر حذف خطة الحفظ.");
+      setError(result.error.message || "تعذر حذف خطة الحفظ.");
       return;
     }
 
-    setSuccess("تم حذف خطة الحفظ ومقاطعها التابعة.");
+    setSuccess("تم حذف الخطة وإعادة نقاطها، ويمكن إنشاء خطة جديدة الآن.");
     await loadData();
   }
 
@@ -130,6 +132,7 @@ export default function TeacherDashboardPage() {
         <Link className="brand" href="/"><span className="brand-mark">ن</span><span>نماء</span></Link>
         <div className="role-header-actions">
           <span className="role-identity-badge teacher"><b>المعلم</b><small>إدارة مهنية</small></span>
+          {hasFamilyPortal && <Link className="quiet-button link-submit teacher-family-switch" href="/dashboard">حساب ولي الأمر</Link>}
           <button className="quiet-button" type="button" onClick={signOut}>تسجيل الخروج</button>
         </div>
       </header>
@@ -144,21 +147,34 @@ export default function TeacherDashboardPage() {
           <div className="teacher-hero-actions">
             <Link className="primary" href="/teacher/quran/reviews"><span>🎙️</span>فتح مركز التسميع</Link>
             <Link className="secondary" href="#teacher-students"><span>👥</span>عرض الطلاب</Link>
+            {hasFamilyPortal && <Link className="secondary" href="/children/new"><span>➕</span>إضافة ابن أو ابنة</Link>}
           </div>
         </div>
 
-        <div className="teacher-code-card">
+        <div className={`teacher-code-card ${teacherCode ? "ready" : "missing"}`}>
           <span>رمز المعلم</span>
-          <strong>{teacherCode || "—"}</strong>
-          <small>شاركه مع ولي الأمر لتفويضك بالطالب</small>
-          <button className={`teacher-code-copy ${copied ? "copied" : ""}`} type="button" onClick={copyTeacherCode} disabled={!teacherCode}>
-            {copied ? "✓ تم نسخ الرمز" : "نسخ الرمز"}
-          </button>
+          <strong>{teacherCode || "غير متوفر"}</strong>
+          <small>{teacherCode ? "شاركه مع ولي الأمر لتفويضك بالطالب" : "أكمل إعداد حساب المعلم لإصدار الرمز"}</small>
+          {teacherCode ? (
+            <button className={`teacher-code-copy ${copied ? "copied" : ""}`} type="button" onClick={copyTeacherCode}>
+              {copied ? "✓ تم نسخ الرمز" : "نسخ الرمز"}
+            </button>
+          ) : (
+            <Link className="teacher-code-setup" href="/onboarding">إكمال إعداد الحساب</Link>
+          )}
         </div>
       </section>
 
       {error && <p className="form-message error-message">{error}</p>}
       {success && <p className="form-message success-message">{success}</p>}
+
+      {hasFamilyPortal && (
+        <section className="teacher-family-access-card">
+          <span>👨‍👩‍👧‍👦</span>
+          <div><strong>حساب ولي الأمر متاح أيضًا</strong><p>يمكنك إضافة أبنائك من لوحة الأسرة كما كان سابقًا، ثم العودة إلى لوحة المعلم دون إنشاء حساب جديد.</p></div>
+          <div className="teacher-family-access-actions"><Link href="/children/new">إضافة طفل</Link><Link href="/dashboard">فتح لوحة الأسرة</Link></div>
+        </section>
+      )}
 
       <section className="teacher-authority-note">
         <span>🛡️</span>
@@ -184,7 +200,7 @@ export default function TeacherDashboardPage() {
         </div>
 
         {students.length === 0 ? (
-          <div className="teacher-empty"><span>🔗</span><h3>لا يوجد طلاب مرتبطون بعد</h3><p>شارك رمز المعلم مع ولي الأمر، وبعد موافقته سيظهر الطالب هنا.</p></div>
+          <div className="teacher-empty"><span>🔗</span><h3>لا يوجد طلاب مرتبطون بعد</h3><p>انسخ رمز المعلم واطلب من ولي الأمر إدخاله في صفحة «تفويض المعلم» الخاصة بالطفل.</p></div>
         ) : (
           <div className="teacher-students-grid">
             {students.map((student) => (
@@ -212,7 +228,7 @@ export default function TeacherDashboardPage() {
 
       <section className="teacher-students-section quran-plan-control-section">
         <div className="teacher-section-head">
-          <div><span className="section-label">إدارة الحفظ</span><h2>خطط الحفظ المرتبطة</h2><p>عرض سريع لتقدم كل خطة مع إمكانية إدارتها مباشرة.</p></div>
+          <div><span className="section-label">إدارة الحفظ</span><h2>خطط الحفظ المرتبطة</h2><p>يمكن حذف أي خطة تجريبية وإعادة نقاطها، ثم إنشاء خطة جديدة من الصفر.</p></div>
         </div>
 
         {plans.length === 0 ? (
@@ -237,8 +253,8 @@ export default function TeacherDashboardPage() {
 
                   <div className="teacher-plan-actions">
                     <Link href={`/teacher/students/${plan.student_id}/quran`}>إدارة الخطة</Link>
-                    <button type="button" disabled={busyPlanId === plan.plan_id || plan.has_points} onClick={() => deletePlan(plan)}>
-                      {plan.has_points ? "احتُسبت نقاط" : busyPlanId === plan.plan_id ? "جارٍ الحذف..." : "حذف الخطة"}
+                    <button type="button" disabled={busyPlanId === plan.plan_id} onClick={() => deletePlan(plan)}>
+                      {busyPlanId === plan.plan_id ? "جارٍ الحذف..." : "حذف والبدء من جديد"}
                     </button>
                   </div>
                 </article>
