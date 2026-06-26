@@ -42,6 +42,7 @@ export default function QuranAudioRecorder({ segmentId, hasAudio, audioDurationS
   const chunksRef = useRef<Blob[]>([]);
   const timerRef = useRef<number | null>(null);
   const startedAtRef = useRef(0);
+  const previewUrlRef = useRef("");
   const [recording, setRecording] = useState(false);
   const [elapsed, setElapsed] = useState(0);
   const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
@@ -51,6 +52,12 @@ export default function QuranAudioRecorder({ segmentId, hasAudio, audioDurationS
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+
+  function setLocalPreview(url: string) {
+    if (previewUrlRef.current) URL.revokeObjectURL(previewUrlRef.current);
+    previewUrlRef.current = url;
+    setPreviewUrl(url);
+  }
 
   function clearTimer() {
     if (timerRef.current !== null) {
@@ -72,13 +79,14 @@ export default function QuranAudioRecorder({ segmentId, hasAudio, audioDurationS
     setRecording(false);
   }
 
-  function clearLocalRecording() {
-    if (previewUrl) URL.revokeObjectURL(previewUrl);
-    setPreviewUrl("");
+  function clearLocalRecording(clearMessages = true) {
+    setLocalPreview("");
     setAudioBlob(null);
     setElapsed(0);
-    setError("");
-    setSuccess("");
+    if (clearMessages) {
+      setError("");
+      setSuccess("");
+    }
   }
 
   useEffect(() => {
@@ -86,9 +94,9 @@ export default function QuranAudioRecorder({ segmentId, hasAudio, audioDurationS
       clearTimer();
       if (recorderRef.current?.state !== "inactive") recorderRef.current?.stop();
       stopStream();
-      if (previewUrl) URL.revokeObjectURL(previewUrl);
+      if (previewUrlRef.current) URL.revokeObjectURL(previewUrlRef.current);
     };
-  }, [previewUrl]);
+  }, []);
 
   async function startRecording() {
     setError("");
@@ -101,10 +109,7 @@ export default function QuranAudioRecorder({ segmentId, hasAudio, audioDurationS
     }
 
     try {
-      if (previewUrl) URL.revokeObjectURL(previewUrl);
-      setPreviewUrl("");
-      setAudioBlob(null);
-      setElapsed(0);
+      clearLocalRecording(false);
       chunksRef.current = [];
 
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -121,9 +126,8 @@ export default function QuranAudioRecorder({ segmentId, hasAudio, audioDurationS
         const finalType = recorder.mimeType || mimeType || "audio/webm";
         const blob = new Blob(chunksRef.current, { type: finalType });
         if (blob.size > 0) {
-          const url = URL.createObjectURL(blob);
           setAudioBlob(blob);
-          setPreviewUrl(url);
+          setLocalPreview(URL.createObjectURL(blob));
         } else {
           setError("لم يتم التقاط صوت. أعد المحاولة وتأكد من السماح للميكروفون.");
         }
@@ -170,9 +174,9 @@ export default function QuranAudioRecorder({ segmentId, hasAudio, audioDurationS
       return;
     }
 
-    setSuccess("تم إرسال تسجيلك بنجاح إلى ولي الأمر أو المعلم.");
+    clearLocalRecording(false);
     setSavedUrl(result.data.signedUrl || "");
-    clearLocalRecording();
+    setSuccess("تم إرسال تسجيلك بنجاح إلى ولي الأمر أو المعلم.");
     await onUploaded();
   }
 
@@ -234,7 +238,7 @@ export default function QuranAudioRecorder({ segmentId, hasAudio, audioDurationS
             <button className="send-audio-button" type="button" disabled={uploading} onClick={uploadRecording}>
               {uploading ? "جارٍ رفع التسجيل..." : "إرسال التسجيل للتسميع"}
             </button>
-            <button type="button" disabled={uploading} onClick={clearLocalRecording}>حذف وإعادة التسجيل</button>
+            <button type="button" disabled={uploading} onClick={() => clearLocalRecording()}>حذف وإعادة التسجيل</button>
           </div>
         </div>
       )}
