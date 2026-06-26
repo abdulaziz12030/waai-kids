@@ -82,7 +82,7 @@ export default function TeacherDashboardPage() {
     setBusyPlanId("");
 
     if (result.error) {
-      setError(result.error.message.includes("نقاط") ? "لا يمكن حذف خطة احتُسبت نقاط أحد مقاطعها." : "تعذر حذف خطة الحفظ.");
+      setError(result.error.message.includes("نقاط") ? "لا يمكن حذف خطة احتُسبت نقاط أحد مقاطعها." : result.error.message || "تعذر حذف خطة الحفظ.");
       return;
     }
 
@@ -106,29 +106,34 @@ export default function TeacherDashboardPage() {
       </header>
 
       <section className="teacher-hero">
-        <div><span className="section-label">حساب المعلم</span><h1>متابعة الحفظ والتسميع</h1><p>تابع الطلاب المرتبطين بحسابك واعتمد نتائج التسميع من مركز واحد.</p></div>
-        <div className="teacher-code-card"><span>رمز المعلم</span><strong>{teacherCode || "—"}</strong><small>يرسله المعلم لولي الأمر لربط الطالب</small></div>
+        <div><span className="section-label">الحساب المهني للمعلم</span><h1>إدارة الحفظ والتسميع</h1><p>أنشئ خطط الحفظ، تابع الطلاب، قيّم التسجيلات، واعتمد الإتقان أو أعد المقطع للتصحيح.</p></div>
+        <div className="teacher-code-card"><span>رمز المعلم</span><strong>{teacherCode || "—"}</strong><small>يرسله المعلم لولي الأمر لتفويضه بمتابعة الطالب</small></div>
       </section>
 
       {error && <p className="form-message error-message">{error}</p>}
       {success && <p className="form-message success-message">{success}</p>}
 
+      <section className="teacher-authority-note">
+        <span>🛡️</span><div><strong>صلاحيتك المهنية</strong><p>المعلم هو المسؤول عن إنشاء الخطة، تحديد الورد، تقييم الأخطاء والطلاقة والتجويد، اعتماد الإتقان، وإعادة المقطع للتصحيح. ولي الأمر يشاهد النتائج ويتابع التقدم فقط.</p></div>
+      </section>
+
       <section className="teacher-actions-grid">
-        <Link href="/quran/reviews"><span>🎙️</span><strong>مركز التسميع</strong><small>مراجعة المقاطع المرسلة من الطلاب</small></Link>
+        <Link href="/quran/reviews"><span>🎙️</span><strong>مركز التسميع والاعتماد</strong><small>تقييم التسجيلات واعتمادها أو إعادتها</small></Link>
         <article><span>👥</span><strong>{students.length}</strong><small>طلاب مرتبطون</small></article>
-        <article><span>⏳</span><strong>{students.reduce((sum, student) => sum + Number(student.waiting_segments || 0), 0)}</strong><small>مقاطع تنتظر التسميع</small></article>
+        <article><span>⏳</span><strong>{students.reduce((sum, student) => sum + Number(student.waiting_segments || 0), 0)}</strong><small>محاولات تنتظر تقييمك</small></article>
       </section>
 
       <section className="teacher-students-section">
-        <div className="teacher-section-head"><div><span className="section-label">طلابي</span><h2>الطلاب المرتبطون</h2></div></div>
+        <div className="teacher-section-head"><div><span className="section-label">طلابي</span><h2>الطلاب المرتبطون</h2><p>اختر الطالب لإدارة برنامج الحفظ الخاص به.</p></div></div>
         {students.length === 0 ? (
-          <div className="teacher-empty"><span>🔗</span><h3>لا يوجد طلاب مرتبطون بعد</h3><p>شارك رمز المعلم مع ولي الأمر، ثم يربط الطالب من إعداداته.</p></div>
+          <div className="teacher-empty"><span>🔗</span><h3>لا يوجد طلاب مرتبطون بعد</h3><p>شارك رمز المعلم مع ولي الأمر، وبعد موافقته سيظهر الطالب هنا.</p></div>
         ) : (
           <div className="teacher-students-grid">
             {students.map((student) => (
-              <article key={student.student_id}>
+              <article key={student.student_id} className="teacher-student-management-card">
                 <div><span>🧒</span><h3>{student.student_name}</h3><p>{student.family_name}</p></div>
-                <div className="teacher-student-stats"><span><strong>{student.active_plans}</strong><small>خطط نشطة</small></span><span><strong>{student.waiting_segments}</strong><small>تنتظر التسميع</small></span><span><strong>{student.mastered_segments}</strong><small>متقنة</small></span></div>
+                <div className="teacher-student-stats"><span><strong>{student.active_plans}</strong><small>خطط نشطة</small></span><span><strong>{student.waiting_segments}</strong><small>تنتظر التقييم</small></span><span><strong>{student.mastered_segments}</strong><small>متقنة</small></span></div>
+                <div className="teacher-student-actions"><Link href={`/teacher/students/${student.student_id}/quran`}>إدارة برنامج الحفظ</Link><Link href="/quran/reviews">فتح مركز التسميع</Link></div>
               </article>
             ))}
           </div>
@@ -138,13 +143,13 @@ export default function TeacherDashboardPage() {
       <section className="teacher-students-section quran-plan-control-section">
         <div className="teacher-section-head"><div><span className="section-label">إدارة الحفظ</span><h2>خطط الحفظ المرتبطة</h2></div></div>
         {plans.length === 0 ? (
-          <div className="teacher-empty compact"><span>📖</span><h3>لا توجد خطط حفظ</h3><p>عند إنشاء خطة للطالب المرتبط ستظهر هنا للتحكم بها.</p></div>
+          <div className="teacher-empty compact"><span>📖</span><h3>لا توجد خطط حفظ</h3><p>اختر أحد الطلاب وأنشئ له أول خطة حفظ.</p></div>
         ) : (
           <div className="quran-plan-control-list">
             {plans.map((plan) => (
               <article key={plan.plan_id}>
                 <div><span>📘</span><div><strong>{plan.title}</strong><small>{plan.student_name} · {plan.family_name} · {plan.segments_count} مقاطع · {plan.mastered_count} متقنة</small></div></div>
-                <button type="button" disabled={busyPlanId === plan.plan_id || plan.has_points} onClick={() => deletePlan(plan)}>{plan.has_points ? "احتُسبت نقاط" : busyPlanId === plan.plan_id ? "جارٍ الحذف..." : "حذف الخطة"}</button>
+                <div className="teacher-plan-actions"><Link href={`/teacher/students/${plan.student_id}/quran`}>إدارة الخطة</Link><button type="button" disabled={busyPlanId === plan.plan_id || plan.has_points} onClick={() => deletePlan(plan)}>{plan.has_points ? "احتُسبت نقاط" : busyPlanId === plan.plan_id ? "جارٍ الحذف..." : "حذف الخطة"}</button></div>
               </article>
             ))}
           </div>
