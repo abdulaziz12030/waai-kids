@@ -13,10 +13,9 @@ export default function ChildAdminNav() {
     ["ملف الطفل", `/children/${id}`, "👤"],
     ["الأهداف", `/children/${id}/goals`, "🎯"],
     ["المهام", `/children/${id}/tasks`, "✅"],
-    ["الحفظ", `/children/${id}/quran`, "📖"],
-    ["التسميع", "/quran/reviews", "🎙️"],
-    ["المعلم", `/children/${id}/teacher`, "👨‍🏫"],
-    ["الدخول", `/children/${id}/access`, "🔐"]
+    ["متابعة الحفظ", `/children/${id}/quran`, "📖"],
+    ["تفويض المعلم", `/children/${id}/teacher`, "👨‍🏫"],
+    ["دخول الطفل", `/children/${id}/access`, "🔐"]
   ];
 
   return (
