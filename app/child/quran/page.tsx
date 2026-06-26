@@ -10,7 +10,10 @@ type QuranPlan = {
   title: string;
   status: string;
   daily_target: number;
+  start_date: string | null;
   due_date: string | null;
+  surah_number: number | null;
+  duration_days: number | null;
 };
 
 type QuranSegment = {
@@ -23,6 +26,11 @@ type QuranSegment = {
   achievement_points: number;
   reward_points: number;
   notes: string | null;
+  scheduled_date: string | null;
+  day_number: number | null;
+  from_ayah: number | null;
+  to_ayah: number | null;
+  surah_number: number | null;
 };
 
 type QuranData = {
@@ -37,6 +45,21 @@ const statusLabels: Record<string, string> = {
   mastered: "متقن",
   needs_revision: "يحتاج مراجعة"
 };
+
+function localToday() {
+  const date = new Date();
+  const offset = date.getTimezoneOffset();
+  return new Date(date.getTime() - offset * 60_000).toISOString().slice(0, 10);
+}
+
+function formatDate(dateValue: string | null) {
+  if (!dateValue) return "";
+  return new Intl.DateTimeFormat("ar-SA-u-ca-gregory", {
+    weekday: "long",
+    day: "numeric",
+    month: "long"
+  }).format(new Date(`${dateValue}T00:00:00`));
+}
 
 export default function ChildQuranPage() {
   const router = useRouter();
@@ -73,6 +96,11 @@ export default function ChildQuranPage() {
     () => data.segments.filter((segment) => ["assigned", "needs_revision"].includes(segment.status)),
     [data.segments]
   );
+
+  const todaySegments = useMemo(() => {
+    const today = localToday();
+    return data.segments.filter((segment) => segment.scheduled_date === today && ["assigned", "needs_revision"].includes(segment.status));
+  }, [data.segments]);
 
   const memorizedSegments = useMemo(
     () => data.segments.filter((segment) => segment.status === "memorized"),
@@ -119,9 +147,9 @@ export default function ChildQuranPage() {
       {success && <p className="form-message success-message floating-message">{success}</p>}
 
       <section className="child-quran-hero">
-        <div><span>🌙</span><h2>خطوة صغيرة كل يوم</h2><p>احفظ المقطع، ثم اضغط تم الحفظ ليصل إلى ولي الأمر للتسميع.</p></div>
+        <div><span>🌙</span><h2>{todaySegments.length > 0 ? "ورد اليوم جاهز" : "خطوة صغيرة كل يوم"}</h2><p>{todaySegments.length > 0 ? "ابدأ بمقطع اليوم، وبعد حفظه أرسله للتسميع." : "اتبع الجدول اليومي، واحفظ كل مقطع في موعده."}</p></div>
         <div className="child-quran-stats">
-          <article><strong>{pendingSegments.length}</strong><small>مقاطع مطلوبة</small></article>
+          <article><strong>{todaySegments.length}</strong><small>مقاطع اليوم</small></article>
           <article><strong>{memorizedSegments.length}</strong><small>بانتظار التسميع</small></article>
           <article><strong>{masteredCount}</strong><small>مقاطع متقنة</small></article>
         </div>
@@ -135,12 +163,12 @@ export default function ChildQuranPage() {
         <>
           <section className="child-quran-plans">
             {data.plans.map((plan) => (
-              <article key={plan.id}><span>📚</span><div><strong>{plan.title}</strong><small>{plan.daily_target} آيات يوميًا{plan.due_date ? ` · الهدف ${plan.due_date}` : ""}</small></div></article>
+              <article key={plan.id}><span>📚</span><div><strong>{plan.title}</strong><small>{plan.daily_target} آيات يوميًا{plan.duration_days ? ` · ${plan.duration_days} يومًا` : ""}{plan.due_date ? ` · النهاية ${formatDate(plan.due_date)}` : ""}</small></div></article>
             ))}
           </section>
 
           <section className="child-quran-list-section">
-            <div className="child-section-head"><div><span className="section-label">مقاطع الحفظ</span><h2>ابدأ بالمقطع التالي</h2></div><span className="section-color-icon">📖</span></div>
+            <div className="child-section-head"><div><span className="section-label">الجدول اليومي</span><h2>مقاطع الحفظ</h2></div><span className="section-color-icon">📖</span></div>
             {data.segments.length === 0 ? (
               <div className="child-friendly-empty"><span>🌤️</span><strong>لا توجد مقاطع بعد</strong><p>سيضيف ولي الأمر أول مقطع قريبًا.</p></div>
             ) : (
@@ -149,10 +177,10 @@ export default function ChildQuranPage() {
                   <article className={`child-quran-segment status-${segment.status}`} key={segment.id}>
                     <div className="child-task-head">
                       <span className="task-round-icon category-quran">📖</span>
-                      <div><span className={`task-status task-status-${segment.status}`}>{statusLabels[segment.status] || segment.status}</span><h3>{segment.portion_label || "مقطع قرآن"}</h3><p>{segment.achievement_points} ⭐ {segment.reward_points > 0 ? `· ${segment.reward_points} 💎` : ""}</p></div>
+                      <div><span className={`task-status task-status-${segment.status}`}>{statusLabels[segment.status] || segment.status}</span><h3>{segment.portion_label || "مقطع قرآن"}</h3><p>{segment.scheduled_date ? `📅 ${formatDate(segment.scheduled_date)} · ` : ""}{segment.achievement_points} ⭐ {segment.reward_points > 0 ? `· ${segment.reward_points} 💎` : ""}</p></div>
                     </div>
                     <QuranTextDisplay uthmaniText={segment.uthmani_text} readableText={segment.readable_text} />
-                    {segment.notes && <div className="task-note review"><strong>ملاحظة ولي الأمر</strong><p>{segment.notes}</p></div>}
+                    {segment.notes && <div className="task-note review"><strong>تعليمات الحفظ</strong><p>{segment.notes}</p></div>}
                     {["assigned", "needs_revision"].includes(segment.status) && (
                       <button className="child-quran-submit" type="button" disabled={busyId === segment.id} onClick={() => markMemorized(segment.id)}>{busyId === segment.id ? "جارٍ الإرسال..." : "تم الحفظ ✓"}</button>
                     )}
