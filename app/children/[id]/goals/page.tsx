@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import ChildGoals from "../../../components/ChildGoals";
+import GoalDeletionManager from "../../../components/GoalDeletionManager";
 
 export default function ChildGoalsPage() {
   const params = useParams<{ id: string }>();
@@ -18,6 +19,7 @@ export default function ChildGoalsPage() {
         <Link className="quiet-button link-submit" href={`/children/${studentId}`}>ملف الطفل</Link>
       </header>
 
+      <GoalDeletionManager studentId={studentId} />
       <ChildGoals studentId={studentId} />
     </main>
   );
