@@ -42,4 +42,33 @@
 .goal-reward-paid-card>span{font-size:30px}
 .goal-reward-paid-card strong{display:block;color:#2f6743}
 .goal-reward-paid-card p{margin:4px 0 0;color:var(--muted);font-size:12px}
-@media(max-width:700px){.child-plan-group,.parent-plan-group{padding:14px}.child-plan-header,.parent-plan-group-head{align-items:flex-start}.child-plan-header h3,.parent-plan-group-head h3{font-size:19px}.child-plan-header>strong,.parent-plan-group-head>strong{width:52px;height:52px;border-radius:15px;font-size:15px}.reward-grant-fields{grid-template-columns:1fr}.child-task-head{display:grid;grid-template-columns:auto 1fr}.child-task-head time{grid-column:2}.parent-task-head{align-items:flex-start}}
+.simplified-task-followup{width:min(1100px,calc(100% - 28px))}
+.simplified-followup-summary{padding:24px}
+.parent-followup-toolbar{margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;gap:14px}
+.parent-followup-tabs{display:flex;align-items:center;gap:8px;overflow-x:auto;padding:3px 0}
+.parent-followup-tabs button{min-height:48px;padding:8px 12px;display:grid;grid-template-columns:auto auto auto;align-items:center;gap:7px;flex:0 0 auto;border:1px solid var(--border);border-radius:14px;background:#fff;color:var(--muted);font:inherit;cursor:pointer;transition:.18s ease}
+.parent-followup-tabs button:hover{transform:translateY(-1px);border-color:#b8cdbd}
+.parent-followup-tabs button.active{border-color:#8fc5a0;background:#edf8f0;color:var(--primary-dark);box-shadow:0 8px 20px rgba(43,140,91,.09)}
+.parent-followup-tabs button span{font-size:17px}
+.parent-followup-tabs button strong{font-size:12px;white-space:nowrap}
+.parent-followup-tabs button b{min-width:24px;height:24px;padding:0 6px;display:grid;place-items:center;border-radius:999px;background:#eef1ee;font-size:11px}
+.parent-followup-tabs button.active b{background:#d9efdf}
+.toggle-task-create-button{min-height:46px;padding:0 16px;flex:0 0 auto;border:0;border-radius:13px;background:var(--primary);color:#fff;font:inherit;font-weight:900;cursor:pointer}
+.simplified-create-card{position:static;margin-bottom:16px;max-width:none;animation:namaa-fade-up .25s ease both}
+.simplified-create-card .task-create-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.simplified-create-card .task-create-head h2{margin:4px 0 0}
+.simplified-followup-list{padding:20px}
+.followup-empty-state{min-height:260px}
+.simplified-plan-group{background:#fff}
+.followup-card-followup{border-color:#e5c875;background:#fffdf6;box-shadow:0 8px 22px rgba(128,96,12,.06)}
+.followup-card-upcoming{opacity:.86;background:#f9fafb}
+.followup-card-completed{background:#f5faf6}
+.task-followup-reason{margin-top:13px;padding:11px 13px;display:flex;align-items:center;gap:8px;border:1px solid #ead690;border-radius:12px;background:#fff8df;color:#76570a}
+.task-followup-reason strong{font-size:12px;line-height:1.6}
+.task-card-footer-actions{margin-top:14px;padding-top:12px;display:flex;justify-content:flex-end;border-top:1px solid var(--border)}
+.task-delete-button{min-height:38px;padding:0 13px;border:1px solid #ddb7b1;border-radius:11px;background:#fff8f6;color:#a1483d;font:inherit;font-size:12px;font-weight:900;cursor:pointer}
+.task-delete-button:hover{background:#fdebe7}
+.task-delete-button:disabled{opacity:.55;cursor:not-allowed}
+.compact-reward-card{margin-bottom:14px}
+@media(max-width:800px){.parent-followup-toolbar{align-items:stretch;flex-direction:column}.toggle-task-create-button{width:100%}.parent-followup-tabs{width:100%}.parent-followup-tabs button{min-width:max-content}}
+@media(max-width:700px){.child-plan-group,.parent-plan-group{padding:14px}.child-plan-header,.parent-plan-group-head{align-items:flex-start}.child-plan-header h3,.parent-plan-group-head h3{font-size:19px}.child-plan-header>strong,.parent-plan-group-head>strong{width:52px;height:52px;border-radius:15px;font-size:15px}.reward-grant-fields{grid-template-columns:1fr}.child-task-head{display:grid;grid-template-columns:auto 1fr}.child-task-head time{grid-column:2}.parent-task-head{align-items:flex-start}.simplified-followup-summary{padding:20px 16px}.simplified-followup-list{padding:14px}.parent-followup-tabs button{min-height:44px;padding:7px 10px}.task-card-footer-actions{justify-content:stretch}.task-delete-button{width:100%}}
