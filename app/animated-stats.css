@@ -1,0 +1,196 @@
+.namaa-stats {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.namaa-stats::before {
+  content: "";
+  width: 42%;
+  height: 180%;
+  position: absolute;
+  top: -40%;
+  right: 29%;
+  z-index: -1;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(39, 171, 101, .12), transparent 68%);
+  opacity: 0;
+  transform: scale(.55);
+  transition: opacity .55s ease .25s, transform .8s cubic-bezier(.2, .8, .2, 1) .25s;
+}
+
+.namaa-stats article {
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+.namaa-stats article:nth-child(odd) {
+  transform: translateX(125px) scale(.92);
+}
+
+.namaa-stats article:nth-child(even) {
+  transform: translateX(-125px) scale(.92);
+}
+
+.namaa-stats.stats-visible::before {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.namaa-stats.stats-visible article {
+  animation-duration: .9s;
+  animation-fill-mode: both;
+  animation-timing-function: cubic-bezier(.18, .86, .28, 1.12);
+}
+
+.namaa-stats.stats-visible article:nth-child(1) {
+  animation-name: namaa-stat-enter-right;
+  animation-delay: .05s;
+}
+
+.namaa-stats.stats-visible article:nth-child(2) {
+  animation-name: namaa-stat-enter-left;
+  animation-delay: .17s;
+}
+
+.namaa-stats.stats-visible article:nth-child(3) {
+  animation-name: namaa-stat-enter-right;
+  animation-delay: .29s;
+}
+
+.namaa-stats.stats-visible article:nth-child(4) {
+  animation-name: namaa-stat-enter-left;
+  animation-delay: .41s;
+}
+
+.namaa-stats.stats-visible article > span {
+  animation: namaa-stat-icon-pop .72s cubic-bezier(.2, .95, .25, 1.35) both;
+}
+
+.namaa-stats.stats-visible article:nth-child(1) > span { animation-delay: .42s; }
+.namaa-stats.stats-visible article:nth-child(2) > span { animation-delay: .55s; }
+.namaa-stats.stats-visible article:nth-child(3) > span { animation-delay: .68s; }
+.namaa-stats.stats-visible article:nth-child(4) > span { animation-delay: .81s; }
+
+.namaa-stats article strong {
+  min-width: 98px;
+  display: inline-block;
+  font-variant-numeric: tabular-nums;
+  direction: ltr;
+  unicode-bidi: isolate;
+  transition: color .25s ease, text-shadow .25s ease;
+}
+
+.namaa-stats.stats-visible article strong {
+  color: #0c5638;
+  text-shadow: 0 5px 14px rgba(29, 139, 81, .12);
+}
+
+.namaa-stats.stats-visible article::after {
+  content: "";
+  width: 58%;
+  height: 2px;
+  position: absolute;
+  bottom: 5px;
+  right: 21%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, transparent, rgba(35, 168, 98, .42), transparent);
+  transform: scaleX(0);
+  transform-origin: center;
+  animation: namaa-stat-line 1s ease forwards;
+}
+
+.namaa-stats.stats-visible article:nth-child(1)::after { animation-delay: .48s; }
+.namaa-stats.stats-visible article:nth-child(2)::after { animation-delay: .6s; }
+.namaa-stats.stats-visible article:nth-child(3)::after { animation-delay: .72s; }
+.namaa-stats.stats-visible article:nth-child(4)::after { animation-delay: .84s; }
+
+@keyframes namaa-stat-enter-right {
+  0% {
+    opacity: 0;
+    transform: translateX(125px) scale(.92);
+  }
+  58% {
+    opacity: 1;
+    transform: translateX(-10px) scale(1.025);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes namaa-stat-enter-left {
+  0% {
+    opacity: 0;
+    transform: translateX(-125px) scale(.92);
+  }
+  58% {
+    opacity: 1;
+    transform: translateX(10px) scale(1.025);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes namaa-stat-icon-pop {
+  0% {
+    opacity: 0;
+    transform: scale(.45) rotate(-12deg);
+  }
+  68% {
+    opacity: 1;
+    transform: scale(1.16) rotate(4deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0);
+  }
+}
+
+@keyframes namaa-stat-line {
+  to { transform: scaleX(1); }
+}
+
+@media (max-width: 760px) {
+  .namaa-stats article:nth-child(odd),
+  .namaa-stats article:nth-child(even) {
+    transform: translateY(36px) scale(.96);
+  }
+
+  .namaa-stats.stats-visible article:nth-child(n) {
+    animation-name: namaa-stat-enter-mobile;
+  }
+
+  .namaa-stats article strong {
+    min-width: 88px;
+  }
+}
+
+@keyframes namaa-stat-enter-mobile {
+  0% {
+    opacity: 0;
+    transform: translateY(36px) scale(.96);
+  }
+  65% {
+    opacity: 1;
+    transform: translateY(-5px) scale(1.02);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .namaa-stats article,
+  .namaa-stats article > span,
+  .namaa-stats.stats-visible article,
+  .namaa-stats.stats-visible article::after {
+    opacity: 1 !important;
+    transform: none !important;
+    animation: none !important;
+  }
+}
