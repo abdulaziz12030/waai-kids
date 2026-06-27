@@ -20,6 +20,8 @@
 }
 
 .namaa-stats article {
+  position: relative;
+  overflow: hidden;
   opacity: 0;
   will-change: transform, opacity;
 }
