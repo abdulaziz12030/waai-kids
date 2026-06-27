@@ -25,8 +25,8 @@ const landingOverrides = `
 .hero-orbit-stage::before{content:"";position:absolute;inset:7%;border:1.5px solid rgba(54,170,101,.18);border-radius:50%;background:radial-gradient(circle at 50% 45%,rgba(210,247,188,.72),rgba(255,244,207,.34) 58%,transparent 59%);box-shadow:0 24px 60px rgba(35,80,57,.08);z-index:0}
 .hero-orbit-stage::after{content:"";position:absolute;inset:2%;border-radius:50%;background:conic-gradient(from 20deg,rgba(77,202,120,.16),rgba(102,184,255,.16),rgba(151,104,242,.14),rgba(255,197,63,.18),rgba(77,202,120,.16));filter:blur(20px);opacity:.55;z-index:-1}
 .hero-core{width:72%;height:72%;position:relative;z-index:3;overflow:hidden;border-radius:50%;border:8px solid rgba(255,255,255,.92);background:linear-gradient(145deg,#e6f9d9,#fff6d7);box-shadow:0 24px 54px rgba(25,87,53,.16),inset 0 0 0 1px rgba(32,139,79,.08)}
-.hero-core img{width:100%;height:100%;display:block;object-fit:cover;object-position:47% 38%;transform:scale(1.13);transition:transform .45s ease;filter:saturate(1.04) contrast(1.02)}
-.hero-orbit-stage:hover .hero-core img,.hero-orbit-stage:focus-within .hero-core img{transform:scale(1.17)}
+.hero-core img{width:100%;height:100%;display:block;object-fit:contain;object-position:center center;transform:scale(1.03);transition:transform .45s ease;filter:saturate(1.04) contrast(1.02)}
+.hero-orbit-stage:hover .hero-core img,.hero-orbit-stage:focus-within .hero-core img{transform:scale(1.06)}
 .hero-orbit{position:absolute;inset:0;z-index:5;border-radius:50%;animation:hero-orbit-clockwise 18s linear infinite;transform-origin:center}
 .hero-orbit-item{--angle:0deg;--neg-angle:0deg;position:absolute;top:50%;left:50%;width:66px;height:66px;display:grid;place-items:center;transform:translate(-50%,-50%) rotate(var(--angle)) translateX(232px) rotate(var(--neg-angle));border-radius:50%;text-decoration:none;outline:none}
 .hero-orbit-item.orbit-a{--angle:0deg;--neg-angle:0deg}
@@ -56,8 +56,8 @@ const landingOverrides = `
 @media(max-width:760px){
 .namaa-hero-art{min-height:390px!important;padding:8px 0 0!important}
 .hero-orbit-stage{width:min(100%,370px)}
-.hero-core{width:70%;height:70%;border-width:6px}
-.hero-core img{object-position:47% 37%;transform:scale(1.15)}
+.hero-core{width:72%;height:72%;border-width:6px}
+.hero-core img{object-fit:contain;object-position:center center;transform:scale(1.02)}
 .hero-orbit-item{width:54px;height:54px;transform:translate(-50%,-50%) rotate(var(--angle)) translateX(151px) rotate(var(--neg-angle))}
 .orbit-face{border-width:3px}
 .orbit-face svg{width:25px;height:25px}
