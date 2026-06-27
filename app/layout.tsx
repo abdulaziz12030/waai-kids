@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import HomeStatsAnimator from './components/HomeStatsAnimator';
 import './globals.css';
 import './phase3.css';
 import './children.css';
@@ -16,6 +17,7 @@ import './security-controls.css';
 import './points-v2.css';
 import './landing-v2.css';
 import './landing-teacher-entry.css';
+import './animated-stats.css';
 import './family-quran.css';
 import './child-quran.css';
 import './quran-readable.css';
@@ -38,7 +40,10 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="ar" dir="rtl">
-      <body>{children}</body>
+      <body>
+        {children}
+        <HomeStatsAnimator />
+      </body>
     </html>
   );
 }
