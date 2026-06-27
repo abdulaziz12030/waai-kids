@@ -1,0 +1,45 @@
+.child-plan-workspace{background:linear-gradient(145deg,#f8fbff,#fff)}
+.child-plan-groups,.parent-plan-groups{display:grid;gap:18px}
+.child-plan-group,.parent-plan-group{padding:18px;border:1px solid var(--border);border-radius:20px;background:#fff}
+.child-plan-header,.parent-plan-group-head{display:flex;align-items:center;justify-content:space-between;gap:16px}
+.child-plan-header>div,.parent-plan-group-head>div{min-width:0}
+.child-plan-header span,.parent-plan-group-head span{color:var(--primary);font-size:11px;font-weight:900}
+.child-plan-header h3,.parent-plan-group-head h3{margin:6px 0 4px;font-size:22px}
+.child-plan-header p,.parent-plan-group-head p{margin:0;color:var(--muted);font-size:12px}
+.child-plan-header>strong,.parent-plan-group-head>strong{width:62px;height:62px;display:grid;place-items:center;flex:0 0 auto;border-radius:18px;background:#edf7f0;color:var(--primary-dark);font-size:18px}
+.child-plan-progress,.parent-plan-progress{height:8px;margin:14px 0 18px;overflow:hidden;border-radius:999px;background:#edf1ee}
+.child-plan-progress span,.parent-plan-progress span{height:100%;display:block;border-radius:inherit;background:linear-gradient(90deg,#2b8c5b,#75bb82);transition:width .3s ease}
+.child-plan-task-list{gap:12px}
+.child-task-card.task-current{border-color:#8fc5a0;box-shadow:0 10px 24px rgba(43,140,91,.1)}
+.child-task-card.task-locked{opacity:.72;background:#f6f7f6;border-style:dashed}
+.task-stage-row,.parent-task-stage-row{display:flex;align-items:center;flex-wrap:wrap;gap:7px}
+.task-stage-row b,.parent-task-stage-row b{min-height:27px;padding:0 9px;display:inline-flex;align-items:center;border-radius:999px;background:#eef1fb;color:#53658d;font-size:10px}
+.task-period-line,.parent-task-period{margin-top:12px;padding:10px 12px;display:flex;align-items:center;gap:7px;border-radius:12px;background:#f4f7f5;color:#51675a;font-size:12px}
+.task-period-line strong,.parent-task-period strong{font-size:12px}
+.task-lock-note{background:#f0f1f3;color:#677078}
+.child-plan-pill{width:fit-content;margin-top:14px;padding:8px 11px;border-radius:999px;background:#edf4ff;color:#4d648d;font-size:11px;font-weight:900}
+.child-goal-note.rejected{background:#fff0ed;color:#98463c}
+.child-reward-celebration{margin-top:16px;padding:16px;display:flex;align-items:center;gap:12px;border:1px solid #edd176;border-radius:16px;background:linear-gradient(135deg,#fff9dd,#fffdf4)}
+.child-reward-celebration.paid{border-color:#b7dcc2;background:linear-gradient(135deg,#eaf8ee,#f7fcf8)}
+.child-reward-celebration>span{font-size:34px}
+.child-reward-celebration strong{display:block;color:#6d5307;font-size:15px}
+.child-reward-celebration.paid strong{color:#2e6542}
+.child-reward-celebration p{margin:4px 0 0;color:var(--muted);line-height:1.7;font-size:12px}
+.parent-plan-list-card{display:grid;gap:14px}
+.parent-plan-group{padding:16px;background:#fafcfb}
+.parent-plan-group .parent-task-list{margin-top:16px}
+.goal-reward-grant-card{margin:16px 0;padding:18px;display:grid;gap:14px;border:1px solid #e7c45e;border-radius:18px;background:linear-gradient(135deg,#fff9dc,#fffdf6)}
+.reward-grant-title{display:flex;align-items:center;gap:12px}
+.reward-grant-title>span{font-size:34px}
+.reward-grant-title strong{display:block;color:#6f5608;font-size:16px}
+.reward-grant-title p{margin:4px 0 0;color:#796b3b;font-size:12px;line-height:1.7}
+.reward-grant-fields{display:grid;grid-template-columns:180px minmax(0,1fr);gap:10px}
+.reward-grant-fields label{display:grid;gap:6px;font-size:11px;font-weight:900}
+.reward-grant-fields input{width:100%;min-height:44px;padding:10px 12px;border:1px solid #dcc77f;border-radius:12px;background:#fff;font:inherit;outline:none}
+.goal-reward-grant-card>button{min-height:46px;padding:0 18px;border:0;border-radius:13px;background:linear-gradient(135deg,#7d6312,#c89c24);color:#fff;font:inherit;font-weight:900;cursor:pointer}
+.goal-reward-grant-card>button:disabled{opacity:.55;cursor:not-allowed}
+.goal-reward-paid-card{margin:16px 0;padding:15px;display:flex;align-items:center;gap:12px;border:1px solid #b7d9c0;border-radius:16px;background:#edf8f0}
+.goal-reward-paid-card>span{font-size:30px}
+.goal-reward-paid-card strong{display:block;color:#2f6743}
+.goal-reward-paid-card p{margin:4px 0 0;color:var(--muted);font-size:12px}
+@media(max-width:700px){.child-plan-group,.parent-plan-group{padding:14px}.child-plan-header,.parent-plan-group-head{align-items:flex-start}.child-plan-header h3,.parent-plan-group-head h3{font-size:19px}.child-plan-header>strong,.parent-plan-group-head>strong{width:52px;height:52px;border-radius:15px;font-size:15px}.reward-grant-fields{grid-template-columns:1fr}.child-task-head{display:grid;grid-template-columns:auto 1fr}.child-task-head time{grid-column:2}.parent-task-head{align-items:flex-start}}
