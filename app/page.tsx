@@ -24,7 +24,7 @@ const landingOverrides = `
 .hero-orbit-stage{width:min(100%,560px);aspect-ratio:1;position:relative;display:grid;place-items:center;margin-inline:auto;isolation:isolate}
 .hero-orbit-stage::before{content:"";position:absolute;inset:7%;border:1.5px solid rgba(54,170,101,.18);border-radius:50%;background:radial-gradient(circle at 50% 45%,rgba(210,247,188,.72),rgba(255,244,207,.34) 58%,transparent 59%);box-shadow:0 24px 60px rgba(35,80,57,.08);z-index:0}
 .hero-orbit-stage::after{content:"";position:absolute;inset:2%;border-radius:50%;background:conic-gradient(from 20deg,rgba(77,202,120,.16),rgba(102,184,255,.16),rgba(151,104,242,.14),rgba(255,197,63,.18),rgba(77,202,120,.16));filter:blur(20px);opacity:.55;z-index:-1}
-.hero-core{width:72%;height:72%;position:relative;z-index:3;overflow:hidden;border-radius:50%;border:8px solid rgba(255,255,255,.92);background:linear-gradient(145deg,#e6f9d9,#fff6d7);box-shadow:0 24px 54px rgba(25,87,53,.16),inset 0 0 0 1px rgba(32,139,79,.08)}
+.hero-core{width:72%;height:72%;position:relative;z-index:3;overflow:hidden;border-radius:50%;border:8px solid rgba(255,255,255,.92);background:linear-gradient(145deg,#e6f9d9,#fff6d7);box-shadow:0 24px 54px rgba(25,87,53,.16),inset 0 0 0 1px rgba(32,139,79,.08);display:grid;place-items:center}
 .hero-core img{width:100%;height:100%;display:block;object-fit:contain;object-position:center center;transform:scale(1.03);transition:transform .45s ease;filter:saturate(1.04) contrast(1.02)}
 .hero-orbit-stage:hover .hero-core img,.hero-orbit-stage:focus-within .hero-core img{transform:scale(1.06)}
 .hero-orbit{position:absolute;inset:0;z-index:5;border-radius:50%;animation:hero-orbit-clockwise 18s linear infinite;transform-origin:center}
@@ -145,7 +145,7 @@ export default function HomePage() {
         <div className="namaa-hero-art">
           <div className="hero-orbit-stage">
             <div className="hero-core">
-              <img src="/assets/hero-boy-trophy.webp?v=2" alt="طفل يرفع كأس الإنجاز" loading="eager" />
+              <img src="https://raw.githubusercontent.com/abdulaziz12030/namaa/assets-approved-hero/public/assets/hero-child.webp?v=20260627" alt="طفل يرفع كأس الإنجاز" loading="eager" referrerPolicy="no-referrer" />
             </div>
 
             <div className="hero-orbit" aria-label="اختصارات تفاعلية">
