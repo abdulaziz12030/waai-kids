@@ -1,3 +1,4 @@
+@import "./task-plan-flow.css";
 .goal-review-workspace{background:radial-gradient(circle at 92% 4%,rgba(43,140,91,.08),transparent 280px),var(--surface)}
 .goal-head-actions,.goal-plan-points-head,.goal-inline-submit-row{display:flex;align-items:center;gap:10px}.goal-head-actions,.goal-plan-points-head{justify-content:space-between}
 .pending-goals-badge{min-height:40px;padding:0 14px;display:inline-flex;align-items:center;justify-content:center;border:1px solid #ebcc79;border-radius:999px;background:#fff8df;color:#76570a;font-size:12px;font-weight:900}
