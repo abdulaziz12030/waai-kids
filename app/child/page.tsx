@@ -123,9 +123,10 @@ function formatDate(value: string | null) {
 }
 
 function isBlockedByPrevious(task: ChildTask, groupTasks: ChildTask[]) {
-  if (!task.generated_from_goal || !task.plan_step || task.plan_step <= 1) return false;
+  const currentStep = task.plan_step;
+  if (!task.generated_from_goal || !currentStep || currentStep <= 1) return false;
   return groupTasks.some((previous) =>
-    Boolean(previous.plan_step && previous.plan_step < task.plan_step && previous.status !== "approved")
+    Boolean(previous.plan_step && previous.plan_step < currentStep && previous.status !== "approved")
   );
 }
 
