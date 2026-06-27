@@ -157,32 +157,129 @@
 }
 
 @media (max-width: 760px) {
-  .namaa-stats article:nth-child(odd),
-  .namaa-stats article:nth-child(even) {
-    transform: translateY(36px) scale(.96);
+  .namaa-stats {
+    width: calc(100% - 20px);
+    margin-top: 26px;
+    padding: 8px 2px 14px;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(158px, 1fr));
+    gap: 10px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    overscroll-behavior-inline: contain;
+    scrollbar-width: none;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
   }
 
-  .namaa-stats.stats-visible article:nth-child(n) {
-    animation-name: namaa-stat-enter-mobile;
+  .namaa-stats::-webkit-scrollbar {
+    display: none;
+  }
+
+  .namaa-stats::before {
+    display: none;
+  }
+
+  .namaa-stats article {
+    min-width: 158px;
+    min-height: 98px;
+    padding: 13px 12px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 10px;
+    scroll-snap-align: start;
+    border: 1px solid #e3ebe6;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, .96);
+    box-shadow: 0 10px 24px rgba(39, 65, 52, .08);
+  }
+
+  .namaa-stats article:last-child {
+    border: 1px solid #e3ebe6;
+  }
+
+  .namaa-stats article:nth-child(odd) {
+    transform: translateX(92px) scale(.94);
+  }
+
+  .namaa-stats article:nth-child(even) {
+    transform: translateX(-92px) scale(.94);
+  }
+
+  .namaa-stats article > span {
+    width: 44px;
+    height: 44px;
+    flex: 0 0 44px;
+    border-radius: 14px;
+    font-size: 22px;
+  }
+
+  .namaa-stats article div {
+    min-width: 0;
+    align-items: flex-start;
+    text-align: right;
   }
 
   .namaa-stats article strong {
-    min-width: 88px;
+    min-width: 0;
+    font-size: 16px;
+  }
+
+  .namaa-stats article small {
+    font-size: 9px;
+    line-height: 1.5;
+    white-space: nowrap;
+  }
+
+  .namaa-stats.stats-visible article:nth-child(1),
+  .namaa-stats.stats-visible article:nth-child(3) {
+    animation-name: namaa-stat-enter-mobile-right;
+  }
+
+  .namaa-stats.stats-visible article:nth-child(2),
+  .namaa-stats.stats-visible article:nth-child(4) {
+    animation-name: namaa-stat-enter-mobile-left;
+  }
+
+  .namaa-stats.stats-visible article::after {
+    width: 68%;
+    right: 16%;
+    bottom: 4px;
   }
 }
 
-@keyframes namaa-stat-enter-mobile {
+@keyframes namaa-stat-enter-mobile-right {
   0% {
     opacity: 0;
-    transform: translateY(36px) scale(.96);
+    transform: translateX(92px) scale(.94);
   }
-  65% {
+  60% {
     opacity: 1;
-    transform: translateY(-5px) scale(1.02);
+    transform: translateX(-7px) scale(1.02);
   }
   100% {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes namaa-stat-enter-mobile-left {
+  0% {
+    opacity: 0;
+    transform: translateX(-92px) scale(.94);
+  }
+  60% {
+    opacity: 1;
+    transform: translateX(7px) scale(1.02);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
   }
 }
 
