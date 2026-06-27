@@ -145,7 +145,7 @@ export default function HomePage() {
         <div className="namaa-hero-art">
           <div className="hero-orbit-stage">
             <div className="hero-core">
-              <img src="/assets/hero-boy-trophy.webp" alt="طفل يرفع كأس الإنجاز" loading="eager" />
+              <img src="/assets/hero-boy-trophy.webp?v=2" alt="طفل يرفع كأس الإنجاز" loading="eager" />
             </div>
 
             <div className="hero-orbit" aria-label="اختصارات تفاعلية">
