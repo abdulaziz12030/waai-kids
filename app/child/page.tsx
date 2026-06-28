@@ -136,6 +136,12 @@ function isTaskActionable(task: ChildTask, groupTasks: ChildTask[], today: strin
   return !isBlockedByPrevious(task, groupTasks);
 }
 
+function isUpcomingTask(task: ChildTask, groupTasks: ChildTask[], today: string) {
+  if (task.status === "approved" || task.status === "submitted") return false;
+  const future = Boolean(task.starts_on && task.starts_on > today);
+  return future || isBlockedByPrevious(task, groupTasks);
+}
+
 function taskFriendlyError(message?: string) {
   if (!message) return "تعذر إرسال المهمة الآن.";
   if (message.includes("لم يحن وقت")) return "هذه المرحلة ستفتح في تاريخ بدايتها.";
@@ -304,6 +310,39 @@ export default function ChildDashboardPage() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
+  function renderTaskCard(task: ChildTask, groupTasks: ChildTask[]) {
+    const future = Boolean(task.starts_on && task.starts_on > today);
+    const blocked = isBlockedByPrevious(task, groupTasks);
+    const actionable = isTaskActionable(task, groupTasks, today);
+    const locked = (future || blocked) && task.status !== "approved" && task.status !== "submitted";
+
+    return (
+      <article className={`child-task-card interactive-child-card task-${task.status} ${locked ? "task-locked" : ""} ${actionable ? "task-current" : ""}`} key={task.id}>
+        <div className="child-task-head">
+          <span className={`task-round-icon category-${task.category}`}>{locked ? "🔒" : taskIcons[task.category] || "✨"}</span>
+          <div>
+            <div className="task-stage-row"><span className={`task-status task-status-${task.status}`}>{locked ? "قادمة" : taskStatusLabels[task.status] || task.status}</span>{task.plan_step && <b>المرحلة {task.plan_step} من {task.plan_total}</b>}</div>
+            <h3>{task.title}</h3>
+            <p>{task.achievement_points} ⭐ إنجاز · {task.reward_points} 💎 مكافآت</p>
+          </div>
+          {task.due_date && <time>{formatDate(task.due_date)}</time>}
+        </div>
+
+        {(task.starts_on || task.due_date) && <div className="task-period-line"><span>📅</span><strong>{task.starts_on === task.due_date ? formatDate(task.due_date) : `${formatDate(task.starts_on)} — ${formatDate(task.due_date)}`}</strong></div>}
+        {task.description && <p className="task-description">{task.description}</p>}
+        {task.review_note && <div className="task-note review"><strong>ملاحظة ولي الأمر</strong><p>{task.review_note}</p></div>}
+
+        {actionable && (
+          <div className="child-task-submit-box"><textarea rows={2} value={taskNotes[task.id] || ""} onChange={(event) => setTaskNotes((current) => ({ ...current, [task.id]: event.target.value }))} placeholder="اكتب ماذا أنجزت في هذه المرحلة" /><button type="button" disabled={busyTaskId === task.id} onClick={() => submitTask(task.id)}>{busyTaskId === task.id ? "جارٍ الإرسال..." : "أنجزت المرحلة ✓"}</button></div>
+        )}
+        {future && task.status !== "approved" && <div className="child-goal-note task-lock-note">🔒 تفتح في {formatDate(task.starts_on)}.</div>}
+        {!future && blocked && task.status !== "approved" && <div className="child-goal-note task-lock-note">🔒 تفتح بعد اعتماد المرحلة السابقة.</div>}
+        {task.status === "submitted" && <div className="child-goal-note">⏳ أرسلتها، وتنتظر الآن اعتماد ولي الأمر.</div>}
+        {task.status === "approved" && <div className="child-goal-note success">🎉 تم اعتماد المرحلة وإضافة {task.achievement_points} ⭐ و{task.reward_points} 💎.</div>}
+      </article>
+    );
+  }
+
   if (loading || !data) return <main className="dashboard-loading">جارٍ تجهيز حساب الطفل...</main>;
 
   return (
@@ -375,6 +414,10 @@ export default function ChildDashboardPage() {
               {taskGroups.map((group) => {
                 const approvedCount = group.tasks.filter((task) => task.status === "approved").length;
                 const planProgress = group.tasks.length ? Math.round((approvedCount / group.tasks.length) * 100) : 0;
+                const upcomingTasks = group.tasks.filter((task) => isUpcomingTask(task, group.tasks, today));
+                const visibleTasks = group.tasks.filter((task) => !isUpcomingTask(task, group.tasks, today));
+                const firstUpcomingDate = upcomingTasks.find((task) => task.starts_on)?.starts_on || null;
+
                 return (
                   <section className="child-plan-group" key={group.key}>
                     <div className="child-plan-header">
@@ -383,39 +426,24 @@ export default function ChildDashboardPage() {
                     </div>
                     <div className="child-plan-progress"><span style={{ width: `${planProgress}%` }} /></div>
 
-                    <div className="child-task-list child-plan-task-list">
-                      {group.tasks.map((task) => {
-                        const future = Boolean(task.starts_on && task.starts_on > today);
-                        const blocked = isBlockedByPrevious(task, group.tasks);
-                        const actionable = isTaskActionable(task, group.tasks, today);
-                        const locked = (future || blocked) && task.status !== "approved" && task.status !== "submitted";
-                        return (
-                          <article className={`child-task-card interactive-child-card task-${task.status} ${locked ? "task-locked" : ""} ${actionable ? "task-current" : ""}`} key={task.id}>
-                            <div className="child-task-head">
-                              <span className={`task-round-icon category-${task.category}`}>{locked ? "🔒" : taskIcons[task.category] || "✨"}</span>
-                              <div>
-                                <div className="task-stage-row"><span className={`task-status task-status-${task.status}`}>{locked ? "قادمة" : taskStatusLabels[task.status] || task.status}</span>{task.plan_step && <b>المرحلة {task.plan_step} من {task.plan_total}</b>}</div>
-                                <h3>{task.title}</h3>
-                                <p>{task.achievement_points} ⭐ إنجاز · {task.reward_points} 💎 مكافآت</p>
-                              </div>
-                              {task.due_date && <time>{formatDate(task.due_date)}</time>}
-                            </div>
+                    {visibleTasks.length > 0 && (
+                      <div className="child-task-list child-plan-task-list">
+                        {visibleTasks.map((task) => renderTaskCard(task, group.tasks))}
+                      </div>
+                    )}
 
-                            {(task.starts_on || task.due_date) && <div className="task-period-line"><span>📅</span><strong>{task.starts_on === task.due_date ? formatDate(task.due_date) : `${formatDate(task.starts_on)} — ${formatDate(task.due_date)}`}</strong></div>}
-                            {task.description && <p className="task-description">{task.description}</p>}
-                            {task.review_note && <div className="task-note review"><strong>ملاحظة ولي الأمر</strong><p>{task.review_note}</p></div>}
-
-                            {actionable && (
-                              <div className="child-task-submit-box"><textarea rows={2} value={taskNotes[task.id] || ""} onChange={(event) => setTaskNotes((current) => ({ ...current, [task.id]: event.target.value }))} placeholder="اكتب ماذا أنجزت في هذه المرحلة" /><button type="button" disabled={busyTaskId === task.id} onClick={() => submitTask(task.id)}>{busyTaskId === task.id ? "جارٍ الإرسال..." : "أنجزت المرحلة ✓"}</button></div>
-                            )}
-                            {future && task.status !== "approved" && <div className="child-goal-note task-lock-note">🔒 تفتح في {formatDate(task.starts_on)}.</div>}
-                            {!future && blocked && task.status !== "approved" && <div className="child-goal-note task-lock-note">🔒 تفتح بعد اعتماد المرحلة السابقة.</div>}
-                            {task.status === "submitted" && <div className="child-goal-note">⏳ أرسلتها، وتنتظر الآن اعتماد ولي الأمر.</div>}
-                            {task.status === "approved" && <div className="child-goal-note success">🎉 تم اعتماد المرحلة وإضافة {task.achievement_points} ⭐ و{task.reward_points} 💎.</div>}
-                          </article>
-                        );
-                      })}
-                    </div>
+                    {upcomingTasks.length > 0 && (
+                      <details className="child-upcoming-tasks-fold">
+                        <summary>
+                          <div className="child-upcoming-summary-main"><span>🔒</span><div><strong>المهام القادمة</strong><small>{firstUpcomingDate ? `أقرب مرحلة تبدأ ${formatDate(firstUpcomingDate)}` : "تفتح بعد اعتماد المرحلة السابقة"}</small></div></div>
+                          <div className="child-upcoming-summary-side"><b>{upcomingTasks.length}</b><span className="child-upcoming-chevron">⌄</span></div>
+                        </summary>
+                        <p className="child-upcoming-hint">هذه المراحل مطوية حتى تظل خطتك مرتبة. اضغط لعرض تفاصيلها.</p>
+                        <div className="child-task-list child-plan-task-list child-upcoming-task-list">
+                          {upcomingTasks.map((task) => renderTaskCard(task, group.tasks))}
+                        </div>
+                      </details>
+                    )}
                   </section>
                 );
               })}
