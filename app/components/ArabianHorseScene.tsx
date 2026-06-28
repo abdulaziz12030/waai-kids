@@ -1,3 +1,4 @@
+import type { RefObject } from "react";
 import type { PreviewGiftLike } from "./giftPreviewConfig";
 import styles from "./ArabianHorseScene.module.css";
 
@@ -8,6 +9,10 @@ type ArabianHorseSceneProps = {
   reason?: string | null;
   senderName?: string;
   status: "idle" | "playing" | "finished";
+  mode: "preview" | "delivery";
+  loading?: boolean;
+  startButtonRef?: RefObject<HTMLButtonElement | null>;
+  onStart: () => void;
 };
 
 const HORSE_SCENE_IMAGE = "https://images.unsplash.com/photo-1757496798794-4b19ef24951c?auto=format&fit=crop&fm=jpg&q=88&w=1800";
@@ -18,7 +23,11 @@ export default function ArabianHorseScene({
   achievement,
   reason,
   senderName,
-  status
+  status,
+  mode,
+  loading = false,
+  startButtonRef,
+  onStart
 }: ArabianHorseSceneProps) {
   const active = status !== "idle";
 
@@ -64,6 +73,18 @@ export default function ArabianHorseScene({
         <span>و</span>
         <div><strong>واعي كيدز</strong><small>WAAI KIDS · ينمو بوعي ويُنجز بثقة</small></div>
       </div>
+
+      {status === "idle" && (
+        <div className={styles.startGate}>
+          <div className={styles.startEmblem} aria-hidden="true">♞</div>
+          <span className={styles.startKicker}>{mode === "preview" ? "معاينة تفاعلية كاملة" : "هدية إنجاز جديدة"}</span>
+          <h1>الخيل العربي</h1>
+          <p>المس لبدء مشهد الخيل الأدهم بصوت الحوافر والصهيل والقفزة.</p>
+          <button ref={startButtonRef} type="button" onClick={onStart} disabled={loading}>
+            <span>▶</span>{loading ? "جارٍ تجهيز الصوت..." : "بدء العرض بالصوت"}
+          </button>
+        </div>
+      )}
     </div>
   );
 }
