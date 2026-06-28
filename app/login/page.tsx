@@ -96,7 +96,7 @@ export default function LoginPage() {
   return (
     <main className={`auth-page compact-auth-page role-login-page login-role-${loginRole}`}>
       <section className="auth-panel role-login-panel">
-        <Link className="auth-brand" href="/"><span className="brand-mark">ن</span><span>نماء</span></Link>
+        <Link className="auth-brand" href="/"><span className="brand-mark">و</span><span>واعي</span></Link>
 
         <div className="login-role-selector" role="tablist" aria-label="اختيار نوع الدخول">
           <button className={loginRole === "family" ? "active" : ""} type="button" onClick={() => chooseRole("family")}>
