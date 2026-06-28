@@ -7,6 +7,7 @@
   opacity: 0;
   transform: scale(1.08);
   filter: brightness(.18) contrast(1.28) saturate(.72);
+  will-change: transform, opacity, filter;
 }
 
 .active .videoStage {
@@ -21,6 +22,7 @@
   object-position: 50% 48%;
   transform: scale(1.08);
   filter: sepia(.14) saturate(.88) contrast(1.16);
+  will-change: transform;
 }
 
 .active .video {
@@ -88,6 +90,7 @@
   background-position: 50% 42%;
   filter: brightness(.42) contrast(1.25) saturate(.75);
   transform: scale(1.1);
+  will-change: transform, opacity;
 }
 
 .active .fallbackPoster {
