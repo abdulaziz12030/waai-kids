@@ -1,0 +1,173 @@
+.film {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  background: #000;
+  pointer-events: none;
+}
+
+.frame,
+.frame::before,
+.frame::after,
+.cinemaGrade,
+.grain,
+.lensFlare,
+.cinemaBars {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.frame {
+  opacity: 0;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: 50% 50%;
+  will-change: transform, opacity, filter;
+  filter: brightness(.62) contrast(1.18) saturate(.88);
+}
+
+.frame::before {
+  content: "";
+  background: linear-gradient(180deg, rgba(0,0,0,.42), transparent 34%, rgba(0,0,0,.08) 58%, rgba(0,0,0,.72));
+}
+
+.frame::after {
+  content: "";
+  box-shadow: inset 0 0 180px rgba(0,0,0,.7);
+}
+
+.opening { background-image: url("/gifts/arabian-horse/opening.webp"); background-position: 58% 48%; }
+.running { background-image: url("/gifts/arabian-horse/running.webp"); }
+.jump { background-image: url("/gifts/arabian-horse/jump.webp"); background-position: 50% 44%; }
+.final { background-image: url("/gifts/arabian-horse/final.webp"); background-position: 52% 48%; }
+
+.active .opening { animation: openingShot 2.55s cubic-bezier(.2,.75,.2,1) 0s both; }
+.active .running { animation: runningShot 3.65s cubic-bezier(.16,.72,.2,1) 1.85s both; }
+.active .jump { animation: jumpShot 2.1s cubic-bezier(.18,.8,.22,1) 4.55s both; }
+.active .final { animation: finalShot 3s cubic-bezier(.2,.7,.25,1) 6.05s both; }
+
+.cinemaGrade {
+  z-index: 7;
+  background:
+    radial-gradient(circle at 75% 34%, rgba(255,194,81,.18), transparent 28%),
+    linear-gradient(100deg, rgba(0,0,0,.34), transparent 42%, rgba(144,78,10,.1));
+  mix-blend-mode: screen;
+}
+
+.grain {
+  z-index: 8;
+  opacity: .055;
+  background: repeating-radial-gradient(circle at 23% 37%, rgba(255,255,255,.18) 0 1px, transparent 1px 4px);
+  mix-blend-mode: soft-light;
+  animation: grainShift .22s steps(2) infinite;
+}
+
+.lensFlare {
+  z-index: 6;
+  opacity: 0;
+  background: radial-gradient(circle at 75% 42%, rgba(255,226,158,.76), rgba(255,168,45,.12) 12%, transparent 31%);
+}
+
+.active .lensFlare { animation: flareSweep 8.8s ease-in-out both; }
+
+.cinemaBars {
+  z-index: 9;
+  border-top: clamp(0px, 2.2vh, 20px) solid rgba(0,0,0,.88);
+  border-bottom: clamp(0px, 2.2vh, 20px) solid rgba(0,0,0,.88);
+}
+
+.phaseLabel {
+  position: absolute;
+  z-index: 10;
+  left: 50%;
+  bottom: max(19vh, 148px);
+  padding: 7px 13px;
+  border: 1px solid rgba(228,184,91,.26);
+  border-radius: 999px;
+  background: rgba(0,0,0,.5);
+  color: rgba(255,229,164,.86);
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: .04em;
+  backdrop-filter: blur(10px);
+  opacity: 0;
+  transform: translateX(-50%);
+}
+
+.active .phaseLabel { animation: phaseLabel 6.4s ease .55s both; }
+
+@keyframes openingShot {
+  0% { opacity: 0; transform: scale(1.18) translate3d(4%,2%,0); filter: brightness(.04) contrast(1.34) saturate(.42); }
+  18% { opacity: .4; }
+  48% { opacity: 1; filter: brightness(.42) contrast(1.27) saturate(.72); }
+  82% { opacity: 1; transform: scale(1.06) translate3d(0,0,0); filter: brightness(.66) contrast(1.2) saturate(.86); }
+  100% { opacity: 0; transform: scale(1.02); }
+}
+
+@keyframes runningShot {
+  0% { opacity: 0; transform: scale(1.22) translate3d(8%,1%,0); filter: brightness(.5) contrast(1.25) saturate(.82); }
+  12% { opacity: 1; }
+  45% { opacity: 1; transform: scale(1.1) translate3d(-2%,0,0); }
+  78% { opacity: 1; transform: scale(1.04) translate3d(-6%,-1%,0); filter: brightness(.72) contrast(1.18) saturate(.93); }
+  100% { opacity: 0; transform: scale(1.08) translate3d(-9%,-2%,0); }
+}
+
+@keyframes jumpShot {
+  0% { opacity: 0; transform: scale(1.28) translate3d(0,7%,0); filter: brightness(.58) contrast(1.28) saturate(.88); }
+  15% { opacity: 1; }
+  48% { opacity: 1; transform: scale(1.04) translate3d(0,-2%,0); filter: brightness(.9) contrast(1.2) saturate(1); }
+  72% { opacity: 1; transform: scale(1.09) translate3d(0,-5%,0); }
+  100% { opacity: 0; transform: scale(1.14) translate3d(0,1%,0); }
+}
+
+@keyframes finalShot {
+  0% { opacity: 0; transform: scale(1.17) translate3d(0,3%,0); filter: brightness(.48) contrast(1.26) saturate(.82); }
+  18% { opacity: 1; }
+  60% { opacity: 1; transform: scale(1.04) translate3d(0,0,0); filter: brightness(.69) contrast(1.2) saturate(.9); }
+  100% { opacity: 1; transform: scale(1.01); filter: brightness(.62) contrast(1.2) saturate(.86); }
+}
+
+@keyframes flareSweep {
+  0%,17% { opacity: 0; transform: translateX(12%) scale(.8); }
+  28% { opacity: .3; }
+  52% { opacity: .16; transform: translateX(-4%) scale(1); }
+  58% { opacity: .72; transform: translateX(0) scale(1.12); }
+  67% { opacity: .08; }
+  100% { opacity: .18; transform: translateX(-3%) scale(1); }
+}
+
+@keyframes grainShift {
+  0% { transform: translate(0,0); }
+  50% { transform: translate(-1.5%,1%); }
+  100% { transform: translate(1%,-1.5%); }
+}
+
+@keyframes phaseLabel {
+  0%,8% { opacity: 0; }
+  15%,34% { opacity: 1; }
+  40%,58% { opacity: 0; }
+  65%,79% { opacity: 1; }
+  88%,100% { opacity: 0; }
+}
+
+@media (max-width: 700px) {
+  .frame { background-position: 52% 50%; }
+  .opening { background-position: 65% 48%; }
+  .running { background-position: 48% 50%; }
+  .jump { background-position: 51% 45%; }
+  .final { background-position: 56% 48%; }
+  .phaseLabel { bottom: 118px; }
+  .cinemaBars { border-top-width: 10px; border-bottom-width: 10px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .opening,
+  .running,
+  .jump,
+  .lensFlare,
+  .grain,
+  .phaseLabel { display: none; animation: none !important; }
+  .active .final { opacity: 1; transform: none; filter: brightness(.64) contrast(1.18) saturate(.86); animation: none !important; }
+}

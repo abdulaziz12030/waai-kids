@@ -1,0 +1,9 @@
+.active .finalCopyTiming {
+  animation-delay: 6.3s !important;
+}
+
+@media (max-width: 700px) {
+  .active .finalCopyTiming {
+    animation-delay: 6.15s !important;
+  }
+}
