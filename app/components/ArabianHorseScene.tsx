@@ -3,6 +3,7 @@ import type { PreviewGiftLike } from "./giftPreviewConfig";
 import styles from "./ArabianHorseScene.module.css";
 import startStyles from "./ArabianHorseStart.module.css";
 import filmStyles from "./ArabianHorseExclusiveFilm.module.css";
+import timingStyles from "./ArabianHorseExclusiveTiming.module.css";
 
 type ArabianHorseSceneProps = {
   gift: PreviewGiftLike;
@@ -32,7 +33,7 @@ export default function ArabianHorseScene({
   const active = status !== "idle";
 
   return (
-    <div className={`${styles.scene} ${active ? `${styles.active} ${filmStyles.active}` : ""} ${status === "finished" ? styles.finished : ""}`}>
+    <div className={`${styles.scene} ${active ? `${styles.active} ${filmStyles.active} ${timingStyles.active}` : ""} ${status === "finished" ? styles.finished : ""}`}>
       <div className={styles.blackBase} />
       <div className={styles.revealGlow} />
 
@@ -66,7 +67,7 @@ export default function ArabianHorseScene({
         <strong>{childName}</strong>
       </div>
 
-      <div className={styles.finalCopy}>
+      <div className={`${styles.finalCopy} ${timingStyles.finalCopyTiming}`}>
         <span className={styles.giftMark}>{gift.icon}</span>
         <p>أُهديت لك</p>
         <h2>هدية الخيل العربي</h2>
