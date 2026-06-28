@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { supabase } from "../../../lib/supabase";
+import GiftCelebrationModal from "../../components/GiftCelebrationModal";
 import ChildCertificate from "./ChildCertificate";
 import GiftCard from "./GiftCard";
 import { ChildGift, GiftData } from "./types";
@@ -16,7 +17,6 @@ export default function ChildGiftsPage() {
   const [selected, setSelected] = useState<ChildGift | null>(null);
   const [printing, setPrinting] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
 
   useEffect(() => {
     async function load() {
@@ -52,15 +52,6 @@ export default function ChildGiftsPage() {
     }
   }
 
-  function playSound() {
-    if (!("speechSynthesis" in window)) { setError("الصوت غير مدعوم على هذا الجهاز."); return; }
-    window.speechSynthesis.cancel();
-    const message = new SpeechSynthesisUtterance(`أحسنت يا ${data?.student.full_name || "بطل"}`);
-    message.lang = "ar-SA";
-    message.rate = .85;
-    window.speechSynthesis.speak(message);
-  }
-
   function printGift(gift: ChildGift) {
     setSelected(gift);
     setPrinting(true);
@@ -88,7 +79,6 @@ export default function ChildGiftsPage() {
           </section>
         )}
         <p className={styles.info}>هذه الهدايا ذكرى رقمية لإنجازاتك، ويمكنك مشاهدتها وطباعتها، لكنها لا تُباع ولا تُحوّل إلى أموال.</p>
-        {error && <p className={styles.message}>{error}</p>}
 
         <section className={styles.cabinet}>
           <div className={styles.cabinetHead}><div><h2>خزانة إنجازاتي</h2><p>كل هدية تحكي قصة هدف أو مهمة أنجزتها.</p></div><strong>{data.gifts.length} هدية</strong></div>
@@ -103,22 +93,19 @@ export default function ChildGiftsPage() {
       </div>
 
       {selected && !printing && (
-        <div className={styles.overlay} role="dialog" aria-modal="true">
-          <section className={styles.celebration}>
-            <div className={styles.sparkles}>✦ ★ ✧ ✦ ★ ✧ ✦ ★ ✧ ✦ ★ ✧</div>
-            <span className={`${styles.celebrationIcon} ${styles[selected.gift.animation_key] || ""}`}>{selected.gift.icon}</span>
-            <h2>مبارك يا {data.student.full_name}! 🎉</h2>
-            <h3>{selected.gift.name}</h3>
-            <p>لإنجازك: <strong>{selected.achievement_title}</strong></p>
-            {selected.reason && <p>{selected.reason}</p>}
-            <p>بكل فخر ومحبة من {selected.sender_name}</p>
-            <div className={styles.celebrationActions}>
-              <button type="button" onClick={playSound}>🔊 تشغيل الصوت</button>
-              <button type="button" onClick={() => printGift(selected)}>طباعة الشهادة</button>
-              <button type="button" onClick={() => setSelected(null)}>إغلاق</button>
-            </div>
-          </section>
-        </div>
+        <GiftCelebrationModal
+          gift={selected.gift}
+          childName={data.student.full_name}
+          achievement={selected.achievement_title}
+          reason={selected.reason}
+          mode="delivery"
+          senderName={selected.sender_name}
+          certificateNumber={selected.certificate_number}
+          giftedAt={selected.gifted_at}
+          priceLabel="هدية إنجاز"
+          onPrintCertificate={() => printGift(selected)}
+          onClose={() => setSelected(null)}
+        />
       )}
     </main>
   );
