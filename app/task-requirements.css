@@ -1,0 +1,34 @@
+.parent-task-card .task-description,
+.child-task-card .task-description {
+  margin-top: 14px;
+  padding: 15px 16px;
+  border: 1px solid #dce7df;
+  border-inline-start: 4px solid var(--primary);
+  border-radius: 14px;
+  background: linear-gradient(145deg, #f3f8f4, #ffffff);
+  color: var(--text);
+  font-weight: 700;
+  line-height: 1.9;
+}
+
+.parent-task-card .task-description::before,
+.child-task-card .task-description::before {
+  content: "📌 تفاصيل المهمة المطلوبة";
+  display: block;
+  margin-bottom: 6px;
+  color: var(--primary-dark);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.child-task-card .task-description {
+  box-shadow: 0 8px 20px rgba(61, 82, 70, 0.05);
+}
+
+@media (max-width: 620px) {
+  .parent-task-card .task-description,
+  .child-task-card .task-description {
+    padding: 13px 14px;
+    font-size: 14px;
+  }
+}
