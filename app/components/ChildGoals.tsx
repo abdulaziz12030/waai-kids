@@ -51,6 +51,13 @@ type PlanDraft = {
   achievementPoints: string;
   rewardPoints: string;
   note: string;
+  partDescriptions: string[];
+};
+
+type PlanPeriod = {
+  label: string;
+  startDate: string;
+  dueDate: string;
 };
 
 const typeLabels: Record<string, string> = {
@@ -113,6 +120,50 @@ function estimateTaskCount(draft: PlanDraft | null) {
   if (draft.splitMode === "daily") return days;
   if (draft.splitMode === "weekly") return Math.ceil(days / 7);
   return Math.max(0, Number(draft.installments || 0));
+}
+
+function buildPlanPeriods(draft: PlanDraft | null): PlanPeriod[] {
+  const count = estimateTaskCount(draft);
+  if (!draft || count < 1) return [];
+
+  const start = new Date(`${draft.startDate}T12:00:00`);
+  const due = new Date(`${draft.dueDate}T12:00:00`);
+  const totalDays = Math.floor((due.getTime() - start.getTime()) / 86_400_000) + 1;
+
+  return Array.from({ length: count }, (_, index) => {
+    let periodStart = new Date(start);
+    let periodDue = new Date(due);
+
+    if (draft.splitMode === "daily") {
+      periodStart.setDate(start.getDate() + index);
+      periodDue = new Date(periodStart);
+    } else if (draft.splitMode === "weekly") {
+      periodStart.setDate(start.getDate() + index * 7);
+      periodDue = new Date(periodStart);
+      periodDue.setDate(periodDue.getDate() + 6);
+      if (periodDue > due) periodDue = new Date(due);
+    } else if (draft.splitMode === "milestones") {
+      const startOffset = Math.floor((index * totalDays) / count);
+      const nextOffset = Math.floor(((index + 1) * totalDays) / count);
+      periodStart.setDate(start.getDate() + startOffset);
+      periodDue = index === count - 1 ? new Date(due) : new Date(start);
+      if (index !== count - 1) periodDue.setDate(start.getDate() + Math.max(startOffset, nextOffset - 1));
+    }
+
+    const label = draft.splitMode === "weekly"
+      ? `الأسبوع ${index + 1} من ${count}`
+      : draft.splitMode === "daily"
+        ? `اليوم ${index + 1} من ${count}`
+        : draft.splitMode === "milestones"
+          ? `المرحلة ${index + 1} من ${count}`
+          : "المهمة المطلوبة";
+
+    return {
+      label,
+      startDate: toIsoDate(periodStart),
+      dueDate: toIsoDate(periodDue)
+    };
+  });
 }
 
 function friendlyError(message?: string) {
@@ -209,6 +260,27 @@ export default function ChildGoals({ studentId }: { studentId: string }) {
     [goals]
   );
 
+  function updatePlanDraft(patch: Partial<PlanDraft>) {
+    setPlanDraft((current) => {
+      if (!current) return current;
+      const next = { ...current, ...patch };
+      const count = estimateTaskCount(next);
+      return {
+        ...next,
+        partDescriptions: Array.from({ length: count }, (_, index) => next.partDescriptions[index] || "")
+      };
+    });
+  }
+
+  function updatePartDescription(index: number, value: string) {
+    setPlanDraft((current) => {
+      if (!current) return current;
+      const nextDescriptions = [...current.partDescriptions];
+      nextDescriptions[index] = value;
+      return { ...current, partDescriptions: nextDescriptions };
+    });
+  }
+
   function openReview(goal: Goal, decision: "approved" | "rejected") {
     setPlanDraft(null);
     setError("");
@@ -228,7 +300,7 @@ export default function ChildGoals({ studentId }: { studentId: string }) {
     setError("");
     setSuccess("");
     const startDate = goal.start_date || todayIso();
-    setPlanDraft({
+    const draft: PlanDraft = {
       goalId: goal.id,
       startDate,
       dueDate: goal.due_date || addDays(startDate, 30),
@@ -240,8 +312,11 @@ export default function ChildGoals({ studentId }: { studentId: string }) {
       pointsMode: "automatic",
       achievementPoints: "10",
       rewardPoints: "1",
-      note: goal.decision_note || ""
-    });
+      note: goal.decision_note || "",
+      partDescriptions: []
+    };
+    draft.partDescriptions = Array.from({ length: estimateTaskCount(draft) }, () => "");
+    setPlanDraft(draft);
   }
 
   async function submitReview(event: FormEvent<HTMLFormElement>) {
@@ -290,7 +365,7 @@ export default function ChildGoals({ studentId }: { studentId: string }) {
     setBusyId(planDraft.goalId);
     setError("");
     setSuccess("");
-    const result = await client.rpc("convert_goal_to_task_plan", {
+    const result = await client.rpc("convert_goal_to_task_plan_v2", {
       p_goal_id: planDraft.goalId,
       p_start_date: planDraft.startDate,
       p_due_date: planDraft.dueDate,
@@ -302,7 +377,8 @@ export default function ChildGoals({ studentId }: { studentId: string }) {
       p_points_mode: planDraft.pointsMode,
       p_achievement_points: Number(planDraft.achievementPoints || 0),
       p_reward_points: Number(planDraft.rewardPoints || 0),
-      p_review_note: planDraft.note.trim() || null
+      p_review_note: planDraft.note.trim() || null,
+      p_step_descriptions: planDraft.partDescriptions.map((description) => description.trim())
     });
     setBusyId("");
 
@@ -312,7 +388,8 @@ export default function ChildGoals({ studentId }: { studentId: string }) {
     }
 
     const createdCount = Number(result.data?.task_count || taskCount);
-    setSuccess(`تم اعتماد الهدف وإنشاء ${createdCount} ${createdCount === 1 ? "مهمة" : "مهام"} موزعة حسب المدة.`);
+    const describedCount = Number(result.data?.custom_descriptions_count || 0);
+    setSuccess(`تم اعتماد الهدف وإنشاء ${createdCount} ${createdCount === 1 ? "مهمة" : "مهام"}${describedCount ? ` مع ${describedCount} أوصاف مستقلة` : ""}.`);
     setPlanDraft(null);
     await loadGoals();
   }
@@ -389,6 +466,7 @@ export default function ChildGoals({ studentId }: { studentId: string }) {
             const canPlan = ["pending", "requested", "approved", "paused"].includes(goal.status) && !hasTasks;
             const planIsOpen = planDraft?.goalId === goal.id;
             const reviewIsOpen = reviewDraft?.goalId === goal.id;
+            const planPeriods = planIsOpen ? buildPlanPeriods(planDraft) : [];
 
             return (
               <article className={`goal-card goal-decision-card goal-card-${goal.status}`} key={goal.id}>
@@ -489,13 +567,13 @@ export default function ChildGoals({ studentId }: { studentId: string }) {
                 {planIsOpen && planDraft && (
                   <form className="goal-inline-panel goal-plan-panel" onSubmit={submitPlan}>
                     <div className="goal-inline-panel-head">
-                      <div><span>خطة التنفيذ</span><h4>قسّم الهدف إلى مهام بتاريخ استحقاق واضح</h4></div>
+                      <div><span>خطة التنفيذ</span><h4>قسّم الهدف واكتب المطلوب في كل جزء</h4></div>
                       <button type="button" onClick={() => setPlanDraft(null)}>×</button>
                     </div>
 
                     <div className="goal-plan-grid two-columns">
-                      <label>تاريخ البداية<input type="date" value={planDraft.startDate} onChange={(event) => setPlanDraft({ ...planDraft, startDate: event.target.value })} required /></label>
-                      <label>تاريخ الاستحقاق<input type="date" min={planDraft.startDate} value={planDraft.dueDate} onChange={(event) => setPlanDraft({ ...planDraft, dueDate: event.target.value })} required /></label>
+                      <label>تاريخ البداية<input type="date" value={planDraft.startDate} onChange={(event) => updatePlanDraft({ startDate: event.target.value })} required /></label>
+                      <label>تاريخ الاستحقاق<input type="date" min={planDraft.startDate} value={planDraft.dueDate} onChange={(event) => updatePlanDraft({ dueDate: event.target.value })} required /></label>
                     </div>
 
                     <fieldset className="goal-split-options">
@@ -507,14 +585,14 @@ export default function ChildGoals({ studentId }: { studentId: string }) {
                         ["milestones", "مراحل", "عدد تحدده أنت"]
                       ] as const).map(([value, title, description]) => (
                         <label className={planDraft.splitMode === value ? "active" : ""} key={value}>
-                          <input type="radio" name={`split-${goal.id}`} value={value} checked={planDraft.splitMode === value} onChange={() => setPlanDraft({ ...planDraft, splitMode: value })} />
+                          <input type="radio" name={`split-${goal.id}`} value={value} checked={planDraft.splitMode === value} onChange={() => updatePlanDraft({ splitMode: value })} />
                           <strong>{title}</strong><small>{description}</small>
                         </label>
                       ))}
                     </fieldset>
 
                     {planDraft.splitMode === "milestones" && (
-                      <label className="goal-installments-field">عدد المراحل<input type="number" min="2" max="30" step="1" value={planDraft.installments} onChange={(event) => setPlanDraft({ ...planDraft, installments: event.target.value })} required /></label>
+                      <label className="goal-installments-field">عدد المراحل<input type="number" min="2" max="30" step="1" value={planDraft.installments} onChange={(event) => updatePlanDraft({ installments: event.target.value })} required /></label>
                     )}
 
                     <div className="goal-plan-estimate">
@@ -523,27 +601,51 @@ export default function ChildGoals({ studentId }: { studentId: string }) {
                       <small>توزع تلقائيًا بين {formatDate(planDraft.startDate)} و{formatDate(planDraft.dueDate)}</small>
                     </div>
 
-                    <label>عنوان المهام<input value={planDraft.titlePrefix} onChange={(event) => setPlanDraft({ ...planDraft, titlePrefix: event.target.value })} placeholder="يُستخدم عنوان الهدف تلقائيًا" /></label>
+                    <section className="goal-part-descriptions">
+                      <div className="goal-part-descriptions-head">
+                        <div><span>وصف كل جزء</span><strong>حدد المطلوب من الطفل في كل فترة</strong></div>
+                        <small>يمكن ترك أي جزء فارغًا ليستخدم الوصف العام تلقائيًا.</small>
+                      </div>
+                      <div className="goal-part-description-list">
+                        {planPeriods.map((period, index) => (
+                          <label className="goal-part-description-card" key={`${period.label}-${index}`}>
+                            <span className="goal-part-description-number">{index + 1}</span>
+                            <div className="goal-part-description-title">
+                              <strong>{period.label}</strong>
+                              <small>{period.startDate === period.dueDate ? formatDate(period.startDate) : `${formatDate(period.startDate)} — ${formatDate(period.dueDate)}`}</small>
+                            </div>
+                            <textarea
+                              rows={2}
+                              value={planDraft.partDescriptions[index] || ""}
+                              onChange={(event) => updatePartDescription(index, event.target.value)}
+                              placeholder={planDraft.splitMode === "weekly" ? "مثال: حفظ الآيات 1–6 مع مراجعتها" : "اكتب المهمة المطلوبة في هذا الجزء"}
+                            />
+                          </label>
+                        ))}
+                      </div>
+                    </section>
+
+                    <label>عنوان المهام<input value={planDraft.titlePrefix} onChange={(event) => updatePlanDraft({ titlePrefix: event.target.value })} placeholder="يُستخدم عنوان الهدف تلقائيًا" /></label>
 
                     <div className="goal-plan-grid two-columns">
-                      <label>نوع المهمة<select value={planDraft.category} onChange={(event) => setPlanDraft({ ...planDraft, category: event.target.value })}><option value="behavior">سلوكية</option><option value="educational">تعليمية</option><option value="quran">قرآن</option><option value="home">منزلية</option><option value="other">أخرى</option></select></label>
-                      <label>درجة الصعوبة<select value={planDraft.difficulty} onChange={(event) => setPlanDraft({ ...planDraft, difficulty: event.target.value })}><option value="easy">سهل</option><option value="medium">متوسط</option><option value="hard">صعب</option><option value="major">إنجاز كبير</option></select></label>
+                      <label>نوع المهمة<select value={planDraft.category} onChange={(event) => updatePlanDraft({ category: event.target.value })}><option value="behavior">سلوكية</option><option value="educational">تعليمية</option><option value="quran">قرآن</option><option value="home">منزلية</option><option value="other">أخرى</option></select></label>
+                      <label>درجة الصعوبة<select value={planDraft.difficulty} onChange={(event) => updatePlanDraft({ difficulty: event.target.value })}><option value="easy">سهل</option><option value="medium">متوسط</option><option value="hard">صعب</option><option value="major">إنجاز كبير</option></select></label>
                     </div>
 
                     <div className="goal-plan-points-head">
                       <div><strong>نقاط كل مهمة</strong><small>تضاف بعد اعتماد إنجاز الطفل</small></div>
                       <div className="points-mode-switch compact-switch">
-                        <button className={planDraft.pointsMode === "automatic" ? "active" : ""} type="button" onClick={() => setPlanDraft({ ...planDraft, pointsMode: "automatic" })}>تلقائي</button>
-                        <button className={planDraft.pointsMode === "manual" ? "active" : ""} type="button" onClick={() => setPlanDraft({ ...planDraft, pointsMode: "manual" })}>يدوي</button>
+                        <button className={planDraft.pointsMode === "automatic" ? "active" : ""} type="button" onClick={() => updatePlanDraft({ pointsMode: "automatic" })}>تلقائي</button>
+                        <button className={planDraft.pointsMode === "manual" ? "active" : ""} type="button" onClick={() => updatePlanDraft({ pointsMode: "manual" })}>يدوي</button>
                       </div>
                     </div>
 
                     <div className="goal-plan-grid two-columns">
-                      <label>⭐ نقاط الإنجاز<input type="number" min="0" step="1" value={planDraft.achievementPoints} onChange={(event) => setPlanDraft({ ...planDraft, achievementPoints: event.target.value })} disabled={planDraft.pointsMode === "automatic"} /></label>
-                      <label>💎 نقاط المكافآت<input type="number" min="0" step="1" value={planDraft.rewardPoints} onChange={(event) => setPlanDraft({ ...planDraft, rewardPoints: event.target.value })} disabled={planDraft.pointsMode === "automatic"} /></label>
+                      <label>⭐ نقاط الإنجاز<input type="number" min="0" step="1" value={planDraft.achievementPoints} onChange={(event) => updatePlanDraft({ achievementPoints: event.target.value })} disabled={planDraft.pointsMode === "automatic"} /></label>
+                      <label>💎 نقاط المكافآت<input type="number" min="0" step="1" value={planDraft.rewardPoints} onChange={(event) => updatePlanDraft({ rewardPoints: event.target.value })} disabled={planDraft.pointsMode === "automatic"} /></label>
                     </div>
 
-                    <label>ملاحظة للطفل<textarea rows={3} value={planDraft.note} onChange={(event) => setPlanDraft({ ...planDraft, note: event.target.value })} placeholder="اشرح له طريقة التنفيذ أو سبب اختيار هذه الخطة" /></label>
+                    <label>وصف عام احتياطي<textarea rows={3} value={planDraft.note} onChange={(event) => updatePlanDraft({ note: event.target.value })} placeholder="يظهر للأجزاء التي لم تكتب لها وصفًا مستقلًا" /></label>
 
                     <div className="goal-inline-submit-row">
                       <button type="submit" disabled={busyId === goal.id}>{busyId === goal.id ? "جارٍ إنشاء الخطة..." : `اعتماد وإنشاء ${estimateTaskCount(planDraft)} مهام`}</button>
