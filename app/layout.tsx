@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
 import HomeStatsAnimator from './components/HomeStatsAnimator';
+import BrandIdentity from './components/BrandIdentity';
+import { BRAND } from './brand';
 import './globals.css';
 import './phase3.css';
 import './children.css';
@@ -33,16 +35,33 @@ import './login-roles.css';
 import './teacher-workspace.css';
 import './teacher-review-polish.css';
 import './teacher-recovery.css';
+import './waai-brand.css';
 
 export const metadata: Metadata = {
-  title: 'نماء',
-  description: 'منصة تربوية تعليمية للأطفال والطلاب'
+  metadataBase: new URL(BRAND.url),
+  title: {
+    default: `${BRAND.arabicName} | ${BRAND.englishName}`,
+    template: `%s | ${BRAND.arabicName}`
+  },
+  description: BRAND.description,
+  applicationName: BRAND.arabicName,
+  keywords: ['واعي', 'WAAI', 'منصة أطفال', 'تربية الأطفال', 'الأهداف والمهام', 'حفظ القرآن', 'تحفيز الأطفال'],
+  alternates: { canonical: '/' },
+  openGraph: {
+    type: 'website',
+    locale: 'ar_SA',
+    url: BRAND.url,
+    siteName: `${BRAND.arabicName} | ${BRAND.englishName}`,
+    title: `${BRAND.arabicName} — ${BRAND.tagline}`,
+    description: BRAND.description
+  }
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="ar" dir="rtl">
       <body>
+        <BrandIdentity />
         {children}
         <HomeStatsAnimator />
       </body>
