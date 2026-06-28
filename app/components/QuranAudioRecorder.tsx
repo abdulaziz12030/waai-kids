@@ -8,6 +8,7 @@ type Props = {
   hasAudio: boolean;
   audioDurationSeconds?: number | null;
   onUploaded: () => Promise<void> | void;
+  onRecordingChange?: (recording: boolean) => void;
 };
 
 function formatSeconds(value: number) {
@@ -36,7 +37,7 @@ function fileExtension(mimeType: string) {
   return "webm";
 }
 
-export default function QuranAudioRecorder({ segmentId, hasAudio, audioDurationSeconds, onUploaded }: Props) {
+export default function QuranAudioRecorder({ segmentId, hasAudio, audioDurationSeconds, onUploaded, onRecordingChange }: Props) {
   const recorderRef = useRef<MediaRecorder | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const chunksRef = useRef<Blob[]>([]);
@@ -77,6 +78,7 @@ export default function QuranAudioRecorder({ segmentId, hasAudio, audioDurationS
     clearTimer();
     stopStream();
     setRecording(false);
+    onRecordingChange?.(false);
   }
 
   function clearLocalRecording(clearMessages = true) {
@@ -94,9 +96,10 @@ export default function QuranAudioRecorder({ segmentId, hasAudio, audioDurationS
       clearTimer();
       if (recorderRef.current?.state !== "inactive") recorderRef.current?.stop();
       stopStream();
+      onRecordingChange?.(false);
       if (previewUrlRef.current) URL.revokeObjectURL(previewUrlRef.current);
     };
-  }, []);
+  }, [onRecordingChange]);
 
   async function startRecording() {
     setError("");
@@ -104,6 +107,7 @@ export default function QuranAudioRecorder({ segmentId, hasAudio, audioDurationS
     setSavedUrl("");
 
     if (!navigator.mediaDevices?.getUserMedia || typeof MediaRecorder === "undefined") {
+      onRecordingChange?.(false);
       setError("هذا المتصفح لا يدعم التسجيل الصوتي. جرّب متصفح Chrome أو Safari المحدث.");
       return;
     }
@@ -137,6 +141,7 @@ export default function QuranAudioRecorder({ segmentId, hasAudio, audioDurationS
       recorder.start(1000);
       startedAtRef.current = Date.now();
       setRecording(true);
+      onRecordingChange?.(true);
       timerRef.current = window.setInterval(() => {
         const seconds = Math.min(300, Math.max(0, Math.floor((Date.now() - startedAtRef.current) / 1000)));
         setElapsed(seconds);
@@ -145,6 +150,7 @@ export default function QuranAudioRecorder({ segmentId, hasAudio, audioDurationS
     } catch {
       stopStream();
       setRecording(false);
+      onRecordingChange?.(false);
       setError("تعذر تشغيل الميكروفون. اسمح للمنصة باستخدامه ثم أعد المحاولة.");
     }
   }
