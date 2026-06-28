@@ -44,6 +44,7 @@ export default function QuranAudioRecorder({ segmentId, hasAudio, audioDurationS
   const timerRef = useRef<number | null>(null);
   const startedAtRef = useRef(0);
   const previewUrlRef = useRef("");
+  const onRecordingChangeRef = useRef(onRecordingChange);
   const [recording, setRecording] = useState(false);
   const [elapsed, setElapsed] = useState(0);
   const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
@@ -53,6 +54,10 @@ export default function QuranAudioRecorder({ segmentId, hasAudio, audioDurationS
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+
+  useEffect(() => {
+    onRecordingChangeRef.current = onRecordingChange;
+  }, [onRecordingChange]);
 
   function setLocalPreview(url: string) {
     if (previewUrlRef.current) URL.revokeObjectURL(previewUrlRef.current);
@@ -78,7 +83,7 @@ export default function QuranAudioRecorder({ segmentId, hasAudio, audioDurationS
     clearTimer();
     stopStream();
     setRecording(false);
-    onRecordingChange?.(false);
+    onRecordingChangeRef.current?.(false);
   }
 
   function clearLocalRecording(clearMessages = true) {
@@ -96,10 +101,10 @@ export default function QuranAudioRecorder({ segmentId, hasAudio, audioDurationS
       clearTimer();
       if (recorderRef.current?.state !== "inactive") recorderRef.current?.stop();
       stopStream();
-      onRecordingChange?.(false);
+      onRecordingChangeRef.current?.(false);
       if (previewUrlRef.current) URL.revokeObjectURL(previewUrlRef.current);
     };
-  }, [onRecordingChange]);
+  }, []);
 
   async function startRecording() {
     setError("");
@@ -107,7 +112,7 @@ export default function QuranAudioRecorder({ segmentId, hasAudio, audioDurationS
     setSavedUrl("");
 
     if (!navigator.mediaDevices?.getUserMedia || typeof MediaRecorder === "undefined") {
-      onRecordingChange?.(false);
+      onRecordingChangeRef.current?.(false);
       setError("هذا المتصفح لا يدعم التسجيل الصوتي. جرّب متصفح Chrome أو Safari المحدث.");
       return;
     }
@@ -141,7 +146,7 @@ export default function QuranAudioRecorder({ segmentId, hasAudio, audioDurationS
       recorder.start(1000);
       startedAtRef.current = Date.now();
       setRecording(true);
-      onRecordingChange?.(true);
+      onRecordingChangeRef.current?.(true);
       timerRef.current = window.setInterval(() => {
         const seconds = Math.min(300, Math.max(0, Math.floor((Date.now() - startedAtRef.current) / 1000)));
         setElapsed(seconds);
@@ -150,7 +155,7 @@ export default function QuranAudioRecorder({ segmentId, hasAudio, audioDurationS
     } catch {
       stopStream();
       setRecording(false);
-      onRecordingChange?.(false);
+      onRecordingChangeRef.current?.(false);
       setError("تعذر تشغيل الميكروفون. اسمح للمنصة باستخدامه ثم أعد المحاولة.");
     }
   }
