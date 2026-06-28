@@ -37,11 +37,18 @@ import './teacher-review-polish.css';
 import './teacher-recovery.css';
 import './waai-brand.css';
 
-const waaiBrandRuntime = `
+const waaiKidsBrandRuntime = `
 (() => {
-  const replacements = [['نماء', 'واعي'], ['NAMAA', 'WAAI'], ['Namaa', 'Waai']];
   const skipped = new Set(['SCRIPT', 'STYLE', 'NOSCRIPT', 'CODE', 'PRE', 'TEXTAREA']);
-  const replaceValue = (value) => replacements.reduce((result, pair) => result.split(pair[0]).join(pair[1]), value);
+  const replaceValue = (value) => value
+    .replace(/نماء/g, 'واعي كيدز')
+    .replace(/واعي(?! كيدز)/g, 'واعي كيدز')
+    .replace(/NAMAA/g, 'WAAI KIDS')
+    .replace(/WAAI(?! KIDS)/g, 'WAAI KIDS')
+    .replace(/Namaa/g, 'Waai Kids')
+    .replace(/Waai(?! Kids)/g, 'Waai Kids')
+    .replace(/https:\/\/waai\.sa/g, 'https://kids.waai.sa')
+    .replace(/(^|[^.])waai\.sa/g, '$1kids.waai.sa');
 
   const updateBrand = () => {
     if (!document.body) return;
@@ -87,8 +94,30 @@ const waaiBrandRuntime = `
 `;
 
 export const metadata: Metadata = {
-  title: 'واعي | WAAI',
-  description: BRAND.description
+  metadataBase: new URL(BRAND.url),
+  title: {
+    default: `${BRAND.arabicName} | ${BRAND.englishName}`,
+    template: `%s | ${BRAND.arabicName}`
+  },
+  description: BRAND.description,
+  applicationName: BRAND.arabicName,
+  keywords: ['واعي كيدز', 'WAAI KIDS', 'تنمية الطفل', 'تربية الأطفال', 'أهداف الأطفال', 'مهام الأطفال', 'تحفيز الأطفال', 'حفظ القرآن للأطفال'],
+  alternates: { canonical: '/' },
+  openGraph: {
+    type: 'website',
+    locale: 'ar_SA',
+    url: BRAND.url,
+    siteName: `${BRAND.arabicName} | ${BRAND.englishName}`,
+    title: `${BRAND.arabicName} — ${BRAND.tagline}`,
+    description: BRAND.description
+  },
+  twitter: {
+    card: 'summary',
+    title: `${BRAND.arabicName} — ${BRAND.tagline}`,
+    description: BRAND.description
+  },
+  icons: { icon: '/icon.svg' },
+  robots: { index: true, follow: true }
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -97,7 +126,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         {children}
         <HomeStatsAnimator />
-        <Script id="waai-brand-runtime" strategy="afterInteractive">{waaiBrandRuntime}</Script>
+        <Script id="waai-kids-brand-runtime" strategy="afterInteractive">{waaiKidsBrandRuntime}</Script>
       </body>
     </html>
   );
