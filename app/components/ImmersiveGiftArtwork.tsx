@@ -1,5 +1,5 @@
 import { PreviewGiftLike, GiftMotionType } from "./giftPreviewConfig";
-import styles from "./GiftCelebrationModal.module.css";
+import styles from "./ImmersiveGiftExperience.module.css";
 
 function ArabianHorseArtwork() {
   return (
