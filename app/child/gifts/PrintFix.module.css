@@ -1,0 +1,5 @@
+@media print {
+  :global([role="dialog"]) {
+    display: none !important;
+  }
+}
