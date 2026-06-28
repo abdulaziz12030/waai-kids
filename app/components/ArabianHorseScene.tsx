@@ -1,5 +1,6 @@
 import type { RefObject } from "react";
 import type { PreviewGiftLike } from "./giftPreviewConfig";
+import { ARABIAN_HORSE_IMAGE } from "./arabianHorseAssets";
 import styles from "./ArabianHorseScene.module.css";
 import startStyles from "./ArabianHorseStart.module.css";
 
@@ -15,8 +16,6 @@ type ArabianHorseSceneProps = {
   startButtonRef?: RefObject<HTMLButtonElement | null>;
   onStart: () => void;
 };
-
-const HORSE_SCENE_IMAGE = "https://images.unsplash.com/photo-1757496798794-4b19ef24951c?auto=format&fit=crop&fm=jpg&q=88&w=1800";
 
 export default function ArabianHorseScene({
   gift,
@@ -38,9 +37,9 @@ export default function ArabianHorseScene({
       <div className={styles.revealGlow} />
 
       <div className={styles.photoStage} aria-hidden="true">
-        <div className={styles.photoBlur} style={{ backgroundImage: `url(${HORSE_SCENE_IMAGE})` }} />
-        <div className={styles.photo} style={{ backgroundImage: `url(${HORSE_SCENE_IMAGE})` }} />
-        <div className={styles.photoHighlight} style={{ backgroundImage: `url(${HORSE_SCENE_IMAGE})` }} />
+        <div className={styles.photoBlur} style={{ backgroundImage: `url(${ARABIAN_HORSE_IMAGE})` }} />
+        <div className={styles.photo} style={{ backgroundImage: `url(${ARABIAN_HORSE_IMAGE})` }} />
+        <div className={styles.photoHighlight} style={{ backgroundImage: `url(${ARABIAN_HORSE_IMAGE})` }} />
       </div>
 
       <div className={styles.shadowCurtain} aria-hidden="true"><span /><span /></div>
