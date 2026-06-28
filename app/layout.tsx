@@ -34,6 +34,7 @@ import './login-roles.css';
 import './teacher-workspace.css';
 import './teacher-review-polish.css';
 import './teacher-recovery.css';
+import './waai-brand.css';
 
 export const metadata: Metadata = {
   title: 'واعي | WAAI',
