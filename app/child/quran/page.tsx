@@ -70,6 +70,7 @@ export default function ChildQuranPage() {
   const [data, setData] = useState<QuranData>({ plans: [], segments: [] });
   const [loading, setLoading] = useState(true);
   const [busyId, setBusyId] = useState("");
+  const [recordingSegmentId, setRecordingSegmentId] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
@@ -134,6 +135,13 @@ export default function ChildQuranPage() {
     await loadData();
   }
 
+  function handleRecordingChange(segmentId: string, isRecording: boolean) {
+    setRecordingSegmentId((current) => {
+      if (isRecording) return segmentId;
+      return current === segmentId ? "" : current;
+    });
+  }
+
   if (loading) return <main className="dashboard-loading">جارٍ تجهيز برنامج الحفظ...</main>;
 
   return (
@@ -172,31 +180,45 @@ export default function ChildQuranPage() {
               <div className="child-friendly-empty"><span>🌤️</span><strong>لا توجد مقاطع بعد</strong><p>سيضيف ولي الأمر أول مقطع قريبًا.</p></div>
             ) : (
               <div className="child-quran-segments">
-                {data.segments.map((segment) => (
-                  <article className={`child-quran-segment status-${segment.status}`} key={segment.id}>
-                    <div className="child-task-head">
-                      <span className="task-round-icon category-quran">📖</span>
-                      <div><span className={`task-status task-status-${segment.status}`}>{statusLabels[segment.status] || segment.status}</span><h3>{segment.portion_label || "مقطع قرآن"}</h3><p>{segment.scheduled_date ? `📅 ${formatDate(segment.scheduled_date)} · ` : ""}{segment.achievement_points} ⭐ {segment.reward_points > 0 ? `· ${segment.reward_points} 💎` : ""}</p></div>
-                    </div>
-                    <QuranTextDisplay uthmaniText={segment.uthmani_text} readableText={segment.readable_text} />
-                    {segment.notes && <div className="task-note review"><strong>تعليمات الحفظ</strong><p>{segment.notes}</p></div>}
+                {data.segments.map((segment) => {
+                  const isRecordingThisSegment = recordingSegmentId === segment.id;
+                  return (
+                    <article className={`child-quran-segment status-${segment.status} ${isRecordingThisSegment ? "is-reciting" : ""}`} key={segment.id}>
+                      <div className="child-task-head">
+                        <span className="task-round-icon category-quran">📖</span>
+                        <div><span className={`task-status task-status-${segment.status}`}>{statusLabels[segment.status] || segment.status}</span><h3>{segment.portion_label || "مقطع قرآن"}</h3><p>{segment.scheduled_date ? `📅 ${formatDate(segment.scheduled_date)} · ` : ""}{segment.achievement_points} ⭐ {segment.reward_points > 0 ? `· ${segment.reward_points} 💎` : ""}</p></div>
+                      </div>
 
-                    {["assigned", "needs_revision", "memorized"].includes(segment.status) && (
-                      <QuranAudioRecorder
-                        segmentId={segment.id}
-                        hasAudio={Boolean(segment.has_audio)}
-                        audioDurationSeconds={segment.audio_duration_seconds}
-                        onUploaded={loadData}
-                      />
-                    )}
+                      {isRecordingThisSegment ? (
+                        <div className="child-quran-recitation-cover" role="status" aria-live="polite">
+                          <span>🙈</span>
+                          <strong>تم إخفاء الآيات أثناء التسميع</strong>
+                          <p>سمّع المقطع عن ظهر قلب، وسيعود النص فور إيقاف التسجيل.</p>
+                        </div>
+                      ) : (
+                        <QuranTextDisplay uthmaniText={segment.uthmani_text} readableText={segment.readable_text} />
+                      )}
 
-                    {["assigned", "needs_revision"].includes(segment.status) && !(segment.status === "needs_revision" && segment.has_audio) && (
-                      <button className="child-quran-submit secondary-submit" type="button" disabled={busyId === segment.id} onClick={() => markMemorized(segment.id)}>{busyId === segment.id ? "جارٍ الإرسال..." : "تم الحفظ — إرسال بدون تسجيل"}</button>
-                    )}
-                    {segment.status === "memorized" && <div className="child-goal-note">⏳ ينتظر التسميع واعتماد ولي الأمر أو المعلم{segment.has_audio ? "، والتسجيل الصوتي مرفق." : "."}</div>}
-                    {segment.status === "mastered" && <div className="child-goal-note success">🎉 مقطع متقن وتمت إضافة نقاطه.</div>}
-                  </article>
-                ))}
+                      {segment.notes && <div className="task-note review"><strong>تعليمات الحفظ</strong><p>{segment.notes}</p></div>}
+
+                      {["assigned", "needs_revision", "memorized"].includes(segment.status) && (
+                        <QuranAudioRecorder
+                          segmentId={segment.id}
+                          hasAudio={Boolean(segment.has_audio)}
+                          audioDurationSeconds={segment.audio_duration_seconds}
+                          onUploaded={loadData}
+                          onRecordingChange={(isRecording) => handleRecordingChange(segment.id, isRecording)}
+                        />
+                      )}
+
+                      {["assigned", "needs_revision"].includes(segment.status) && !(segment.status === "needs_revision" && segment.has_audio) && (
+                        <button className="child-quran-submit secondary-submit" type="button" disabled={busyId === segment.id || isRecordingThisSegment} onClick={() => markMemorized(segment.id)}>{busyId === segment.id ? "جارٍ الإرسال..." : "تم الحفظ — إرسال بدون تسجيل"}</button>
+                      )}
+                      {segment.status === "memorized" && <div className="child-goal-note">⏳ ينتظر التسميع واعتماد ولي الأمر أو المعلم{segment.has_audio ? "، والتسجيل الصوتي مرفق." : "."}</div>}
+                      {segment.status === "mastered" && <div className="child-goal-note success">🎉 مقطع متقن وتمت إضافة نقاطه.</div>}
+                    </article>
+                  );
+                })}
               </div>
             )}
           </section>
