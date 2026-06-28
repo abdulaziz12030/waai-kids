@@ -110,6 +110,97 @@
 .previewButton span { display: inline-grid; width: 22px; height: 22px; place-items: center; margin-left: 4px; border-radius: 50%; background: #176e43; color: #fff; font-size: 9px; }
 .previewButton:focus-visible, .giftSelect:focus-visible { outline: 3px solid rgba(43,155,96,.28); outline-offset: -3px; }
 
+.horseGift {
+  min-height: 420px;
+  border-color: #c59a49;
+  background: linear-gradient(180deg, #100b04, #211407 72%, #fff);
+  box-shadow: 0 20px 46px rgba(65,39,7,.18);
+}
+.horseGift:hover {
+  transform: translateY(-4px);
+  border-color: #e0b75c;
+  box-shadow: 0 26px 62px rgba(65,39,7,.28);
+}
+.horseGift .giftSelect {
+  padding: 0 0 16px;
+  color: #fff;
+}
+.horseGift .giftSelect > p {
+  padding: 13px 17px 0;
+  color: #d9c394;
+  font-size: 13px;
+}
+.horseGift .price {
+  margin-right: 17px;
+  background: linear-gradient(145deg, #f8dfa1, #bc8730);
+  color: #241603;
+}
+.horseCardVisual {
+  position: relative;
+  isolation: isolate;
+  width: 100%;
+  min-height: 300px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  overflow: hidden;
+  border-radius: 20px 20px 0 0;
+  background-size: cover;
+  background-position: 50% 35%;
+  box-shadow: inset 0 -90px 80px rgba(0,0,0,.72);
+}
+.horseCardVisual::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(circle at 74% 24%, rgba(255,214,124,.26), transparent 32%),
+    linear-gradient(180deg, rgba(0,0,0,.02), rgba(0,0,0,.12) 48%, rgba(0,0,0,.88));
+}
+.horseCardShade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(0,0,0,.36), transparent 55%);
+}
+.horseLuxuryBadge {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  padding: 7px 11px;
+  border: 1px solid rgba(255,228,161,.52);
+  border-radius: 999px;
+  background: rgba(20,12,3,.68);
+  color: #f3d38a;
+  font-size: 11px;
+  font-weight: 900;
+  backdrop-filter: blur(9px);
+}
+.horseCardTitle {
+  position: relative;
+  z-index: 2;
+  padding: 0 17px;
+  color: #fff0bf;
+  font-size: clamp(27px, 3vw, 38px);
+  font-weight: 950;
+  text-shadow: 0 3px 18px rgba(0,0,0,.8);
+}
+.horseCardHint {
+  position: relative;
+  z-index: 2;
+  margin: 7px 17px 15px;
+  color: #d7b76c;
+  font-size: 11px;
+  font-weight: 800;
+}
+.horsePreviewButton {
+  border-color: #c99a45;
+  background: linear-gradient(145deg, #d4a443, #7a4c12);
+  color: #130d04;
+  box-shadow: 0 10px 26px rgba(74,43,7,.24);
+}
+.horsePreviewButton span { background: #160e03; color: #f8dda1; }
+
 .formGrid { display: grid; grid-template-columns: .9fr 1.1fr; gap: 17px; }
 .form { padding: 20px; border: 1px solid #e1ebe5; border-radius: 21px; background: #f8fbf8; }
 .form label { display: grid; gap: 7px; margin-bottom: 13px; font-size: 14px; font-weight: 800; }
@@ -161,6 +252,6 @@
 
 @keyframes float { 50% { transform: translateY(-11px) rotate(2deg); } }
 @media (max-width: 900px) { .hero { grid-template-columns: 1fr; } .catalog, .recent { grid-template-columns: repeat(2,1fr); } .packages { grid-template-columns: repeat(2,1fr); } .formGrid { grid-template-columns: 1fr; } }
-@media (max-width: 580px) { .page { width: calc(100% - 16px); } .hero, .section { padding: 16px; } .catalog, .recent, .packages { grid-template-columns: 1fr; } .head { align-items: flex-start; flex-direction: column; } .gift { min-height: 0; } .certificate { padding: 32px 17px; } .meta { flex-direction: column; } }
+@media (max-width: 580px) { .page { width: calc(100% - 16px); } .hero, .section { padding: 16px; } .catalog, .recent, .packages { grid-template-columns: 1fr; } .head { align-items: flex-start; flex-direction: column; } .gift { min-height: 0; } .horseGift { min-height: 410px; } .horseCardVisual { min-height: 315px; } .certificate { padding: 32px 17px; } .meta { flex-direction: column; } }
 @media print { .certificate { position: fixed; inset: 0; width: 100%; height: 100%; min-height: 100vh; margin: 0; } }
 @media (prefers-reduced-motion: reduce) { .previewIcon, .gift { animation: none; transition: none; } }
