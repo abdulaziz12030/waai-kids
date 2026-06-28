@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { type MouseEvent, useEffect, useMemo, useRef, useState } from "react";
 import {
   PreviewGiftLike,
   getGiftPreviewConfig,
@@ -161,14 +161,24 @@ export default function GiftCelebrationModal({
 
   useEffect(() => {
     let active = true;
+    let generatedUrl: string | null = null;
     if (config.audioKey === "arabian-horse") {
       void import("./giftAudio/arabianHorse").then((module) => {
-        if (active) setAudioSource(module.default);
+        const url = module.default();
+        if (active) {
+          generatedUrl = url;
+          setAudioSource(url);
+        } else {
+          URL.revokeObjectURL(url);
+        }
       });
     } else {
       setAudioSource(null);
     }
-    return () => { active = false; };
+    return () => {
+      active = false;
+      if (generatedUrl) URL.revokeObjectURL(generatedUrl);
+    };
   }, [config.audioKey]);
 
   useEffect(() => {
@@ -237,7 +247,7 @@ export default function GiftCelebrationModal({
     });
   }
 
-  function closeFromBackdrop(event: React.MouseEvent<HTMLDivElement>) {
+  function closeFromBackdrop(event: MouseEvent<HTMLDivElement>) {
     if (event.target === event.currentTarget) onClose();
   }
 
@@ -288,7 +298,7 @@ export default function GiftCelebrationModal({
 
           {status === "idle" && (
             <button ref={startButtonRef} className={styles.startButton} type="button" onClick={runCelebration} disabled={soundLoading}>
-              <span>▶</span> {soundLoading ? "جارٍ تجهيز الصوت..." : "تشغيل المعاينة"}
+              <span>▶</span> {soundLoading ? "جارٍ تجهيز الصوت..." : mode === "preview" ? "تشغيل المعاينة" : "فتح الهدية"}
             </button>
           )}
         </div>
