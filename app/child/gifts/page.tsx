@@ -15,6 +15,7 @@ export default function ChildGiftsPage() {
   const autoOpened = useRef(false);
   const [data, setData] = useState<GiftData | null>(null);
   const [selected, setSelected] = useState<ChildGift | null>(null);
+  const [giftQueue, setGiftQueue] = useState<ChildGift[]>([]);
   const [printing, setPrinting] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -32,13 +33,17 @@ export default function ChildGiftsPage() {
       const next = result.data as GiftData;
       setData(next);
       setLoading(false);
-      const fresh = next.gifts.find((gift) => gift.status === "delivered");
-      if (fresh && !autoOpened.current) { autoOpened.current = true; void openGift(fresh); }
+      const fresh = next.gifts.filter((gift) => gift.status === "delivered");
+      if (fresh.length > 0 && !autoOpened.current) {
+        autoOpened.current = true;
+        void openGift(fresh[0], fresh);
+      }
     }
     void load();
   }, [router]);
 
-  async function openGift(gift: ChildGift) {
+  async function openGift(gift: ChildGift, queue: ChildGift[] = [gift]) {
+    setGiftQueue(queue);
     setSelected(gift);
     if (!supabase || gift.status === "opened") return;
     const token = localStorage.getItem("namaa_child_token");
@@ -50,6 +55,15 @@ export default function ChildGiftsPage() {
         gifts: current.gifts.map((item) => item.id === gift.id ? { ...item, status: "opened", opened_at: result.data?.opened_at || new Date().toISOString() } : item)
       } : current);
     }
+  }
+
+  function closeGift() {
+    if (!selected) return;
+    const currentIndex = giftQueue.findIndex((gift) => gift.id === selected.id);
+    const nextGift = currentIndex >= 0 ? giftQueue[currentIndex + 1] : null;
+    setSelected(null);
+    if (nextGift) window.setTimeout(() => void openGift(nextGift, giftQueue), 260);
+    else setGiftQueue([]);
   }
 
   function printGift(gift: ChildGift) {
@@ -74,8 +88,8 @@ export default function ChildGiftsPage() {
       <div className={styles.content}>
         {unopened.length > 0 && (
           <section className={styles.banner}>
-            <div><h2>لديك {unopened.length} {unopened.length === 1 ? "هدية جديدة" : "هدايا جديدة"}!</h2><p>افتحها وشاهد الاحتفال الذي أعده لك ولي أمرك.</p></div>
-            <button type="button" onClick={() => void openGift(unopened[0])}>فتح الهدية 🎉</button>
+            <div><h2>لديك {unopened.length} {unopened.length === 1 ? "هدية جديدة" : "هدايا جديدة"}!</h2><p>افتحها وشاهد الاحتفال الذي أعده لك ولي أمرك. ستظهر الهدايا واحدة بعد الأخرى.</p></div>
+            <button type="button" onClick={() => void openGift(unopened[0], unopened)}>فتح الهدايا 🎉</button>
           </section>
         )}
         <p className={styles.info}>هذه الهدايا ذكرى رقمية لإنجازاتك، ويمكنك مشاهدتها وطباعتها، لكنها لا تُباع ولا تُحوّل إلى أموال.</p>
@@ -104,7 +118,7 @@ export default function ChildGiftsPage() {
           giftedAt={selected.gifted_at}
           priceLabel="هدية إنجاز"
           onPrintCertificate={() => printGift(selected)}
-          onClose={() => setSelected(null)}
+          onClose={closeGift}
         />
       )}
     </main>
