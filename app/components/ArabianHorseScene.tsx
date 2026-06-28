@@ -1,6 +1,7 @@
 import type { RefObject } from "react";
 import type { PreviewGiftLike } from "./giftPreviewConfig";
 import styles from "./ArabianHorseScene.module.css";
+import startStyles from "./ArabianHorseStart.module.css";
 
 type ArabianHorseSceneProps = {
   gift: PreviewGiftLike;
@@ -75,9 +76,9 @@ export default function ArabianHorseScene({
       </div>
 
       {status === "idle" && (
-        <div className={styles.startGate}>
-          <div className={styles.startEmblem} aria-hidden="true">♞</div>
-          <span className={styles.startKicker}>{mode === "preview" ? "معاينة تفاعلية كاملة" : "هدية إنجاز جديدة"}</span>
+        <div className={startStyles.startGate}>
+          <div className={startStyles.startEmblem} aria-hidden="true">♞</div>
+          <span className={startStyles.startKicker}>{mode === "preview" ? "معاينة تفاعلية كاملة" : "هدية إنجاز جديدة"}</span>
           <h1>الخيل العربي</h1>
           <p>المس لبدء مشهد الخيل الأدهم بصوت الحوافر والصهيل والقفزة.</p>
           <button ref={startButtonRef} type="button" onClick={onStart} disabled={loading}>
