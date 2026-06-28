@@ -10,7 +10,7 @@ import {
   getGiftPreviewConfig,
   interpolateGiftText
 } from "./giftPreviewConfig";
-import styles from "./GiftCelebrationModal.module.css";
+import styles from "./ImmersiveGiftExperience.module.css";
 
 type GiftCelebrationModalProps = {
   gift: PreviewGiftLike;
