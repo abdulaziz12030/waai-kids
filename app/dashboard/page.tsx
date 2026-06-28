@@ -172,7 +172,7 @@ export default function DashboardPage() {
         </section>
       ) : (
         <section className="children-section children-section-v2">
-          <div className="children-section-head"><div><span className="section-label">الأبناء</span><h2>اختر الطفل الذي تريد متابعته</h2><p>الأهداف والمهام ومتابعة الحفظ ودخول الطفل في مكان واحد.</p></div></div>
+          <div className="children-section-head"><div><span className="section-label">الأبناء</span><h2>اختر الطفل الذي تريد متابعته</h2><p>الأهداف والمهام والهدايا ومتابعة الحفظ ودخول الطفل في مكان واحد.</p></div></div>
           <div className="children-grid children-grid-v2 refreshed-children-grid">
             {students.map((student, index) => {
               const profile = student.profile_data || {};
@@ -188,9 +188,10 @@ export default function DashboardPage() {
                     <div className="progress-row"><div className="progress-row-head"><span>اكتمال الملف</span><strong>{completion}%</strong></div><div className="progress-track"><div className="progress-fill" style={{ width: `${completion}%` }} /></div></div>
                     <div className="child-points-row"><div className="child-points-pill"><span>⭐</span><strong>{student.achievement_points || 0}</strong><small>إنجاز</small></div><div className="child-points-pill reward"><span>💎</span><strong>{student.reward_points || 0}</strong><small>مكافآت</small></div></div>
                   </Link>
-                  <div className="child-quick-actions child-quick-actions-four">
+                  <div className="child-quick-actions" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(88px, 1fr))" }}>
                     <Link href={`/children/${student.id}/goals`}><span>🎯</span>الأهداف</Link>
                     <Link href={`/children/${student.id}/tasks`}><span>✅</span>المهام</Link>
+                    <Link href={`/children/${student.id}/gifts`}><span>🎁</span>الهدايا</Link>
                     <Link href={`/children/${student.id}/quran`}><span>📖</span>متابعة الحفظ</Link>
                     <Link href={`/children/${student.id}/access`}><span>🔐</span>الدخول</Link>
                   </div>
