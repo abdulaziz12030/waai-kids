@@ -49,11 +49,11 @@ export default function ChildLoginPage() {
   return (
     <main className="auth-page compact-auth-page child-login-page">
       <section className="auth-panel child-login-panel simplified-child-login">
-        <Link className="auth-brand" href="/"><span className="brand-mark">ن</span><span>نماء</span></Link>
+        <Link className="auth-brand" href="/"><span className="brand-mark">و</span><span>واعي كيدز</span></Link>
 
         <div className="auth-heading">
           <span className="section-label">دخول الطفل</span>
-          <h1>مرحبًا بك في نماء</h1>
+          <h1>مرحبًا بك في واعي كيدز</h1>
           <p>اكتب رمز الأسرة الثابت، ثم رقمك السري الخاص.</p>
         </div>
 
