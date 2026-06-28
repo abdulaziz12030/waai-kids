@@ -1,7 +1,6 @@
 import { CatalogGift } from "./giftTypes";
+import { ARABIAN_HORSE_IMAGE } from "./arabianHorseAssets";
 import styles from "./GiftCenter.module.css";
-
-const ARABIAN_HORSE_CARD_IMAGE = "https://upload.wikimedia.org/wikipedia/commons/9/90/Black_arabian_horse_head.jpg";
 
 function isArabianHorse(gift: CatalogGift) {
   return gift.animation_key === "arabian_horse" || /خيل|حصان|horse/i.test(`${gift.code} ${gift.name}`);
@@ -43,7 +42,7 @@ export default function GiftCatalog({ gifts, selectedCode, balance, includedRema
                 aria-label={horseGift ? "اختيار ومعاينة هدية الخيل العربي" : `اختيار ${gift.name}`}
               >
                 {horseGift ? (
-                  <span className={styles.horseCardVisual} style={{ backgroundImage: `url(${ARABIAN_HORSE_CARD_IMAGE})` }}>
+                  <span className={styles.horseCardVisual} style={{ backgroundImage: `url(${ARABIAN_HORSE_IMAGE})` }}>
                     <span className={styles.horseCardShade} />
                     <span className={styles.horseLuxuryBadge}>هدية فاخرة</span>
                     <span className={styles.horseCardTitle}>الخيل العربي</span>
