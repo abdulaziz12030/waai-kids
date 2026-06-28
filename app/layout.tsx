@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import HomeStatsAnimator from './components/HomeStatsAnimator';
+import { BRAND } from './brand';
 import './globals.css';
 import './phase3.css';
 import './children.css';
@@ -35,8 +36,8 @@ import './teacher-review-polish.css';
 import './teacher-recovery.css';
 
 export const metadata: Metadata = {
-  title: 'نماء',
-  description: 'منصة تربوية تعليمية للأطفال والطلاب'
+  title: 'واعي | WAAI',
+  description: BRAND.description
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
