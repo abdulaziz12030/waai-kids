@@ -41,7 +41,6 @@ export default function ArabianHorseScene({
 }: ArabianHorseSceneProps) {
   const active = status !== "idle";
   const videoRef = useRef<HTMLVideoElement | null>(null);
-  const [videoReady, setVideoReady] = useState(false);
   const [videoFailed, setVideoFailed] = useState(false);
   const [videoBuffering, setVideoBuffering] = useState(false);
 
@@ -50,7 +49,7 @@ export default function ArabianHorseScene({
     if (!video) return;
 
     if (status === "playing") {
-      setVideoBuffering(!videoReady);
+      setVideoBuffering(video.readyState < HTMLMediaElement.HAVE_FUTURE_DATA);
       video.currentTime = 0;
       video.playbackRate = 0.92;
       void video.play().then(() => {
@@ -67,7 +66,7 @@ export default function ArabianHorseScene({
       video.pause();
       video.currentTime = 0;
     }
-  }, [status, videoReady]);
+  }, [status]);
 
   return (
     <div className={`${styles.scene} ${active ? `${styles.active} ${videoStyles.active}` : ""} ${status === "finished" ? styles.finished : ""}`}>
@@ -91,12 +90,8 @@ export default function ArabianHorseScene({
             poster={ARABIAN_HORSE_IMAGE}
             disablePictureInPicture
             controls={false}
-            onCanPlay={() => {
-              setVideoReady(true);
-              setVideoBuffering(false);
-            }}
+            onCanPlay={() => setVideoBuffering(false)}
             onPlaying={() => {
-              setVideoReady(true);
               setVideoBuffering(false);
               setVideoFailed(false);
             }}
