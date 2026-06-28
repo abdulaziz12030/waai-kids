@@ -1,0 +1,122 @@
+.goal-part-descriptions {
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid #c8ddd0;
+  border-radius: 17px;
+  background: linear-gradient(145deg, #f3f9f5, #ffffff);
+}
+
+.goal-part-descriptions-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.goal-part-descriptions-head > div {
+  display: grid;
+  gap: 3px;
+}
+
+.goal-part-descriptions-head span {
+  color: var(--primary);
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.goal-part-descriptions-head strong {
+  color: var(--primary-dark);
+  font-size: 16px;
+}
+
+.goal-part-descriptions-head > small {
+  max-width: 360px;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.7;
+}
+
+.goal-part-description-list {
+  max-height: 480px;
+  padding-inline-end: 3px;
+  display: grid;
+  gap: 10px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+.goal-part-description-card {
+  padding: 13px;
+  display: grid;
+  grid-template-columns: 38px minmax(150px, .5fr) minmax(240px, 1fr);
+  align-items: center;
+  gap: 12px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: #fff;
+}
+
+.goal-part-description-number {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  background: var(--primary-soft);
+  color: var(--primary-dark);
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.goal-part-description-title {
+  display: grid;
+  gap: 4px;
+}
+
+.goal-part-description-title strong {
+  color: var(--text);
+  font-size: 13px;
+}
+
+.goal-part-description-title small {
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.6;
+}
+
+.goal-inline-panel .goal-part-description-card textarea {
+  min-height: 68px;
+  margin: 0;
+  background: #fbfcfa;
+}
+
+.goal-inline-panel .goal-part-description-card textarea:not(:placeholder-shown) {
+  border-color: #9ec4aa;
+  background: #f4faf6;
+}
+
+@media (max-width: 780px) {
+  .goal-part-descriptions-head {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .goal-part-description-card {
+    grid-template-columns: 38px 1fr;
+  }
+
+  .goal-part-description-card textarea {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 520px) {
+  .goal-part-descriptions {
+    padding: 13px 10px;
+  }
+
+  .goal-part-description-card {
+    padding: 11px;
+  }
+}
