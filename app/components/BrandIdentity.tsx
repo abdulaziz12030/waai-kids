@@ -16,7 +16,7 @@ const replaceBrandText = (value: string) =>
 const skippedTags = new Set(["SCRIPT", "STYLE", "NOSCRIPT", "CODE", "PRE", "TEXTAREA"]);
 const watchedAttributes = ["aria-label", "title", "alt", "placeholder"];
 
-function updateNode(root: ParentNode) {
+function updateNode(root: HTMLElement) {
   const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
   let current = walker.nextNode();
 
@@ -29,7 +29,7 @@ function updateNode(root: ParentNode) {
     current = walker.nextNode();
   }
 
-  const elements = root instanceof Element ? [root, ...Array.from(root.querySelectorAll("*"))] : Array.from(root.querySelectorAll("*"));
+  const elements = [root, ...Array.from(root.querySelectorAll("*"))];
   for (const element of elements) {
     for (const attribute of watchedAttributes) {
       const value = element.getAttribute(attribute);
