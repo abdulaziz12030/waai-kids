@@ -116,12 +116,12 @@ export default function HomePage() {
     <main className="namaa-home" id="top">
       <style>{landingOverrides}</style>
       <header className="namaa-header">
-        <a className="namaa-logo" href="#top" aria-label="واعي - الصفحة الرئيسية">
+        <a className="namaa-logo" href="#top" aria-label="واعي كيدز - الصفحة الرئيسية">
           <span className="namaa-logo-mark">و</span>
-          <span><strong>واعي</strong><small>ينمو بوعي</small></span>
+          <span><strong>واعي كيدز</strong><small>ينمو بوعي ويُنجز بثقة</small></span>
         </a>
         <nav className="namaa-nav" aria-label="التنقل الرئيسي">
-          <a href="#features">المزايا</a><a href="#how">كيف يعمل؟</a><a href="#about">عن واعي</a>
+          <a href="#features">المزايا</a><a href="#how">كيف يعمل؟</a><a href="#about">عن واعي كيدز</a>
         </nav>
         <div className="namaa-header-actions">
           <a className="namaa-login" href="/login"><span>👤</span> تسجيل الدخول</a>
@@ -131,9 +131,9 @@ export default function HomePage() {
 
       <section className="namaa-hero">
         <div className="namaa-hero-copy">
-          <span className="namaa-eyebrow">💚 منصة تربوية إسلامية للعائلة والمعلم</span>
-          <h1>نساعد أطفالك<br />على <span>النمو</span> و<strong>الإنجاز</strong></h1>
-          <p>واعي منصة تساعدك على بناء عادات إيجابية لدى أطفالك من خلال الأهداف والمهام والنقاط بطريقة ممتعة وهادفة، مع متابعة الأسرة والمعلم.</p>
+          <span className="namaa-eyebrow">💚 منصة تربوية ذكية للأسرة والطفل والمعلم</span>
+          <h1>نزرع الوعي<br />ونحوّل <span>الأهداف</span> إلى <strong>إنجاز</strong></h1>
+          <p>واعي كيدز منصة تربوية ذكية تساعد الأسرة والمعلم على تنمية وعي الطفل، وبناء عاداته الإيجابية، وتحقيق أهدافه، ومتابعة حفظه للقرآن، وتحفيزه بالمكافآت والهدايا الهادفة.</p>
           <div className="namaa-entry-grid">
             <a className="namaa-entry parent" href="/login?type=family"><span className="entry-icon">👤</span><span><strong>دخول ولي الأمر</strong><small>إدارة ومتابعة الأبناء</small></span></a>
             <a className="namaa-entry child" href="/child/login"><span className="entry-icon">🧒🏻</span><span><strong>دخول الطفل</strong><small>إنجاز المهام وكسب النقاط</small></span></a>
@@ -145,28 +145,16 @@ export default function HomePage() {
         <div className="namaa-hero-art">
           <div className="hero-orbit-stage">
             <div className="hero-core">
-              <img src="/assets/hero-child-namaa-bg.svg?v=20260627-3" alt="طفل سعيد يحمل كأس الإنجاز على خلفية متناسقة مع واعي" loading="eager" />
+              <img src="/assets/hero-child-namaa-bg.svg?v=20260627-3" alt="طفل سعيد يحمل كأس الإنجاز على خلفية متناسقة مع واعي كيدز" loading="eager" />
             </div>
 
             <div className="hero-orbit" aria-label="اختصارات تفاعلية">
-              <a className="hero-orbit-item orbit-a orbit-green" href="#features" aria-label="عرض المزايا" title="المزايا">
-                <span className="orbit-icon-inner"><span className="orbit-face"><ChartIcon /></span></span>
-              </a>
-              <a className="hero-orbit-item orbit-b orbit-purple" href="#how" aria-label="كيف يعمل واعي" title="كيف يعمل واعي">
-                <span className="orbit-icon-inner"><span className="orbit-face"><CheckIcon /></span></span>
-              </a>
-              <a className="hero-orbit-item orbit-c orbit-blue" href="#about" aria-label="الأهداف والمتابعة" title="الأهداف والمتابعة">
-                <span className="orbit-icon-inner"><span className="orbit-face"><TargetIcon /></span></span>
-              </a>
-              <a className="hero-orbit-item orbit-d orbit-gold" href="/register" aria-label="ابدأ رحلة الإنجاز" title="ابدأ الآن">
-                <span className="orbit-icon-inner"><span className="orbit-face"><MedalIcon /></span></span>
-              </a>
-              <a className="hero-orbit-item orbit-e orbit-sky" href="/child/login" aria-label="دخول الطفل" title="دخول الطفل">
-                <span className="orbit-icon-inner"><span className="orbit-face"><UserIcon /></span></span>
-              </a>
-              <a className="hero-orbit-item orbit-f orbit-points" href="#features" aria-label="نظام النقاط" title="نظام النقاط">
-                <span className="orbit-icon-inner"><span className="orbit-face"><strong>120</strong><span>⭐</span><small>نقاط اليوم</small></span></span>
-              </a>
+              <a className="hero-orbit-item orbit-a orbit-green" href="#features" aria-label="عرض المزايا" title="المزايا"><span className="orbit-icon-inner"><span className="orbit-face"><ChartIcon /></span></span></a>
+              <a className="hero-orbit-item orbit-b orbit-purple" href="#how" aria-label="كيف يعمل واعي كيدز" title="كيف يعمل واعي كيدز"><span className="orbit-icon-inner"><span className="orbit-face"><CheckIcon /></span></span></a>
+              <a className="hero-orbit-item orbit-c orbit-blue" href="#about" aria-label="الأهداف والمتابعة" title="الأهداف والمتابعة"><span className="orbit-icon-inner"><span className="orbit-face"><TargetIcon /></span></span></a>
+              <a className="hero-orbit-item orbit-d orbit-gold" href="/register" aria-label="ابدأ رحلة الإنجاز" title="ابدأ الآن"><span className="orbit-icon-inner"><span className="orbit-face"><MedalIcon /></span></span></a>
+              <a className="hero-orbit-item orbit-e orbit-sky" href="/child/login" aria-label="دخول الطفل" title="دخول الطفل"><span className="orbit-icon-inner"><span className="orbit-face"><UserIcon /></span></span></a>
+              <a className="hero-orbit-item orbit-f orbit-points" href="#features" aria-label="نظام النقاط" title="نظام النقاط"><span className="orbit-icon-inner"><span className="orbit-face"><strong>120</strong><span>⭐</span><small>نقاط اليوم</small></span></span></a>
             </div>
           </div>
         </div>
@@ -175,17 +163,17 @@ export default function HomePage() {
       <section className="namaa-features" id="features">{features.map((feature,index)=><article key={feature.title} style={{animationDelay:`${index*70}ms`}}><span>{feature.icon}</span><h3>{feature.title}</h3><p>{feature.description}</p></article>)}</section>
 
       <section className="namaa-how" id="how">
-        <div className="namaa-section-heading"><span>🌱 خطوات بسيطة لبناء جيل متميز</span><h2>كيف يعمل واعي؟</h2></div>
+        <div className="namaa-section-heading"><span>🌱 خطوات بسيطة لبناء طفل واعٍ وواثق</span><h2>كيف يعمل واعي كيدز؟</h2></div>
         <div className="namaa-steps">{steps.map((step,index)=><article className="namaa-step" key={step.number}><b>{step.number}</b><div className={`step-art step-art-${index+1}`}>{step.icon}</div><h3>{step.title}</h3><p>{step.description}</p>{index<steps.length-1&&<span className="namaa-step-arrow">←</span>}</article>)}</div>
-        <a className="namaa-journey" href="/register">🚀 ابدأ رحلتكم الآن</a>
+        <a className="namaa-journey" href="/register">🚀 ابدأ رحلة طفلك الآن</a>
       </section>
 
-      <section className="namaa-about" id="about"><div><span>عن واعي</span><h2>منصة واحدة تجمع الأسرة والطفل والمعلم</h2></div><p>تجمع واعي الأهداف والمهام والتحفيز وحفظ القرآن في تجربة بسيطة، مع فصل واضح بين دور ولي الأمر ودور المعلم، وتمكين الطفل من متابعة تقدمه بثقة ووضوح.</p></section>
+      <section className="namaa-about" id="about"><div><span>عن واعي كيدز</span><h2>رحلة تربوية تجمع الأسرة والطفل والمعلم</h2></div><p>يجمع واعي كيدز الأهداف والمهام والتحفيز وحفظ القرآن في تجربة واحدة ممتعة، مع أدوار واضحة للأسرة والمعلم، ومساحة آمنة تمكّن الطفل من رؤية تقدمه والاعتزاز بإنجازاته.</p></section>
 
-      <section className="namaa-stats" aria-label="إحصاءات واعي">{stats.map(stat=><article key={stat.label}><span>{stat.icon}</span><div><strong>{stat.value}</strong><small>{stat.label}</small></div></article>)}</section>
+      <section className="namaa-stats" aria-label="إحصاءات واعي كيدز">{stats.map(stat=><article key={stat.label}><span>{stat.icon}</span><div><strong>{stat.value}</strong><small>{stat.label}</small></div></article>)}</section>
 
-      <section className="namaa-final-call"><div><span>✨ ابدأ بخطوة صغيرة اليوم</span><h2>ساعد أبناءك وطلابك على بناء عادات تدوم</h2></div><a href="/register">إنشاء حساب جديد</a></section>
-      <footer className="namaa-footer"><div className="namaa-logo"><span className="namaa-logo-mark">و</span><span><strong>واعي</strong><small>منصة الأسرة لتنمية الطفل</small></span></div><p>waai.sa — الإصدار التجريبي للأسرة والطفل والمعلم</p></footer>
+      <section className="namaa-final-call"><div><span>✨ كل إنجاز صغير يصنع وعيًا كبيرًا</span><h2>ساعد طفلك على بناء عادات ومهارات تدوم</h2></div><a href="/register">إنشاء حساب جديد</a></section>
+      <footer className="namaa-footer"><div className="namaa-logo"><span className="namaa-logo-mark">و</span><span><strong>واعي كيدز</strong><small>منصة تربوية ذكية لتنمية الطفل</small></span></div><p>kids.waai.sa — ينمو بوعي ويُنجز بثقة</p></footer>
     </main>
   );
 }
