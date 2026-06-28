@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { GiftMotionType } from "./giftPreviewConfig";
+import type { GiftMotionType } from "./giftPreviewConfig";
 
 type Particle = {
   x: number;
@@ -64,20 +64,19 @@ export default function GiftParticleCanvas({ motion, active }: { motion: GiftMot
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas || !active) return;
+    const currentCanvas = canvasRef.current;
+    if (!currentCanvas || !active) return undefined;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return undefined;
 
-    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reducedMotion) return;
+    const currentContext = currentCanvas.getContext("2d");
+    if (!currentContext) return undefined;
 
-    const context = canvas.getContext("2d");
-    if (!context) return;
-
+    const canvas: HTMLCanvasElement = currentCanvas;
+    const context: CanvasRenderingContext2D = currentContext;
     let frame = 0;
     let animationFrame = 0;
     let width = 0;
     let height = 0;
-    let dpr = 1;
     let pointerX = 0;
     let pointerY = 0;
     const particles: Particle[] = [];
@@ -88,7 +87,7 @@ export default function GiftParticleCanvas({ motion, active }: { motion: GiftMot
       const rect = canvas.getBoundingClientRect();
       width = Math.max(1, rect.width);
       height = Math.max(1, rect.height);
-      dpr = Math.min(window.devicePixelRatio || 1, 1.75);
+      const dpr = Math.min(window.devicePixelRatio || 1, 1.75);
       canvas.width = Math.round(width * dpr);
       canvas.height = Math.round(height * dpr);
       context.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -96,25 +95,23 @@ export default function GiftParticleCanvas({ motion, active }: { motion: GiftMot
 
     function spawnParticle(burst = false) {
       const isHorse = motion === "arabian-horse";
-      const shape = burst && motion !== "arabian-horse" ? defaultShape : isHorse ? "circle" : defaultShape;
-      const x = burst ? width * (0.35 + Math.random() * 0.3) : Math.random() * width;
-      const y = burst ? height * (0.32 + Math.random() * 0.28) : Math.random() * height;
+      const shape: Particle["shape"] = burst && !isHorse ? defaultShape : isHorse ? "circle" : defaultShape;
       const speed = burst ? 2.8 + Math.random() * 4 : 0.25 + Math.random() * 0.9;
       const angle = burst ? Math.random() * Math.PI * 2 : -Math.PI / 2 + (Math.random() - 0.5) * 0.65;
-      const maxLife = burst ? 75 + Math.random() * 45 : 140 + Math.random() * 130;
+      const color = colors[Math.floor(Math.random() * colors.length)] || colors[0] || "#ffffff";
 
       particles.push({
-        x,
-        y,
+        x: burst ? width * (0.35 + Math.random() * 0.3) : Math.random() * width,
+        y: burst ? height * (0.32 + Math.random() * 0.28) : Math.random() * height,
         vx: Math.cos(angle) * speed,
         vy: Math.sin(angle) * speed,
         size: isHorse ? 2 + Math.random() * 5.5 : 2.5 + Math.random() * 7,
         alpha: 0,
         life: 0,
-        maxLife,
+        maxLife: burst ? 75 + Math.random() * 45 : 140 + Math.random() * 130,
         rotation: Math.random() * Math.PI * 2,
         spin: (Math.random() - 0.5) * 0.08,
-        color: colors[Math.floor(Math.random() * colors.length)],
+        color,
         shape
       });
     }
@@ -124,40 +121,30 @@ export default function GiftParticleCanvas({ motion, active }: { motion: GiftMot
       pointerY = (event.clientY / Math.max(window.innerHeight, 1) - 0.5) * 18;
     }
 
-    resize();
-    window.addEventListener("resize", resize);
-    window.addEventListener("pointermove", onPointerMove, { passive: true });
-
     function draw() {
       frame += 1;
       context.clearRect(0, 0, width, height);
-
       const targetCount = Math.min(150, Math.max(60, Math.floor(width / 8)));
       const spawnRate = motion === "star-burst" ? 3 : motion === "arabian-horse" ? 2 : 1;
+
       for (let index = 0; index < spawnRate; index += 1) {
         if (particles.length < targetCount) spawnParticle(frame > 120 && frame < 180 && index === 0);
       }
-
       if (frame === 125 || frame === 150 || frame === 175) {
         for (let burst = 0; burst < 24; burst += 1) spawnParticle(true);
       }
 
       for (let index = particles.length - 1; index >= 0; index -= 1) {
         const particle = particles[index];
+        if (!particle) continue;
         particle.life += 1;
         particle.x += particle.vx + pointerX * 0.003;
         particle.y += particle.vy + pointerY * 0.003;
         particle.rotation += particle.spin;
-
         const progress = particle.life / particle.maxLife;
         particle.alpha = progress < 0.14 ? progress / 0.14 : Math.max(0, 1 - (progress - 0.7) / 0.3);
-
-        if (motion === "arabian-horse") {
-          particle.vx -= 0.012;
-          particle.vy -= 0.006;
-        } else {
-          particle.vy -= 0.002;
-        }
+        particle.vy -= motion === "arabian-horse" ? 0.006 : 0.002;
+        if (motion === "arabian-horse") particle.vx -= 0.012;
 
         if (particle.life >= particle.maxLife || particle.x < -80 || particle.x > width + 80 || particle.y < -80 || particle.y > height + 80) {
           particles.splice(index, 1);
@@ -171,27 +158,27 @@ export default function GiftParticleCanvas({ motion, active }: { motion: GiftMot
         context.fillStyle = particle.color;
         context.shadowColor = particle.color;
         context.shadowBlur = particle.shape === "circle" ? 8 : 16;
-
         if (particle.shape === "circle") {
           context.beginPath();
           context.arc(0, 0, particle.size, 0, Math.PI * 2);
           context.fill();
-        } else if (particle.shape === "heart") {
-          drawHeart(context, particle.size);
-        } else if (particle.shape === "star") {
-          drawStar(context, particle.size);
-        } else {
+        } else if (particle.shape === "heart") drawHeart(context, particle.size);
+        else if (particle.shape === "star") drawStar(context, particle.size);
+        else {
           context.fillRect(-particle.size * 0.22, -particle.size, particle.size * 0.44, particle.size * 2);
           context.rotate(Math.PI / 2);
           context.fillRect(-particle.size * 0.22, -particle.size, particle.size * 0.44, particle.size * 2);
         }
         context.restore();
       }
-
       animationFrame = window.requestAnimationFrame(draw);
     }
 
+    resize();
+    window.addEventListener("resize", resize);
+    window.addEventListener("pointermove", onPointerMove, { passive: true });
     animationFrame = window.requestAnimationFrame(draw);
+
     return () => {
       window.cancelAnimationFrame(animationFrame);
       window.removeEventListener("resize", resize);
