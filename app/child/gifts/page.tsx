@@ -14,6 +14,7 @@ export default function ChildGiftsPage() {
   const autoOpened = useRef(false);
   const [data, setData] = useState<GiftData | null>(null);
   const [selected, setSelected] = useState<ChildGift | null>(null);
+  const [printing, setPrinting] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -62,7 +63,11 @@ export default function ChildGiftsPage() {
 
   function printGift(gift: ChildGift) {
     setSelected(gift);
-    window.setTimeout(() => window.print(), 150);
+    setPrinting(true);
+    window.setTimeout(() => {
+      window.print();
+      setPrinting(false);
+    }, 180);
   }
 
   if (loading || !data) return <main className={styles.page}><div className={styles.content}>جارٍ فتح خزانة الهدايا...</div></main>;
@@ -97,7 +102,7 @@ export default function ChildGiftsPage() {
         {selected && <ChildCertificate gift={selected} studentName={data.student.full_name} />}
       </div>
 
-      {selected && (
+      {selected && !printing && (
         <div className={styles.overlay} role="dialog" aria-modal="true">
           <section className={styles.celebration}>
             <div className={styles.sparkles}>✦ ★ ✧ ✦ ★ ✧ ✦ ★ ✧ ✦ ★ ✧</div>
