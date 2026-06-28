@@ -4,7 +4,10 @@ import styles from "./GiftCenter.module.css";
 export default function GiftCertificate({ gift, studentName }: { gift: RecentGift; studentName: string }) {
   return (
     <article className={styles.certificate}>
-      <strong className={styles.brand}>نـمـاء</strong>
+      <div className={styles.certificateBrand}>
+        <span>و</span>
+        <div><strong>واعي كيدز</strong><small>WAAI KIDS</small></div>
+      </div>
       <span className={styles.certIcon}>{gift.gift.icon}</span>
       <h2>{gift.gift.certificate_title || "شهادة شكر وتقدير"}</h2>
       <p>تُقدَّم بكل فخر وتقدير إلى</p>
@@ -16,6 +19,7 @@ export default function GiftCertificate({ gift, studentName }: { gift: RecentGif
         <span>رقم الشهادة: {gift.certificate_number}</span>
         <span>التاريخ: {formatGiftDate(gift.gifted_at)}</span>
       </div>
+      <strong className={styles.certificateTagline}>ينمو بوعي ويُنجز بثقة</strong>
     </article>
   );
 }
