@@ -9,6 +9,7 @@ import './dashboard-v2.css';
 import './motion.css';
 import './goals.css';
 import './goal-planner.css';
+import './goal-part-descriptions.css';
 import './child-app.css';
 import './home-child-entry.css';
 import './tasks.css';
