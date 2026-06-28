@@ -12,6 +12,7 @@ import './goal-planner.css';
 import './child-app.css';
 import './home-child-entry.css';
 import './tasks.css';
+import './task-requirements.css';
 import './ui-refresh.css';
 import './security-controls.css';
 import './points-v2.css';
