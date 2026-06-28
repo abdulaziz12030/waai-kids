@@ -1,5 +1,6 @@
 import { ChildGift, formatGiftDate } from "./types";
 import styles from "./ChildGifts.module.css";
+import "./PrintFix.module.css";
 
 export default function ChildCertificate({ gift, studentName }: { gift: ChildGift; studentName: string }) {
   return (
