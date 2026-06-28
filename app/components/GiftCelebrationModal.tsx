@@ -2,6 +2,7 @@
 
 import { createPortal } from "react-dom";
 import { useEffect, useMemo, useRef, useState } from "react";
+import ArabianHorseScene from "./ArabianHorseScene";
 import GiftParticleCanvas from "./GiftParticleCanvas";
 import ImmersiveGiftArtwork from "./ImmersiveGiftArtwork";
 import {
@@ -120,6 +121,7 @@ export default function GiftCelebrationModal({
   onClose
 }: GiftCelebrationModalProps) {
   const config = useMemo(() => getGiftPreviewConfig(gift), [gift]);
+  const isArabianHorse = config.motionType === "arabian-horse";
   const [mounted, setMounted] = useState(false);
   const [status, setStatus] = useState<SceneStatus>("idle");
   const [runId, setRunId] = useState(0);
@@ -238,6 +240,8 @@ export default function GiftCelebrationModal({
 
   if (!mounted) return null;
 
+  const soundLoading = Boolean(config.audioKey && !audioSource);
+
   const fullScreenExperience = (
     <div className={styles.overlay} role="dialog" aria-modal="true" aria-label={`${mode === "preview" ? "معاينة" : "عرض"} ${gift.name}`}>
       <section
@@ -247,18 +251,20 @@ export default function GiftCelebrationModal({
         data-motion={config.motionType}
         data-effects={config.effects}
       >
-        <div className={styles.cinematicBackdrop} aria-hidden="true">
-          <div className={styles.skyGradient} />
-          <div className={styles.ambientGlow} />
-          <div className={styles.lightBeams}>{Array.from({ length: 7 }, (_, index) => <span key={index} />)}</div>
-          <div className={styles.speedLines}>{Array.from({ length: 18 }, (_, index) => <span key={index} />)}</div>
-          <div className={styles.dunes}><span /><span /><span /></div>
-          <div className={styles.horizonGlow} />
-          <div className={styles.vignette} />
-          <div className={styles.filmGrain} />
-        </div>
+        {!isArabianHorse && (
+          <div className={styles.cinematicBackdrop} aria-hidden="true">
+            <div className={styles.skyGradient} />
+            <div className={styles.ambientGlow} />
+            <div className={styles.lightBeams}>{Array.from({ length: 7 }, (_, index) => <span key={index} />)}</div>
+            <div className={styles.speedLines}>{Array.from({ length: 18 }, (_, index) => <span key={index} />)}</div>
+            <div className={styles.dunes}><span /><span /><span /></div>
+            <div className={styles.horizonGlow} />
+            <div className={styles.vignette} />
+            <div className={styles.filmGrain} />
+          </div>
+        )}
 
-        <GiftParticleCanvas motion={config.motionType} active={status !== "idle"} />
+        {!isArabianHorse && <GiftParticleCanvas motion={config.motionType} active={status !== "idle"} />}
 
         <header className={styles.hud}>
           <div className={styles.brandLockup}>
@@ -278,38 +284,57 @@ export default function GiftCelebrationModal({
         {mode === "preview" && <div className={styles.previewRibbon}>معاينة فقط · لن يتم خصم كوينز أو إرسال هدية</div>}
 
         <main className={styles.scene}>
-          <p className={styles.greeting}>{greeting}</p>
-          <ImmersiveGiftArtwork gift={gift} motion={config.motionType} />
-          <div className={styles.impactBurst} aria-hidden="true"><span /><span /><span /><span /></div>
-          <div className={styles.finalMessage}>
-            <span className={styles.giftBadge}>{gift.icon}</span>
-            <h2>{config.revealText}</h2>
-            <p>بمناسبة <strong>{achievement}</strong></p>
-            {reason && <small>{reason}</small>}
-            {mode === "delivery" && senderName && <em>بكل فخر ومحبة من {senderName}</em>}
-          </div>
+          {isArabianHorse ? (
+            <ArabianHorseScene
+              gift={gift}
+              childName={childName}
+              achievement={achievement}
+              reason={reason}
+              senderName={mode === "delivery" ? senderName : undefined}
+              status={status}
+              mode={mode}
+              loading={soundLoading}
+              startButtonRef={launchButtonRef}
+              onStart={runCelebration}
+            />
+          ) : (
+            <>
+              <p className={styles.greeting}>{greeting}</p>
+              <ImmersiveGiftArtwork gift={gift} motion={config.motionType} />
+              <div className={styles.impactBurst} aria-hidden="true"><span /><span /><span /><span /></div>
+              <div className={styles.finalMessage}>
+                <span className={styles.giftBadge}>{gift.icon}</span>
+                <h2>{config.revealText}</h2>
+                <p>بمناسبة <strong>{achievement}</strong></p>
+                {reason && <small>{reason}</small>}
+                {mode === "delivery" && senderName && <em>بكل فخر ومحبة من {senderName}</em>}
+              </div>
 
-          {status === "idle" && (
-            <div className={styles.launchGate}>
-              <div className={styles.launchHalo} />
-              <span className={styles.launchIcon}>{gift.icon}</span>
-              <p>{mode === "preview" ? "شاهد تجربة الهدية كما ستظهر للطفل" : "لديك هدية إنجاز جديدة"}</p>
-              <h1>{gift.name}</h1>
-              <small>{gift.description || "لحظة احتفالية تملأ الشاشة وتخلّد الإنجاز."}</small>
-              <button ref={launchButtonRef} type="button" onClick={runCelebration} disabled={Boolean(config.audioKey && !audioSource)}>
-                <span>▶</span>{config.audioKey && !audioSource ? "جارٍ تجهيز التجربة..." : mode === "preview" ? "تشغيل المعاينة" : "فتح الهدية"}
-              </button>
-            </div>
+              {status === "idle" && (
+                <div className={styles.launchGate}>
+                  <div className={styles.launchHalo} />
+                  <span className={styles.launchIcon}>{gift.icon}</span>
+                  <p>{mode === "preview" ? "شاهد تجربة الهدية كما ستظهر للطفل" : "لديك هدية إنجاز جديدة"}</p>
+                  <h1>{gift.name}</h1>
+                  <small>{gift.description || "لحظة احتفالية تملأ الشاشة وتخلّد الإنجاز."}</small>
+                  <button ref={launchButtonRef} type="button" onClick={runCelebration} disabled={soundLoading}>
+                    <span>▶</span>{soundLoading ? "جارٍ تجهيز التجربة..." : mode === "preview" ? "تشغيل المعاينة" : "فتح الهدية"}
+                  </button>
+                </div>
+              )}
+            </>
           )}
         </main>
 
-        <footer className={styles.controlDock}>
-          <button type="button" onClick={runCelebration} disabled={Boolean(config.audioKey && !audioSource)}>↻ <span>إعادة التشغيل</span></button>
-          <button type="button" onClick={() => setShowCertificate(true)}>📜 <span>معاينة الشهادة</span></button>
-          {onPrintCertificate && <button type="button" onClick={onPrintCertificate}>🖨️ <span>طباعة الشهادة</span></button>}
-          {primaryActionLabel && onPrimaryAction && <button className={styles.primaryAction} type="button" onClick={onPrimaryAction}>{primaryActionLabel}</button>}
-          <button className={styles.closeAction} type="button" onClick={onClose}>إغلاق</button>
-        </footer>
+        {(!isArabianHorse || status !== "idle") && (
+          <footer className={styles.controlDock}>
+            <button type="button" onClick={runCelebration} disabled={soundLoading}>↻ <span>إعادة التشغيل</span></button>
+            <button type="button" onClick={() => setShowCertificate(true)}>📜 <span>معاينة الشهادة</span></button>
+            {onPrintCertificate && <button type="button" onClick={onPrintCertificate}>🖨️ <span>طباعة الشهادة</span></button>}
+            {primaryActionLabel && onPrimaryAction && <button className={styles.primaryAction} type="button" onClick={onPrimaryAction}>{primaryActionLabel}</button>}
+            <button className={styles.closeAction} type="button" onClick={onClose}>إغلاق</button>
+          </footer>
+        )}
 
         {config.audioKey && <audio ref={audioRef} src={audioSource || undefined} preload="none" aria-hidden="true" />}
 

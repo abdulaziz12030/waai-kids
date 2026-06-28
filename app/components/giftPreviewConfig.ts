@@ -38,10 +38,10 @@ export type PreviewGiftLike = {
 const previewConfigs: Record<string, GiftPreviewConfig> = {
   arabian_horse: {
     motionType: "arabian-horse",
-    background: "desert-gold",
-    durationMs: 8000,
+    background: "midnight-black",
+    durationMs: 8800,
     audioKey: "arabian-horse",
-    volume: 0.34,
+    volume: 0.42,
     effects: "celebration",
     greeting: "أحسنت يا {child}",
     revealText: "أُهديت لك هدية الخيل العربي"
