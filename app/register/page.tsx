@@ -71,7 +71,7 @@ export default function RegisterPage() {
   return (
     <main className="auth-page">
       <section className="auth-panel teacher-register-panel">
-        <Link className="auth-brand" href="/"><span className="brand-mark">و</span><span>واعي</span></Link>
+        <Link className="auth-brand" href="/"><span className="brand-mark">و</span><span>واعي كيدز</span></Link>
 
         <div className="auth-heading">
           <span className="section-label">إنشاء حساب جديد</span>
