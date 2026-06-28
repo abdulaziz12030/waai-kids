@@ -151,6 +151,9 @@ export default function ChildTasks({ studentId }: { studentId: string }) {
   const [reviewNotes, setReviewNotes] = useState<Record<string, string>>({});
   const [rewardNotes, setRewardNotes] = useState<Record<string, string>>({});
   const [rewardAmounts, setRewardAmounts] = useState<Record<string, string>>({});
+  const [descriptionDrafts, setDescriptionDrafts] = useState<Record<string, string>>({});
+  const [editingDescriptionId, setEditingDescriptionId] = useState("");
+  const [savingDescriptionId, setSavingDescriptionId] = useState("");
   const [filter, setFilter] = useState<TaskFilter>("followup");
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -181,8 +184,19 @@ export default function ChildTasks({ studentId }: { studentId: string }) {
         .not("goal_id", "is", null)
     ]);
 
-    if (taskResult.error) setError("تعذر تحميل المهام الآن.");
-    else setTasks((taskResult.data || []) as Task[]);
+    if (taskResult.error) {
+      setError("تعذر تحميل المهام الآن.");
+    } else {
+      const nextTasks = (taskResult.data || []) as Task[];
+      setTasks(nextTasks);
+      setDescriptionDrafts((current) => {
+        const next = { ...current };
+        for (const task of nextTasks) {
+          if (next[task.id] === undefined || editingDescriptionId !== task.id) next[task.id] = task.description || "";
+        }
+        return next;
+      });
+    }
 
     if (!goalResult.error) {
       const nextGoals = (goalResult.data || []) as GoalOption[];
@@ -319,6 +333,40 @@ export default function ChildTasks({ studentId }: { studentId: string }) {
     setSuccess("تم إسناد المهمة وستظهر في حساب الطفل.");
     await loadSuggestedPoints("behavior", "medium");
     await loadData();
+  }
+
+  async function saveTaskDescription(task: Task) {
+    const client = supabase;
+    if (!client) return;
+
+    const nextDescription = (descriptionDrafts[task.id] || "").trim();
+    if (nextDescription.length < 3) {
+      setError("اكتب وصفًا واضحًا للمطلوب في هذا الجزء.");
+      return;
+    }
+
+    setSavingDescriptionId(task.id);
+    setError("");
+    setSuccess("");
+    const result = await client.rpc("parent_update_task_description", {
+      p_task_id: task.id,
+      p_description: nextDescription
+    });
+    setSavingDescriptionId("");
+
+    if (result.error) {
+      setError(result.error.message.includes("معتمدة") ? "لا يمكن تعديل وصف مهمة معتمدة." : "تعذر تحديث وصف المهمة الآن.");
+      return;
+    }
+
+    setEditingDescriptionId("");
+    setSuccess("تم تحديث وصف هذا الجزء وسيظهر للطفل مباشرة.");
+    await loadData();
+  }
+
+  function cancelDescriptionEdit(task: Task) {
+    setDescriptionDrafts((current) => ({ ...current, [task.id]: task.description || "" }));
+    setEditingDescriptionId("");
   }
 
   async function reviewTask(taskId: string, decision: "approved" | "rejected") {
@@ -478,6 +526,7 @@ export default function ChildTasks({ studentId }: { studentId: string }) {
                     <div className="parent-task-list">
                       {group.tasks.map((task) => {
                         const bucket = taskBucket(task, today);
+                        const editingDescription = editingDescriptionId === task.id;
                         return (
                           <article className={`parent-task-card task-${task.status} followup-card-${bucket}`} key={task.id}>
                             <div className="parent-task-head">
@@ -491,7 +540,19 @@ export default function ChildTasks({ studentId }: { studentId: string }) {
 
                             {bucket === "followup" && <div className="task-followup-reason"><span>🔔</span><strong>{followupReason(task, today)}</strong></div>}
                             {(task.starts_on || task.due_date) && <div className="parent-task-period"><span>📅</span><strong>{task.starts_on === task.due_date ? formatDate(task.due_date) : `${formatDate(task.starts_on)} — ${formatDate(task.due_date)}`}</strong></div>}
-                            {task.description && <p className="task-description">{task.description}</p>}
+
+                            {editingDescription ? (
+                              <div className="task-description-editor">
+                                <label>وصف المطلوب في هذا الجزء<textarea rows={3} value={descriptionDrafts[task.id] || ""} onChange={(event) => setDescriptionDrafts((current) => ({ ...current, [task.id]: event.target.value }))} placeholder="اكتب المطلوب من الطفل في هذه المرحلة" /></label>
+                                <div><button type="button" disabled={savingDescriptionId === task.id} onClick={() => saveTaskDescription(task)}>{savingDescriptionId === task.id ? "جارٍ الحفظ..." : "حفظ الوصف"}</button><button className="cancel-description-edit" type="button" disabled={savingDescriptionId === task.id} onClick={() => cancelDescriptionEdit(task)}>إلغاء</button></div>
+                              </div>
+                            ) : (
+                              <>
+                                {task.description && <p className="task-description">{task.description}</p>}
+                                {task.generated_from_goal && (task.status === "pending" || task.status === "rejected") && <button className="task-description-edit-button" type="button" onClick={() => setEditingDescriptionId(task.id)}>✏️ تعديل وصف هذا الجزء</button>}
+                              </>
+                            )}
+
                             {task.child_note && <div className="task-note"><strong>ملاحظة الطفل</strong><p>{task.child_note}</p></div>}
                             {task.review_note && <div className="task-note review"><strong>ملاحظتك السابقة</strong><p>{task.review_note}</p></div>}
 
