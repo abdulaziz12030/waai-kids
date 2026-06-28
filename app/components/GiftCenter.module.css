@@ -49,6 +49,7 @@
 .error { background: #fff0ef; color: #96372f; }
 
 .section {
+  scroll-margin-top: 18px;
   margin-top: 24px;
   padding: 23px;
   border: 1px solid #e0ebe4;
@@ -62,25 +63,52 @@
 
 .catalog, .recent { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 13px; }
 .gift {
-  min-height: 205px;
+  min-height: 245px;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  padding: 18px;
+  overflow: hidden;
   border: 1px solid #dce8e0;
   border-radius: 21px;
   background: #fff;
   color: inherit;
+  transition: border-color .2s ease, box-shadow .2s ease, transform .2s ease;
+}
+.gift:hover { transform: translateY(-2px); box-shadow: 0 15px 32px rgba(33,94,59,.1); }
+.selected { border-color: #2b9b60; box-shadow: 0 0 0 3px rgba(43,155,96,.11); }
+.locked .giftSelect { opacity: .68; }
+.giftSelect {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 18px;
+  border: 0;
+  background: transparent;
+  color: inherit;
   text-align: right;
+  font: inherit;
   cursor: pointer;
 }
-.selected { border-color: #2b9b60; box-shadow: 0 0 0 3px rgba(43,155,96,.11); }
-.locked { opacity: .68; }
 .icon { width: 64px; height: 64px; display: grid; place-items: center; margin-bottom: 12px; border-radius: 20px; background: linear-gradient(145deg,#eaf8e7,#fff4c4); font-size: 36px; }
 .gift h3 { margin: 0 0 6px; }
 .gift p { flex: 1; margin: 0; color: #687f74; font-size: 13px; line-height: 1.7; }
 .price { margin-top: 12px; padding: 7px 10px; border-radius: 999px; background: #eaf7ed; color: #176e43; font-size: 12px; font-weight: 900; }
 .premium { background: #fff1bd; color: #785a00; }
+.previewButton {
+  min-height: 44px;
+  margin: 0 12px 12px;
+  border: 1px solid #cbe4d3;
+  border-radius: 12px;
+  background: linear-gradient(145deg,#f3fbf5,#e7f6ec);
+  color: #176e43;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 900;
+  cursor: pointer;
+}
+.previewButton span { display: inline-grid; width: 22px; height: 22px; place-items: center; margin-left: 4px; border-radius: 50%; background: #176e43; color: #fff; font-size: 9px; }
+.previewButton:focus-visible, .giftSelect:focus-visible { outline: 3px solid rgba(43,155,96,.28); outline-offset: -3px; }
 
 .formGrid { display: grid; grid-template-columns: .9fr 1.1fr; gap: 17px; }
 .form { padding: 20px; border: 1px solid #e1ebe5; border-radius: 21px; background: #f8fbf8; }
@@ -119,14 +147,20 @@
   background: #fffef9;
   text-align: center;
 }
-.brand { color: #167246; font-weight: 900; letter-spacing: 3px; }
+.certificateBrand { display: flex; align-items: center; gap: 10px; }
+.certificateBrand > span { width: 46px; height: 46px; display: grid; place-items: center; border-radius: 14px; background: #167246; color: #fff; font-size: 25px; font-weight: 900; }
+.certificateBrand div { display: grid; text-align: right; }
+.certificateBrand strong { color: #167246; font-weight: 900; }
+.certificateBrand small { color: #77877e; letter-spacing: 1px; }
 .certIcon { font-size: 70px; }
 .certificate h2 { color: #896713; font-size: 33px; }
 .certificate h3 { font-size: 30px; }
 .certificate p { max-width: 620px; color: #4d695c; line-height: 1.9; }
 .meta { display: flex; gap: 22px; color: #78877e; font-size: 12px; }
+.certificateTagline { margin-top: 20px; color: #167246; }
 
 @keyframes float { 50% { transform: translateY(-11px) rotate(2deg); } }
 @media (max-width: 900px) { .hero { grid-template-columns: 1fr; } .catalog, .recent { grid-template-columns: repeat(2,1fr); } .packages { grid-template-columns: repeat(2,1fr); } .formGrid { grid-template-columns: 1fr; } }
-@media (max-width: 580px) { .page { width: calc(100% - 16px); } .hero, .section { padding: 16px; } .catalog, .recent, .packages { grid-template-columns: 1fr; } .head { align-items: flex-start; flex-direction: column; } .certificate { padding: 32px 17px; } .meta { flex-direction: column; } }
+@media (max-width: 580px) { .page { width: calc(100% - 16px); } .hero, .section { padding: 16px; } .catalog, .recent, .packages { grid-template-columns: 1fr; } .head { align-items: flex-start; flex-direction: column; } .gift { min-height: 0; } .certificate { padding: 32px 17px; } .meta { flex-direction: column; } }
 @media print { .certificate { position: fixed; inset: 0; width: 100%; height: 100%; min-height: 100vh; margin: 0; } }
+@media (prefers-reduced-motion: reduce) { .previewIcon, .gift { animation: none; transition: none; } }

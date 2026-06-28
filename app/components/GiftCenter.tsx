@@ -4,7 +4,8 @@ import { FormEvent, useEffect, useMemo, useState } from "react";
 import { supabase } from "../../lib/supabase";
 import GiftCatalog from "./GiftCatalog";
 import GiftCertificate from "./GiftCertificate";
-import { GiftCenterData, RecentGift, formatGiftDate, giftError } from "./giftTypes";
+import GiftCelebrationModal from "./GiftCelebrationModal";
+import { CatalogGift, GiftCenterData, RecentGift, formatGiftDate, giftError } from "./giftTypes";
 import styles from "./GiftCenter.module.css";
 
 export default function GiftCenter({ studentId }: { studentId: string }) {
@@ -14,6 +15,7 @@ export default function GiftCenter({ studentId }: { studentId: string }) {
   const [title, setTitle] = useState("");
   const [reason, setReason] = useState("");
   const [printable, setPrintable] = useState<RecentGift | null>(null);
+  const [previewGift, setPreviewGift] = useState<CatalogGift | null>(null);
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState("");
@@ -85,6 +87,12 @@ export default function GiftCenter({ studentId }: { studentId: string }) {
     window.setTimeout(() => window.print(), 150);
   }
 
+  function choosePreviewGift(item: CatalogGift) {
+    setGiftCode(item.code);
+    setPreviewGift(null);
+    window.setTimeout(() => document.getElementById("gift-award-details")?.scrollIntoView({ behavior: "smooth", block: "start" }), 80);
+  }
+
   if (loading) return <main className={styles.page}>جارٍ تجهيز مركز الهدايا...</main>;
   if (!data) return <main className={styles.page}><p className={`${styles.message} ${styles.error}`}>{error}</p></main>;
 
@@ -100,9 +108,16 @@ export default function GiftCenter({ studentId }: { studentId: string }) {
 
       <p className={styles.notice}>الهدايا رقمية تشجيعية لا تُباع ولا تُستبدل بأموال، ونقاط الطفل مستقلة تمامًا عن كوينز ولي الأمر.</p>
 
-      <GiftCatalog gifts={data.catalog} selectedCode={giftCode} balance={data.wallet.coin_balance} includedRemaining={data.wallet.included_remaining} onSelect={setGiftCode} />
+      <GiftCatalog
+        gifts={data.catalog}
+        selectedCode={giftCode}
+        balance={data.wallet.coin_balance}
+        includedRemaining={data.wallet.included_remaining}
+        onSelect={setGiftCode}
+        onPreview={setPreviewGift}
+      />
 
-      <section className={styles.section}>
+      <section className={styles.section} id="gift-award-details">
         <div className={styles.head}><div><span className={styles.label}>تفاصيل التكريم</span><h2>اربط الهدية بالإنجاز</h2></div></div>
         <div className={styles.formGrid}>
           <form className={styles.form} onSubmit={submit}>
@@ -127,6 +142,20 @@ export default function GiftCenter({ studentId }: { studentId: string }) {
       </section>
 
       {printable && <GiftCertificate gift={printable} studentName={data.student.full_name} />}
+
+      {previewGift && (
+        <GiftCelebrationModal
+          gift={previewGift}
+          childName="عمر"
+          achievement="إتمام حفظ سورة الملك"
+          reason="تقديرًا لاجتهاده وإتقانه الحفظ"
+          mode="preview"
+          priceLabel={previewGift.tier === "included" ? "ضمن الاشتراك" : `${previewGift.coin_price} كوينز`}
+          primaryActionLabel={previewGift.tier === "included" ? "اختيارها للإهداء" : "اختيارها للشراء بالكوينز"}
+          onPrimaryAction={() => choosePreviewGift(previewGift)}
+          onClose={() => setPreviewGift(null)}
+        />
+      )}
     </main>
   );
 }

@@ -4,7 +4,7 @@ import styles from "./ChildGifts.module.css";
 export default function ChildCertificate({ gift, studentName }: { gift: ChildGift; studentName: string }) {
   return (
     <article className={styles.certificate}>
-      <strong>نـمـاء</strong>
+      <strong>واعي كيدز | WAAI KIDS</strong>
       <span className={styles.certificateIcon}>{gift.gift.icon}</span>
       <h2>{gift.gift.certificate_title || "شهادة شكر وتقدير"}</h2>
       <p>تُقدَّم بكل فخر وتقدير إلى</p>
@@ -16,6 +16,7 @@ export default function ChildCertificate({ gift, studentName }: { gift: ChildGif
         <span>رقم الشهادة: {gift.certificate_number}</span>
         <span>التاريخ: {formatGiftDate(gift.gifted_at)}</span>
       </div>
+      <strong>ينمو بوعي ويُنجز بثقة</strong>
     </article>
   );
 }
