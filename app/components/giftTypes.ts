@@ -8,6 +8,7 @@ export type CatalogGift = {
   coin_price: number;
   sar_price: number;
   animation_key: string;
+  sound_key?: string | null;
   certificate_title: string;
 };
 
@@ -23,7 +24,7 @@ export type RecentGift = {
   gifted_at: string;
   certificate_number: string;
   sender_name?: string;
-  gift: Pick<CatalogGift, "code" | "name" | "icon" | "tier" | "animation_key" | "certificate_title">;
+  gift: Pick<CatalogGift, "code" | "name" | "icon" | "tier" | "animation_key" | "sound_key" | "certificate_title">;
 };
 
 export type GiftCenterData = {
