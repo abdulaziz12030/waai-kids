@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - feature/arabian-horse-exclusive-film
+  pull_request:
+    branches:
+      - main
 
 jobs:
   build:
