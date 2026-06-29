@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { PointerEvent as ReactPointerEvent } from "react";
 import styles from "./AboutWaaiMotion.module.css";
+import textStyles from "./AboutTextInteraction.module.css";
 
 export default function AboutWaaiMotion() {
   const sectionRef = useRef<HTMLElement | null>(null);
@@ -76,7 +77,7 @@ export default function AboutWaaiMotion() {
       <span className={styles.orbitLine} aria-hidden="true" />
 
       <div
-        className={`${styles.textPanel} ${textActive ? styles.textPanelActive : ""}`}
+        className={`${textStyles.textPanel} ${textActive ? textStyles.textPanelActive : ""}`}
         onPointerEnter={handleTextPointerMove}
         onPointerMove={handleTextPointerMove}
         onPointerDown={(event) => {
@@ -87,14 +88,14 @@ export default function AboutWaaiMotion() {
         onPointerCancel={resetTextPanel}
         onPointerLeave={resetTextPanel}
       >
-        <span className={styles.textGlow} aria-hidden="true" />
-        <span className={styles.textSweep} aria-hidden="true" />
+        <span className={textStyles.textGlow} aria-hidden="true" />
+        <span className={textStyles.textSweep} aria-hidden="true" />
 
         <div className={styles.heading}>
           <span className={styles.badge}>عن واعي كيدز</span>
           <h2>
-            <span className={styles.titleLine}>رحلة تربوية تجمع</span>
-            <span className={styles.titleAccent}>الأسرة والطفل والمعلم</span>
+            <span className={textStyles.titleLine}>رحلة تربوية تجمع</span>
+            <span className={textStyles.titleAccent}>الأسرة والطفل والمعلم</span>
           </h2>
         </div>
 
