@@ -24,7 +24,7 @@ export default function FeaturesMotion({ features }: { features: Feature[] }) {
           observer.disconnect();
         }
       },
-      { threshold: 0.14, rootMargin: "0px 0px -8% 0px" }
+      { threshold: 0.02, rootMargin: "0px 0px 22% 0px" }
     );
 
     observer.observe(section);
@@ -37,7 +37,7 @@ export default function FeaturesMotion({ features }: { features: Feature[] }) {
         <article
           key={feature.title}
           className={`${styles.card} ${index % 2 === 0 ? styles.fromRight : styles.fromLeft}`}
-          style={{ "--delay": `${index * 150}ms` } as React.CSSProperties}
+          style={{ "--delay": `${index * 85}ms` } as React.CSSProperties}
         >
           <span className={styles.decorOne} aria-hidden="true" />
           <span className={styles.decorTwo} aria-hidden="true" />
