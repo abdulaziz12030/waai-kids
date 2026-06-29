@@ -1,0 +1,121 @@
+.interactiveCard {
+  --drag-x: 0px;
+  --drag-y: 0px;
+  --tilt-x: 0deg;
+  --tilt-y: 0deg;
+  touch-action: pan-y;
+  transform-style: preserve-3d;
+  will-change: transform, box-shadow;
+}
+
+.visibleGrid .interactiveCard {
+  opacity: 1;
+  filter: none;
+  transform: translate3d(var(--drag-x), var(--drag-y), 0) rotateX(var(--tilt-x)) rotateY(var(--tilt-y)) scale(1);
+  animation:
+    interactiveEnter .72s cubic-bezier(.18,.86,.22,1) var(--delay) backwards,
+    ambientBorder 4.8s ease-in-out calc(var(--delay) + 1.1s) infinite;
+}
+
+.visibleGrid .interactiveIcon {
+  animation:
+    interactiveIconEnter .66s cubic-bezier(.17,.9,.24,1.14) calc(var(--delay) + 120ms) both,
+    interactiveIconFloat 3s ease-in-out calc(var(--delay) + .9s) infinite !important;
+}
+
+.visibleGrid .interactiveShine {
+  animation: repeatedShine 5.8s ease-in-out calc(var(--delay) + 1.3s) infinite !important;
+}
+
+.visibleGrid .interactiveCard:nth-child(2) { animation-delay: var(--delay), calc(var(--delay) + 1.35s); }
+.visibleGrid .interactiveCard:nth-child(3) { animation-delay: var(--delay), calc(var(--delay) + 1.6s); }
+.visibleGrid .interactiveCard:nth-child(4) { animation-delay: var(--delay), calc(var(--delay) + 1.85s); }
+.visibleGrid .interactiveCard:nth-child(5) { animation-delay: var(--delay), calc(var(--delay) + 2.1s); }
+
+.interactiveCard[data-pressed="true"] {
+  border-color: rgba(45, 174, 104, .45) !important;
+  box-shadow: 0 20px 42px rgba(31, 84, 54, .15) !important;
+}
+
+.interactiveCard[data-pressed="true"] .interactiveIcon {
+  transform: translateZ(26px) scale(1.08) rotate(2deg) !important;
+}
+
+.interactiveCard::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  border-radius: inherit;
+  background: radial-gradient(circle at var(--pointer-x, 50%) var(--pointer-y, 50%), rgba(76, 190, 123, .14), transparent 34%);
+  opacity: 0;
+  transition: opacity .25s ease;
+}
+
+.interactiveCard:hover::before,
+.interactiveCard[data-pressed="true"]::before {
+  opacity: 1;
+}
+
+@keyframes interactiveEnter {
+  from {
+    opacity: 0;
+    filter: blur(8px);
+    transform: translate3d(var(--enter-x, 0px), 24px, 0) scale(.94);
+  }
+}
+
+@keyframes interactiveIconEnter {
+  0% { opacity: 0; transform: translateY(18px) scale(.58) rotate(-10deg); }
+  72% { opacity: 1; transform: translateY(-2px) scale(1.08) rotate(3deg); }
+  100% { opacity: 1; transform: translateY(0) scale(1) rotate(0); }
+}
+
+@keyframes interactiveIconFloat {
+  0%,100% { transform: translate3d(0, 0, 18px) rotate(-1deg); }
+  50% { transform: translate3d(0, -7px, 22px) rotate(2deg); }
+}
+
+@keyframes ambientBorder {
+  0%,100% {
+    border-color: rgba(208,222,213,.86);
+    box-shadow: 0 12px 30px rgba(38,67,52,.065);
+  }
+  50% {
+    border-color: rgba(68,177,112,.3);
+    box-shadow: 0 16px 38px rgba(38,90,58,.1);
+  }
+}
+
+@keyframes repeatedShine {
+  0%,70% { left: -42%; opacity: 0; }
+  76% { opacity: .72; }
+  92%,100% { left: 112%; opacity: 0; }
+}
+
+@media (max-width: 620px) {
+  .interactiveCard {
+    --enter-x: 58px;
+  }
+
+  .interactiveCard:nth-child(even) {
+    --enter-x: -58px;
+  }
+
+  .visibleGrid .interactiveCard {
+    transform: translate3d(var(--drag-x), var(--drag-y), 0) rotateZ(var(--tilt-y)) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .visibleGrid .interactiveCard,
+  .visibleGrid .interactiveIcon,
+  .visibleGrid .interactiveShine {
+    animation: none !important;
+  }
+
+  .interactiveCard {
+    transform: none !important;
+  }
+}
