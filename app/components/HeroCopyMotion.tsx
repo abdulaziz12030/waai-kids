@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import styles from "./HeroCopyMotion.module.css";
+import textStyles from "./HeroTextMobile.module.css";
 
 export default function HeroCopyMotion() {
   const ref = useRef<HTMLDivElement | null>(null);
@@ -29,14 +30,14 @@ export default function HeroCopyMotion() {
     <div ref={ref} className={`namaa-hero-copy ${styles.copy} ${visible ? styles.visible : ""}`}>
       <span className={styles.eyebrow}>💚 منصة تربوية ذكية للأسرة والطفل والمعلم</span>
 
-      <h1 className={styles.title}>
+      <h1 className={`${styles.title} ${textStyles.titleBalance}`}>
         <span>نزرع الوعي</span>
         <span>ونحوّل <em>الأهداف</em> إلى</span>
         <strong>إنجاز</strong>
       </h1>
 
-      <p className={styles.description}>
-        واعي كيدز منصة تربوية ذكية تساعد الأسرة والمعلم على تنمية وعي الطفل، وبناء عاداته الإيجابية، وتحقيق أهدافه، ومتابعة حفظه للقرآن، وتحفيزه بالمكافآت والهدايا الهادفة.
+      <p className={`${styles.description} ${textStyles.detailText}`}>
+        واعي كيدز منصة تربوية ذكية تساعد الأسرة والمعلم على تنمية <span className={textStyles.keyword}>وعي الطفل</span>، وبناء عاداته الإيجابية، وتحقيق <span className={textStyles.keyword}>أهدافه</span>، ومتابعة حفظه <span className={textStyles.keyword}>للقرآن</span>، وتحفيزه <span className={textStyles.keyword}>بالمكافآت والهدايا الهادفة</span>.
       </p>
 
       <div className={styles.entries}>
