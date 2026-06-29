@@ -1,0 +1,146 @@
+.textPanel {
+  --text-x: 50%;
+  --text-y: 50%;
+  --text-shift-x: 0px;
+  --text-shift-y: 0px;
+  grid-column: 1 / -1;
+  position: relative;
+  z-index: 3;
+  padding: 22px 24px;
+  display: grid;
+  grid-template-columns: minmax(0,.95fr) minmax(0,1.05fr);
+  gap: 36px;
+  align-items: center;
+  overflow: hidden;
+  border: 1px solid rgba(69,166,107,.08);
+  border-radius: 24px;
+  background: linear-gradient(145deg, rgba(255,255,255,.34), rgba(239,248,242,.18));
+  transform: translate3d(var(--text-shift-x), var(--text-shift-y), 0);
+  transition: transform .22s ease, border-color .22s ease, box-shadow .22s ease, background .22s ease;
+  touch-action: pan-y;
+}
+
+.textPanel:hover,
+.textPanelActive {
+  border-color: rgba(69,166,107,.24);
+  background: linear-gradient(145deg, rgba(255,255,255,.72), rgba(235,248,240,.52));
+  box-shadow: 0 16px 36px rgba(37,78,54,.08);
+}
+
+.textGlow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(circle at var(--text-x) var(--text-y), rgba(63,181,108,.18), transparent 30%);
+  opacity: 0;
+  transition: opacity .2s ease;
+}
+
+.textPanel:hover .textGlow,
+.textPanelActive .textGlow {
+  opacity: 1;
+}
+
+.textSweep {
+  position: absolute;
+  inset: -35% auto -35% -35%;
+  width: 25%;
+  pointer-events: none;
+  transform: rotate(17deg);
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.72), transparent);
+  opacity: 0;
+}
+
+.textPanel:hover .textSweep,
+.textPanelActive .textSweep {
+  animation: sweep 1s ease both;
+}
+
+.titleLine,
+.titleAccent {
+  display: block;
+  transition: transform .24s ease, color .24s ease, text-shadow .24s ease;
+}
+
+.titleAccent {
+  color: #27925b;
+}
+
+.textPanel:hover .titleLine,
+.textPanelActive .titleLine {
+  transform: translateX(-4px);
+}
+
+.textPanel:hover .titleAccent,
+.textPanelActive .titleAccent {
+  transform: translateX(5px);
+  color: #15965a;
+  text-shadow: 0 7px 22px rgba(31,147,84,.13);
+}
+
+.textPanel:hover p,
+.textPanelActive p {
+  color: #5d6f66;
+}
+
+.textPanel:hover strong,
+.textPanelActive strong {
+  color: #118d52;
+  text-shadow: 0 4px 13px rgba(27,145,82,.12);
+}
+
+.textPanel:hover strong::after,
+.textPanelActive strong::after {
+  animation: underlineAgain .48s ease forwards !important;
+}
+
+.textPanel:hover strong:nth-of-type(2)::after,
+.textPanelActive strong:nth-of-type(2)::after { animation-delay: .09s !important; }
+.textPanel:hover strong:nth-of-type(3)::after,
+.textPanelActive strong:nth-of-type(3)::after { animation-delay: .18s !important; }
+
+@keyframes sweep {
+  0% { left: -35%; opacity: 0; }
+  20% { opacity: .75; }
+  100% { left: 118%; opacity: 0; }
+}
+
+@keyframes underlineAgain {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+@media (max-width: 820px) {
+  .textPanel {
+    grid-template-columns: 1fr;
+    gap: 18px;
+    padding: 20px 18px;
+    text-align: center;
+  }
+}
+
+@media (max-width: 520px) {
+  .textPanel {
+    padding: 18px 12px;
+    border-radius: 19px;
+  }
+
+  .textPanel:hover .titleLine,
+  .textPanelActive .titleLine,
+  .textPanel:hover .titleAccent,
+  .textPanelActive .titleAccent {
+    transform: translateY(-2px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .textPanel,
+  .textGlow,
+  .textSweep,
+  .titleLine,
+  .titleAccent {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+  }
+}
