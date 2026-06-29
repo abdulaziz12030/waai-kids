@@ -26,7 +26,7 @@ export default function HeroCopyMotion() {
   }, []);
 
   return (
-    <div ref={ref} className={`${styles.copy} ${visible ? styles.visible : ""}`}>
+    <div ref={ref} className={`namaa-hero-copy ${styles.copy} ${visible ? styles.visible : ""}`}>
       <span className={styles.eyebrow}>💚 منصة تربوية ذكية للأسرة والطفل والمعلم</span>
 
       <h1 className={styles.title}>
