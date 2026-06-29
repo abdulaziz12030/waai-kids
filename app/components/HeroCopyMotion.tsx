@@ -1,0 +1,65 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import styles from "./HeroCopyMotion.module.css";
+
+export default function HeroCopyMotion() {
+  const ref = useRef<HTMLDivElement | null>(null);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const node = ref.current;
+    if (!node) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setVisible(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.18 }
+    );
+
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <div ref={ref} className={`${styles.copy} ${visible ? styles.visible : ""}`}>
+      <span className={styles.eyebrow}>💚 منصة تربوية ذكية للأسرة والطفل والمعلم</span>
+
+      <h1 className={styles.title}>
+        <span>نزرع الوعي</span>
+        <span>ونحوّل <em>الأهداف</em> إلى</span>
+        <strong>إنجاز</strong>
+      </h1>
+
+      <p className={styles.description}>
+        واعي كيدز منصة تربوية ذكية تساعد الأسرة والمعلم على تنمية وعي الطفل، وبناء عاداته الإيجابية، وتحقيق أهدافه، ومتابعة حفظه للقرآن، وتحفيزه بالمكافآت والهدايا الهادفة.
+      </p>
+
+      <div className={styles.entries}>
+        <a className={`${styles.entry} ${styles.parent}`} href="/login?type=family">
+          <span className={styles.entryIcon}>👤</span>
+          <span className={styles.entryText}><strong>دخول ولي الأمر</strong><small>إدارة ومتابعة الأبناء</small></span>
+          <span className={styles.entryArrow}>←</span>
+        </a>
+
+        <a className={`${styles.entry} ${styles.child}`} href="/child/login">
+          <span className={styles.entryIcon}>🧒🏻</span>
+          <span className={styles.entryText}><strong>دخول الطفل</strong><small>إنجاز المهام وكسب النقاط</small></span>
+          <span className={styles.entryArrow}>←</span>
+        </a>
+
+        <a className={`${styles.entry} ${styles.teacher}`} href="/login?type=teacher">
+          <span className={styles.entryIcon}>👨‍🏫</span>
+          <span className={styles.entryText}><strong>دخول المعلم</strong><small>إدارة الحفظ ومركز التسميع</small></span>
+          <span className={styles.entryArrow}>←</span>
+        </a>
+      </div>
+
+      <div className={styles.security}>🔒 بياناتك آمنة ومشفرة</div>
+    </div>
+  );
+}
