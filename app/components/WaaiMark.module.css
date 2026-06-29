@@ -1,0 +1,144 @@
+.mark {
+  width: 62px;
+  height: 62px;
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  border-radius: 20px;
+  background:
+    radial-gradient(circle at 30% 20%, rgba(255,255,255,.3), transparent 32%),
+    linear-gradient(145deg, #36a86f, #176243 68%, #104c36);
+  box-shadow:
+    0 16px 30px rgba(18,83,56,.22),
+    inset 0 0 0 1px rgba(255,255,255,.2),
+    inset 0 -10px 18px rgba(5,49,32,.14);
+  isolation: isolate;
+  transform: rotate(-2deg);
+  animation: markFloat 4.6s ease-in-out infinite;
+}
+
+.compact {
+  width: 48px;
+  height: 48px;
+  border-radius: 16px;
+}
+
+.halo {
+  position: absolute;
+  inset: -7px;
+  z-index: -1;
+  border-radius: 24px;
+  background: radial-gradient(circle, rgba(72,184,119,.22), transparent 68%);
+  filter: blur(8px);
+  opacity: .8;
+}
+
+.letter {
+  color: #fff;
+  font-size: 35px;
+  font-weight: 950;
+  line-height: 1;
+  transform: translateY(2px);
+  text-shadow: 0 3px 10px rgba(0,0,0,.16);
+}
+
+.compact .letter {
+  font-size: 28px;
+}
+
+.leaf {
+  position: absolute;
+  display: block;
+  z-index: 3;
+  border-radius: 90% 12% 82% 18%;
+  background: linear-gradient(145deg, #78d68e, #38ad68 72%);
+  box-shadow: 0 6px 13px rgba(25,100,62,.2);
+  transform-origin: 20% 80%;
+}
+
+.leafPrimary {
+  width: 20px;
+  height: 30px;
+  top: -8px;
+  right: 7px;
+  transform: rotate(24deg);
+  animation: leafPrimary 3.6s ease-in-out infinite;
+}
+
+.leafSecondary {
+  width: 15px;
+  height: 24px;
+  top: -4px;
+  right: 23px;
+  opacity: .96;
+  transform: rotate(-18deg);
+  animation: leafSecondary 4s ease-in-out .2s infinite;
+}
+
+.compact .leafPrimary {
+  width: 16px;
+  height: 24px;
+  top: -7px;
+  right: 5px;
+}
+
+.compact .leafSecondary {
+  width: 12px;
+  height: 19px;
+  top: -4px;
+  right: 18px;
+}
+
+.spark {
+  width: 5px;
+  height: 5px;
+  position: absolute;
+  top: 9px;
+  left: 10px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.95);
+  box-shadow: 0 0 12px rgba(255,255,255,.9);
+  animation: sparkPulse 2.8s ease-in-out infinite;
+}
+
+@keyframes markFloat {
+  0%,100% { transform: translateY(0) rotate(-2deg); }
+  50% { transform: translateY(-4px) rotate(1deg); }
+}
+
+@keyframes leafPrimary {
+  0%,100% { transform: rotate(24deg); }
+  50% { transform: rotate(15deg); }
+}
+
+@keyframes leafSecondary {
+  0%,100% { transform: rotate(-18deg); }
+  50% { transform: rotate(-7deg); }
+}
+
+@keyframes sparkPulse {
+  0%,100% { opacity: .35; transform: scale(.8); }
+  50% { opacity: 1; transform: scale(1.25); }
+}
+
+@media (max-width: 640px) {
+  .mark {
+    width: 58px;
+    height: 58px;
+    border-radius: 19px;
+  }
+
+  .letter {
+    font-size: 33px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mark,
+  .leafPrimary,
+  .leafSecondary,
+  .spark {
+    animation: none !important;
+  }
+}
