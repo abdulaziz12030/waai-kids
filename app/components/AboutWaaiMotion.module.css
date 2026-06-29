@@ -1,0 +1,252 @@
+.section {
+  --pointer-x: 50%;
+  --pointer-y: 50%;
+  --tilt-x: 0deg;
+  --tilt-y: 0deg;
+  width: min(1160px, calc(100% - 32px));
+  margin: 58px auto 0;
+  padding: 44px 46px;
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: minmax(0, .95fr) minmax(0, 1.05fr);
+  gap: 40px;
+  align-items: center;
+  border: 1px solid rgba(191, 218, 202, .72);
+  border-radius: 30px;
+  background:
+    radial-gradient(circle at 85% 18%, rgba(226, 247, 232, .9), transparent 31%),
+    linear-gradient(145deg, rgba(255,255,255,.97), rgba(244,250,246,.94));
+  box-shadow: 0 18px 48px rgba(36, 73, 54, .08);
+  transform: perspective(1200px) rotateX(var(--tilt-x)) rotateY(var(--tilt-y));
+  transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+  isolation: isolate;
+}
+
+.section:hover {
+  border-color: rgba(69, 166, 107, .28);
+  box-shadow: 0 24px 58px rgba(36, 73, 54, .12);
+}
+
+.pointerGlow {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: radial-gradient(circle at var(--pointer-x) var(--pointer-y), rgba(76, 186, 119, .16), transparent 30%);
+  opacity: 0;
+  transition: opacity .24s ease;
+}
+
+.section:hover .pointerGlow,
+.section:active .pointerGlow {
+  opacity: 1;
+}
+
+.orbitLine {
+  width: 240px;
+  height: 240px;
+  position: absolute;
+  top: -120px;
+  left: -70px;
+  border: 1px dashed rgba(65, 162, 103, .16);
+  border-radius: 50%;
+  animation: orbitSpin 16s linear infinite;
+}
+
+.heading,
+.content {
+  position: relative;
+  z-index: 2;
+}
+
+.badge {
+  display: inline-flex;
+  padding: 9px 16px;
+  border-radius: 999px;
+  background: rgba(227, 246, 233, .92);
+  color: #28794f;
+  font-size: 12px;
+  font-weight: 900;
+  opacity: 0;
+  transform: translateY(16px) scale(.96);
+}
+
+.heading h2 {
+  margin: 18px 0 0;
+  color: #173f31;
+  font-size: clamp(36px, 5vw, 58px);
+  line-height: 1.2;
+  text-wrap: balance;
+}
+
+.heading h2,
+.heading h2 span {
+  display: block;
+  opacity: 0;
+  transform: translateY(24px);
+}
+
+.heading h2 span {
+  color: #27925b;
+}
+
+.content p {
+  margin: 0;
+  color: #6e7a74;
+  font-size: 17px;
+  line-height: 2;
+  opacity: 0;
+  transform: translateY(22px);
+}
+
+.content strong {
+  position: relative;
+  color: #1f7a4d;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.content strong::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: -3px;
+  width: 100%;
+  height: 2px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(49,157,92,.08), rgba(49,157,92,.52), rgba(49,157,92,.08));
+  transform: scaleX(0);
+  transform-origin: right;
+}
+
+.values {
+  margin-top: 24px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0,1fr));
+  gap: 10px;
+}
+
+.values span {
+  min-height: 48px;
+  padding: 10px 13px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  border: 1px solid rgba(206, 223, 213, .8);
+  border-radius: 15px;
+  background: rgba(255,255,255,.8);
+  color: #315a47;
+  font-size: 12px;
+  font-weight: 850;
+  box-shadow: 0 9px 22px rgba(40, 72, 55, .045);
+  opacity: 0;
+  transform: translateY(16px) scale(.96);
+  transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease;
+}
+
+.values span:hover,
+.values span:active {
+  transform: translateY(-4px) scale(1.02);
+  border-color: rgba(65,166,107,.3);
+  box-shadow: 0 14px 28px rgba(40, 72, 55, .09);
+}
+
+.values i {
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  background: #edf8f1;
+  font-style: normal;
+  animation: iconFloat 3.2s ease-in-out infinite;
+}
+
+.spark {
+  width: 8px;
+  height: 8px;
+  position: absolute;
+  border-radius: 50%;
+  background: #7fd39a;
+  box-shadow: 0 0 14px rgba(73, 178, 112, .6);
+  opacity: .55;
+  animation: sparkPulse 3s ease-in-out infinite;
+}
+
+.sparkOne { top: 22%; right: 4%; }
+.sparkTwo { bottom: 14%; left: 8%; animation-delay: .8s; }
+.sparkThree { top: 10%; left: 42%; animation-delay: 1.5s; }
+
+.visible .badge { animation: fadeUp .58s ease .05s both; }
+.visible .heading h2 { animation: titleUp .68s ease .18s both; }
+.visible .heading h2 span { animation: titleUp .68s ease .34s both; }
+.visible .content p { animation: fadeUp .68s ease .48s both; }
+.visible .content strong::after { animation: underlineIn .55s ease .95s forwards; }
+.visible .content strong:nth-of-type(2)::after { animation-delay: 1.08s; }
+.visible .content strong:nth-of-type(3)::after { animation-delay: 1.21s; }
+.visible .values span:nth-child(1) { animation: valueIn .55s ease .72s both; }
+.visible .values span:nth-child(2) { animation: valueIn .55s ease .84s both; }
+.visible .values span:nth-child(3) { animation: valueIn .55s ease .96s both; }
+.visible .values span:nth-child(4) { animation: valueIn .55s ease 1.08s both; }
+
+@keyframes fadeUp { to { opacity: 1; transform: translateY(0) scale(1); } }
+@keyframes titleUp { to { opacity: 1; transform: translateY(0); } }
+@keyframes valueIn { to { opacity: 1; transform: translateY(0) scale(1); } }
+@keyframes underlineIn { to { transform: scaleX(1); } }
+@keyframes orbitSpin { to { transform: rotate(360deg); } }
+@keyframes iconFloat { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+@keyframes sparkPulse { 0%,100% { opacity: .25; transform: scale(.7); } 50% { opacity: 1; transform: scale(1.25); } }
+
+@media (max-width: 820px) {
+  .section {
+    grid-template-columns: 1fr;
+    gap: 22px;
+    padding: 34px 26px;
+    text-align: center;
+  }
+
+  .badge { margin-inline: auto; }
+  .content p { font-size: 15px; line-height: 1.95; }
+  .values { grid-template-columns: repeat(2, minmax(0,1fr)); }
+}
+
+@media (max-width: 520px) {
+  .section {
+    width: calc(100% - 16px);
+    margin-top: 42px;
+    padding: 28px 16px;
+    border-radius: 24px;
+  }
+
+  .heading h2 {
+    font-size: clamp(30px, 9vw, 42px);
+    line-height: 1.26;
+  }
+
+  .content p {
+    font-size: 13px;
+    line-height: 1.95;
+  }
+
+  .content strong { white-space: normal; }
+  .values { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .values span { min-height: 44px; padding: 9px 10px; font-size: 10px; }
+  .values i { width: 27px; height: 27px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .section,
+  .orbitLine,
+  .badge,
+  .heading h2,
+  .heading h2 span,
+  .content p,
+  .content strong::after,
+  .values span,
+  .values i,
+  .spark {
+    animation: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+  }
+}
