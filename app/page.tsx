@@ -1,3 +1,5 @@
+import HowStepsMotion from './components/HowStepsMotion';
+
 const features = [
   { icon: '🔒', title: 'آمن وموثوق', description: 'خصوصية عالية وصلاحيات مستقلة لكل فرد.' },
   { icon: '👥', title: 'متابعة ذكية', description: 'تقارير توضح تقدم الأبناء والطلاب بسهولة.' },
@@ -162,11 +164,7 @@ export default function HomePage() {
 
       <section className="namaa-features" id="features">{features.map((feature,index)=><article key={feature.title} style={{animationDelay:`${index*70}ms`}}><span>{feature.icon}</span><h3>{feature.title}</h3><p>{feature.description}</p></article>)}</section>
 
-      <section className="namaa-how" id="how">
-        <div className="namaa-section-heading"><span>🌱 خطوات بسيطة لبناء طفل واعٍ وواثق</span><h2>كيف يعمل واعي كيدز؟</h2></div>
-        <div className="namaa-steps">{steps.map((step,index)=><article className="namaa-step" key={step.number}><b>{step.number}</b><div className={`step-art step-art-${index+1}`}>{step.icon}</div><h3>{step.title}</h3><p>{step.description}</p>{index<steps.length-1&&<span className="namaa-step-arrow">←</span>}</article>)}</div>
-        <a className="namaa-journey" href="/register">🚀 ابدأ رحلة طفلك الآن</a>
-      </section>
+      <HowStepsMotion steps={steps} />
 
       <section className="namaa-about" id="about"><div><span>عن واعي كيدز</span><h2>رحلة تربوية تجمع الأسرة والطفل والمعلم</h2></div><p>يجمع واعي كيدز الأهداف والمهام والتحفيز وحفظ القرآن في تجربة واحدة ممتعة، مع أدوار واضحة للأسرة والمعلم، ومساحة آمنة تمكّن الطفل من رؤية تقدمه والاعتزاز بإنجازاته.</p></section>
 
