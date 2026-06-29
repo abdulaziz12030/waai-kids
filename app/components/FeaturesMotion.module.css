@@ -1,0 +1,288 @@
+.grid {
+  width: min(1160px, calc(100% - 32px));
+  margin: 28px auto 0;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.card {
+  min-height: 190px;
+  padding: 22px 17px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  border: 1px solid rgba(208,222,213,.86);
+  border-radius: 26px;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255,255,255,.98), rgba(255,255,255,.84) 55%, rgba(248,252,249,.9)),
+    linear-gradient(145deg, #fff, #f7fbf8);
+  box-shadow: 0 12px 30px rgba(38,67,52,.065);
+  opacity: 0;
+  filter: blur(8px);
+  transition: transform .28s ease, box-shadow .28s ease, border-color .28s ease, background .28s ease;
+}
+
+.fromRight {
+  transform: translateX(72px) translateY(22px) scale(.94);
+}
+
+.fromLeft {
+  transform: translateX(-72px) translateY(22px) scale(.94);
+}
+
+.card:nth-child(2) .iconWrap { background: linear-gradient(145deg,#f3edff,#fff); }
+.card:nth-child(3) .iconWrap { background: linear-gradient(145deg,#edf4ff,#fff); }
+.card:nth-child(4) .iconWrap { background: linear-gradient(145deg,#ebf9f0,#fff); }
+.card:nth-child(5) .iconWrap { background: linear-gradient(145deg,#fff7d9,#fff); }
+
+.iconWrap {
+  width: 72px;
+  height: 72px;
+  position: relative;
+  display: grid;
+  place-items: center;
+  border-radius: 24px;
+  background: linear-gradient(145deg,#ebf9f0,#fff);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.8), 0 12px 25px rgba(35,80,56,.08);
+  opacity: 0;
+  transform: translateY(18px) scale(.62) rotate(-8deg);
+}
+
+.icon {
+  position: relative;
+  z-index: 2;
+  font-size: 34px;
+  line-height: 1;
+}
+
+.iconGlow {
+  width: 48px;
+  height: 48px;
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(45,184,105,.2), transparent 70%);
+  opacity: 0;
+  transform: scale(.4);
+}
+
+.copy {
+  position: relative;
+  z-index: 3;
+}
+
+.copy h3,
+.copy p {
+  opacity: 0;
+  transform: translateY(14px);
+}
+
+.copy h3 {
+  margin: 16px 0 8px;
+  color: #173e31;
+  font-size: 18px;
+}
+
+.copy p {
+  margin: 0;
+  color: #718078;
+  font-size: 11px;
+  line-height: 1.9;
+}
+
+.decorOne,
+.decorTwo {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.decorOne {
+  width: 92px;
+  height: 92px;
+  top: -42px;
+  right: -36px;
+  background: rgba(43,177,105,.07);
+}
+
+.decorTwo {
+  width: 58px;
+  height: 58px;
+  bottom: -24px;
+  left: -20px;
+  background: rgba(68,138,224,.06);
+}
+
+.shine {
+  position: absolute;
+  inset: -30% auto -30% -40%;
+  width: 34%;
+  transform: rotate(18deg);
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.76), transparent);
+  opacity: 0;
+}
+
+.visible .card {
+  animation: cardEnter .78s cubic-bezier(.18,.86,.22,1) var(--delay) both;
+}
+
+.visible .iconWrap {
+  animation: iconEnter .7s cubic-bezier(.17,.9,.24,1.14) calc(var(--delay) + 170ms) both,
+    iconFloat 3.2s ease-in-out calc(var(--delay) + 1s) infinite;
+}
+
+.visible .iconGlow {
+  animation: glowEnter .65s ease calc(var(--delay) + 230ms) both,
+    glowPulse 2.6s ease-in-out calc(var(--delay) + 1s) infinite;
+}
+
+.visible .copy h3 {
+  animation: textEnter .55s ease calc(var(--delay) + 300ms) both;
+}
+
+.visible .copy p {
+  animation: textEnter .6s ease calc(var(--delay) + 390ms) both;
+}
+
+.visible .shine {
+  animation: shineSweep 1.1s ease calc(var(--delay) + 520ms) both;
+}
+
+.card:hover,
+.card:focus-within {
+  transform: translateY(-9px) scale(1.02);
+  border-color: rgba(68,177,112,.36);
+  background:
+    radial-gradient(circle at 50% 0%, #fff, rgba(248,255,251,.95) 55%, #f4fbf7),
+    linear-gradient(145deg,#fff,#f5faf7);
+  box-shadow: 0 22px 46px rgba(32,72,51,.13);
+}
+
+.card:hover .iconWrap,
+.card:focus-within .iconWrap {
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.9), 0 18px 32px rgba(35,80,56,.14);
+}
+
+.card:hover .shine,
+.card:focus-within .shine {
+  animation: shineSweep .9s ease both;
+}
+
+@keyframes cardEnter {
+  to { opacity: 1; filter: blur(0); transform: translate(0,0) scale(1); }
+}
+
+@keyframes iconEnter {
+  0% { opacity: 0; transform: translateY(18px) scale(.58) rotate(-10deg); }
+  72% { opacity: 1; transform: translateY(-2px) scale(1.08) rotate(3deg); }
+  100% { opacity: 1; transform: translateY(0) scale(1) rotate(0); }
+}
+
+@keyframes iconFloat {
+  0%,100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+@keyframes glowEnter {
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes glowPulse {
+  0%,100% { opacity: .45; transform: scale(.9); }
+  50% { opacity: 1; transform: scale(1.22); }
+}
+
+@keyframes textEnter {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes shineSweep {
+  0% { left: -42%; opacity: 0; }
+  22% { opacity: .85; }
+  100% { left: 112%; opacity: 0; }
+}
+
+@media (max-width: 980px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .card:last-child {
+    grid-column: 1 / -1;
+    width: min(100%, 520px);
+    justify-self: center;
+  }
+}
+
+@media (max-width: 620px) {
+  .grid {
+    width: calc(100% - 16px);
+    margin-top: 22px;
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .card,
+  .card:last-child {
+    width: 100%;
+    min-height: 138px;
+    padding: 18px 18px;
+    display: grid;
+    grid-template-columns: 76px minmax(0, 1fr);
+    align-items: center;
+    justify-content: stretch;
+    gap: 16px;
+    text-align: right;
+    border-radius: 22px;
+  }
+
+  .iconWrap {
+    width: 68px;
+    height: 68px;
+    border-radius: 21px;
+  }
+
+  .copy h3 {
+    margin: 0 0 7px;
+    font-size: 21px;
+  }
+
+  .copy p {
+    font-size: 12px;
+    line-height: 1.8;
+  }
+
+  .decorOne {
+    top: -48px;
+    right: auto;
+    left: -36px;
+  }
+
+  .decorTwo {
+    right: -18px;
+    left: auto;
+  }
+
+  .card:hover,
+  .card:focus-within {
+    transform: translateY(-5px) scale(1.01);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card,
+  .iconWrap,
+  .iconGlow,
+  .copy h3,
+  .copy p,
+  .shine {
+    animation: none !important;
+    opacity: 1 !important;
+    filter: none !important;
+    transform: none !important;
+  }
+}
