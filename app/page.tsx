@@ -1,3 +1,4 @@
+import FeaturesMotion from './components/FeaturesMotion';
 import HowStepsMotion from './components/HowStepsMotion';
 
 const features = [
@@ -162,7 +163,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="namaa-features" id="features">{features.map((feature,index)=><article key={feature.title} style={{animationDelay:`${index*70}ms`}}><span>{feature.icon}</span><h3>{feature.title}</h3><p>{feature.description}</p></article>)}</section>
+      <FeaturesMotion features={features} />
 
       <HowStepsMotion steps={steps} />
 
