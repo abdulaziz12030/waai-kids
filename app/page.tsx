@@ -1,5 +1,7 @@
 import FeaturesMotion from './components/FeaturesMotion';
+import HeroCopyMotion from './components/HeroCopyMotion';
 import HowStepsMotion from './components/HowStepsMotion';
+import WaaiMark from './components/WaaiMark';
 
 const features = [
   { icon: '🔒', title: 'آمن وموثوق', description: 'خصوصية عالية وصلاحيات مستقلة لكل فرد.' },
@@ -71,48 +73,17 @@ const landingOverrides = `
 .orbit-points small{font-size:7px}
 .namaa-stats{width:calc(100% - 20px)!important;margin-top:26px!important;padding:6px!important;display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important;overflow:visible!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important}
 .namaa-stats::before{display:none!important}
-.namaa-stats article,.namaa-stats article:last-child{min-width:0!important;min-height:106px!important;padding:12px 9px!important;display:grid!important;grid-template-columns:42px minmax(0,1fr)!important;align-items:center!important;justify-content:stretch!important;gap:8px!important;border:1px solid #e3ebe6!important;border-radius:18px!important;background:rgba(255,255,255,.97)!important;box-shadow:0 10px 24px rgba(39,65,52,.08)!important}
-.namaa-stats article:nth-child(odd){transform:translateX(72px) scale(.94)}
-.namaa-stats article:nth-child(even){transform:translateX(-72px) scale(.94)}
-.namaa-stats article>span{width:42px!important;height:42px!important;flex:none!important;border-radius:14px!important;font-size:21px!important}
-.namaa-stats article div{min-width:0!important;align-items:flex-start!important;text-align:right!important}
-.namaa-stats article strong{min-width:0!important;width:100%!important;font-size:clamp(13px,4vw,16px)!important;line-height:1.2!important}
-.namaa-stats article small{font-size:9px!important;line-height:1.45!important;white-space:normal!important}
-.namaa-stats.stats-visible article:nth-child(1),.namaa-stats.stats-visible article:nth-child(3){animation-name:namaa-stat-enter-mobile-right!important}
-.namaa-stats.stats-visible article:nth-child(2),.namaa-stats.stats-visible article:nth-child(4){animation-name:namaa-stat-enter-mobile-left!important}
+.namaa-stats article,.namaa-stats article:last-child{min-width:0!important;min-height:106px!important;padding:12px 9px!important;display:grid!important;grid-template-columns:42px minmax(0,1fr))!important;align-items:center!important;justify-content:stretch!important;gap:8px!important;border:1px solid #e3ebe6!important;border-radius:18px!important;background:rgba(255,255,255,.97)!important;box-shadow:0 10px 24px rgba(39,65,52,.08)!important}
 }
-@media(max-width:390px){
-.hero-orbit-stage{width:min(100%,334px)}
-.hero-orbit-item{width:49px;height:49px;transform:translate(-50%,-50%) rotate(var(--angle)) translateX(136px) rotate(var(--neg-angle))}
-.hero-orbit-item.orbit-points{width:76px;height:50px}
-.namaa-stats{width:calc(100% - 12px)!important;gap:7px!important;padding:3px!important}
-.namaa-stats article,.namaa-stats article:last-child{min-height:100px!important;padding:10px 7px!important;grid-template-columns:36px minmax(0,1fr)!important;gap:6px!important;border-radius:15px!important}
-.namaa-stats article>span{width:36px!important;height:36px!important;font-size:18px!important}
-.namaa-stats article strong{font-size:12px!important}
-.namaa-stats article small{font-size:8px!important}
-}
+@media(max-width:390px){.hero-orbit-stage{width:min(100%,334px)}.hero-orbit-item{width:49px;height:49px;transform:translate(-50%,-50%) rotate(var(--angle)) translateX(136px) rotate(var(--neg-angle))}.hero-orbit-item.orbit-points{width:76px;height:50px}}
 @media(prefers-reduced-motion:reduce){.hero-orbit,.orbit-icon-inner{animation:none!important}.hero-core img{transition:none!important}}
 `;
 
-function ChartIcon() {
-  return <svg viewBox="0 0 40 40" aria-hidden="true"><rect x="7" y="22" width="6" height="11" rx="2" fill="currentColor"/><rect x="17" y="15" width="6" height="18" rx="2" fill="currentColor"/><rect x="27" y="8" width="6" height="25" rx="2" fill="currentColor"/></svg>;
-}
-
-function CheckIcon() {
-  return <svg viewBox="0 0 40 40" aria-hidden="true"><path d="M9 20.5l7.2 7.2L31.5 12" fill="none" stroke="currentColor" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round"/></svg>;
-}
-
-function TargetIcon() {
-  return <svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="19" cy="21" r="12" fill="none" stroke="currentColor" strokeWidth="3"/><circle cx="19" cy="21" r="6" fill="none" stroke="currentColor" strokeWidth="3"/><circle cx="19" cy="21" r="2.5" fill="currentColor"/><path d="M23 17L34 6M29 6h5v5" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>;
-}
-
-function UserIcon() {
-  return <svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="14" r="7" fill="currentColor"/><path d="M8 33c1.2-7 5.4-10.5 12-10.5S30.8 26 32 33" fill="currentColor"/></svg>;
-}
-
-function MedalIcon() {
-  return <svg viewBox="0 0 40 40" aria-hidden="true"><path d="M13 5l7 11L27 5h-5l-2 4-2-4z" fill="currentColor" opacity=".9"/><circle cx="20" cy="25" r="10" fill="none" stroke="currentColor" strokeWidth="3"/><path d="M20 18l2.2 4.2 4.8.7-3.5 3.3.8 4.8-4.3-2.3-4.3 2.3.8-4.8-3.5-3.3 4.8-.7z" fill="currentColor"/></svg>;
-}
+function ChartIcon() { return <svg viewBox="0 0 40 40" aria-hidden="true"><rect x="7" y="22" width="6" height="11" rx="2" fill="currentColor"/><rect x="17" y="15" width="6" height="18" rx="2" fill="currentColor"/><rect x="27" y="8" width="6" height="25" rx="2" fill="currentColor"/></svg>; }
+function CheckIcon() { return <svg viewBox="0 0 40 40" aria-hidden="true"><path d="M9 20.5l7.2 7.2L31.5 12" fill="none" stroke="currentColor" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round"/></svg>; }
+function TargetIcon() { return <svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="19" cy="21" r="12" fill="none" stroke="currentColor" strokeWidth="3"/><circle cx="19" cy="21" r="6" fill="none" stroke="currentColor" strokeWidth="3"/><circle cx="19" cy="21" r="2.5" fill="currentColor"/><path d="M23 17L34 6M29 6h5v5" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>; }
+function UserIcon() { return <svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="14" r="7" fill="currentColor"/><path d="M8 33c1.2-7 5.4-10.5 12-10.5S30.8 26 32 33" fill="currentColor"/></svg>; }
+function MedalIcon() { return <svg viewBox="0 0 40 40" aria-hidden="true"><path d="M13 5l7 11L27 5h-5l-2 4-2-4z" fill="currentColor" opacity=".9"/><circle cx="20" cy="25" r="10" fill="none" stroke="currentColor" strokeWidth="3"/><path d="M20 18l2.2 4.2 4.8.7-3.5 3.3.8 4.8-4.3-2.3-4.3 2.3.8-4.8-3.5-3.3 4.8-.7z" fill="currentColor"/></svg>; }
 
 export default function HomePage() {
   return (
@@ -120,37 +91,18 @@ export default function HomePage() {
       <style>{landingOverrides}</style>
       <header className="namaa-header">
         <a className="namaa-logo" href="#top" aria-label="واعي كيدز - الصفحة الرئيسية">
-          <span className="namaa-logo-mark">و</span>
+          <WaaiMark compact />
           <span><strong>واعي كيدز</strong><small>ينمو بوعي ويُنجز بثقة</small></span>
         </a>
-        <nav className="namaa-nav" aria-label="التنقل الرئيسي">
-          <a href="#features">المزايا</a><a href="#how">كيف يعمل؟</a><a href="#about">عن واعي كيدز</a>
-        </nav>
-        <div className="namaa-header-actions">
-          <a className="namaa-login" href="/login"><span>👤</span> تسجيل الدخول</a>
-          <a className="namaa-start" href="/register">ابدأ الآن</a>
-        </div>
+        <nav className="namaa-nav" aria-label="التنقل الرئيسي"><a href="#features">المزايا</a><a href="#how">كيف يعمل؟</a><a href="#about">عن واعي كيدز</a></nav>
+        <div className="namaa-header-actions"><a className="namaa-login" href="/login"><span>👤</span> تسجيل الدخول</a><a className="namaa-start" href="/register">ابدأ الآن</a></div>
       </header>
 
       <section className="namaa-hero">
-        <div className="namaa-hero-copy">
-          <span className="namaa-eyebrow">💚 منصة تربوية ذكية للأسرة والطفل والمعلم</span>
-          <h1>نزرع الوعي<br />ونحوّل <span>الأهداف</span> إلى <strong>إنجاز</strong></h1>
-          <p>واعي كيدز منصة تربوية ذكية تساعد الأسرة والمعلم على تنمية وعي الطفل، وبناء عاداته الإيجابية، وتحقيق أهدافه، ومتابعة حفظه للقرآن، وتحفيزه بالمكافآت والهدايا الهادفة.</p>
-          <div className="namaa-entry-grid">
-            <a className="namaa-entry parent" href="/login?type=family"><span className="entry-icon">👤</span><span><strong>دخول ولي الأمر</strong><small>إدارة ومتابعة الأبناء</small></span></a>
-            <a className="namaa-entry child" href="/child/login"><span className="entry-icon">🧒🏻</span><span><strong>دخول الطفل</strong><small>إنجاز المهام وكسب النقاط</small></span></a>
-            <a className="namaa-entry teacher" href="/login?type=teacher"><span className="entry-icon">👨‍🏫</span><span><strong>دخول المعلم</strong><small>إدارة الحفظ ومركز التسميع</small></span></a>
-          </div>
-          <div className="namaa-security">🔒 بياناتك آمنة ومشفرة</div>
-        </div>
-
+        <HeroCopyMotion />
         <div className="namaa-hero-art">
           <div className="hero-orbit-stage">
-            <div className="hero-core">
-              <img src="/assets/hero-child-namaa-bg.svg?v=20260627-3" alt="طفل سعيد يحمل كأس الإنجاز على خلفية متناسقة مع واعي كيدز" loading="eager" />
-            </div>
-
+            <div className="hero-core"><img src="/assets/hero-child-namaa-bg.svg?v=20260627-3" alt="طفل سعيد يحمل كأس الإنجاز على خلفية متناسقة مع واعي كيدز" loading="eager" /></div>
             <div className="hero-orbit" aria-label="اختصارات تفاعلية">
               <a className="hero-orbit-item orbit-a orbit-green" href="#features" aria-label="عرض المزايا" title="المزايا"><span className="orbit-icon-inner"><span className="orbit-face"><ChartIcon /></span></span></a>
               <a className="hero-orbit-item orbit-b orbit-purple" href="#how" aria-label="كيف يعمل واعي كيدز" title="كيف يعمل واعي كيدز"><span className="orbit-icon-inner"><span className="orbit-face"><CheckIcon /></span></span></a>
@@ -164,15 +116,11 @@ export default function HomePage() {
       </section>
 
       <FeaturesMotion features={features} />
-
       <HowStepsMotion steps={steps} />
-
       <section className="namaa-about" id="about"><div><span>عن واعي كيدز</span><h2>رحلة تربوية تجمع الأسرة والطفل والمعلم</h2></div><p>يجمع واعي كيدز الأهداف والمهام والتحفيز وحفظ القرآن في تجربة واحدة ممتعة، مع أدوار واضحة للأسرة والمعلم، ومساحة آمنة تمكّن الطفل من رؤية تقدمه والاعتزاز بإنجازاته.</p></section>
-
       <section className="namaa-stats" aria-label="إحصاءات واعي كيدز">{stats.map(stat=><article key={stat.label}><span>{stat.icon}</span><div><strong>{stat.value}</strong><small>{stat.label}</small></div></article>)}</section>
-
       <section className="namaa-final-call"><div><span>✨ كل إنجاز صغير يصنع وعيًا كبيرًا</span><h2>ساعد طفلك على بناء عادات ومهارات تدوم</h2></div><a href="/register">إنشاء حساب جديد</a></section>
-      <footer className="namaa-footer"><div className="namaa-logo"><span className="namaa-logo-mark">و</span><span><strong>واعي كيدز</strong><small>منصة تربوية ذكية لتنمية الطفل</small></span></div><p>kids.waai.sa — ينمو بوعي ويُنجز بثقة</p></footer>
+      <footer className="namaa-footer"><div className="namaa-logo"><WaaiMark compact /><span><strong>واعي كيدز</strong><small>منصة تربوية ذكية لتنمية الطفل</small></span></div><p>kids.waai.sa — ينمو بوعي ويُنجز بثقة</p></footer>
     </main>
   );
 }
