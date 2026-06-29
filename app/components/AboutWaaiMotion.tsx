@@ -3,16 +3,16 @@
 import { useEffect, useRef, useState } from "react";
 import type { PointerEvent as ReactPointerEvent } from "react";
 import styles from "./AboutWaaiMotion.module.css";
-import textStyles from "./AboutTextInteraction.module.css";
 
 export default function AboutWaaiMotion() {
   const sectionRef = useRef<HTMLElement | null>(null);
+  const textRef = useRef<HTMLDivElement | null>(null);
   const [visible, setVisible] = useState(false);
-  const [textActive, setTextActive] = useState(false);
+  const [active, setActive] = useState(false);
 
   useEffect(() => {
-    const section = sectionRef.current;
-    if (!section) return;
+    const node = sectionRef.current;
+    if (!node) return;
 
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -21,48 +21,31 @@ export default function AboutWaaiMotion() {
           observer.disconnect();
         }
       },
-      { threshold: 0.08, rootMargin: "0px 0px 15% 0px" }
+      { threshold: 0.08, rootMargin: "0px 0px 12% 0px" }
     );
 
-    observer.observe(section);
+    observer.observe(node);
     return () => observer.disconnect();
   }, []);
 
-  function handleSectionPointerMove(event: ReactPointerEvent<HTMLElement>) {
-    const section = event.currentTarget;
-    const rect = section.getBoundingClientRect();
-    const x = Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width));
-    const y = Math.max(0, Math.min(1, (event.clientY - rect.top) / rect.height));
-
-    section.style.setProperty("--pointer-x", `${(x * 100).toFixed(1)}%`);
-    section.style.setProperty("--pointer-y", `${(y * 100).toFixed(1)}%`);
-    section.style.setProperty("--tilt-x", `${((0.5 - y) * 1.2).toFixed(2)}deg`);
-    section.style.setProperty("--tilt-y", `${((x - 0.5) * 1.2).toFixed(2)}deg`);
-  }
-
-  function resetSectionPointer() {
-    const section = sectionRef.current;
-    if (!section) return;
-    section.style.setProperty("--tilt-x", "0deg");
-    section.style.setProperty("--tilt-y", "0deg");
-  }
-
-  function handleTextPointerMove(event: ReactPointerEvent<HTMLDivElement>) {
+  function handleTextMove(event: ReactPointerEvent<HTMLDivElement>) {
     const panel = event.currentTarget;
     const rect = panel.getBoundingClientRect();
     const x = Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width));
     const y = Math.max(0, Math.min(1, (event.clientY - rect.top) / rect.height));
 
-    panel.style.setProperty("--text-x", `${(x * 100).toFixed(1)}%`);
-    panel.style.setProperty("--text-y", `${(y * 100).toFixed(1)}%`);
-    panel.style.setProperty("--text-shift-x", `${((x - 0.5) * 6).toFixed(2)}px`);
-    panel.style.setProperty("--text-shift-y", `${((y - 0.5) * 4).toFixed(2)}px`);
+    panel.style.setProperty("--mx", `${((x - 0.5) * 10).toFixed(2)}px`);
+    panel.style.setProperty("--my", `${((y - 0.5) * 8).toFixed(2)}px`);
+    panel.style.setProperty("--px", `${(x * 100).toFixed(1)}%`);
+    panel.style.setProperty("--py", `${(y * 100).toFixed(1)}%`);
   }
 
-  function resetTextPanel(event: ReactPointerEvent<HTMLDivElement>) {
-    event.currentTarget.style.setProperty("--text-shift-x", "0px");
-    event.currentTarget.style.setProperty("--text-shift-y", "0px");
-    setTextActive(false);
+  function resetTextMove() {
+    const panel = textRef.current;
+    if (!panel) return;
+    panel.style.setProperty("--mx", "0px");
+    panel.style.setProperty("--my", "0px");
+    setActive(false);
   }
 
   return (
@@ -70,40 +53,36 @@ export default function AboutWaaiMotion() {
       ref={sectionRef}
       className={`${styles.section} ${visible ? styles.visible : ""}`}
       id="about"
-      onPointerMove={handleSectionPointerMove}
-      onPointerLeave={resetSectionPointer}
     >
-      <span className={styles.pointerGlow} aria-hidden="true" />
-      <span className={styles.orbitLine} aria-hidden="true" />
-
       <div
-        className={`${textStyles.textPanel} ${textActive ? textStyles.textPanelActive : ""}`}
-        onPointerEnter={handleTextPointerMove}
-        onPointerMove={handleTextPointerMove}
-        onPointerDown={(event) => {
-          setTextActive(true);
-          handleTextPointerMove(event);
+        ref={textRef}
+        className={`${styles.textInteractive} ${active ? styles.active : ""}`}
+        onPointerEnter={(event) => {
+          setActive(true);
+          handleTextMove(event);
         }}
-        onPointerUp={resetTextPanel}
-        onPointerCancel={resetTextPanel}
-        onPointerLeave={resetTextPanel}
+        onPointerMove={handleTextMove}
+        onPointerDown={(event) => {
+          setActive(true);
+          handleTextMove(event);
+        }}
+        onPointerUp={resetTextMove}
+        onPointerLeave={resetTextMove}
+        onPointerCancel={resetTextMove}
       >
-        <span className={textStyles.textGlow} aria-hidden="true" />
-        <span className={textStyles.textSweep} aria-hidden="true" />
+        <span className={styles.textGlow} aria-hidden="true" />
+        <span className={styles.textShine} aria-hidden="true" />
 
-        <div className={styles.heading}>
-          <span className={styles.badge}>عن واعي كيدز</span>
-          <h2>
-            <span className={textStyles.titleLine}>رحلة تربوية تجمع</span>
-            <span className={textStyles.titleAccent}>الأسرة والطفل والمعلم</span>
-          </h2>
-        </div>
+        <span className={styles.badge}>عن واعي كيدز</span>
 
-        <div className={styles.content}>
-          <p>
-            يجمع واعي كيدز <strong>الأهداف والمهام</strong> و<strong>التحفيز</strong> و<strong>حفظ القرآن</strong> في تجربة واحدة ممتعة، مع أدوار واضحة للأسرة والمعلم، ومساحة آمنة تمكّن الطفل من رؤية تقدمه والاعتزاز بإنجازاته.
-          </p>
-        </div>
+        <h2 className={styles.title}>
+          <span className={styles.titleLine}>رحلة تربوية تجمع</span>
+          <span className={styles.titleAccent}>الأسرة والطفل والمعلم</span>
+        </h2>
+
+        <p className={styles.description}>
+          يجمع واعي كيدز <strong>الأهداف والمهام</strong> و<strong>التحفيز</strong> و<strong>حفظ القرآن</strong> في تجربة واحدة ممتعة، مع أدوار واضحة للأسرة والمعلم، ومساحة آمنة تمكّن الطفل من رؤية تقدمه والاعتزاز بإنجازاته.
+        </p>
       </div>
 
       <div className={styles.values} aria-label="قيم واعي كيدز">
@@ -112,10 +91,6 @@ export default function AboutWaaiMotion() {
         <span><i>🤝</i> أسرة ومعلم</span>
         <span><i>⭐</i> إنجاز محفّز</span>
       </div>
-
-      <span className={`${styles.spark} ${styles.sparkOne}`} aria-hidden="true" />
-      <span className={`${styles.spark} ${styles.sparkTwo}`} aria-hidden="true" />
-      <span className={`${styles.spark} ${styles.sparkThree}`} aria-hidden="true" />
     </section>
   );
 }
