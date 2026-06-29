@@ -31,7 +31,7 @@ export default function HeroCopyMotion() {
       <span className={styles.eyebrow}>💚 منصة تربوية ذكية للأسرة والطفل والمعلم</span>
 
       <h1 className={`${styles.title} ${textStyles.titleBalance}`}>
-        <span>نزرع الوعي</span>
+        <span>ننمي الوعي</span>
         <span>ونحوّل <em>الأهداف</em> إلى</span>
         <strong>إنجاز</strong>
       </h1>
