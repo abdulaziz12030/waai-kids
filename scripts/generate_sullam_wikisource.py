@@ -138,9 +138,26 @@ def candidate_section_lines(nodes: list[Tag]) -> list[list[str]]:
 
 def choose_chapter_lines(chapter_candidates: list[list[list[str]]]) -> list[list[str]]:
     target = EXPECTED_VERSES * 2
-    possibilities = [[item for item in candidates if len(item) % 2 == 0] for candidates in chapter_candidates]
+    even_candidates = [[item for item in candidates if len(item) % 2 == 0] for candidates in chapter_candidates]
+
+    # Arabic Wikisource currently exposes one clear table candidate per chapter.
+    # The final chapter is followed by a small page-information block that can be
+    # collected with the poem. Trim only that final trailing surplus, while the
+    # fixed 290-verse validation remains the source of truth.
+    if all(len(options) == 1 for options in even_candidates):
+        selected = [list(options[0]) for options in even_candidates]
+        total = sum(len(lines) for lines in selected)
+        excess = total - target
+        if excess == 0:
+            return selected
+        if 0 < excess <= 12 and excess % 2 == 0 and len(selected[-1]) > excess:
+            selected[-1] = selected[-1][:-excess]
+            if sum(len(lines) for lines in selected) == target:
+                print(f"Trimmed {excess} trailing non-poem lines from the final chapter.")
+                return selected
+
     states: dict[int, list[list[str]]] = {0: []}
-    for chapter_options in possibilities:
+    for chapter_options in even_candidates:
         next_states: dict[int, list[list[str]]] = {}
         for current_total, chosen in states.items():
             for option in chapter_options:
@@ -150,6 +167,7 @@ def choose_chapter_lines(chapter_candidates: list[list[list[str]]]) -> list[list
         states = next_states
     if target in states:
         return states[target]
+
     diagnostics = [[len(item) for item in candidates] for candidates in chapter_candidates]
     raise RuntimeError(f"Could not extract exactly {target} hemistichs. Candidate counts: {diagnostics}")
 
