@@ -157,6 +157,22 @@ def candidate_section_lines(nodes: list[Tag]) -> list[list[str]]:
 def choose_chapter_lines(chapter_candidates: list[list[list[str]]]) -> list[list[str]]:
     target = EXPECTED_VERSES * 2
     possibilities = [[item for item in candidates if len(item) % 2 == 0] for candidates in chapter_candidates]
+
+    # Every chapter currently exposes one poem table. The last section is the
+    # only one followed by page footnotes inside the same parse range. Remove
+    # a small even surplus from its end only after reference tags were removed,
+    # then keep the global 290-verse assertion as the final safeguard.
+    if all(len(options) == 1 for options in possibilities):
+        selected = [list(options[0]) for options in possibilities]
+        excess = sum(len(lines) for lines in selected) - target
+        if excess == 0:
+            return selected
+        if 0 < excess <= 12 and excess % 2 == 0 and len(selected[-1]) > excess:
+            selected[-1] = selected[-1][:-excess]
+            if sum(len(lines) for lines in selected) == target:
+                print(f"Removed {excess} trailing Wikisource footnote lines.")
+                return selected
+
     states: dict[int, list[list[str]]] = {0: []}
     for chapter_options in possibilities:
         next_states: dict[int, list[list[str]]] = {}
