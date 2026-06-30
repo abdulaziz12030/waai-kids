@@ -3,6 +3,7 @@
 import { ChangeEvent, FormEvent, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
+import ChildRestartControls from "../../components/ChildRestartControls";
 import { supabase } from "../../../lib/supabase";
 
 const avatarSymbols: Record<string, string> = {
@@ -55,68 +56,90 @@ export default function ChildProfilePage() {
   const [photoPath, setPhotoPath] = useState("");
   const [photoUrl, setPhotoUrl] = useState("");
   const [photoFile, setPhotoFile] = useState<File | null>(null);
+  const [achievementPoints, setAchievementPoints] = useState(0);
+  const [rewardPoints, setRewardPoints] = useState(0);
+  const [goalCount, setGoalCount] = useState(0);
+  const [quranPlanCount, setQuranPlanCount] = useState(0);
   const [editing, setEditing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  useEffect(() => {
-    async function loadChild() {
-      if (!supabase) {
-        setError("تعذر الاتصال بالخدمة.");
-        setLoading(false);
-        return;
-      }
-
-      const { data: sessionData } = await supabase.auth.getSession();
-      const user = sessionData.session?.user;
-      if (!user) {
-        router.replace("/login");
-        return;
-      }
-
-      const organization = await supabase
-        .from("organizations")
-        .select("id")
-        .eq("owner_id", user.id)
-        .eq("type", "family")
-        .maybeSingle();
-
-      if (!organization.data) {
-        router.replace("/onboarding");
-        return;
-      }
-
-      const child = await supabase
-        .from("students")
-        .select("id, full_name, profile_data")
-        .eq("id", studentId)
-        .eq("organization_id", organization.data.id)
-        .maybeSingle();
-
-      if (child.error || !child.data) {
-        setError(child.error?.message || "تعذر العثور على ملف الطفل.");
-        setLoading(false);
-        return;
-      }
-
-      const profile = (child.data.profile_data || {}) as ProfileData;
-      setFullName(child.data.full_name);
-      setBirthDate(profile.birth_date || "");
-      setGender(profile.gender || "");
-      setGradeLevel(profile.grade_level || "");
-      setAvatar(profile.avatar || (profile.photo_path ? "photo" : "leaf"));
-      setPhotoPath(profile.photo_path || "");
-
-      if (profile.photo_path) {
-        const signed = await supabase.storage.from("child-photos").createSignedUrl(profile.photo_path, 60 * 60);
-        if (signed.data?.signedUrl) setPhotoUrl(signed.data.signedUrl);
-      }
+  async function loadChild(showLoading = false) {
+    if (!supabase) {
+      setError("تعذر الاتصال بالخدمة.");
       setLoading(false);
+      return;
     }
 
-    loadChild();
+    if (showLoading) setLoading(true);
+    const { data: sessionData } = await supabase.auth.getSession();
+    const user = sessionData.session?.user;
+    if (!user) {
+      router.replace("/login");
+      return;
+    }
+
+    const organization = await supabase
+      .from("organizations")
+      .select("id")
+      .eq("owner_id", user.id)
+      .eq("type", "family")
+      .maybeSingle();
+
+    if (!organization.data) {
+      router.replace("/onboarding");
+      return;
+    }
+
+    const [child, goals, quranPlans] = await Promise.all([
+      supabase
+        .from("students")
+        .select("id, full_name, profile_data, achievement_points, reward_points")
+        .eq("id", studentId)
+        .eq("organization_id", organization.data.id)
+        .maybeSingle(),
+      supabase
+        .from("goals")
+        .select("id", { count: "exact", head: true })
+        .eq("student_id", studentId),
+      supabase
+        .from("quran_plans")
+        .select("id", { count: "exact", head: true })
+        .eq("student_id", studentId)
+    ]);
+
+    if (child.error || !child.data) {
+      setError(child.error?.message || "تعذر العثور على ملف الطفل.");
+      setLoading(false);
+      return;
+    }
+
+    const profile = (child.data.profile_data || {}) as ProfileData;
+    setFullName(child.data.full_name);
+    setBirthDate(profile.birth_date || "");
+    setGender(profile.gender || "");
+    setGradeLevel(profile.grade_level || "");
+    setAvatar(profile.avatar || (profile.photo_path ? "photo" : "leaf"));
+    setPhotoPath(profile.photo_path || "");
+    setAchievementPoints(Number(child.data.achievement_points || 0));
+    setRewardPoints(Number(child.data.reward_points || 0));
+    setGoalCount(goals.count || 0);
+    setQuranPlanCount(quranPlans.count || 0);
+
+    if (profile.photo_path) {
+      const signed = await supabase.storage.from("child-photos").createSignedUrl(profile.photo_path, 60 * 60);
+      if (signed.data?.signedUrl) setPhotoUrl(signed.data.signedUrl);
+    } else {
+      setPhotoUrl("");
+    }
+
+    setLoading(false);
+  }
+
+  useEffect(() => {
+    loadChild(true);
   }, [router, studentId]);
 
   const age = useMemo(() => {
@@ -328,17 +351,30 @@ export default function ChildProfilePage() {
         <section className="profile-summary-grid">
           <article><span>العمر</span><strong>{age !== null ? `${age} سنوات` : "غير محدد"}</strong></article>
           <article><span>الصف الدراسي</span><strong>{gradeLevel || "غير محدد"}</strong></article>
-          <article><span>النقاط الحالية</span><strong>0 نقطة</strong></article>
-          <article><span>الهدف الحالي</span><strong>لا يوجد هدف بعد</strong></article>
+          <article><span>نقاط الإنجاز</span><strong>{achievementPoints} ⭐</strong><small>{rewardPoints} نقطة مكافآت 💎</small></article>
+          <article><span>الأهداف الحالية</span><strong>{goalCount} هدف</strong><small>{quranPlanCount} خطة حفظ</small></article>
         </section>
       )}
 
       {success && !editing && <p className="form-message success-message profile-success">{success}</p>}
 
       <section className="profile-next-card">
-        <div><span className="section-label">الخطوة القادمة</span><h2>ابدأ أول هدف</h2><p>بعد اكتمال بيانات الطفل سنبدأ نظام الأهداف وفق المرحلة التالية من الخطة.</p></div>
-        <button className="quiet-button" type="button" disabled>إضافة هدف قريبًا</button>
+        <div><span className="section-label">متابعة الطفل</span><h2>انتقل مباشرة إلى القسم المطلوب</h2><p>أدر الأهداف والمهام وبرنامج الحفظ من ملف الطفل نفسه.</p></div>
+        <div className="profile-quick-links">
+          <Link className="quiet-button link-submit" href={`/children/${studentId}/goals`}>الأهداف</Link>
+          <Link className="quiet-button link-submit" href={`/children/${studentId}/tasks`}>المهام</Link>
+          <Link className="auth-submit link-submit" href={`/children/${studentId}/quran`}>حفظ القرآن</Link>
+        </div>
       </section>
+
+      <ChildRestartControls
+        studentId={studentId}
+        studentName={fullName}
+        achievementPoints={achievementPoints}
+        goalCount={goalCount}
+        quranPlanCount={quranPlanCount}
+        onChanged={() => loadChild(false)}
+      />
     </main>
   );
 }
