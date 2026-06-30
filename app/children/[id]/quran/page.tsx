@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
+import QuranPlanDeleteControls from "../../../components/QuranPlanDeleteControls";
 import { supabase } from "../../../../lib/supabase";
 
 type QuranPlan = {
@@ -237,8 +238,8 @@ export default function ParentQuranSupervisionPage() {
         <div className="quran-hero-copy">
           <span className="section-label">👁️ لوحة ولي الأمر</span>
           <h1>متابعة حفظ {studentName || "الطفل"}</h1>
-          <p>عرض مبسط للخطة والتقدم ونتائج المعلم دون أدوات مهنية أو أزرار اعتماد.</p>
-          <div className="role-scope-strip"><span>عرض الخطة</span><span>متابعة التقدم</span><span>نتائج المعلم</span><span>سجل الإنجاز</span></div>
+          <p>عرض مبسط للخطة والتقدم ونتائج المعلم، مع إمكانية حذف الخطة والبدء من جديد عند الحاجة.</p>
+          <div className="role-scope-strip"><span>عرض الخطة</span><span>متابعة التقدم</span><span>نتائج المعلم</span><span>إعادة البدء</span></div>
         </div>
         <div className="quran-hero-icon">📊</div>
       </section>
@@ -249,7 +250,7 @@ export default function ParentQuranSupervisionPage() {
         <span>{activeTeacher ? "👨‍🏫" : "🔗"}</span>
         <div>
           <strong>{activeTeacher ? `المعلم المسؤول: ${activeTeacher.teacher_name}` : "لا يوجد معلم مرتبط بالطالب"}</strong>
-          <p>{activeTeacher ? "المعلم يدير الخطة والتسميع والاعتماد، وأنت تتابع النتائج والتقدم." : "يلزم تفويض معلم حتى يبدأ البرنامج المهني للحفظ والتسميع."}</p>
+          <p>{activeTeacher ? "المعلم يدير الخطة والتسميع والاعتماد، وأنت تتابع النتائج وتستطيع إعادة البرنامج عند الحاجة." : "يلزم تفويض معلم حتى يبدأ البرنامج المهني للحفظ والتسميع."}</p>
         </div>
         <Link href={`/children/${studentId}/teacher`}>{activeTeacher ? "إدارة التفويض" : "تفويض معلم"}</Link>
       </section>
@@ -263,7 +264,20 @@ export default function ParentQuranSupervisionPage() {
       </section>
 
       <section className="quran-plan-manager-card parent-plan-viewer">
-        <div><span className="section-label">الخطط الحالية</span><h2>اختر خطة لمتابعة تفاصيلها</h2></div>
+        <div className="quran-plan-manager-title">
+          <div><span className="section-label">الخطط الحالية</span><h2>اختر خطة لمتابعة تفاصيلها</h2></div>
+          <QuranPlanDeleteControls
+            studentId={studentId}
+            studentName={studentName || "الطفل"}
+            selectedPlan={selectedPlan ? { id: selectedPlan.id, title: selectedPlan.title } : null}
+            planCount={plans.length}
+            onChanged={async () => {
+              setSelectedPlanId("");
+              setSegments([]);
+              await loadData();
+            }}
+          />
+        </div>
         {plans.length === 0 ? (
           <div className="quran-empty-state"><span>📘</span><h3>لا توجد خطة حفظ بعد</h3><p>{activeTeacher ? "يمكن للمعلم إنشاء أول خطة من حسابه." : "ابدأ بتفويض معلم للطالب."}</p></div>
         ) : (
