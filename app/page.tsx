@@ -104,7 +104,7 @@ export default function HomePage() {
 
       <footer className="namaa-footer">
         <div className="namaa-logo"><WaaiMark compact /><span><strong>واعي كيدز</strong><small>منصة تربوية ذكية لتنمية الطفل</small></span></div>
-        <p>kids.waai.sa — ينمو بوعي ويُنجز بثقة</p>
+        <p>waai-kids.com — ينمو بوعي ويُنجز بثقة</p>
       </footer>
     </main>
   );
