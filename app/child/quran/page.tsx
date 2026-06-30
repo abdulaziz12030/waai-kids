@@ -97,6 +97,7 @@ function pickCurrentSegment(segments: QuranSegment[], today: string) {
 export default function ChildQuranPage() {
   const router = useRouter();
   const focusRef = useRef<HTMLDivElement | null>(null);
+  const initializedRef = useRef(false);
   const [data, setData] = useState<QuranData>({ plans: [], segments: [] });
   const [loading, setLoading] = useState(true);
   const [busyId, setBusyId] = useState("");
@@ -164,11 +165,18 @@ export default function ChildQuranPage() {
   }, [planGroups, today]);
 
   useEffect(() => {
-    if (openPlanId && planGroups.some((group) => group.plan.id === openPlanId)) return;
-    const nextPlanId = recommendedGroup?.plan.id || "";
-    setOpenPlanId(nextPlanId);
-    setSelectedSegmentId(recommendedGroup?.current?.id || "");
-  }, [openPlanId, planGroups, recommendedGroup?.plan.id, recommendedGroup?.current?.id]);
+    if (!initializedRef.current && recommendedGroup) {
+      initializedRef.current = true;
+      setOpenPlanId(recommendedGroup.plan.id);
+      setSelectedSegmentId(recommendedGroup.current?.id || recommendedGroup.segments[0]?.id || "");
+      return;
+    }
+
+    if (openPlanId && !planGroups.some((group) => group.plan.id === openPlanId)) {
+      setOpenPlanId("");
+      setSelectedSegmentId("");
+    }
+  }, [openPlanId, planGroups, recommendedGroup]);
 
   const activeGroup = planGroups.find((group) => group.plan.id === openPlanId) || null;
   const activeSegment = activeGroup
