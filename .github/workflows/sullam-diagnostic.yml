@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - scripts/generate_sullam_wikisource.py
+      - scripts/build_sullam_content.py
       - .github/workflows/sullam-diagnostic.yml
 
 permissions:
@@ -26,7 +27,7 @@ jobs:
         shell: bash
         run: |
           set +e
-          python scripts/generate_sullam_wikisource.py > sullam-diagnostic.log 2>&1
+          python scripts/build_sullam_content.py > sullam-diagnostic.log 2>&1
           status=$?
           echo "exit_code=$status" >> "$GITHUB_OUTPUT"
           cat sullam-diagnostic.log
