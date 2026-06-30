@@ -47,8 +47,8 @@ const waaiKidsBrandRuntime = `
     .replace(/WAAI(?! KIDS)/g, 'WAAI KIDS')
     .replace(/Namaa/g, 'Waai Kids')
     .replace(/Waai(?! Kids)/g, 'Waai Kids')
-    .replace(/https:\/\/waai\.sa/g, 'https://kids.waai.sa')
-    .replace(/(^|[^.])waai\.sa/g, '$1kids.waai.sa');
+    .replace(/https:\/\/kids\.waai\.sa/g, 'https://waai-kids.com')
+    .replace(/kids\.waai\.sa/g, 'waai-kids.com');
 
   const updateBrand = () => {
     if (!document.body) return;
