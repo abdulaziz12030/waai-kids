@@ -21,6 +21,7 @@ EXPECTED_LAST = (
 
 
 def main() -> int:
+    # Build from the live Wikisource page, then enforce the verified boundaries.
     generator.main()
     path = Path(generator.OUTPUT_PATH)
     document = json.loads(path.read_text(encoding="utf-8"))
