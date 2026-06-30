@@ -1,0 +1,37 @@
+name: Validate Sullam Generator
+
+on:
+  pull_request:
+    paths:
+      - scripts/generate_sullam_wikisource.py
+      - .github/workflows/sullam-diagnostic.yml
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install parser dependencies
+        run: python -m pip install --disable-pip-version-check requests beautifulsoup4
+      - name: Generate and validate JSON
+        run: python scripts/generate_sullam_wikisource.py
+      - name: Show generated summary
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          path = Path('public/content/religious-sciences/sullam-al-wusul.json')
+          data = json.loads(path.read_text(encoding='utf-8'))
+          print('chapters=', len(data['chapters']))
+          print('verses=', sum(len(chapter['verses']) for chapter in data['chapters']))
+          print('first=', data['chapters'][0]['verses'][0]['full_text'])
+          print('last=', data['chapters'][-1]['verses'][-1]['full_text'])
+          PY
