@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
+import MemorizationPlanBuilder from "../../../components/MemorizationPlanBuilder";
 import QuranPlanDeleteControls from "../../../components/QuranPlanDeleteControls";
 import { supabase } from "../../../../lib/supabase";
 
@@ -229,43 +230,53 @@ export default function ParentQuranSupervisionPage() {
       <header className="dashboard-header role-aware-header parent-role-header">
         <Link className="brand" href="/dashboard"><span className="brand-mark">ن</span><span>نماء</span></Link>
         <div className="role-header-actions">
-          <span className="role-identity-badge parent"><b>ولي الأمر</b><small>متابعة وإشراف</small></span>
+          <span className="role-identity-badge parent"><b>ولي الأمر</b><small>متابعة وإنشاء</small></span>
           <Link className="quiet-button link-submit" href={`/children/${studentId}`}>ملف الطفل</Link>
         </div>
       </header>
 
       <section className="quran-program-hero parent-supervision-hero role-distinct-hero">
         <div className="quran-hero-copy">
-          <span className="section-label">👁️ لوحة ولي الأمر</span>
-          <h1>متابعة حفظ {studentName || "الطفل"}</h1>
-          <p>عرض مبسط للخطة والتقدم ونتائج المعلم، مع إمكانية حذف الخطة والبدء من جديد عند الحاجة.</p>
-          <div className="role-scope-strip"><span>عرض الخطة</span><span>متابعة التقدم</span><span>نتائج المعلم</span><span>إعادة البدء</span></div>
+          <span className="section-label">👨‍👩‍👦 لوحة ولي الأمر</span>
+          <h1>برامج حفظ {studentName || "الطفل"}</h1>
+          <p>أنشئ برنامج قرآن أو متنًا دينيًا، ثم تابع التقدم ونتائج التسميع من مكان واحد.</p>
+          <div className="role-scope-strip"><span>إنشاء الخطة</span><span>تقسيم تلقائي</span><span>متابعة التقدم</span><span>إعادة البدء</span></div>
         </div>
-        <div className="quran-hero-icon">📊</div>
+        <div className="quran-hero-icon">🧭</div>
       </section>
 
       {error && <p className="form-message error-message">{error}</p>}
+
+      <MemorizationPlanBuilder
+        studentId={studentId}
+        role="parent"
+        studentName={studentName || "الطفل"}
+        onCreated={async () => {
+          setSelectedPlanId("");
+          await loadData();
+        }}
+      />
 
       <section className={`parent-teacher-supervision-card ${activeTeacher ? "linked" : "unlinked"}`}>
         <span>{activeTeacher ? "👨‍🏫" : "🔗"}</span>
         <div>
           <strong>{activeTeacher ? `المعلم المسؤول: ${activeTeacher.teacher_name}` : "لا يوجد معلم مرتبط بالطالب"}</strong>
-          <p>{activeTeacher ? "المعلم يدير الخطة والتسميع والاعتماد، وأنت تتابع النتائج وتستطيع إعادة البرنامج عند الحاجة." : "يلزم تفويض معلم حتى يبدأ البرنامج المهني للحفظ والتسميع."}</p>
+          <p>{activeTeacher ? "يمكن لولي الأمر والمعلم إنشاء البرامج، ويتولى المعلم التقييم العلمي للتسميع." : "يمكنك إنشاء البرنامج ومتابعته، كما تستطيع تفويض معلم للتقييم المهني."}</p>
         </div>
         <Link href={`/children/${studentId}/teacher`}>{activeTeacher ? "إدارة التفويض" : "تفويض معلم"}</Link>
       </section>
 
       <section className="parent-quran-summary-grid">
-        <article><span>📚</span><div><strong>{plans.length}</strong><small>خطط الحفظ</small></div></article>
+        <article><span>📚</span><div><strong>{plans.length}</strong><small>برامج الحفظ</small></div></article>
         <article><span>📖</span><div><strong>{totalSegments}</strong><small>إجمالي المقاطع</small></div></article>
-        <article><span>⏳</span><div><strong>{waitingSegments}</strong><small>بانتظار المعلم</small></div></article>
+        <article><span>⏳</span><div><strong>{waitingSegments}</strong><small>بانتظار المراجعة</small></div></article>
         <article><span>🔄</span><div><strong>{revisionSegmentsCount}</strong><small>للتصحيح</small></div></article>
         <article><span>✅</span><div><strong>{masteredSegments}</strong><small>متقنة ومعتمدة</small></div></article>
       </section>
 
       <section className="quran-plan-manager-card parent-plan-viewer">
         <div className="quran-plan-manager-title">
-          <div><span className="section-label">الخطط الحالية</span><h2>اختر خطة لمتابعة تفاصيلها</h2></div>
+          <div><span className="section-label">الخطط الحالية</span><h2>اختر برنامجًا لمتابعة تفاصيله</h2></div>
           <QuranPlanDeleteControls
             studentId={studentId}
             studentName={studentName || "الطفل"}
@@ -279,13 +290,13 @@ export default function ParentQuranSupervisionPage() {
           />
         </div>
         {plans.length === 0 ? (
-          <div className="quran-empty-state"><span>📘</span><h3>لا توجد خطة حفظ بعد</h3><p>{activeTeacher ? "يمكن للمعلم إنشاء أول خطة من حسابه." : "ابدأ بتفويض معلم للطالب."}</p></div>
+          <div className="quran-empty-state"><span>📘</span><h3>لا توجد خطة حفظ بعد</h3><p>استخدم نموذج الإنشاء أعلاه لإضافة أول برنامج.</p></div>
         ) : (
           <div className="quran-plan-control-list">
             {plans.map((plan) => (
               <article key={plan.id} className={selectedPlanId === plan.id ? "active" : ""}>
                 <button type="button" onClick={() => setSelectedPlanId(plan.id)}>
-                  <span>📘</span>
+                  <span>{plan.surah_number ? "📖" : "📜"}</span>
                   <div><strong>{plan.title}</strong><small>{plan.mastered_count} من {plan.segments_count} متقنة · ينتهي {formatDate(plan.due_date)}</small></div>
                 </button>
               </article>
@@ -297,7 +308,7 @@ export default function ParentQuranSupervisionPage() {
       {selectedPlan && (
         <>
           <section className="parent-plan-progress-card">
-            <div><span className="section-label">تقدم البرنامج</span><h2>{selectedPlan.title}</h2><p>{selectedPlan.duration_days || "—"} يومًا · بمعدل {selectedPlan.daily_target || "—"} آيات يوميًا</p></div>
+            <div><span className="section-label">تقدم البرنامج</span><h2>{selectedPlan.title}</h2><p>{selectedPlan.duration_days || "—"} يومًا · بمعدل {selectedPlan.daily_target || "—"} وحدة يوميًا</p></div>
             <div className="parent-progress-number"><strong>{progress}%</strong><small>نسبة الإتقان</small></div>
             <div className="parent-progress-track"><span style={{ width: `${progress}%` }} /></div>
           </section>
@@ -346,8 +357,8 @@ export default function ParentQuranSupervisionPage() {
 
       <section className="future-parent-rewards-card">
         <span>🎁</span>
-        <div><strong>المكافآت والهدايا وسجل الإنجازات</strong><p>سيُتاح لولي الأمر لاحقًا مكافأة الطفل بعد إتمام البرنامج أو المهام، وإهداؤه هدية أو شهادة شكر تُضاف إلى سجل إنجازاته.</p></div>
-        <small>قريبًا</small>
+        <div><strong>المكافآت والهدايا وسجل الإنجازات</strong><p>تُحتسب نقاط المقاطع ضمن هدف البرنامج، ويمكن مكافأة الطفل عند إتمامه.</p></div>
+        <small>مرتبط بالأهداف</small>
       </section>
     </main>
   );
