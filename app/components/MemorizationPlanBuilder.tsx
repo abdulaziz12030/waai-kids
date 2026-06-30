@@ -32,6 +32,16 @@ type Props = {
   showQuran?: boolean;
 };
 
+type Preview = {
+  total: number;
+  scheduledDays: number;
+  dailyMin: number;
+  dailyMax: number;
+  dueDate: string;
+  duration: number;
+  isSpreadAcrossDuration: boolean;
+};
+
 function localToday() {
   const date = new Date();
   const offset = date.getTimezoneOffset();
@@ -97,16 +107,21 @@ export default function MemorizationPlanBuilder({
     [catalog, selectedSlug]
   );
 
-  const preview = useMemo(() => {
+  const preview = useMemo<Preview>(() => {
     const duration = Math.max(1, Math.min(365, Number(durationDays || 1)));
     const total = mode === "quran" ? selectedSurah.ayahs : Math.max(1, Number(selectedItem?.units_count || 1));
-    const scheduledDays = Math.min(duration, total);
+    const maxMatnSegments = Math.max(1, Math.floor(total / 2));
+    const scheduledDays = mode === "religious"
+      ? Math.min(duration, maxMatnSegments)
+      : Math.min(duration, total);
     return {
       total,
       scheduledDays,
       dailyMin: Math.floor(total / scheduledDays),
       dailyMax: Math.ceil(total / scheduledDays),
-      dueDate: addDays(startDate, duration - 1)
+      dueDate: addDays(startDate, duration - 1),
+      duration,
+      isSpreadAcrossDuration: mode === "religious" && scheduledDays < duration
     };
   }, [durationDays, mode, selectedItem?.units_count, selectedSurah.ayahs, startDate]);
 
@@ -171,7 +186,7 @@ export default function MemorizationPlanBuilder({
       setError(result.error.message || "تعذر إنشاء برنامج المتن.");
       return;
     }
-    setSuccess(`تم إنشاء ${selectedItem.short_title} وربطه بهدف تعليمي وتقسيمه على الأيام.`);
+    setSuccess(`تم إنشاء ${selectedItem.short_title} وتقسيمه على المدة بحد أدنى بيتين في كل مقطع.`);
     await onCreated?.();
   }
 
@@ -181,7 +196,7 @@ export default function MemorizationPlanBuilder({
         <div>
           <span className="section-label">🧭 إنشاء برنامج جديد</span>
           <h2>{role === "parent" ? `خطط حفظ ${studentName}` : "مكتبة العلوم الدينية"}</h2>
-          <p>اختر المادة والمدة، وستُنشأ المقاطع اليومية والهدف التعليمي تلقائيًا.</p>
+          <p>اختر المادة والمدة، وستُنشأ المقاطع والهدف التعليمي تلقائيًا.</p>
         </div>
         <span className={`builder-role-badge ${role}`}>{role === "parent" ? "ولي الأمر" : "المعلم"}</span>
       </div>
@@ -204,7 +219,7 @@ export default function MemorizationPlanBuilder({
             </select>
           </label>
           <BuilderFields startDate={startDate} setStartDate={setStartDate} durationDays={durationDays} setDurationDays={setDurationDays} achievementPoints={achievementPoints} setAchievementPoints={setAchievementPoints} rewardPoints={rewardPoints} setRewardPoints={setRewardPoints} notes={notes} setNotes={setNotes} />
-          <PlanPreview totalLabel={`${preview.total} آية`} preview={preview} />
+          <PlanPreview totalLabel={`${preview.total} آية`} preview={preview} religious={false} />
           <button className="auth-submit builder-create-button" disabled={saving} type="submit">{saving ? "جارٍ إنشاء البرنامج..." : "إنشاء وتقسيم برنامج القرآن"}</button>
         </form>
       ) : (
@@ -213,13 +228,13 @@ export default function MemorizationPlanBuilder({
             {catalog.length === 0 ? <p className="queue-empty-message">لا توجد متون منشورة حاليًا.</p> : catalog.map((item) => (
               <button type="button" key={item.id} className={selectedSlug === item.slug ? "active" : ""} onClick={() => setSelectedSlug(item.slug)}>
                 <span>📜</span>
-                <div><small>{item.science_category}</small><strong>{item.short_title}</strong><p>{item.description}</p><em>{item.units_count} وحدة · {item.chapters_count} فصل</em></div>
+                <div><small>{item.science_category}</small><strong>{item.short_title}</strong><p>{item.description}</p><em>{item.units_count} بيتًا · {item.chapters_count} قسمًا</em></div>
               </button>
             ))}
           </div>
           {selectedItem && <div className="selected-matn-note builder-wide-field"><strong>{selectedItem.title}</strong><span>{selectedItem.author || "مؤلف غير محدد"}</span>{selectedItem.source_note && <p>{selectedItem.source_note}</p>}</div>}
           <BuilderFields startDate={startDate} setStartDate={setStartDate} durationDays={durationDays} setDurationDays={setDurationDays} achievementPoints={achievementPoints} setAchievementPoints={setAchievementPoints} rewardPoints={rewardPoints} setRewardPoints={setRewardPoints} notes={notes} setNotes={setNotes} />
-          <PlanPreview totalLabel={`${preview.total} بيت/وحدة`} preview={preview} />
+          <PlanPreview totalLabel={`${preview.total} بيتًا`} preview={preview} religious />
           <button className="auth-submit builder-create-button" disabled={saving || !selectedItem} type="submit">{saving ? "جارٍ إنشاء البرنامج..." : "إنشاء هدف وبرنامج المتن"}</button>
         </form>
       )}
@@ -252,13 +267,20 @@ function BuilderFields(props: BuilderFieldsProps) {
   );
 }
 
-function PlanPreview({ totalLabel, preview }: { totalLabel: string; preview: { scheduledDays: number; dailyMin: number; dailyMax: number; dueDate: string } }) {
+function PlanPreview({ totalLabel, preview, religious }: { totalLabel: string; preview: Preview; religious: boolean }) {
   return (
     <div className="memorization-plan-preview builder-wide-field">
       <article><span>المحتوى</span><strong>{totalLabel}</strong></article>
-      <article><span>أيام الحفظ</span><strong>{preview.scheduledDays}</strong></article>
-      <article><span>الورد اليومي</span><strong>{preview.dailyMin === preview.dailyMax ? preview.dailyMin : `${preview.dailyMin}–${preview.dailyMax}`}</strong></article>
+      <article><span>{religious ? "مقاطع الحفظ" : "أيام الحفظ"}</span><strong>{preview.scheduledDays}</strong></article>
+      <article><span>{religious ? "أبيات كل مقطع" : "الورد اليومي"}</span><strong>{preview.dailyMin === preview.dailyMax ? preview.dailyMin : `${preview.dailyMin}–${preview.dailyMax}`}</strong></article>
       <article><span>نهاية البرنامج</span><strong>{formatDate(preview.dueDate)}</strong></article>
+      {religious && (
+        <p className="builder-preview-note">
+          الحد الأدنى بيتان في كل مقطع. {preview.isSpreadAcrossDuration
+            ? `ستوزع ${preview.scheduledDays} جلسة حفظ على كامل مدة البرنامج (${preview.duration} يومًا)، مع أيام للمراجعة والراحة.`
+            : "ستوزع المقاطع يوميًا على المدة المحددة."}
+        </p>
+      )}
     </div>
   );
 }
