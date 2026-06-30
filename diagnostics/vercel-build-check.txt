@@ -1,1 +1,2 @@
 Temporary pull-request build diagnostic for the WAAI Kids deployment.
+Rerun after correcting the GitHub Actions dependency installation.
