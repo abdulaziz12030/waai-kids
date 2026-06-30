@@ -24,6 +24,7 @@ import './landing-teacher-entry.css';
 import './animated-stats.css';
 import './family-quran.css';
 import './child-quran.css';
+import './child-matn.css';
 import './quran-readable.css';
 import './quran-display.css';
 import './teacher-quran.css';
