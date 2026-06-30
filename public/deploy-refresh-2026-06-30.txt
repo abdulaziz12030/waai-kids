@@ -1,0 +1,2 @@
+WAAI Kids deployment refresh for the child Quran page.
+Commit created on 2026-06-30 Asia/Riyadh.
