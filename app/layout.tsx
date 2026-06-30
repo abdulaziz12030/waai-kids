@@ -36,6 +36,7 @@ import './login-roles.css';
 import './teacher-workspace.css';
 import './teacher-review-polish.css';
 import './teacher-recovery.css';
+import './memorization-builder.css';
 import './waai-brand.css';
 
 const waaiKidsBrandRuntime = `
