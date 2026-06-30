@@ -31,6 +31,7 @@ import './quran-plan-controls.css';
 import './quran-audio.css';
 import './parent-review-pipeline.css';
 import './quran-role-separation.css';
+import './restart-controls.css';
 import './login-roles.css';
 import './teacher-workspace.css';
 import './teacher-review-polish.css';
