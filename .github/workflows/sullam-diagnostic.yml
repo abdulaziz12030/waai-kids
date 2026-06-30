@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - scripts/generate_sullam_wikisource.py
+      - scripts/build_sullam_content.py
       - .github/workflows/sullam-diagnostic.yml
 
 permissions:
@@ -21,9 +22,29 @@ jobs:
           python-version: "3.12"
       - name: Install parser dependencies
         run: python -m pip install --disable-pip-version-check requests beautifulsoup4
-      - name: Generate and validate JSON
-        run: python scripts/generate_sullam_wikisource.py
+      - name: Generate and capture diagnostics
+        id: generate
+        shell: bash
+        run: |
+          set +e
+          python scripts/build_sullam_content.py > sullam-diagnostic.log 2>&1
+          status=$?
+          echo "exit_code=$status" >> "$GITHUB_OUTPUT"
+          cat sullam-diagnostic.log
+          exit 0
+      - name: Upload diagnostic output
+        uses: actions/upload-artifact@v4
+        with:
+          name: sullam-diagnostic
+          path: |
+            sullam-diagnostic.log
+            public/content/religious-sciences/sullam-al-wusul.json
+          if-no-files-found: warn
+      - name: Fail when generation failed
+        if: steps.generate.outputs.exit_code != '0'
+        run: exit 1
       - name: Show generated summary
+        if: steps.generate.outputs.exit_code == '0'
         run: |
           python - <<'PY'
           import json

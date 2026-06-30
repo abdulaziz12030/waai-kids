@@ -1,9 +1,5 @@
 #!/usr/bin/env python3
-"""Generate the Sullam al-Wusul religious-science JSON from Arabic Wikisource.
-
-The script deliberately validates the published 290-verse count before writing
-anything, so a Wikisource markup change cannot silently corrupt the library.
-"""
+"""Generate the Sullam al-Wusul JSON from Arabic Wikisource."""
 
 from __future__ import annotations
 
@@ -21,7 +17,6 @@ PAGE_URL = "https://ar.wikisource.org/wiki/%D8%B3%D9%84%D9%85_%D8%A7%D9%84%D9%88
 API_URL = "https://ar.wikisource.org/w/api.php"
 OUTPUT_PATH = Path("public/content/religious-sciences/sullam-al-wusul.json")
 EXPECTED_VERSES = 290
-
 ARABIC_DIGITS = "٠١٢٣٤٥٦٧٨٩"
 
 
@@ -40,31 +35,38 @@ def clean_line(value: str) -> str:
 
 def is_content_heading(text: str) -> bool:
     text = normalize_space(text)
-    return (
-        text == "افتتاح"
-        or text.startswith("مقدمة:")
-        or text.startswith("فصل:")
-        or text.startswith("خاتمة:")
-    )
+    return text == "افتتاح" or text.startswith(("مقدمة:", "فصل:", "خاتمة:"))
+
+
+def heading_anchor(heading: Tag) -> Tag:
+    parent = heading.parent
+    if isinstance(parent, Tag) and "mw-heading" in (parent.get("class") or []):
+        return parent
+    return heading
+
+
+def contains_section_heading(node: Tag) -> bool:
+    if node.name in {"h2", "h3"}:
+        return True
+    classes = node.get("class") or []
+    return "mw-heading" in classes and node.find(["h2", "h3"], recursive=False) is not None
 
 
 def direct_section_nodes(heading: Tag) -> list[Tag]:
     nodes: list[Tag] = []
-    for sibling in heading.next_siblings:
+    for sibling in heading_anchor(heading).next_siblings:
         if isinstance(sibling, NavigableString):
             continue
         if not isinstance(sibling, Tag):
             continue
-        if sibling.name in {"h2", "h3"}:
+        if contains_section_heading(sibling):
             break
         nodes.append(sibling)
     return nodes
 
 
 def valid_line(value: str) -> bool:
-    if not value:
-        return False
-    if value in {"عدل", "هامش"}:
+    if not value or value in {"عدل", "هامش", "=", "–", "—"}:
         return False
     if re.fullmatch(r"[0-9%s]+" % ARABIC_DIGITS, value):
         return False
@@ -77,51 +79,58 @@ def split_text(value: str) -> list[str]:
     return [line for line in (clean_line(item) for item in value.splitlines()) if valid_line(line)]
 
 
-def extract_table_rows(nodes: Iterable[Tag]) -> list[str]:
-    lines: list[str] = []
-    for node in nodes:
-        tables = [node] if node.name == "table" else node.find_all("table", recursive=False)
-        for table in tables:
-            for row in table.find_all("tr"):
-                cells = row.find_all(["td", "th"], recursive=False)
-                row_lines = [clean_line(cell.get_text(" ", strip=True)) for cell in cells]
-                row_lines = [line for line in row_lines if valid_line(line) and line not in {"=", "–", "—"}]
-                lines.extend(row_lines)
-    return lines
+def clean_element_text(element: Tag, separator: str = " ") -> str:
+    clone = BeautifulSoup(str(element), "html.parser")
+    for selector in ["sup", ".reference", ".mw-editsection", "style", "script", "noscript"]:
+        for item in clone.select(selector):
+            item.decompose()
+    return clean_line(clone.get_text(separator, strip=True))
 
 
-def extract_leaf_blocks(nodes: Iterable[Tag]) -> list[str]:
-    lines: list[str] = []
+def section_tables(nodes: Iterable[Tag]) -> list[Tag]:
+    tables: list[Tag] = []
+    seen: set[int] = set()
     for node in nodes:
-        # Prefer semantic poem/verse line containers when present.
-        selectors = [
-            ".poem-line",
-            ".verse",
-            ".hemistich",
-            "p",
-            "dd",
-            "li",
-        ]
-        matched: list[Tag] = []
+        found = [node] if node.name == "table" else node.find_all("table")
+        for table in found:
+            marker = id(table)
+            if marker not in seen:
+                seen.add(marker)
+                tables.append(table)
+    return tables
+
+
+def extract_one_table(table: Tag) -> list[str]:
+    lines: list[str] = []
+    for row in table.find_all("tr"):
+        cells = row.find_all(["td", "th"], recursive=False)
+        for cell in cells:
+            value = clean_element_text(cell)
+            if valid_line(value):
+                lines.append(value)
+    return dedupe_adjacent(lines)
+
+
+def extract_table_candidates(nodes: Iterable[Tag]) -> list[list[str]]:
+    return [lines for table in section_tables(nodes) if (lines := extract_one_table(table))]
+
+
+def extract_poem_blocks(nodes: Iterable[Tag]) -> list[str]:
+    lines: list[str] = []
+    selectors = [".poem-line", ".verse", ".hemistich", ".ws-poem-line", "p", "dd"]
+    for node in nodes:
         for selector in selectors:
-            matched.extend(node.select(selector))
-        seen: set[int] = set()
-        for block in matched:
-            if id(block) in seen or block.find_parent("table") is not None:
-                continue
-            seen.add(id(block))
-            lines.extend(split_text(block.get_text("\n", strip=True)))
+            for block in node.select(selector):
+                if block.find_parent("table") is not None:
+                    continue
+                lines.extend(split_text(clean_element_text(block, "\n")))
     return lines
 
 
-def extract_all_visible(nodes: Iterable[Tag]) -> list[str]:
+def extract_visible(nodes: Iterable[Tag]) -> list[str]:
     lines: list[str] = []
     for node in nodes:
-        clone = BeautifulSoup(str(node), "html.parser")
-        for selector in ["sup", ".reference", ".mw-editsection", "style", "script", "noscript"]:
-            for item in clone.select(selector):
-                item.decompose()
-        lines.extend(split_text(clone.get_text("\n", strip=True)))
+        lines.extend(split_text(clean_element_text(node, "\n")))
     return lines
 
 
@@ -134,40 +143,36 @@ def dedupe_adjacent(lines: list[str]) -> list[str]:
 
 
 def candidate_section_lines(nodes: list[Tag]) -> list[list[str]]:
-    table = extract_table_rows(nodes)
-    leaf = extract_leaf_blocks(nodes)
-    visible = extract_all_visible(nodes)
-    combined = table + [line for line in leaf if line not in table]
-    candidates = [
-        dedupe_adjacent(table),
-        dedupe_adjacent(combined),
-        dedupe_adjacent(leaf),
-        dedupe_adjacent(visible),
-    ]
-    return [candidate for candidate in candidates if candidate]
+    table_candidates = extract_table_candidates(nodes)
+    poem = dedupe_adjacent(extract_poem_blocks(nodes))
+    visible = dedupe_adjacent(extract_visible(nodes))
+    candidates = table_candidates + [poem, visible]
+    unique: list[list[str]] = []
+    for candidate in candidates:
+        if candidate and candidate not in unique:
+            unique.append(candidate)
+    return unique
 
 
 def choose_chapter_lines(chapter_candidates: list[list[list[str]]]) -> list[list[str]]:
-    """Try candidate combinations and select the one matching 580 hemistichs."""
     target = EXPECTED_VERSES * 2
-    # Most pages use the same extraction structure for every chapter.
-    for strategy_index in range(4):
-        selected: list[list[str]] = []
-        valid = True
-        for candidates in chapter_candidates:
-            if strategy_index >= len(candidates):
-                valid = False
-                break
-            lines = candidates[strategy_index]
-            if len(lines) % 2:
-                valid = False
-                break
-            selected.append(lines)
-        if valid and sum(map(len, selected)) == target:
-            return selected
-
-    # Fallback: bounded search, choosing an even candidate per chapter.
     possibilities = [[item for item in candidates if len(item) % 2 == 0] for candidates in chapter_candidates]
+
+    # Every chapter currently exposes one poem table. The last section is the
+    # only one followed by page footnotes inside the same parse range. Remove
+    # a small even surplus from its end only after reference tags were removed,
+    # then keep the global 290-verse assertion as the final safeguard.
+    if all(len(options) == 1 for options in possibilities):
+        selected = [list(options[0]) for options in possibilities]
+        excess = sum(len(lines) for lines in selected) - target
+        if excess == 0:
+            return selected
+        if 0 < excess <= 12 and excess % 2 == 0 and len(selected[-1]) > excess:
+            selected[-1] = selected[-1][:-excess]
+            if sum(len(lines) for lines in selected) == target:
+                print(f"Removed {excess} trailing Wikisource footnote lines.")
+                return selected
+
     states: dict[int, list[list[str]]] = {0: []}
     for chapter_options in possibilities:
         next_states: dict[int, list[list[str]]] = {}
@@ -179,7 +184,6 @@ def choose_chapter_lines(chapter_candidates: list[list[list[str]]]) -> list[list
         states = next_states
     if target in states:
         return states[target]
-
     diagnostics = [[len(item) for item in candidates] for candidates in chapter_candidates]
     raise RuntimeError(f"Could not extract exactly {target} hemistichs. Candidate counts: {diagnostics}")
 
@@ -187,19 +191,12 @@ def choose_chapter_lines(chapter_candidates: list[list[list[str]]]) -> list[list
 def main() -> int:
     response = requests.get(
         API_URL,
-        params={
-            "action": "parse",
-            "page": PAGE_TITLE,
-            "prop": "text",
-            "format": "json",
-            "formatversion": "2",
-        },
+        params={"action": "parse", "page": PAGE_TITLE, "prop": "text", "format": "json", "formatversion": "2"},
         headers={"User-Agent": "WaaiKidsContentImporter/1.0 (educational project)"},
         timeout=45,
     )
     response.raise_for_status()
-    payload = response.json()
-    html = payload["parse"]["text"]
+    html = response.json()["parse"]["text"]
     soup = BeautifulSoup(html, "html.parser")
     root = soup.select_one(".mw-parser-output") or soup
 
@@ -207,40 +204,27 @@ def main() -> int:
     if len(headings) != 15:
         raise RuntimeError(f"Expected 15 content chapters, found {len(headings)}: {[h.get_text(' ', strip=True) for h in headings]}")
 
-    chapter_candidates: list[list[list[str]]] = []
     chapter_titles: list[str] = []
+    chapter_candidates: list[list[list[str]]] = []
     for heading in headings:
         chapter_titles.append(normalize_space(heading.get_text(" ", strip=True)))
-        nodes = direct_section_nodes(heading)
-        candidates = candidate_section_lines(nodes)
-        chapter_candidates.append(candidates)
+        chapter_candidates.append(candidate_section_lines(direct_section_nodes(heading)))
 
     chosen_lines = choose_chapter_lines(chapter_candidates)
     chapters: list[dict[str, object]] = []
     verse_number = 0
-
     for chapter_number, (title, lines) in enumerate(zip(chapter_titles, chosen_lines, strict=True), start=1):
         verses: list[dict[str, object]] = []
         for index in range(0, len(lines), 2):
             verse_number += 1
-            first = lines[index]
-            second = lines[index + 1]
-            verses.append(
-                {
-                    "verse_number": verse_number,
-                    "first_hemistich": first,
-                    "second_hemistich": second,
-                    "full_text": f"{first}\n{second}",
-                }
-            )
-        chapters.append(
-            {
-                "chapter_number": chapter_number,
-                "title": title,
-                "sort_order": chapter_number,
-                "verses": verses,
-            }
-        )
+            first, second = lines[index], lines[index + 1]
+            verses.append({
+                "verse_number": verse_number,
+                "first_hemistich": first,
+                "second_hemistich": second,
+                "full_text": f"{first}\n{second}",
+            })
+        chapters.append({"chapter_number": chapter_number, "title": title, "sort_order": chapter_number, "verses": verses})
 
     if verse_number != EXPECTED_VERSES:
         raise RuntimeError(f"Expected {EXPECTED_VERSES} verses, generated {verse_number}")

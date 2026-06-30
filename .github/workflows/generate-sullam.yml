@@ -7,6 +7,7 @@ on:
       - main
     paths:
       - scripts/generate_sullam_wikisource.py
+      - scripts/build_sullam_content.py
       - .github/workflows/generate-sullam.yml
 
 permissions:
@@ -30,7 +31,7 @@ jobs:
         run: python -m pip install --disable-pip-version-check requests beautifulsoup4
 
       - name: Generate and validate JSON
-        run: python scripts/generate_sullam_wikisource.py
+        run: python scripts/build_sullam_content.py
 
       - name: Commit generated content
         run: |
