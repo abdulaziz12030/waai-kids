@@ -35,3 +35,4 @@ jobs:
           print('first=', data['chapters'][0]['verses'][0]['full_text'])
           print('last=', data['chapters'][-1]['verses'][-1]['full_text'])
           PY
+          # Diagnostic workflow only; it never writes to the repository.
