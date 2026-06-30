@@ -42,6 +42,16 @@ type QuranData = {
   segments: QuranSegment[];
 };
 
+type PlanGroup = {
+  plan: QuranPlan;
+  segments: QuranSegment[];
+  current: QuranSegment | null;
+  assignedCount: number;
+  waitingCount: number;
+  masteredCount: number;
+  progress: number;
+};
+
 const statusLabels: Record<string, string> = {
   assigned: "مطلوب حفظه",
   memorized: "أُرسل للتسميع",
@@ -66,17 +76,32 @@ function formatDate(dateValue: string | null) {
 }
 
 function segmentSortValue(segment: QuranSegment) {
-  const dateValue = segment.scheduled_date ? new Date(`${segment.scheduled_date}T00:00:00`).getTime() : Number.MAX_SAFE_INTEGER;
+  const dateValue = segment.scheduled_date
+    ? new Date(`${segment.scheduled_date}T00:00:00`).getTime()
+    : Number.MAX_SAFE_INTEGER;
   return dateValue + Number(segment.day_number || 0);
+}
+
+function pickCurrentSegment(segments: QuranSegment[], today: string) {
+  const sorted = [...segments].sort((a, b) => segmentSortValue(a) - segmentSortValue(b));
+  return (
+    sorted.find((segment) => segment.status === "needs_revision") ||
+    sorted.find((segment) => segment.status === "assigned" && (!segment.scheduled_date || segment.scheduled_date <= today)) ||
+    sorted.find((segment) => segment.status === "assigned") ||
+    sorted.find((segment) => ["memorized", "recited"].includes(segment.status)) ||
+    sorted.find((segment) => segment.status === "mastered") ||
+    null
+  );
 }
 
 export default function ChildQuranPage() {
   const router = useRouter();
-  const focusRef = useRef<HTMLElement | null>(null);
+  const focusRef = useRef<HTMLDivElement | null>(null);
   const [data, setData] = useState<QuranData>({ plans: [], segments: [] });
   const [loading, setLoading] = useState(true);
   const [busyId, setBusyId] = useState("");
   const [recordingSegmentId, setRecordingSegmentId] = useState("");
+  const [openPlanId, setOpenPlanId] = useState("");
   const [selectedSegmentId, setSelectedSegmentId] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -106,70 +131,58 @@ export default function ChildQuranPage() {
 
   const today = localToday();
 
-  const sortedSegments = useMemo(
-    () => [...data.segments].sort((a, b) => segmentSortValue(a) - segmentSortValue(b)),
-    [data.segments]
-  );
+  const planGroups = useMemo<PlanGroup[]>(() => {
+    return data.plans.map((plan) => {
+      const segments = data.segments
+        .filter((segment) => segment.plan_id === plan.id)
+        .sort((a, b) => segmentSortValue(a) - segmentSortValue(b));
+      const masteredCount = segments.filter((segment) => segment.status === "mastered").length;
+      const assignedCount = segments.filter((segment) => ["assigned", "needs_revision"].includes(segment.status)).length;
+      const waitingCount = segments.filter((segment) => ["memorized", "recited"].includes(segment.status)).length;
+      const progress = segments.length > 0 ? Math.round((masteredCount / segments.length) * 100) : 0;
 
-  const defaultSegment = useMemo(() => {
-    const revision = sortedSegments.find((segment) => segment.status === "needs_revision");
-    if (revision) return revision;
+      return {
+        plan,
+        segments,
+        current: pickCurrentSegment(segments, today),
+        assignedCount,
+        waitingCount,
+        masteredCount,
+        progress
+      };
+    });
+  }, [data.plans, data.segments, today]);
 
-    const dueNow = sortedSegments.find((segment) =>
-      segment.status === "assigned" && (!segment.scheduled_date || segment.scheduled_date <= today)
+  const recommendedGroup = useMemo(() => {
+    return (
+      planGroups.find((group) => group.current?.status === "needs_revision") ||
+      planGroups.find((group) => group.current?.status === "assigned" && (!group.current.scheduled_date || group.current.scheduled_date <= today)) ||
+      planGroups.find((group) => group.current) ||
+      planGroups[0] ||
+      null
     );
-    if (dueNow) return dueNow;
-
-    const nextAssigned = sortedSegments.find((segment) => segment.status === "assigned");
-    if (nextAssigned) return nextAssigned;
-
-    const waiting = sortedSegments.find((segment) => ["memorized", "recited"].includes(segment.status));
-    if (waiting) return waiting;
-
-    return sortedSegments.find((segment) => segment.status === "mastered") || null;
-  }, [sortedSegments, today]);
+  }, [planGroups, today]);
 
   useEffect(() => {
-    if (selectedSegmentId && data.segments.some((segment) => segment.id === selectedSegmentId)) return;
-    setSelectedSegmentId(defaultSegment?.id || "");
-  }, [defaultSegment?.id, data.segments, selectedSegmentId]);
+    if (openPlanId && planGroups.some((group) => group.plan.id === openPlanId)) return;
+    const nextPlanId = recommendedGroup?.plan.id || "";
+    setOpenPlanId(nextPlanId);
+    setSelectedSegmentId(recommendedGroup?.current?.id || "");
+  }, [openPlanId, planGroups, recommendedGroup?.plan.id, recommendedGroup?.current?.id]);
 
-  const activeSegment = data.segments.find((segment) => segment.id === selectedSegmentId) || defaultSegment;
-  const isEarlySelection = Boolean(
-    activeSegment &&
-    defaultSegment &&
-    activeSegment.id !== defaultSegment.id &&
-    activeSegment.scheduled_date &&
-    activeSegment.scheduled_date > today
-  );
+  const activeGroup = planGroups.find((group) => group.plan.id === openPlanId) || null;
+  const activeSegment = activeGroup
+    ? activeGroup.segments.find((segment) => segment.id === selectedSegmentId) || activeGroup.current
+    : null;
 
-  const upcomingSegments = useMemo(
-    () => sortedSegments.filter((segment) =>
-      ["assigned", "needs_revision"].includes(segment.status) && segment.id !== activeSegment?.id
-    ),
-    [sortedSegments, activeSegment?.id]
-  );
-
-  const waitingSegments = useMemo(
-    () => sortedSegments.filter((segment) =>
-      ["memorized", "recited"].includes(segment.status) && segment.id !== activeSegment?.id
-    ),
-    [sortedSegments, activeSegment?.id]
-  );
-
-  const masteredSegments = useMemo(
-    () => sortedSegments.filter((segment) => segment.status === "mastered" && segment.id !== activeSegment?.id).reverse(),
-    [sortedSegments, activeSegment?.id]
-  );
-
-  const masteredCount = useMemo(
+  const totalMastered = useMemo(
     () => data.segments.filter((segment) => segment.status === "mastered").length,
     [data.segments]
   );
 
-  const planById = useMemo(
-    () => Object.fromEntries(data.plans.map((plan) => [plan.id, plan])),
-    [data.plans]
+  const totalPending = useMemo(
+    () => data.segments.filter((segment) => ["assigned", "needs_revision"].includes(segment.status)).length,
+    [data.segments]
   );
 
   async function markMemorized(segmentId: string) {
@@ -202,8 +215,24 @@ export default function ChildQuranPage() {
     });
   }
 
-  function selectSegment(segmentId: string) {
+  function togglePlan(group: PlanGroup) {
     if (recordingSegmentId) return;
+
+    if (openPlanId === group.plan.id) {
+      setOpenPlanId("");
+      return;
+    }
+
+    setOpenPlanId(group.plan.id);
+    const selectedBelongsToPlan = group.segments.some((segment) => segment.id === selectedSegmentId);
+    if (!selectedBelongsToPlan) setSelectedSegmentId(group.current?.id || group.segments[0]?.id || "");
+    setError("");
+    setSuccess("");
+  }
+
+  function selectSegment(planId: string, segmentId: string) {
+    if (recordingSegmentId) return;
+    setOpenPlanId(planId);
     setSelectedSegmentId(segmentId);
     setError("");
     setSuccess("");
@@ -212,13 +241,13 @@ export default function ChildQuranPage() {
     });
   }
 
-  function renderCompactSegment(segment: QuranSegment, actionLabel = "اختيار هذا المقطع") {
-    const plan = planById[segment.plan_id];
+  function renderCompactSegment(group: PlanGroup, segment: QuranSegment, actionLabel: string) {
     const isToday = segment.scheduled_date === today;
     const isPast = Boolean(segment.scheduled_date && segment.scheduled_date < today);
+    const isSelected = segment.id === activeSegment?.id && group.plan.id === openPlanId;
 
     return (
-      <article className="child-quran-queue-item" key={segment.id}>
+      <article className={`child-quran-queue-item ${isSelected ? "is-selected" : ""}`} key={segment.id}>
         <div className="queue-day-badge">
           <strong>{segment.day_number ? `اليوم ${segment.day_number}` : "مقطع"}</strong>
           <small>{isToday ? "اليوم" : isPast ? "مستحق" : formatDate(segment.scheduled_date)}</small>
@@ -226,40 +255,122 @@ export default function ChildQuranPage() {
         <div className="queue-segment-copy">
           <span className={`task-status task-status-${segment.status}`}>{statusLabels[segment.status] || segment.status}</span>
           <h3>{segment.portion_label || "مقطع قرآن"}</h3>
-          <p>{plan?.title || "خطة الحفظ"} · {segment.achievement_points} ⭐{segment.reward_points > 0 ? ` · ${segment.reward_points} 💎` : ""}</p>
+          <p>{segment.achievement_points} ⭐{segment.reward_points > 0 ? ` · ${segment.reward_points} 💎` : ""}</p>
         </div>
         <button
           type="button"
-          disabled={Boolean(recordingSegmentId)}
-          onClick={() => selectSegment(segment.id)}
+          disabled={Boolean(recordingSegmentId) || isSelected}
+          onClick={() => selectSegment(group.plan.id, segment.id)}
         >
-          {actionLabel}
+          {isSelected ? "المقطع مفتوح" : actionLabel}
         </button>
       </article>
     );
   }
 
-  if (loading) return <main className="dashboard-loading">جارٍ تجهيز برنامج الحفظ...</main>;
+  function renderFocusedSegment(group: PlanGroup, segment: QuranSegment) {
+    const isRecordingActive = recordingSegmentId === segment.id;
+    const isActionable = ["assigned", "needs_revision", "memorized"].includes(segment.status);
+    const isEarlySelection = Boolean(
+      group.current &&
+      segment.id !== group.current.id &&
+      segment.scheduled_date &&
+      segment.scheduled_date > today
+    );
 
-  const isRecordingActive = Boolean(activeSegment && recordingSegmentId === activeSegment.id);
-  const activePlan = activeSegment ? planById[activeSegment.plan_id] : null;
-  const activeIsActionable = Boolean(activeSegment && ["assigned", "needs_revision", "memorized"].includes(activeSegment.status));
+    return (
+      <div className="child-quran-plan-focus" ref={focusRef}>
+        <div className="current-segment-heading">
+          <div>
+            <span className="section-label">
+              {isEarlySelection ? "اخترته مبكرًا" : segment.status === "needs_revision" ? "مقطع المراجعة" : "المقطع المفتوح"}
+            </span>
+            <h2>{segment.portion_label || "مقطع القرآن"}</h2>
+            <p>{group.plan.title} · {formatDate(segment.scheduled_date)}</p>
+          </div>
+          <div className="current-segment-heading-actions">
+            <span className={`task-status task-status-${segment.status}`}>{statusLabels[segment.status] || segment.status}</span>
+            {group.current && segment.id !== group.current.id && (
+              <button type="button" disabled={Boolean(recordingSegmentId)} onClick={() => selectSegment(group.plan.id, group.current!.id)}>
+                العودة للمقطع الحالي
+              </button>
+            )}
+          </div>
+        </div>
+
+        <div className="child-quran-steps" aria-label="خطوات التسميع">
+          <div className="active"><b>1</b><span>اقرأ واحفظ</span></div>
+          <div><b>2</b><span>ابدأ التسجيل</span></div>
+          <div><b>3</b><span>استمع وأرسل</span></div>
+        </div>
+
+        <article className={`child-quran-segment child-quran-focus-card status-${segment.status} ${isRecordingActive ? "is-reciting" : ""}`}>
+          <div className="focus-segment-meta">
+            <span>📅 {formatDate(segment.scheduled_date)}</span>
+            <span>⭐ {segment.achievement_points} نقطة</span>
+            {segment.reward_points > 0 && <span>💎 {segment.reward_points} مكافأة</span>}
+          </div>
+
+          {isRecordingActive ? (
+            <div className="child-quran-recitation-cover" role="status" aria-live="polite">
+              <span>🙈</span>
+              <strong>تم إخفاء الآيات أثناء التسميع</strong>
+              <p>سمّع المقطع عن ظهر قلب، وسيعود النص فور إيقاف التسجيل.</p>
+            </div>
+          ) : (
+            <QuranTextDisplay uthmaniText={segment.uthmani_text} readableText={segment.readable_text} />
+          )}
+
+          {segment.notes && <div className="task-note review"><strong>تعليمات الحفظ</strong><p>{segment.notes}</p></div>}
+
+          {isActionable && (
+            <QuranAudioRecorder
+              key={segment.id}
+              segmentId={segment.id}
+              hasAudio={Boolean(segment.has_audio)}
+              audioDurationSeconds={segment.audio_duration_seconds}
+              onUploaded={loadData}
+              onRecordingChange={(isRecording) => handleRecordingChange(segment.id, isRecording)}
+            />
+          )}
+
+          {["assigned", "needs_revision"].includes(segment.status) && !(segment.status === "needs_revision" && segment.has_audio) && (
+            <button className="child-quran-submit secondary-submit" type="button" disabled={busyId === segment.id || isRecordingActive} onClick={() => markMemorized(segment.id)}>
+              {busyId === segment.id ? "جارٍ الإرسال..." : "تم الحفظ — إرسال بدون تسجيل"}
+            </button>
+          )}
+          {segment.status === "memorized" && <div className="child-goal-note">⏳ تم إرسال المقطع وينتظر المراجعة{segment.has_audio ? "، والتسجيل الصوتي مرفق." : "."}</div>}
+          {segment.status === "recited" && <div className="child-goal-note">👨‍🏫 تم التسميع والمقطع قيد الاعتماد النهائي.</div>}
+          {segment.status === "mastered" && <div className="child-goal-note success">🎉 مقطع متقن وتمت إضافة نقاطه.</div>}
+        </article>
+      </div>
+    );
+  }
+
+  if (loading) return <main className="dashboard-loading">جارٍ تجهيز برنامج الحفظ...</main>;
 
   return (
     <main className="child-quran-page child-quran-focus-page">
       <header className="child-app-header child-quran-page-header">
-        <div><span className="section-label">📖 برنامجي</span><h1>الحفظ والتسميع</h1><p>ركّز على مقطع واحد، ثم انتقل للمقطع التالي عندما تكون مستعدًا.</p></div>
+        <div>
+          <span className="section-label">📖 برامجي</span>
+          <h1>الحفظ والتسميع</h1>
+          <p>اختر برنامج الحفظ أولًا، ثم افتح مقطعًا واحدًا للحفظ أو التسميع دون تكدس الصفحة.</p>
+        </div>
       </header>
 
       {error && <p className="form-message error-message floating-message">{error}</p>}
       {success && <p className="form-message success-message floating-message">{success}</p>}
 
       <section className="child-quran-hero child-quran-hero-focused">
-        <div className="child-quran-hero-message"><span>🌙</span><div><h2>{activeSegment ? "مقطعك جاهز" : "خطوة صغيرة كل يوم"}</h2><p>{activeSegment ? "اقرأ المقطع واحفظه، ثم سجّل تسميعك عندما تصبح مستعدًا." : "سيظهر مقطعك هنا فور إضافته إلى الخطة."}</p></div></div>
+        <div className="child-quran-hero-message">
+          <span>🌙</span>
+          <div><h2>{data.plans.length > 1 ? "برامجك مرتبة في مكان واحد" : "برنامجك جاهز"}</h2><p>افتح البرنامج الذي تريد متابعته، ثم انتقل بين مقاطعه بسهولة.</p></div>
+        </div>
         <div className="child-quran-stats">
-          <article><strong>{activeSegment ? 1 : 0}</strong><small>المقطع المختار</small></article>
-          <article><strong>{upcomingSegments.length}</strong><small>مقاطع قادمة</small></article>
-          <article><strong>{masteredCount}</strong><small>مقاطع متقنة</small></article>
+          <article><strong>{data.plans.length}</strong><small>برامج الحفظ</small></article>
+          <article><strong>{totalPending}</strong><small>مقاطع حالية وقادمة</small></article>
+          <article><strong>{totalMastered}</strong><small>مقاطع متقنة</small></article>
         </div>
       </section>
 
@@ -267,118 +378,93 @@ export default function ChildQuranPage() {
         <section className="child-friendly-empty child-quran-empty">
           <span>📘</span><strong>لا توجد خطة حفظ بعد</strong><p>سيضيف ولي الأمر أو المعلم خطة الحفظ والمقاطع المناسبة لك.</p>
         </section>
-      ) : data.segments.length === 0 ? (
-        <section className="child-friendly-empty child-quran-empty">
-          <span>🌤️</span><strong>لا توجد مقاطع بعد</strong><p>سيظهر أول مقطع هنا عند إضافته إلى خطة الحفظ.</p>
-        </section>
       ) : (
-        <>
-          <details className="child-quran-plan-fold">
-            <summary>
-              <div><span>📚</span><div><strong>{data.plans.length === 1 ? data.plans[0].title : `${data.plans.length} خطط حفظ`}</strong><small>عرض معلومات الخطة</small></div></div>
-              <span className="fold-chevron">⌄</span>
-            </summary>
-            <div className="child-quran-plan-fold-body">
-              {data.plans.map((plan) => (
-                <article key={plan.id}><span>📘</span><div><strong>{plan.title}</strong><small>{plan.daily_target} آيات يوميًا{plan.duration_days ? ` · ${plan.duration_days} يومًا` : ""}{plan.due_date ? ` · النهاية ${formatDate(plan.due_date)}` : ""}</small></div></article>
-              ))}
-            </div>
-          </details>
+        <section className="child-quran-programs" aria-label="برامج الحفظ">
+          <div className="child-programs-heading">
+            <div><span className="section-label">التصفية حسب البرنامج</span><h2>اختر برنامج الحفظ</h2></div>
+            <small>يُفتح برنامج واحد ومقطع واحد فقط في كل مرة.</small>
+          </div>
 
-          {activeSegment && (
-            <section className="child-quran-current-section" ref={focusRef}>
-              <div className="current-segment-heading">
-                <div>
-                  <span className="section-label">{isEarlySelection ? "اخترته مبكرًا" : activeSegment.status === "needs_revision" ? "مقطع المراجعة" : "المقطع الحالي"}</span>
-                  <h2>{activeSegment.portion_label || "مقطع القرآن"}</h2>
-                  <p>{activePlan?.title || "خطة الحفظ"} · {formatDate(activeSegment.scheduled_date)}</p>
-                </div>
-                <div className="current-segment-heading-actions">
-                  <span className={`task-status task-status-${activeSegment.status}`}>{statusLabels[activeSegment.status] || activeSegment.status}</span>
-                  {defaultSegment && activeSegment.id !== defaultSegment.id && (
-                    <button type="button" disabled={Boolean(recordingSegmentId)} onClick={() => selectSegment(defaultSegment.id)}>العودة للمقطع الأساسي</button>
-                  )}
-                </div>
-              </div>
+          {planGroups.map((group, index) => {
+            const isOpen = openPlanId === group.plan.id;
+            const upcoming = group.segments.filter((segment) => ["assigned", "needs_revision"].includes(segment.status) && segment.id !== activeSegment?.id);
+            const waiting = group.segments.filter((segment) => ["memorized", "recited"].includes(segment.status) && segment.id !== activeSegment?.id);
+            const mastered = group.segments.filter((segment) => segment.status === "mastered" && segment.id !== activeSegment?.id).reverse();
 
-              <div className="child-quran-steps" aria-label="خطوات التسميع">
-                <div className="active"><b>1</b><span>اقرأ واحفظ</span></div>
-                <div><b>2</b><span>ابدأ التسجيل</span></div>
-                <div><b>3</b><span>استمع وأرسل</span></div>
-              </div>
+            return (
+              <article className={`child-quran-program-card ${isOpen ? "is-open" : ""}`} key={group.plan.id}>
+                <button
+                  className="child-quran-program-toggle"
+                  type="button"
+                  aria-expanded={isOpen}
+                  disabled={Boolean(recordingSegmentId) && !isOpen}
+                  onClick={() => togglePlan(group)}
+                >
+                  <span className="program-number">{index + 1}</span>
+                  <span className="program-main-copy">
+                    <small>برنامج حفظ</small>
+                    <strong>{group.plan.title}</strong>
+                    <span>{group.plan.daily_target} آيات يوميًا{group.plan.duration_days ? ` · ${group.plan.duration_days} يومًا` : ""}{group.plan.due_date ? ` · النهاية ${formatDate(group.plan.due_date)}` : ""}</span>
+                  </span>
+                  <span className="program-progress-copy">
+                    <b>{group.progress}%</b>
+                    <i><em style={{ width: `${group.progress}%` }} /></i>
+                    <small>{group.masteredCount} من {group.segments.length} متقن</small>
+                  </span>
+                  <span className="program-counters">
+                    <b><strong>{group.assignedCount}</strong><small>قادم</small></b>
+                    <b><strong>{group.waitingCount}</strong><small>مراجعة</small></b>
+                  </span>
+                  <span className="program-chevron">⌄</span>
+                </button>
 
-              <article className={`child-quran-segment child-quran-focus-card status-${activeSegment.status} ${isRecordingActive ? "is-reciting" : ""}`}>
-                <div className="focus-segment-meta">
-                  <span>📅 {formatDate(activeSegment.scheduled_date)}</span>
-                  <span>⭐ {activeSegment.achievement_points} نقطة</span>
-                  {activeSegment.reward_points > 0 && <span>💎 {activeSegment.reward_points} مكافأة</span>}
-                </div>
+                {isOpen && (
+                  <div className="child-quran-program-body">
+                    {group.segments.length === 0 ? (
+                      <div className="child-friendly-empty compact-empty"><span>🌤️</span><strong>لا توجد مقاطع في هذا البرنامج</strong><p>ستظهر المقاطع هنا بعد إضافتها.</p></div>
+                    ) : (
+                      <>
+                        {activeSegment && activeSegment.plan_id === group.plan.id && renderFocusedSegment(group, activeSegment)}
 
-                {isRecordingActive ? (
-                  <div className="child-quran-recitation-cover" role="status" aria-live="polite">
-                    <span>🙈</span>
-                    <strong>تم إخفاء الآيات أثناء التسميع</strong>
-                    <p>سمّع المقطع عن ظهر قلب، وسيعود النص فور إيقاف التسجيل.</p>
+                        <div className="child-quran-queues program-segment-queues" aria-label={`مقاطع ${group.plan.title}`}>
+                          <details className="child-quran-queue-fold">
+                            <summary>
+                              <div><span className="queue-summary-icon">🗓️</span><div><strong>المقاطع الحالية والقادمة</strong><small>اختر أي مقطع ليفتح مكان المقطع الحالي.</small></div></div>
+                              <b>{upcoming.length}</b>
+                            </summary>
+                            <div className="child-quran-queue-body">
+                              {upcoming.length === 0 ? <p className="queue-empty-message">لا توجد مقاطع أخرى حاليًا.</p> : upcoming.map((segment) => renderCompactSegment(group, segment, segment.scheduled_date && segment.scheduled_date > today ? "فتح والبدء مبكرًا" : "فتح المقطع"))}
+                            </div>
+                          </details>
+
+                          {waiting.length > 0 && (
+                            <details className="child-quran-queue-fold waiting-fold">
+                              <summary>
+                                <div><span className="queue-summary-icon">⏳</span><div><strong>بانتظار المراجعة</strong><small>المقاطع المرسلة في هذا البرنامج فقط.</small></div></div>
+                                <b>{waiting.length}</b>
+                              </summary>
+                              <div className="child-quran-queue-body">{waiting.map((segment) => renderCompactSegment(group, segment, "عرض المقطع"))}</div>
+                            </details>
+                          )}
+
+                          {mastered.length > 0 && (
+                            <details className="child-quran-queue-fold mastered-fold">
+                              <summary>
+                                <div><span className="queue-summary-icon">🏆</span><div><strong>المقاطع المتقنة</strong><small>إنجازات هذا البرنامج محفوظة هنا.</small></div></div>
+                                <b>{mastered.length}</b>
+                              </summary>
+                              <div className="child-quran-queue-body">{mastered.map((segment) => renderCompactSegment(group, segment, "عرض الإنجاز"))}</div>
+                            </details>
+                          )}
+                        </div>
+                      </>
+                    )}
                   </div>
-                ) : (
-                  <QuranTextDisplay uthmaniText={activeSegment.uthmani_text} readableText={activeSegment.readable_text} />
                 )}
-
-                {activeSegment.notes && <div className="task-note review"><strong>تعليمات الحفظ</strong><p>{activeSegment.notes}</p></div>}
-
-                {activeIsActionable && (
-                  <QuranAudioRecorder
-                    key={activeSegment.id}
-                    segmentId={activeSegment.id}
-                    hasAudio={Boolean(activeSegment.has_audio)}
-                    audioDurationSeconds={activeSegment.audio_duration_seconds}
-                    onUploaded={loadData}
-                    onRecordingChange={(isRecording) => handleRecordingChange(activeSegment.id, isRecording)}
-                  />
-                )}
-
-                {["assigned", "needs_revision"].includes(activeSegment.status) && !(activeSegment.status === "needs_revision" && activeSegment.has_audio) && (
-                  <button className="child-quran-submit secondary-submit" type="button" disabled={busyId === activeSegment.id || isRecordingActive} onClick={() => markMemorized(activeSegment.id)}>{busyId === activeSegment.id ? "جارٍ الإرسال..." : "تم الحفظ — إرسال بدون تسجيل"}</button>
-                )}
-                {activeSegment.status === "memorized" && <div className="child-goal-note">⏳ تم إرسال المقطع وينتظر المراجعة{activeSegment.has_audio ? "، والتسجيل الصوتي مرفق." : "."}</div>}
-                {activeSegment.status === "recited" && <div className="child-goal-note">👨‍🏫 تم التسميع والمقطع قيد الاعتماد النهائي.</div>}
-                {activeSegment.status === "mastered" && <div className="child-goal-note success">🎉 مقطع متقن وتمت إضافة نقاطه.</div>}
               </article>
-            </section>
-          )}
-
-          <section className="child-quran-queues" aria-label="مقاطع الحفظ الأخرى">
-            <details className="child-quran-queue-fold">
-              <summary>
-                <div><span className="queue-summary-icon">🗓️</span><div><strong>المقاطع القادمة</strong><small>مطوية لتبقى الصفحة مرتبة، ويمكنك اختيار أي مقطع والبدء به.</small></div></div>
-                <b>{upcomingSegments.length}</b>
-              </summary>
-              <div className="child-quran-queue-body">
-                {upcomingSegments.length === 0 ? <p className="queue-empty-message">لا توجد مقاطع قادمة حاليًا.</p> : upcomingSegments.map((segment) => renderCompactSegment(segment, segment.scheduled_date && segment.scheduled_date > today ? "اختيار والبدء مبكرًا" : "اختيار هذا المقطع"))}
-              </div>
-            </details>
-
-            {waitingSegments.length > 0 && (
-              <details className="child-quran-queue-fold waiting-fold">
-                <summary>
-                  <div><span className="queue-summary-icon">⏳</span><div><strong>بانتظار المراجعة</strong><small>مقاطع أرسلتها وتنتظر اعتماد ولي الأمر أو المعلم.</small></div></div>
-                  <b>{waitingSegments.length}</b>
-                </summary>
-                <div className="child-quran-queue-body">{waitingSegments.map((segment) => renderCompactSegment(segment, "عرض المقطع"))}</div>
-              </details>
-            )}
-
-            {masteredSegments.length > 0 && (
-              <details className="child-quran-queue-fold mastered-fold">
-                <summary>
-                  <div><span className="queue-summary-icon">🏆</span><div><strong>سجل المقاطع المتقنة</strong><small>إنجازاتك السابقة محفوظة هنا دون ازدحام الصفحة.</small></div></div>
-                  <b>{masteredSegments.length}</b>
-                </summary>
-                <div className="child-quran-queue-body">{masteredSegments.map((segment) => renderCompactSegment(segment, "عرض الإنجاز"))}</div>
-              </details>
-            )}
-          </section>
-        </>
+            );
+          })}
+        </section>
       )}
     </main>
   );
