@@ -79,17 +79,40 @@ def split_text(value: str) -> list[str]:
     return [line for line in (clean_line(item) for item in value.splitlines()) if valid_line(line)]
 
 
-def extract_table_rows(nodes: Iterable[Tag]) -> list[str]:
-    lines: list[str] = []
+def clean_element_text(element: Tag, separator: str = " ") -> str:
+    clone = BeautifulSoup(str(element), "html.parser")
+    for selector in ["sup", ".reference", ".mw-editsection", "style", "script", "noscript"]:
+        for item in clone.select(selector):
+            item.decompose()
+    return clean_line(clone.get_text(separator, strip=True))
+
+
+def section_tables(nodes: Iterable[Tag]) -> list[Tag]:
+    tables: list[Tag] = []
+    seen: set[int] = set()
     for node in nodes:
-        tables = [node] if node.name == "table" else node.find_all("table")
-        for table in tables:
-            for row in table.find_all("tr"):
-                cells = row.find_all(["td", "th"], recursive=False)
-                row_lines = [clean_line(cell.get_text("\n", strip=True)) for cell in cells]
-                for value in row_lines:
-                    lines.extend(split_text(value))
-    return lines
+        found = [node] if node.name == "table" else node.find_all("table")
+        for table in found:
+            marker = id(table)
+            if marker not in seen:
+                seen.add(marker)
+                tables.append(table)
+    return tables
+
+
+def extract_one_table(table: Tag) -> list[str]:
+    lines: list[str] = []
+    for row in table.find_all("tr"):
+        cells = row.find_all(["td", "th"], recursive=False)
+        for cell in cells:
+            value = clean_element_text(cell)
+            if valid_line(value):
+                lines.append(value)
+    return dedupe_adjacent(lines)
+
+
+def extract_table_candidates(nodes: Iterable[Tag]) -> list[list[str]]:
+    return [lines for table in section_tables(nodes) if (lines := extract_one_table(table))]
 
 
 def extract_poem_blocks(nodes: Iterable[Tag]) -> list[str]:
@@ -100,18 +123,14 @@ def extract_poem_blocks(nodes: Iterable[Tag]) -> list[str]:
             for block in node.select(selector):
                 if block.find_parent("table") is not None:
                     continue
-                lines.extend(split_text(block.get_text("\n", strip=True)))
+                lines.extend(split_text(clean_element_text(block, "\n")))
     return lines
 
 
 def extract_visible(nodes: Iterable[Tag]) -> list[str]:
     lines: list[str] = []
     for node in nodes:
-        clone = BeautifulSoup(str(node), "html.parser")
-        for selector in ["sup", ".reference", ".mw-editsection", "style", "script", "noscript"]:
-            for item in clone.select(selector):
-                item.decompose()
-        lines.extend(split_text(clone.get_text("\n", strip=True)))
+        lines.extend(split_text(clean_element_text(node, "\n")))
     return lines
 
 
@@ -124,11 +143,10 @@ def dedupe_adjacent(lines: list[str]) -> list[str]:
 
 
 def candidate_section_lines(nodes: list[Tag]) -> list[list[str]]:
-    table = dedupe_adjacent(extract_table_rows(nodes))
+    table_candidates = extract_table_candidates(nodes)
     poem = dedupe_adjacent(extract_poem_blocks(nodes))
     visible = dedupe_adjacent(extract_visible(nodes))
-    combined = dedupe_adjacent(table + [line for line in poem if line not in table])
-    candidates = [table, combined, poem, visible]
+    candidates = table_candidates + [poem, visible]
     unique: list[list[str]] = []
     for candidate in candidates:
         if candidate and candidate not in unique:
@@ -138,26 +156,9 @@ def candidate_section_lines(nodes: list[Tag]) -> list[list[str]]:
 
 def choose_chapter_lines(chapter_candidates: list[list[list[str]]]) -> list[list[str]]:
     target = EXPECTED_VERSES * 2
-    even_candidates = [[item for item in candidates if len(item) % 2 == 0] for candidates in chapter_candidates]
-
-    # Arabic Wikisource currently exposes one clear table candidate per chapter.
-    # The final chapter is followed by a small page-information block that can be
-    # collected with the poem. Trim only that final trailing surplus, while the
-    # fixed 290-verse validation remains the source of truth.
-    if all(len(options) == 1 for options in even_candidates):
-        selected = [list(options[0]) for options in even_candidates]
-        total = sum(len(lines) for lines in selected)
-        excess = total - target
-        if excess == 0:
-            return selected
-        if 0 < excess <= 12 and excess % 2 == 0 and len(selected[-1]) > excess:
-            selected[-1] = selected[-1][:-excess]
-            if sum(len(lines) for lines in selected) == target:
-                print(f"Trimmed {excess} trailing non-poem lines from the final chapter.")
-                return selected
-
+    possibilities = [[item for item in candidates if len(item) % 2 == 0] for candidates in chapter_candidates]
     states: dict[int, list[list[str]]] = {0: []}
-    for chapter_options in even_candidates:
+    for chapter_options in possibilities:
         next_states: dict[int, list[list[str]]] = {}
         for current_total, chosen in states.items():
             for option in chapter_options:
@@ -167,7 +168,6 @@ def choose_chapter_lines(chapter_candidates: list[list[list[str]]]) -> list[list
         states = next_states
     if target in states:
         return states[target]
-
     diagnostics = [[len(item) for item in candidates] for candidates in chapter_candidates]
     raise RuntimeError(f"Could not extract exactly {target} hemistichs. Candidate counts: {diagnostics}")
 
