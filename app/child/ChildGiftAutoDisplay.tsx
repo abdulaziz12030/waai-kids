@@ -9,10 +9,9 @@ import type { ChildGift } from "./gifts/types";
 export default function ChildGiftAutoDisplay() {
   const pathname = usePathname();
   const [gift, setGift] = useState<ChildGift | null>(null);
-  const knownIdsRef = useRef<Set<string> | null>(null);
   const busyRef = useRef(false);
 
-  async function checkForNewGift() {
+  async function loadNextGift() {
     if (busyRef.current || pathname === "/child/login" || !supabase) return;
     const token = localStorage.getItem("namaa_child_token");
     if (!token) return;
@@ -21,40 +20,34 @@ export default function ChildGiftAutoDisplay() {
     if (result.error || !result.data || busyRef.current) return;
 
     const gifts = Array.isArray(result.data.gifts) ? result.data.gifts as ChildGift[] : [];
-    const delivered = gifts.filter((item) => item.status === "delivered" && item.gift.animation_key === "arabian_horse");
-    const deliveredIds = new Set(delivered.map((item) => item.id));
-
-    if (knownIdsRef.current === null) {
-      knownIdsRef.current = deliveredIds;
-      return;
-    }
-
-    const nextGift = delivered.find((item) => !knownIdsRef.current?.has(item.id));
-    knownIdsRef.current = deliveredIds;
+    const nextGift = gifts.find((item) => item.status === "delivered" && item.gift.animation_key === "arabian_horse");
     if (!nextGift) return;
 
     busyRef.current = true;
     setGift(nextGift);
-    await supabase.rpc("child_open_gift", { p_session_token: token, p_gift_id: nextGift.id });
+    await supabase.rpc("child_open_gift", {
+      p_session_token: token,
+      p_gift_id: nextGift.id
+    });
   }
 
   useEffect(() => {
     if (pathname === "/child/login") {
       setGift(null);
-      knownIdsRef.current = null;
       busyRef.current = false;
       return;
     }
 
-    void checkForNewGift();
-    const timer = window.setInterval(() => { if (!gift) void checkForNewGift(); }, 3000);
+    void loadNextGift();
+    const timer = window.setInterval(() => {
+      if (!gift) void loadNextGift();
+    }, 3000);
+
     return () => window.clearInterval(timer);
   }, [pathname, gift]);
 
   function finishGift() {
-    setGift(null);
-    busyRef.current = false;
-    window.setTimeout(() => void checkForNewGift(), 200);
+    window.location.reload();
   }
 
   if (!gift) return null;
