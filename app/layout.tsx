@@ -19,6 +19,7 @@ import './task-requirements.css';
 import './ui-refresh.css';
 import './child-journey-phase1.css';
 import './child-journey-coach.css';
+import './daily-journey-home.css';
 import './security-controls.css';
 import './child-login-v2.css';
 import './points-v2.css';
