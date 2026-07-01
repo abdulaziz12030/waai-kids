@@ -1,0 +1,49 @@
+.saved-family-code-card {
+  min-height: 70px;
+  padding: 12px 14px;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 11px;
+  border: 1px solid #dce6de;
+  border-radius: 17px;
+  background: linear-gradient(145deg, #f7fbf8, #ffffff);
+}
+
+.saved-family-code-card > span {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border-radius: 13px;
+  background: #e7f6e9;
+  color: #2f7b4e;
+  font-weight: 950;
+}
+
+.saved-family-code-card div {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.saved-family-code-card strong {
+  color: #31513e;
+}
+
+.saved-family-code-card small {
+  color: var(--muted);
+}
+
+.saved-family-code-card button {
+  min-height: 36px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 11px;
+  background: #efe9ff;
+  color: #5e4cb6;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 900;
+  cursor: pointer;
+}
