@@ -26,6 +26,7 @@ type GiftCelebrationModalProps = {
   primaryActionLabel?: string;
   onPrimaryAction?: () => void;
   onPrintCertificate?: () => void;
+  autoStart?: boolean;
   onClose: () => void;
 };
 
@@ -118,6 +119,7 @@ export default function GiftCelebrationModal({
   primaryActionLabel,
   onPrimaryAction,
   onPrintCertificate,
+  autoStart = false,
   onClose
 }: GiftCelebrationModalProps) {
   const config = useMemo(() => getGiftPreviewConfig(gift), [gift]);
@@ -132,6 +134,7 @@ export default function GiftCelebrationModal({
   const horseVideoRef = useRef<HTMLVideoElement | null>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
   const launchButtonRef = useRef<HTMLButtonElement | null>(null);
+  const autoStartedRef = useRef(false);
 
   const greeting = interpolateGiftText(config.greeting, childName);
   const dateLabel = useMemo(() => new Intl.DateTimeFormat("ar-SA", {
@@ -202,6 +205,13 @@ export default function GiftCelebrationModal({
     return () => window.clearTimeout(timer);
   }, [config.durationMs, runId, status]);
 
+  useEffect(() => {
+    if (!mounted || !autoStart || autoStartedRef.current) return;
+    autoStartedRef.current = true;
+    const timer = window.setTimeout(() => runCelebration(), 180);
+    return () => window.clearTimeout(timer);
+  }, [autoStart, mounted]);
+
   function stopSound() {
     if (audioRef.current) {
       audioRef.current.pause();
@@ -231,7 +241,11 @@ export default function GiftCelebrationModal({
     video.currentTime = 0;
     video.volume = config.volume;
     video.muted = muted;
-    void video.play().catch(() => undefined);
+    void video.play().catch(() => {
+      video.muted = true;
+      setMuted(true);
+      void video.play().catch(() => undefined);
+    });
   }
 
   function runCelebration() {
@@ -248,6 +262,9 @@ export default function GiftCelebrationModal({
       const next = !current;
       if (isArabianHorse && horseVideoRef.current) {
         horseVideoRef.current.muted = next;
+        if (!next && horseVideoRef.current.paused && status === "playing") {
+          void horseVideoRef.current.play().catch(() => undefined);
+        }
       } else if (next) {
         stopSound();
       }
