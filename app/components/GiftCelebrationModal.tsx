@@ -129,6 +129,7 @@ export default function GiftCelebrationModal({
   const [showCertificate, setShowCertificate] = useState(false);
   const [audioSource, setAudioSource] = useState<string | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const horseVideoRef = useRef<HTMLVideoElement | null>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
   const launchButtonRef = useRef<HTMLButtonElement | null>(null);
 
@@ -190,6 +191,7 @@ export default function GiftCelebrationModal({
       document.body.style.overflow = previousOverflow;
       document.body.style.overscrollBehavior = previousOverscroll;
       audioRef.current?.pause();
+      horseVideoRef.current?.pause();
       void audioContextRef.current?.close();
     };
   }, [mounted, onClose, showCertificate]);
@@ -222,18 +224,33 @@ export default function GiftCelebrationModal({
     audioContextRef.current = playSyntheticChime(config.motionType, config.volume);
   }
 
+  function playHorseVideo() {
+    const video = horseVideoRef.current;
+    if (!video) return;
+    video.pause();
+    video.currentTime = 0;
+    video.volume = config.volume;
+    video.muted = muted;
+    void video.play().catch(() => undefined);
+  }
+
   function runCelebration() {
     stopSound();
     setShowCertificate(false);
+    if (isArabianHorse) playHorseVideo();
+    else playSound();
     setStatus("playing");
     setRunId((current) => current + 1);
-    playSound();
   }
 
   function toggleMute() {
     setMuted((current) => {
       const next = !current;
-      if (next) stopSound();
+      if (isArabianHorse && horseVideoRef.current) {
+        horseVideoRef.current.muted = next;
+      } else if (next) {
+        stopSound();
+      }
       return next;
     });
   }
@@ -245,7 +262,7 @@ export default function GiftCelebrationModal({
   const fullScreenExperience = (
     <div className={styles.overlay} role="dialog" aria-modal="true" aria-label={`${mode === "preview" ? "معاينة" : "عرض"} ${gift.name}`}>
       <section
-        key={runId}
+        key={isArabianHorse ? "arabian-horse-video" : runId}
         className={`${styles.experience} ${status === "playing" ? styles.isPlaying : ""} ${status === "finished" ? styles.isFinished : ""}`}
         data-background={config.background}
         data-motion={config.motionType}
@@ -293,9 +310,14 @@ export default function GiftCelebrationModal({
               senderName={mode === "delivery" ? senderName : undefined}
               status={status}
               mode={mode}
+              videoUrl={config.videoUrl || ""}
+              muted={muted}
+              runId={runId}
               loading={soundLoading}
+              videoRef={horseVideoRef}
               startButtonRef={launchButtonRef}
               onStart={runCelebration}
+              onEnded={() => setStatus("finished")}
             />
           ) : (
             <>
