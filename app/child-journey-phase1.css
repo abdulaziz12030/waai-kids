@@ -1,0 +1,118 @@
+/* Phase 1: make the child dashboard feel like one simple daily journey. */
+
+.child-app-refresh .playful-child-hero::before {
+  content: "رحلتي اليوم";
+  position: relative;
+  z-index: 1;
+  width: fit-content;
+  min-height: 34px;
+  margin-bottom: 12px;
+  padding: 0 14px;
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.22);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 950;
+  letter-spacing: -0.01em;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.18);
+}
+
+.child-app-refresh .playful-child-hero > span {
+  position: relative;
+  z-index: 1;
+}
+
+.child-app-refresh .playful-child-hero h2 {
+  max-width: 760px;
+  margin-top: 12px;
+}
+
+.child-app-refresh .playful-child-hero p {
+  max-width: 760px;
+  font-size: 15px;
+}
+
+.child-app-refresh .dual-child-stats {
+  margin-top: 20px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.child-app-refresh .child-preview-section {
+  border: 0;
+  background:
+    radial-gradient(circle at 88% 12%, rgba(255, 207, 116, 0.2), transparent 28%),
+    linear-gradient(145deg, #ffffff, #f6fbf7);
+  box-shadow: 0 18px 46px rgba(61,82,70,.1);
+}
+
+.child-app-refresh .child-preview-section .child-section-head h2::before {
+  content: "🌤️";
+  margin-left: 8px;
+}
+
+.child-app-refresh .preview-task-card {
+  min-height: 86px;
+  border-color: rgba(111, 143, 122, 0.18);
+  background: rgba(255,255,255,.92);
+}
+
+.child-app-refresh .preview-task-card:first-child {
+  border-color: rgba(91, 72, 182, 0.28);
+  background: linear-gradient(135deg, #ffffff, #f7f3ff);
+}
+
+.child-app-refresh .preview-task-card:first-child::after {
+  content: "ابدأ الآن";
+  width: fit-content;
+  padding: 5px 9px;
+  border-radius: 999px;
+  background: #efe9ff;
+  color: #5e4cb6;
+  font-size: 10px;
+  font-weight: 950;
+}
+
+.child-app-refresh .child-level-card,
+.child-app-refresh .child-focus-card {
+  margin-top: 16px;
+}
+
+.child-app-refresh .child-focus-card {
+  background: linear-gradient(145deg, #ffffff, #fbfcfa);
+}
+
+.child-app-refresh .child-bottom-nav {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.child-app-refresh .child-bottom-nav button:first-child small::after {
+  content: " اليوم";
+}
+
+@media (max-width: 680px) {
+  .child-app-refresh .dual-child-stats {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 7px;
+  }
+
+  .child-app-refresh .playful-child-hero::before {
+    min-height: 30px;
+    font-size: 12px;
+  }
+
+  .child-app-refresh .preview-task-card {
+    grid-template-columns: auto 1fr;
+  }
+
+  .child-app-refresh .preview-task-card > b {
+    display: none;
+  }
+
+  .child-app-refresh .preview-task-card:first-child::after {
+    grid-column: 2;
+  }
+}
