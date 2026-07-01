@@ -6,22 +6,27 @@ function isArabianHorse(gift: CatalogGift) {
   return gift.animation_key === "arabian_horse" || /خيل|حصان|horse/i.test(`${gift.code} ${gift.name}`);
 }
 
-export default function GiftCatalog({ gifts, selectedCode, balance, includedRemaining, onSelect, onPreview }: {
+export default function GiftCatalog({ gifts, selectedCode, balance, includedRemaining, trialMode = false, onSelect, onPreview }: {
   gifts: CatalogGift[];
   selectedCode: string;
   balance: number;
   includedRemaining: number;
+  trialMode?: boolean;
   onSelect: (code: string) => void;
   onPreview: (gift: CatalogGift) => void;
 }) {
   return (
     <section className={styles.section}>
       <div className={styles.head}>
-        <div><span className={styles.label}>الكتالوج</span><h2>اختر الهدية</h2><p>الهدايا الخضراء ضمن الاشتراك، والذهبية تُشترى من رصيد الكوينز. عاين التجربة كاملة قبل الاختيار.</p></div>
+        <div>
+          <span className={styles.label}>الكتالوج</span>
+          <h2>اختر الهدية</h2>
+          <p>{trialMode ? "جميع الهدايا متاحة مجانًا خلال النسخة التجريبية. عاين التجربة كاملة ثم اختر الهدية المناسبة." : "الهدايا الخضراء ضمن الاشتراك، والذهبية تُشترى من رصيد الكوينز. عاين التجربة كاملة قبل الاختيار."}</p>
+        </div>
       </div>
       <div className={styles.catalog}>
         {gifts.map((gift) => {
-          const unavailable = gift.tier === "included" ? includedRemaining < 1 : balance < gift.coin_price;
+          const unavailable = !trialMode && (gift.tier === "included" ? includedRemaining < 1 : balance < gift.coin_price);
           const selected = selectedCode === gift.code;
           const horseGift = isArabianHorse(gift);
           const chooseGift = () => {
@@ -44,7 +49,7 @@ export default function GiftCatalog({ gifts, selectedCode, balance, includedRema
                 {horseGift ? (
                   <span className={styles.horseCardVisual} style={{ backgroundImage: `url(${ARABIAN_HORSE_IMAGE})` }}>
                     <span className={styles.horseCardShade} />
-                    <span className={styles.horseLuxuryBadge}>هدية فاخرة</span>
+                    <span className={styles.horseLuxuryBadge}>{trialMode ? "مجانية تجريبيًا" : "هدية فاخرة"}</span>
                     <span className={styles.horseCardTitle}>الخيل العربي</span>
                     <span className={styles.horseCardHint}>اضغط لبدء المشهد بالصوت</span>
                   </span>
@@ -54,7 +59,7 @@ export default function GiftCatalog({ gifts, selectedCode, balance, includedRema
                 {!horseGift && <h3>{gift.name}</h3>}
                 <p>{gift.description}</p>
                 <span className={`${styles.price} ${gift.tier === "premium" ? styles.premium : ""}`}>
-                  {gift.tier === "included" ? "مشمولة شهريًا" : `${gift.coin_price} كوينز · ${gift.sar_price} ر.س`}
+                  {trialMode ? "مجانًا في النسخة التجريبية" : gift.tier === "included" ? "مشمولة شهريًا" : `${gift.coin_price} كوينز · ${gift.sar_price} ر.س`}
                 </span>
               </button>
               <button
