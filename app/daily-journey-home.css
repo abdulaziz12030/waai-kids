@@ -1,0 +1,43 @@
+.child-home-panel > :not(.daily-journey-home) { display: none !important; }
+.daily-journey-home { display: grid; gap: 16px; }
+.daily-journey-primary,.daily-progress-strip,.daily-shortcuts { border: 1px solid rgba(111,143,122,.16); border-radius: 24px; background: #fff; box-shadow: 0 16px 42px rgba(61,82,70,.08); }
+.daily-journey-primary { padding: 22px; background: radial-gradient(circle at 88% 10%,rgba(255,213,124,.2),transparent 26%),linear-gradient(145deg,#fff,#f7fbf8); }
+.daily-journey-heading { display: grid; grid-template-columns: 1fr auto; gap: 14px; align-items: start; }
+.daily-journey-heading h2,.daily-section-title h2 { margin: 5px 0 6px; }
+.daily-journey-heading p { max-width: 660px; margin: 0; color: var(--muted); line-height: 1.8; }
+.daily-journey-icon { width: 64px; height: 64px; display: grid; place-items: center; border-radius: 20px; background: linear-gradient(145deg,#efe9ff,#fff3d7); font-size: 31px; }
+.daily-primary-task { margin-top: 18px; padding: 18px; border: 1px solid rgba(94,76,182,.16); border-radius: 20px; background: linear-gradient(145deg,#fff,#faf8ff); }
+.daily-task-meta { display: flex; justify-content: space-between; gap: 12px; color: #5e4cb6; font-size: 12px; font-weight: 900; }
+.daily-primary-task h3 { margin: 12px 0 7px; font-size: clamp(21px,3vw,28px); }
+.daily-primary-task > p { margin: 0 0 14px; color: var(--muted); line-height: 1.8; }
+.daily-primary-task textarea { width: 100%; min-height: 76px; padding: 12px 14px; border: 1px solid #d9e1db; border-radius: 14px; background: #fff; resize: vertical; font: inherit; }
+.daily-primary-task button,.daily-soft-button { width: 100%; min-height: 50px; margin-top: 12px; border: 0; border-radius: 15px; background: linear-gradient(135deg,#5e4cb6,#7461c9); color: #fff; font: inherit; font-weight: 950; cursor: pointer; }
+.daily-primary-task button:disabled { opacity: .65; cursor: wait; }
+.daily-soft-button { background: #eef4ef; color: #31513e; }
+.daily-journey-message { margin: 12px 0 0; padding: 10px 12px; border-radius: 12px; background: #edf8ef; color: #2f7047; font-weight: 850; text-align: center; }
+.daily-progress-strip { padding: 12px; display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 8px; }
+.daily-progress-strip > div,.daily-progress-strip > button { min-height: 88px; padding: 10px 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; border: 0; border-radius: 16px; background: #f8fbf8; color: inherit; font: inherit; }
+.daily-progress-strip > button { cursor: pointer; }
+.daily-progress-strip span { font-size: 22px; }
+.daily-progress-strip strong { font-size: 17px; }
+.daily-progress-strip small { color: var(--muted); font-size: 11px; font-weight: 800; }
+.daily-shortcuts { padding: 20px; }
+.daily-section-title { margin-bottom: 14px; }
+.daily-shortcut-grid { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 10px; }
+.daily-shortcut-grid a,.daily-shortcut-grid button { min-height: 112px; padding: 14px 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; border: 1px solid #e2e8e3; border-radius: 18px; background: #fff; color: inherit; text-decoration: none; font: inherit; cursor: pointer; }
+.daily-shortcut-grid span { font-size: 29px; }
+.daily-shortcut-grid strong { font-size: 15px; }
+.daily-shortcut-grid small { color: var(--muted); font-size: 11px; }
+@media (max-width:680px) {
+  .daily-journey-home { gap: 12px; }
+  .daily-journey-primary,.daily-shortcuts { padding: 16px; border-radius: 20px; }
+  .daily-journey-icon { width: 52px; height: 52px; border-radius: 17px; font-size: 25px; }
+  .daily-primary-task { padding: 15px; }
+  .daily-task-meta { align-items: flex-start; flex-direction: column; gap: 4px; }
+  .daily-progress-strip { gap: 5px; padding: 8px; }
+  .daily-progress-strip > div,.daily-progress-strip > button { min-height: 78px; padding: 8px 4px; }
+  .daily-progress-strip strong { font-size: 14px; }
+  .daily-progress-strip small { font-size: 9px; }
+  .daily-shortcut-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .daily-shortcut-grid a,.daily-shortcut-grid button { min-height: 102px; }
+}
