@@ -62,13 +62,12 @@ export default function ArabianHorseScene({
       </div>
       <div className={`${styles.videoShade} ${delivered ? deliveryStyles.videoShade : ""}`} aria-hidden="true" />
 
-      {active && (
+      {!delivered && active && (
         <div key={runId} className={styles.overlayTimeline} aria-live="polite">
           <div className={styles.greeting}>
             <span>أحسنت يا</span>
             <strong>{childName}</strong>
           </div>
-
           <div className={`${styles.finalCopy} ${timingStyles.finalCopyTiming}`}>
             <span className={styles.giftMark}>{gift.icon}</span>
             <p>أُهديت لك</p>
@@ -80,15 +79,17 @@ export default function ArabianHorseScene({
         </div>
       )}
 
-      <div className={styles.brand}>
-        <span>و</span>
-        <div><strong>واعي كيدز</strong><small>WAAI KIDS · ينمو بوعي ويُنجز بثقة</small></div>
-      </div>
+      {!delivered && (
+        <div className={styles.brand}>
+          <span>و</span>
+          <div><strong>واعي كيدز</strong><small>WAAI KIDS · ينمو بوعي ويُنجز بثقة</small></div>
+        </div>
+      )}
 
-      {status === "idle" && (
+      {!delivered && status === "idle" && (
         <div className={startStyles.startGate}>
           <div className={startStyles.startEmblem} aria-hidden="true">♞</div>
-          <span className={startStyles.startKicker}>{mode === "preview" ? "معاينة فيديو تفاعلية" : "هدية إنجاز فاخرة"}</span>
+          <span className={startStyles.startKicker}>معاينة فيديو تفاعلية</span>
           <h1>الخيل العربي</h1>
           <p>مشهد الخيل العربي في الصحراء بصوته الأصلي، ضمن تجربة هدية كاملة من واعي كيدز.</p>
           <button ref={startButtonRef} type="button" onClick={onStart} disabled={loading}>
