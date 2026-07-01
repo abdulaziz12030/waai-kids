@@ -9,24 +9,44 @@
 }
 
 .delivery .video {
+  width: 100%;
+  height: 100%;
   object-fit: cover;
-  object-position: 50% 48%;
-  filter: brightness(.88) contrast(1.07) saturate(1.02);
+  object-position: center;
+  filter: none;
 }
 
 .delivery .videoBackdrop {
-  opacity: .46;
-  filter: blur(38px) brightness(.42) saturate(.9);
+  display: none;
 }
 
 .delivery .videoShade {
-  background:
-    linear-gradient(180deg, rgba(0, 0, 0, .56) 0%, transparent 22%, transparent 62%, rgba(0, 0, 0, .78) 100%),
-    radial-gradient(circle at 50% 46%, transparent 36%, rgba(0, 0, 0, .38) 100%);
+  display: none;
 }
 
-@media (min-width: 1000px) and (min-aspect-ratio: 4/3) {
-  .delivery .video {
-    object-position: 50% 45%;
+:global(div[role="dialog"][aria-label^="عرض"] > section[data-motion="arabian-horse"] > header) {
+  justify-content: flex-end !important;
+  padding: 14px !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  pointer-events: none !important;
+}
+
+:global(div[role="dialog"][aria-label^="عرض"] > section[data-motion="arabian-horse"] > header > :not(:first-child)) {
+  display: none !important;
+}
+
+:global(div[role="dialog"][aria-label^="عرض"] > section[data-motion="arabian-horse"] > footer) {
+  display: none !important;
+}
+
+:global(div[role="dialog"][aria-label^="عرض"] > section[data-motion="arabian-horse"] main) {
+  inset: 0 !important;
+}
+
+@media (max-width: 700px) {
+  :global(div[role="dialog"][aria-label^="عرض"] > section[data-motion="arabian-horse"] > header) {
+    padding: 10px !important;
   }
 }
