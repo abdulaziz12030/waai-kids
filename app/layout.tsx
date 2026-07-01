@@ -17,6 +17,7 @@ import './home-child-entry.css';
 import './tasks.css';
 import './task-requirements.css';
 import './ui-refresh.css';
+import './child-journey-phase1.css';
 import './security-controls.css';
 import './points-v2.css';
 import './landing-v2.css';
