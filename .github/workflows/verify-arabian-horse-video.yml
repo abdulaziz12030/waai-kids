@@ -1,0 +1,24 @@
+name: Verify Arabian Horse Video
+
+on:
+  pull_request:
+    paths:
+      - public/gifts/arabian-horse/video-parts/**
+      - .github/workflows/verify-arabian-horse-video.yml
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Assemble and verify
+        shell: bash
+        run: |
+          cat public/gifts/arabian-horse/video-parts/part-*.txt | tr -d '\n\r ' | base64 --decode > /tmp/horse.mp4
+          stat -c 'size=%s' /tmp/horse.mp4
+          sha256sum /tmp/horse.mp4
+          test "$(stat -c%s /tmp/horse.mp4)" = "88977"
+          test "$(sha256sum /tmp/horse.mp4 | cut -d' ' -f1)" = "0f1bf6583b83947f3cef94578bfaf8a6818798fe47a0c7dc269b50a966220424"
