@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - public/gifts/arabian-horse/video-parts/**
+      - scripts/list_horse_chunk_hashes.sh
       - .github/workflows/verify-arabian-horse-video.yml
 
 permissions:
@@ -14,6 +15,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: List chunk hashes
+        run: bash scripts/list_horse_chunk_hashes.sh | tee /tmp/chunks.txt
       - name: Assemble video and record result
         id: assemble
         shell: bash
@@ -23,7 +26,8 @@ jobs:
           decode_status=$?
           actual_size="$(stat -c%s /tmp/horse.mp4 2>/dev/null || echo 0)"
           actual_sha="$(sha256sum /tmp/horse.mp4 2>/dev/null | cut -d' ' -f1)"
-          printf 'decode_status=%s\nsize=%s\nsha=%s\n' "$decode_status" "$actual_size" "$actual_sha" > /tmp/horse-result.txt
+          cp /tmp/chunks.txt /tmp/horse-result.txt
+          printf 'decode_status=%s\nsize=%s\nsha=%s\n' "$decode_status" "$actual_size" "$actual_sha" >> /tmp/horse-result.txt
           cat /tmp/horse-result.txt
           echo "decode_status=$decode_status" >> "$GITHUB_OUTPUT"
           echo "actual_size=$actual_size" >> "$GITHUB_OUTPUT"
