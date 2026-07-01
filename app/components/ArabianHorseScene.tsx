@@ -41,14 +41,15 @@ export default function ArabianHorseScene({
   onEnded
 }: ArabianHorseSceneProps) {
   const active = status !== "idle";
+  const delivered = mode === "delivery";
 
   return (
-    <div className={`${styles.scene} ${mode === "delivery" ? deliveryStyles.delivery : ""} ${active ? `${styles.active} ${timingStyles.active}` : ""} ${status === "finished" ? styles.finished : ""}`}>
-      <div className={styles.videoBackdrop} aria-hidden="true" />
-      <div className={styles.videoFrame}>
+    <div className={`${styles.scene} ${delivered ? deliveryStyles.delivery : ""} ${active ? `${styles.active} ${timingStyles.active}` : ""} ${status === "finished" ? styles.finished : ""}`}>
+      <div className={`${styles.videoBackdrop} ${delivered ? deliveryStyles.videoBackdrop : ""}`} aria-hidden="true" />
+      <div className={`${styles.videoFrame} ${delivered ? deliveryStyles.videoFrame : ""}`}>
         <video
           ref={videoRef}
-          className={styles.video}
+          className={`${styles.video} ${delivered ? deliveryStyles.video : ""}`}
           src={videoUrl}
           poster="/gifts/arabian-horse/opening.webp"
           preload="auto"
@@ -59,7 +60,7 @@ export default function ArabianHorseScene({
           aria-label="فيديو هدية الخيل العربي"
         />
       </div>
-      <div className={styles.videoShade} aria-hidden="true" />
+      <div className={`${styles.videoShade} ${delivered ? deliveryStyles.videoShade : ""}`} aria-hidden="true" />
 
       {active && (
         <div key={runId} className={styles.overlayTimeline} aria-live="polite">
