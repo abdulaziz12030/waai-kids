@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, KeyboardEvent, useEffect, useMemo, useRef, useState } from "react";
+import { ClipboardEvent, FormEvent, KeyboardEvent, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { supabase } from "../../../lib/supabase";
@@ -25,6 +25,7 @@ export default function ChildLoginPage() {
   const router = useRouter();
   const pinRefs = useRef<Array<HTMLInputElement | null>>([]);
   const [familyCode, setFamilyCode] = useState("");
+  const [familyCodeLocked, setFamilyCodeLocked] = useState(false);
   const [pinDigits, setPinDigits] = useState(["", "", "", "", "", ""]);
   const [rememberFamily, setRememberFamily] = useState(true);
   const [showPin, setShowPin] = useState(false);
@@ -33,11 +34,15 @@ export default function ChildLoginPage() {
   const [pendingChild, setPendingChild] = useState<PendingChildSession | null>(null);
 
   const pin = useMemo(() => pinDigits.join(""), [pinDigits]);
-  const hasSavedFamilyCode = familyCode.length >= 8;
+  const hasFamilyCode = familyCode.length >= 8;
 
   useEffect(() => {
     const saved = localStorage.getItem("waai_family_code") || "";
-    if (saved) setFamilyCode(saved);
+    if (saved) {
+      setFamilyCode(saved);
+      setFamilyCodeLocked(true);
+      setTimeout(() => pinRefs.current[0]?.focus(), 0);
+    }
   }, []);
 
   function updatePinDigit(index: number, rawValue: string) {
@@ -54,7 +59,7 @@ export default function ChildLoginPage() {
     if (event.key === "ArrowLeft" && index < 5) pinRefs.current[index + 1]?.focus();
   }
 
-  function handlePinPaste(event: React.ClipboardEvent<HTMLInputElement>) {
+  function handlePinPaste(event: ClipboardEvent<HTMLInputElement>) {
     const pasted = event.clipboardData.getData("text").replace(/\D/g, "").slice(0, 6);
     if (!pasted) return;
     event.preventDefault();
@@ -120,6 +125,14 @@ export default function ChildLoginPage() {
     setTimeout(() => pinRefs.current[0]?.focus(), 0);
   }
 
+  function changeFamilyCode() {
+    localStorage.removeItem("waai_family_code");
+    setFamilyCodeLocked(false);
+    setFamilyCode("");
+    setPinDigits(["", "", "", "", "", ""]);
+    setError("");
+  }
+
   return (
     <main className="auth-page compact-auth-page child-login-page">
       <section className="auth-panel child-login-panel simplified-child-login child-login-v2">
@@ -129,26 +142,34 @@ export default function ChildLoginPage() {
           <>
             <div className="auth-heading child-login-heading">
               <span className="section-label">دخول الطفل</span>
-              <h1>{hasSavedFamilyCode ? "اكتب رقمك السري" : "مرحبًا بك"}</h1>
-              <p>{hasSavedFamilyCode ? "رمز الأسرة محفوظ على هذا الجهاز." : "اكتب رمز الأسرة مرة واحدة، ثم رقمك السري."}</p>
+              <h1>{familyCodeLocked ? "اكتب رقمك السري" : "مرحبًا بك"}</h1>
+              <p>{familyCodeLocked ? "رمز الأسرة محفوظ على هذا الجهاز." : "اكتب رمز الأسرة مرة واحدة، ثم رقمك السري."}</p>
             </div>
 
             <form className="auth-form child-login-form" onSubmit={handleSubmit}>
-              <label className="family-code-field">
-                <span>رمز الأسرة</span>
-                <div className="input-with-status">
-                  <input
-                    value={familyCode}
-                    onChange={(event) => setFamilyCode(event.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ""))}
-                    maxLength={10}
-                    autoCapitalize="characters"
-                    autoComplete="off"
-                    placeholder="مثال: A1B2C3D4E5"
-                    required
-                  />
-                  {hasSavedFamilyCode && <b>✓</b>}
+              {familyCodeLocked ? (
+                <div className="saved-family-code-card">
+                  <span>✓</span>
+                  <div><strong>جهاز العائلة</strong><small>رمز الأسرة محفوظ وجاهز.</small></div>
+                  <button type="button" onClick={changeFamilyCode}>تغيير</button>
                 </div>
-              </label>
+              ) : (
+                <label className="family-code-field">
+                  <span>رمز الأسرة</span>
+                  <div className="input-with-status">
+                    <input
+                      value={familyCode}
+                      onChange={(event) => setFamilyCode(event.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ""))}
+                      maxLength={10}
+                      autoCapitalize="characters"
+                      autoComplete="off"
+                      placeholder="مثال: A1B2C3D4E5"
+                      required
+                    />
+                    {hasFamilyCode && <b>✓</b>}
+                  </div>
+                </label>
+              )}
 
               <fieldset className="child-pin-fieldset">
                 <legend>رقمك السري</legend>
@@ -175,14 +196,16 @@ export default function ChildLoginPage() {
                 </div>
               </fieldset>
 
-              <label className="remember-family-option">
-                <input type="checkbox" checked={rememberFamily} onChange={(event) => setRememberFamily(event.target.checked)} />
-                <span><strong>هذا جهاز العائلة</strong><small>احفظ رمز الأسرة لتكتب رقمك السري فقط في المرة القادمة.</small></span>
-              </label>
+              {!familyCodeLocked && (
+                <label className="remember-family-option">
+                  <input type="checkbox" checked={rememberFamily} onChange={(event) => setRememberFamily(event.target.checked)} />
+                  <span><strong>هذا جهاز العائلة</strong><small>احفظ رمز الأسرة لتكتب رقمك السري فقط في المرة القادمة.</small></span>
+                </label>
+              )}
 
               {error && <p className="form-message error-message">{error}</p>}
 
-              <button className="auth-submit child-login-submit" type="submit" disabled={loading || pin.length !== 6}>
+              <button className="auth-submit child-login-submit" type="submit" disabled={loading || pin.length !== 6 || !hasFamilyCode}>
                 {loading ? "نتحقق من حسابك..." : "متابعة"}
               </button>
             </form>
