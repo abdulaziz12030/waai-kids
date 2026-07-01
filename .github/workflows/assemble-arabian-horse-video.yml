@@ -1,0 +1,49 @@
+name: Assemble Arabian Horse Video
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - public/gifts/arabian-horse/video-parts/**
+      - .github/workflows/assemble-arabian-horse-video.yml
+
+permissions:
+  contents: write
+
+jobs:
+  assemble:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Assemble and verify video
+        shell: bash
+        run: |
+          mkdir -p public/gifts/arabian-horse
+          cat public/gifts/arabian-horse/video-parts/part-*.txt \
+            | tr -d '\n\r ' \
+            | base64 --decode \
+            > public/gifts/arabian-horse/waai-arabian-horse.mp4
+
+          actual_size="$(stat -c%s public/gifts/arabian-horse/waai-arabian-horse.mp4)"
+          actual_sha="$(sha256sum public/gifts/arabian-horse/waai-arabian-horse.mp4 | cut -d' ' -f1)"
+          test "$actual_size" = "88977"
+          test "$actual_sha" = "0f1bf6583b83947f3cef94578bfaf8a6818798fe47a0c7dc269b50a966220424"
+
+      - name: Commit verified video
+        shell: bash
+        run: |
+          git add public/gifts/arabian-horse/waai-arabian-horse.mp4
+          if git diff --cached --quiet; then
+            echo "Verified video is already current."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "asset: assemble uploaded Arabian horse gift video"
+          git push origin HEAD:main
