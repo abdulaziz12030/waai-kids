@@ -1,28 +1,10 @@
-:global(.child-app-header) {
-  position: relative;
-  padding-left: 66px;
-}
-
-:global(.child-app-header .child-logout-button) {
-  margin-left: 54px;
-}
-
 .headerHost,
-.fixedHost {
-  direction: rtl;
-  z-index: 220;
-}
-
-.headerHost {
-  position: absolute;
-  top: 0;
-  left: 0;
-}
-
 .fixedHost {
   position: fixed;
   top: 18px;
-  left: 18px;
+  left: max(78px, calc((100vw - 980px) / 2 + 78px));
+  direction: rtl;
+  z-index: 220;
 }
 
 .bellButton {
@@ -265,21 +247,10 @@
 }
 
 @media (max-width: 700px) {
-  :global(.child-app-header) {
-    padding-left: 58px;
-  }
-
-  :global(.child-app-header .child-logout-button) {
-    margin-left: 48px;
-  }
-
-  .headerHost {
-    top: 1px;
-  }
-
+  .headerHost,
   .fixedHost {
     top: 12px;
-    left: 12px;
+    left: 72px;
   }
 
   .bellButton {
