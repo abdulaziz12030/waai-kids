@@ -42,7 +42,7 @@ export default function ArabianHorseScene({
   const active = status !== "idle";
 
   return (
-    <div className={`${styles.scene} ${active ? `${styles.active} ${timingStyles.active}` : ""} ${status === "finished" ? styles.finished : ""}`}>
+    <div className={`${styles.scene} ${mode === "delivery" ? styles.delivery : ""} ${active ? `${styles.active} ${timingStyles.active}` : ""} ${status === "finished" ? styles.finished : ""}`}>
       <div className={styles.videoBackdrop} aria-hidden="true" />
       <div className={styles.videoFrame}>
         <video
