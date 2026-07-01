@@ -189,6 +189,10 @@ export default function ChildExperienceLayer() {
       const freshGifts = next.gifts.filter((gift) => gift.status === "delivered");
       if (freshGifts.length > 0 && !autoOpened.current) {
         autoOpened.current = true;
+        const freshNotification = next.notifications.find(
+          (notification) => notification.action_type === "gift" && notification.action_id === freshGifts[0].id
+        );
+        if (freshNotification && !freshNotification.read_at) void markNotificationRead(freshNotification.id);
         window.setTimeout(() => void openGift(freshGifts[0], freshGifts, true), 180);
       }
     }
@@ -274,6 +278,10 @@ export default function ChildExperienceLayer() {
     </div>
   );
 
+  const childName = typeof window !== "undefined"
+    ? localStorage.getItem("namaa_child_name") || "بطل واعي"
+    : "بطل واعي";
+
   return (
     <>
       {headerTarget ? createPortal(notificationCenter, headerTarget) : notificationCenter}
@@ -281,7 +289,7 @@ export default function ChildExperienceLayer() {
       {selectedGift && (
         <GiftCelebrationModal
           gift={selectedGift.gift}
-          childName={localStorage.getItem("namaa_child_name") || "بطل واعي"}
+          childName={childName}
           achievement={selectedGift.achievement_title}
           reason={selectedGift.reason}
           mode="delivery"
