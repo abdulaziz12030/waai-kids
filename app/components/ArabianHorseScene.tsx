@@ -14,6 +14,7 @@ type ArabianHorseSceneProps = {
   status: "idle" | "playing" | "finished";
   mode: "preview" | "delivery";
   videoUrl: string;
+  fallbackVideoUrl?: string;
   muted: boolean;
   runId: number;
   loading?: boolean;
@@ -32,6 +33,7 @@ export default function ArabianHorseScene({
   status,
   mode,
   videoUrl,
+  fallbackVideoUrl,
   muted,
   runId,
   loading = false,
@@ -42,6 +44,13 @@ export default function ArabianHorseScene({
 }: ArabianHorseSceneProps) {
   const active = status !== "idle";
   const delivered = mode === "delivery";
+
+  function handleVideoError(event: React.SyntheticEvent<HTMLVideoElement>) {
+    const video = event.currentTarget;
+    if (!fallbackVideoUrl || video.currentSrc.includes(fallbackVideoUrl)) return;
+    video.src = fallbackVideoUrl;
+    video.load();
+  }
 
   return (
     <div className={`${styles.scene} ${delivered ? deliveryStyles.delivery : ""} ${active ? `${styles.active} ${timingStyles.active}` : ""} ${status === "finished" ? styles.finished : ""}`}>
@@ -56,6 +65,7 @@ export default function ArabianHorseScene({
           playsInline
           muted={muted}
           disablePictureInPicture
+          onError={handleVideoError}
           onEnded={onEnded}
           aria-label="فيديو هدية الخيل العربي"
         />
