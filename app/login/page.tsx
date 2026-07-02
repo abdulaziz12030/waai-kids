@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { supabase } from "../../lib/supabase";
 
 type LoginRole = "family" | "teacher";
-type PortalAccess = { family?: boolean; teacher?: boolean };
+type PortalAccess = { family?: boolean; teacher?: boolean; blocked?: boolean; account_status?: string };
 
 const roleCopy: Record<LoginRole, { eyebrow: string; title: string; description: string; icon: string }> = {
   family: {
@@ -68,6 +68,13 @@ export default function LoginPage() {
       await supabase.auth.signOut();
       setLoading(false);
       setError("تعذر التحقق من نوع الحساب. حاول مرة أخرى.");
+      return;
+    }
+
+    if (access.blocked || access.account_status === "deleted") {
+      await supabase.auth.signOut();
+      setLoading(false);
+      setError("تم حذف هذا الحساب من المنصة أو إيقافه من الإدارة. تواصل مع إدارة واعي كيدز عند الحاجة للمراجعة.");
       return;
     }
 
