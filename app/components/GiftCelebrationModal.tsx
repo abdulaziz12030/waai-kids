@@ -328,6 +328,7 @@ export default function GiftCelebrationModal({
               status={status}
               mode={mode}
               videoUrl={config.videoUrl || ""}
+              fallbackVideoUrl={config.fallbackVideoUrl}
               muted={muted}
               runId={runId}
               loading={soundLoading}
@@ -365,35 +366,30 @@ export default function GiftCelebrationModal({
           )}
         </main>
 
-        {(!isArabianHorse || status !== "idle") && (
-          <footer className={styles.controlDock}>
-            <button type="button" onClick={runCelebration} disabled={soundLoading}>↻ <span>إعادة التشغيل</span></button>
-            <button type="button" onClick={() => setShowCertificate(true)}>📜 <span>معاينة الشهادة</span></button>
-            {onPrintCertificate && <button type="button" onClick={onPrintCertificate}>🖨️ <span>طباعة الشهادة</span></button>}
-            {primaryActionLabel && onPrimaryAction && <button className={styles.primaryAction} type="button" onClick={onPrimaryAction}>{primaryActionLabel}</button>}
-            <button className={styles.closeAction} type="button" onClick={onClose}>إغلاق</button>
-          </footer>
-        )}
-
-        {config.audioKey && <audio ref={audioRef} src={audioSource || undefined} preload="none" aria-hidden="true" />}
-
-        {showCertificate && (
-          <div className={styles.certificateOverlay} role="dialog" aria-modal="true" aria-label="معاينة الشهادة">
-            <div className={styles.certificateToolbar}>
-              <div><strong>معاينة الشهادة</strong><small>واعي كيدز · ينمو بوعي ويُنجز بثقة</small></div>
-              <button type="button" onClick={() => setShowCertificate(false)}>العودة إلى الهدية</button>
-            </div>
-            <PreviewCertificate
-              gift={gift}
-              childName={childName}
-              achievement={achievement}
-              reason={reason}
-              certificateNumber={certificateNumber}
-              dateLabel={dateLabel}
-            />
-          </div>
-        )}
+        <footer className={styles.footerActions}>
+          <button type="button" onClick={runCelebration} disabled={soundLoading}>
+            <span>↻</span>{status === "idle" ? "تشغيل الهدية" : "إعادة التشغيل"}
+          </button>
+          <button type="button" onClick={() => setShowCertificate(true)}>
+            <span>📜</span>الشهادة
+          </button>
+          <button type="button" onClick={onPrimaryAction || onClose}>
+            {primaryActionLabel || "رائع!"}
+          </button>
+        </footer>
       </section>
+
+      {showCertificate && (
+        <div className={styles.certificateOverlay} role="dialog" aria-modal="true" aria-label="شهادة الهدية">
+          <PreviewCertificate gift={gift} childName={childName} achievement={achievement} reason={reason} certificateNumber={certificateNumber} dateLabel={dateLabel} />
+          <div className={styles.certificateActions}>
+            <button type="button" onClick={onPrintCertificate}>طباعة أو حفظ PDF</button>
+            <button type="button" onClick={() => setShowCertificate(false)}>العودة للهدية</button>
+          </div>
+        </div>
+      )}
+
+      {audioSource && <audio ref={audioRef} src={audioSource} preload="auto" />}
     </div>
   );
 
