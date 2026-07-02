@@ -55,8 +55,16 @@ function todayIso() {
 }
 
 function isBlocked(task: ChildTask, tasks: ChildTask[]) {
-  if (!task.generated_from_goal || !task.plan_step || task.plan_step <= 1) return false;
-  return tasks.some((item) => item.goal_id === task.goal_id && item.plan_step && item.plan_step < task.plan_step && item.status !== "approved");
+  const currentStep = task.plan_step;
+  if (!task.generated_from_goal || currentStep === null || currentStep <= 1) return false;
+
+  return tasks.some((item) => {
+    const previousStep = item.plan_step;
+    return item.goal_id === task.goal_id
+      && previousStep !== null
+      && previousStep < currentStep
+      && item.status !== "approved";
+  });
 }
 
 export default function ChildJourneyCoach() {
