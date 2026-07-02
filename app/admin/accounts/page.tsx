@@ -11,7 +11,6 @@ type AccountKind = "family" | "teacher" | "incomplete";
 type AccountStatus = "active" | "suspended" | "deleted";
 type AccountFilter = "all" | AccountKind | AccountStatus;
 type ActionResult = { error: { message: string } | null };
-
 type Account = {
   id: string; email: string | null; full_name: string | null; created_at: string;
   last_sign_in_at: string | null; email_confirmed_at: string | null;
@@ -53,6 +52,7 @@ function friendlyError(message: string) {
 
 export default function AdminAccountsPage() {
   const router = useRouter();
+  const client = supabase;
   const [data, setData] = useState<Dashboard | null>(null);
   const [metrics, setMetrics] = useState<Metrics | null>(null);
   const [codes, setCodes] = useState<Record<string, AccessCodes>>({});
@@ -64,13 +64,13 @@ export default function AdminAccountsPage() {
   const [success, setSuccess] = useState("");
 
   async function load(query = search) {
-    if (!supabase) return;
+    if (!client) return;
     setLoading(true); setError("");
-    const session = await supabase.auth.getSession();
+    const session = await client.auth.getSession();
     if (!session.data.session) { router.replace("/login?type=family"); return; }
     const [accountsResult, metricsResult] = await Promise.all([
-      supabase.rpc("get_admin_accounts", { p_search: query.trim(), p_limit: 250 }),
-      supabase.rpc("get_admin_account_metrics")
+      client.rpc("get_admin_accounts", { p_search: query.trim(), p_limit: 250 }),
+      client.rpc("get_admin_account_metrics")
     ]);
     if (accountsResult.error || !accountsResult.data) {
       if (accountsResult.error?.message.includes("ADMIN_ACCESS_DENIED")) router.replace("/dashboard");
@@ -107,20 +107,20 @@ export default function AdminAccountsPage() {
   }
 
   async function showCodes(item: Account) {
-    if (!supabase) return;
+    if (!client) return;
     if (codes[item.id]) { setCodes((current) => { const next = { ...current }; delete next[item.id]; return next; }); return; }
     setBusyId(`codes-${item.id}`);
-    const result = await supabase.rpc("admin_get_account_access_codes", { p_user_id: item.id });
+    const result = await client.rpc("admin_get_account_access_codes", { p_user_id: item.id });
     setBusyId("");
     if (result.error) { setError(friendlyError(result.error.message)); return; }
     setCodes((current) => ({ ...current, [item.id]: result.data as AccessCodes }));
   }
 
   async function sendPasswordReset(item: Account) {
-    if (!supabase || !item.email) return;
+    if (!client || !item.email) return;
     setBusyId(`reset-${item.id}`); setError(""); setSuccess("");
     const redirectTo = `${window.location.origin}/auth/callback?next=/reset-password`;
-    const result = await supabase.auth.resetPasswordForEmail(item.email, { redirectTo });
+    const result = await client.auth.resetPasswordForEmail(item.email, { redirectTo });
     setBusyId("");
     if (result.error) { setError("تعذر إرسال رابط تغيير كلمة المرور الآن."); return; }
     setSuccess(`تم إرسال رابط آمن لتغيير كلمة المرور إلى ${item.email}.`);
@@ -128,42 +128,42 @@ export default function AdminAccountsPage() {
 
   async function suspendAccount(item: Account) {
     const confirmation = askForEmail(item, "سيتم إيقاف الحساب مؤقتًا ومنع دخوله حتى إعادة تفعيله.");
-    if (!confirmation || !supabase) return;
+    if (!confirmation || !client) return;
     const reason = window.prompt("سبب الإيقاف:", "إيقاف إداري مؤقت") || "إيقاف إداري مؤقت";
-    await runAction(`suspend-${item.id}`, () => supabase.rpc("admin_suspend_user_account", { p_user_id: item.id, p_confirmation: confirmation, p_reason: reason }), `تم إيقاف حساب ${item.full_name || item.email}.`);
+    await runAction(`suspend-${item.id}`, () => client.rpc("admin_suspend_user_account", { p_user_id: item.id, p_confirmation: confirmation, p_reason: reason }), `تم إيقاف حساب ${item.full_name || item.email}.`);
   }
 
   async function restoreAccount(item: Account) {
     const confirmation = askForEmail(item, "سيتم استعادة الحساب وإعادة السماح له بالدخول.");
-    if (!confirmation || !supabase) return;
+    if (!confirmation || !client) return;
     const reason = window.prompt("سبب الاستعادة:", "استعادة بواسطة الإدارة") || "استعادة بواسطة الإدارة";
-    await runAction(`restore-${item.id}`, () => supabase.rpc("admin_restore_user_account", { p_user_id: item.id, p_confirmation: confirmation, p_reason: reason }), `تمت استعادة حساب ${item.full_name || item.email}.`);
+    await runAction(`restore-${item.id}`, () => client.rpc("admin_restore_user_account", { p_user_id: item.id, p_confirmation: confirmation, p_reason: reason }), `تمت استعادة حساب ${item.full_name || item.email}.`);
   }
 
   async function disableTeacher(item: Account) {
     const confirmation = askForEmail(item, "سيتم إلغاء صلاحية المعلم ووصوله إلى الطلاب والتسميع.");
-    if (!confirmation || !supabase) return;
+    if (!confirmation || !client) return;
     const reason = window.prompt("سبب إزالة صلاحية المعلم:", "إجراء إداري") || "إجراء إداري";
-    await runAction(`teacher-${item.id}`, () => supabase.rpc("admin_disable_teacher_access", { p_user_id: item.id, p_confirmation: confirmation, p_reason: reason }), `تم إيقاف صلاحية المعلم للحساب ${item.full_name || item.email}.`);
+    await runAction(`teacher-${item.id}`, () => client.rpc("admin_disable_teacher_access", { p_user_id: item.id, p_confirmation: confirmation, p_reason: reason }), `تم إيقاف صلاحية المعلم للحساب ${item.full_name || item.email}.`);
   }
 
   async function safeDelete(item: Account) {
     if (!window.confirm("سيتم حذف الحساب حذفًا آمنًا: منع دخوله وتعطيل عضوياته مع الاحتفاظ بالسجلات. متابعة؟")) return;
     const confirmation = askForEmail(item, "تأكيد الحذف الآمن");
-    if (!confirmation || !supabase) return;
+    if (!confirmation || !client) return;
     const reason = window.prompt("سبب الحذف:", "طلب حذف أو إجراء إداري") || "إجراء إداري";
-    await runAction(`delete-${item.id}`, () => supabase.rpc("admin_disable_user_account", { p_user_id: item.id, p_confirmation: confirmation, p_reason: reason }), `تم حذف حساب ${item.full_name || item.email} من الاستخدام.`);
+    await runAction(`delete-${item.id}`, () => client.rpc("admin_disable_user_account", { p_user_id: item.id, p_confirmation: confirmation, p_reason: reason }), `تم حذف حساب ${item.full_name || item.email} من الاستخدام.`);
   }
 
   async function permanentDelete(item: Account) {
-    if (!item.email || !supabase) return;
+    if (!item.email || !client) return;
     if (!window.confirm("تحذير شديد: الحذف النهائي يزيل الحساب وبيانات الأسرة والأطفال المرتبطة به ولا يمكن التراجع عنه. متابعة؟")) return;
     const confirmationEmail = askForEmail(item, "المرحلة الأولى من تأكيد الحذف النهائي");
     if (!confirmationEmail) return;
     const confirmationPhrase = window.prompt("اكتب العبارة التالية حرفيًا:\nحذف نهائي", "");
     if (confirmationPhrase !== "حذف نهائي") { setError("لم يتم الحذف لأن عبارة التأكيد غير مطابقة."); return; }
     const reason = window.prompt("سبب الحذف النهائي:", "حذف نهائي بواسطة الإدارة") || "حذف نهائي بواسطة الإدارة";
-    const session = await supabase.auth.getSession();
+    const session = await client.auth.getSession();
     const token = session.data.session?.access_token;
     if (!token) return;
     setBusyId(`permanent-${item.id}`); setError(""); setSuccess("");
