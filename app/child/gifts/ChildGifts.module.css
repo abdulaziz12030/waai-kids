@@ -46,7 +46,7 @@
   box-shadow: 0 16px 45px rgba(28,73,49,.06);
 }
 
-.cabinetHead { display: flex; justify-content: space-between; align-items: end; gap: 15px; margin-bottom: 17px; }
+.cabinetHead { display: flex; justify-content: space-between; align-items: flex-end; gap: 15px; margin-bottom: 17px; }
 .cabinetHead h2 { margin: 5px 0 2px; }
 .cabinetHead p { margin: 0; color: #687e73; }
 .grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 13px; }
