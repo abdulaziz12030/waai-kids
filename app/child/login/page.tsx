@@ -29,6 +29,7 @@ export default function ChildLoginPage() {
   const [pinDigits, setPinDigits] = useState(["", "", "", "", "", ""]);
   const [rememberFamily, setRememberFamily] = useState(true);
   const [showPin, setShowPin] = useState(false);
+  const [showHelp, setShowHelp] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [pendingChild, setPendingChild] = useState<PendingChildSession | null>(null);
@@ -74,7 +75,7 @@ export default function ChildLoginPage() {
 
     const client = supabase;
     if (!client) {
-      setError("تعذر الاتصال بالخدمة.");
+      setError("تعذر الاتصال بالخدمة. افتح رابط واعي كيدز الصحيح أو تواصل مع ولي الأمر.");
       return;
     }
 
@@ -93,7 +94,8 @@ export default function ChildLoginPage() {
 
     if (result.error || !result.data?.[0]) {
       const message = result.error?.message || "بيانات الدخول غير صحيحة.";
-      setError(message.includes("15 دقيقة") ? message : "رمز الأسرة أو الرقم السري غير صحيح.");
+      setError(message.includes("15 دقيقة") ? message : "رمز الأسرة أو الرقم السري غير صحيح. جرّب زر تغيير رمز الأسرة إذا كان الجهاز محفوظًا سابقًا.");
+      setShowHelp(true);
       return;
     }
 
@@ -131,6 +133,7 @@ export default function ChildLoginPage() {
     setFamilyCode("");
     setPinDigits(["", "", "", "", "", ""]);
     setError("");
+    setShowHelp(false);
   }
 
   return (
@@ -143,7 +146,7 @@ export default function ChildLoginPage() {
             <div className="auth-heading child-login-heading">
               <span className="section-label">دخول الطفل</span>
               <h1>{familyCodeLocked ? "اكتب رقمك السري" : "مرحبًا بك"}</h1>
-              <p>{familyCodeLocked ? "رمز الأسرة محفوظ على هذا الجهاز." : "اكتب رمز الأسرة مرة واحدة، ثم رقمك السري."}</p>
+              <p>{familyCodeLocked ? "رمز الأسرة محفوظ على هذا الجهاز. إن لم يعمل، اضغط تغيير وأعد كتابة رمز الأسرة." : "اكتب رمز الأسرة مرة واحدة، ثم رقمك السري."}</p>
             </div>
 
             <form className="auth-form child-login-form" onSubmit={handleSubmit}>
@@ -204,6 +207,13 @@ export default function ChildLoginPage() {
               )}
 
               {error && <p className="form-message error-message">{error}</p>}
+
+              {showHelp && (
+                <div className="child-login-help-box">
+                  <strong>نسيت الرقم السري؟</strong>
+                  <small>اطلب من ولي الأمر الدخول إلى لوحة الأسرة ثم إعادة تعيين رقم دخول الطفل. وإذا كان رمز الأسرة محفوظًا قديمًا، اضغط تغيير وأعد إدخاله.</small>
+                </div>
+              )}
 
               <button className="auth-submit child-login-submit" type="submit" disabled={loading || pin.length !== 6 || !hasFamilyCode}>
                 {loading ? "نتحقق من حسابك..." : "متابعة"}
