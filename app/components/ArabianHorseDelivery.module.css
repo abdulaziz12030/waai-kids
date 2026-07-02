@@ -24,7 +24,7 @@
   display: none;
 }
 
-:global(div[role="dialog"][aria-label^="عرض"] > section[data-motion="arabian-horse"] > header) {
+.delivery :global(div[role="dialog"][aria-label^="عرض"] > section[data-motion="arabian-horse"] > header) {
   justify-content: flex-end !important;
   padding: 14px !important;
   background: transparent !important;
@@ -33,20 +33,20 @@
   pointer-events: none !important;
 }
 
-:global(div[role="dialog"][aria-label^="عرض"] > section[data-motion="arabian-horse"] > header > :not(:first-child)) {
+.delivery :global(div[role="dialog"][aria-label^="عرض"] > section[data-motion="arabian-horse"] > header > :not(:first-child)) {
   display: none !important;
 }
 
-:global(div[role="dialog"][aria-label^="عرض"] > section[data-motion="arabian-horse"] > footer) {
+.delivery :global(div[role="dialog"][aria-label^="عرض"] > section[data-motion="arabian-horse"] > footer) {
   display: none !important;
 }
 
-:global(div[role="dialog"][aria-label^="عرض"] > section[data-motion="arabian-horse"] main) {
+.delivery :global(div[role="dialog"][aria-label^="عرض"] > section[data-motion="arabian-horse"] main) {
   inset: 0 !important;
 }
 
 @media (max-width: 700px) {
-  :global(div[role="dialog"][aria-label^="عرض"] > section[data-motion="arabian-horse"] > header) {
+  .delivery :global(div[role="dialog"][aria-label^="عرض"] > section[data-motion="arabian-horse"] > header) {
     padding: 10px !important;
   }
 }
