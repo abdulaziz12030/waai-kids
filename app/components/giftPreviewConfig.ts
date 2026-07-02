@@ -17,6 +17,7 @@ export type GiftPreviewConfig = {
   durationMs: number;
   audioKey: "arabian-horse" | null;
   videoUrl?: string;
+  fallbackVideoUrl?: string;
   volume: number;
   effects: GiftEffectLevel;
   greeting: string;
@@ -42,7 +43,8 @@ const previewConfigs: Record<string, GiftPreviewConfig> = {
     background: "midnight-black",
     durationMs: 8050,
     audioKey: null,
-    videoUrl: "https://cdn.imgchest.com/files/9692eff771e3.mp4",
+    videoUrl: "/gifts/arabian-horse/official-arabian-horse-2026.mp4",
+    fallbackVideoUrl: "https://cdn.imgchest.com/files/9692eff771e3.mp4",
     volume: 1,
     effects: "celebration",
     greeting: "أحسنت يا {child}",
