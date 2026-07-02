@@ -1,0 +1,274 @@
+.child-app-refresh {
+  --child-ink: #24362d;
+  --child-muted: #6d7c73;
+  --child-green: #47745c;
+  --child-purple: #6b58bd;
+  --child-card: #ffffff;
+  --child-line: rgba(67, 94, 78, 0.12);
+  width: min(1040px, calc(100% - 28px));
+  padding-bottom: 112px;
+}
+
+.child-app-refresh .child-app-header {
+  position: sticky;
+  top: 10px;
+  z-index: 18;
+  margin-bottom: 16px;
+  padding: 12px 14px;
+  border: 1px solid var(--child-line);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 10px 32px rgba(45, 73, 58, 0.08);
+  backdrop-filter: blur(16px);
+}
+
+.child-app-refresh .child-app-header h1 {
+  margin-top: 5px;
+  font-size: clamp(23px, 4vw, 34px);
+}
+
+.child-app-refresh .child-logout-button {
+  min-width: 72px;
+  min-height: 40px;
+  border-radius: 13px;
+}
+
+.child-app-refresh .child-home-panel {
+  display: grid;
+  gap: 14px;
+}
+
+.child-app-refresh .playful-child-hero {
+  order: 1;
+  min-height: 0;
+  padding: 22px;
+  border-radius: 24px;
+  overflow: hidden;
+}
+
+.child-app-refresh .playful-child-hero h2 {
+  max-width: 720px;
+  margin: 13px 0 7px;
+  font-size: clamp(25px, 4vw, 38px);
+  line-height: 1.35;
+}
+
+.child-app-refresh .playful-child-hero > p {
+  max-width: 760px;
+  line-height: 1.7;
+}
+
+.child-app-refresh .hero-decoration {
+  opacity: 0.42;
+  transform: scale(0.82);
+}
+
+.child-app-refresh .dual-child-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 17px;
+}
+
+.child-app-refresh .dual-child-stats button {
+  min-height: 86px;
+  margin: 0;
+  padding: 10px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  border: 1px solid rgba(255,255,255,.2);
+  background: rgba(255,255,255,.13);
+  color: #fff;
+}
+
+.child-app-refresh .dual-child-stats button span { font-size: 21px; }
+.child-app-refresh .dual-child-stats button strong { font-size: 20px; }
+.child-app-refresh .dual-child-stats button small { opacity: .86; font-size: 10px; }
+
+/* The level is already visible in the welcome card. Hiding the duplicate card keeps the home page focused. */
+.child-app-refresh .child-level-card { display: none; }
+
+.child-app-refresh .child-preview-section {
+  order: 2;
+  padding: 20px;
+  border: 1px solid rgba(107, 88, 189, 0.14);
+  border-radius: 24px;
+  background: linear-gradient(145deg, #fff, #faf8ff);
+  box-shadow: 0 14px 36px rgba(67, 54, 128, 0.08);
+}
+
+.child-app-refresh .child-preview-section .child-section-head,
+.child-app-refresh .child-focus-card .child-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.child-app-refresh .child-preview-section .child-section-head h2,
+.child-app-refresh .child-focus-card .child-section-head h2 {
+  margin: 5px 0 0;
+  font-size: clamp(22px, 3vw, 29px);
+}
+
+.child-app-refresh .child-preview-section .child-section-head > button,
+.child-app-refresh .soft-action-button {
+  min-height: 42px;
+  padding: 0 15px;
+  border: 0;
+  border-radius: 13px;
+  background: #eeeafa;
+  color: #4f3da9;
+  font: inherit;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.child-app-refresh .child-preview-grid {
+  display: grid;
+  gap: 9px;
+}
+
+.child-app-refresh .preview-task-card {
+  min-height: 76px;
+  padding: 13px 14px;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 12px;
+  text-align: right;
+  border: 1px solid rgba(107, 88, 189, 0.13);
+  border-radius: 17px;
+  background: #fff;
+}
+
+.child-app-refresh .preview-task-card > span {
+  width: 46px;
+  height: 46px;
+  display: grid;
+  place-items: center;
+  border-radius: 15px;
+  background: #f0edfb;
+  font-size: 22px;
+}
+
+.child-app-refresh .preview-task-card strong { display: block; font-size: 16px; }
+.child-app-refresh .preview-task-card small { display: block; margin-top: 4px; color: var(--child-muted); line-height: 1.5; }
+
+.child-app-refresh .child-focus-card {
+  order: 3;
+  margin: 0;
+  padding: 20px;
+  border: 1px solid var(--child-line);
+  border-radius: 24px;
+  background: var(--child-card);
+  box-shadow: 0 12px 32px rgba(45, 73, 58, 0.07);
+}
+
+.child-app-refresh .child-focus-card > p {
+  margin: 0 0 12px;
+  color: var(--child-muted);
+  line-height: 1.75;
+}
+
+.child-app-refresh .child-focus-card .progress-track { margin: 9px 0 14px; }
+
+.child-app-refresh .child-tab-panel.child-goals-section {
+  margin-top: 0;
+  padding: 20px;
+  border-radius: 24px;
+}
+
+.child-app-refresh .child-plan-groups,
+.child-app-refresh .goals-list {
+  display: grid;
+  gap: 13px;
+}
+
+.child-app-refresh .child-plan-group,
+.child-app-refresh .child-goal-card {
+  border-radius: 20px;
+}
+
+.child-app-refresh .child-bottom-nav {
+  right: 50%;
+  bottom: max(12px, env(safe-area-inset-bottom));
+  transform: translateX(50%);
+  width: min(560px, calc(100% - 24px));
+  padding: 7px;
+  border: 1px solid rgba(58, 84, 69, 0.14);
+  border-radius: 22px;
+  background: rgba(255,255,255,.94);
+  box-shadow: 0 16px 45px rgba(38, 58, 47, .16);
+  backdrop-filter: blur(16px);
+}
+
+.child-app-refresh .child-bottom-nav button {
+  min-height: 58px;
+  border-radius: 16px;
+}
+
+.child-app-refresh .child-bottom-nav button.active {
+  background: #e8f1eb;
+  color: #31513e;
+}
+
+@media (min-width: 760px) {
+  .child-app-refresh .child-home-panel {
+    grid-template-columns: minmax(0, 1.35fr) minmax(280px, .65fr);
+  }
+
+  .child-app-refresh .playful-child-hero {
+    grid-column: 1 / -1;
+  }
+
+  .child-app-refresh .child-preview-section { grid-column: 1; }
+  .child-app-refresh .child-focus-card { grid-column: 2; align-self: start; }
+}
+
+@media (max-width: 680px) {
+  .child-app-refresh {
+    width: min(100% - 18px, 1040px);
+    padding-top: 9px;
+  }
+
+  .child-app-refresh .child-app-header {
+    top: 6px;
+    padding: 10px 11px;
+    border-radius: 17px;
+  }
+
+  .child-app-refresh .child-app-header .section-label { display: none; }
+  .child-app-refresh .child-app-header h1 { margin: 0; font-size: 22px; }
+
+  .child-app-refresh .playful-child-hero,
+  .child-app-refresh .child-preview-section,
+  .child-app-refresh .child-focus-card,
+  .child-app-refresh .child-tab-panel.child-goals-section {
+    padding: 15px;
+    border-radius: 20px;
+  }
+
+  .child-app-refresh .playful-child-hero h2 { font-size: 25px; }
+  .child-app-refresh .playful-child-hero > p { font-size: 13px; }
+  .child-app-refresh .dual-child-stats button { min-height: 76px; }
+
+  .child-app-refresh .child-preview-section .child-section-head,
+  .child-app-refresh .child-focus-card .child-section-head {
+    align-items: flex-start;
+  }
+
+  .child-app-refresh .child-preview-section .child-section-head > button {
+    min-height: 38px;
+    padding: 0 11px;
+    white-space: nowrap;
+    font-size: 12px;
+  }
+
+  .child-app-refresh .preview-task-card { padding: 11px; }
+  .child-app-refresh .preview-task-card > span { width: 42px; height: 42px; }
+  .child-app-refresh .preview-task-card small { font-size: 10px; }
+}
