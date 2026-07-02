@@ -10,25 +10,16 @@ import accountStyles from "./accounts.module.css";
 type AccountKind = "family" | "teacher" | "incomplete";
 type AccountStatus = "active" | "suspended" | "deleted";
 type AccountFilter = "all" | AccountKind | AccountStatus;
+type ActionResult = { error: { message: string } | null };
 
 type Account = {
-  id: string;
-  email: string | null;
-  full_name: string | null;
-  created_at: string;
-  last_sign_in_at: string | null;
-  email_confirmed_at: string | null;
-  account_kind: AccountKind;
-  account_status: AccountStatus;
-  teacher_access_enabled: boolean;
-  admin_reason: string | null;
-  is_platform_admin: boolean;
-  family_organization_count: number;
-  teacher_organization_count: number;
-  membership_count: number;
-  students_count: number;
+  id: string; email: string | null; full_name: string | null; created_at: string;
+  last_sign_in_at: string | null; email_confirmed_at: string | null;
+  account_kind: AccountKind; account_status: AccountStatus; teacher_access_enabled: boolean;
+  admin_reason: string | null; is_platform_admin: boolean;
+  family_organization_count: number; teacher_organization_count: number;
+  membership_count: number; students_count: number;
 };
-
 type Dashboard = { admin: { role: string }; accounts: Account[] };
 type Metrics = {
   total_accounts: number; active_accounts: number; suspended_accounts: number; deleted_accounts: number;
@@ -74,8 +65,7 @@ export default function AdminAccountsPage() {
 
   async function load(query = search) {
     if (!supabase) return;
-    setLoading(true);
-    setError("");
+    setLoading(true); setError("");
     const session = await supabase.auth.getSession();
     if (!session.data.session) { router.replace("/login?type=family"); return; }
     const [accountsResult, metricsResult] = await Promise.all([
@@ -85,8 +75,7 @@ export default function AdminAccountsPage() {
     if (accountsResult.error || !accountsResult.data) {
       if (accountsResult.error?.message.includes("ADMIN_ACCESS_DENIED")) router.replace("/dashboard");
       else setError("تعذر تحميل الحسابات الآن.");
-      setLoading(false);
-      return;
+      setLoading(false); return;
     }
     setData(accountsResult.data as Dashboard);
     if (!metricsResult.error && metricsResult.data) setMetrics(metricsResult.data as Metrics);
@@ -102,13 +91,12 @@ export default function AdminAccountsPage() {
     return data.accounts.filter((item) => item.account_kind === filter);
   }, [data, filter]);
 
-  async function runAction(id: string, action: () => Promise<{ error: { message: string } | null }>, message: string) {
+  async function runAction(id: string, action: () => PromiseLike<ActionResult>, message: string) {
     setBusyId(id); setError(""); setSuccess("");
     const result = await action();
     setBusyId("");
     if (result.error) { setError(friendlyError(result.error.message)); return; }
-    setSuccess(message);
-    await load();
+    setSuccess(message); await load();
   }
 
   function askForEmail(item: Account, title: string) {
@@ -120,10 +108,7 @@ export default function AdminAccountsPage() {
 
   async function showCodes(item: Account) {
     if (!supabase) return;
-    if (codes[item.id]) {
-      setCodes((current) => { const next = { ...current }; delete next[item.id]; return next; });
-      return;
-    }
+    if (codes[item.id]) { setCodes((current) => { const next = { ...current }; delete next[item.id]; return next; }); return; }
     setBusyId(`codes-${item.id}`);
     const result = await supabase.rpc("admin_get_account_access_codes", { p_user_id: item.id });
     setBusyId("");
@@ -195,11 +180,7 @@ export default function AdminAccountsPage() {
     await load();
   }
 
-  async function copyCode(value: string) {
-    await navigator.clipboard.writeText(value);
-    setSuccess("تم نسخ الرمز.");
-  }
-
+  async function copyCode(value: string) { await navigator.clipboard.writeText(value); setSuccess("تم نسخ الرمز."); }
   function submit(event: FormEvent) { event.preventDefault(); load(search); }
 
   if (loading && !data) return <main className={styles.shell}><div className={styles.loading}>جارٍ تحميل مركز التحكم...</div></main>;
