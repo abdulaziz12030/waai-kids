@@ -1,3 +1,4 @@
+import "./child-simplified.css";
 import ChildExperienceLayer from "./ChildExperienceLayer";
 import ChildGiftAutoDisplay from "./ChildGiftAutoDisplay";
 import ChildJourneyCoach from "./ChildJourneyCoach";
