@@ -1,0 +1,117 @@
+.notice {
+  margin: 14px 0;
+  padding: 14px 16px;
+  border: 1px solid #d8e3da;
+  border-radius: 16px;
+  background: #f7fbf8;
+  color: #40554a;
+  line-height: 1.75;
+  font-size: 12px;
+}
+
+.notice strong { color: #294b38; }
+
+.metricGroups {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.metricTitle {
+  margin: 0;
+  color: #63736a;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.statusSuspended {
+  background: #fff1dc;
+  color: #94621d;
+}
+
+.codesPanel {
+  margin: 10px 0 4px;
+  padding: 12px;
+  border: 1px dashed #bfcfc3;
+  border-radius: 14px;
+  background: #f8fbf9;
+}
+
+.codesPanel h4 {
+  margin: 0 0 8px;
+  font-size: 13px;
+}
+
+.codesGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 8px;
+}
+
+.codeCard {
+  padding: 10px;
+  border: 1px solid #e1e9e3;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.codeCard small {
+  display: block;
+  color: #748179;
+  margin-bottom: 4px;
+}
+
+.codeValue {
+  direction: ltr;
+  display: inline-block;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 15px;
+  font-weight: 900;
+  letter-spacing: .04em;
+}
+
+.copyButton {
+  margin-inline-start: 7px;
+  padding: 4px 7px;
+  border: 0;
+  border-radius: 8px;
+  background: #e8f0eb;
+  color: #31513e;
+  font: inherit;
+  font-size: 10px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.permanentButton {
+  min-height: 34px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 11px;
+  background: #8f2525;
+  color: #fff;
+  font: inherit;
+  font-size: 10px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.permanentButton:disabled { opacity: .55; cursor: wait; }
+
+.actionDivider {
+  width: 100%;
+  height: 1px;
+  background: #ecefed;
+  margin: 2px 0;
+}
+
+.secondaryInfo {
+  display: block;
+  margin-top: 4px;
+  color: #738078;
+  font-size: 10px;
+}
+
+@media (max-width: 680px) {
+  .codesGrid { grid-template-columns: 1fr; }
+}
