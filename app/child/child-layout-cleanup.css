@@ -1,0 +1,157 @@
+/*
+ * Child dashboard cleanup
+ * The home cards already provide the complete navigation, so the repeated
+ * floating bar is hidden on the home view and kept only inside detail tabs.
+ */
+.child-dashboard-v3 .child-home-v3 ~ .child-bottom-nav-v3 {
+  display: none !important;
+}
+
+@supports selector(main:has(.child-home-v3)) {
+  .child-dashboard-v3:has(.child-home-v3) {
+    padding-bottom: 34px !important;
+  }
+}
+
+/* Keep the detail-tab navigation useful without letting it dominate the page. */
+.child-dashboard-v3 .child-tab-panel:not(.child-home-v3) ~ .child-bottom-nav-v3 {
+  width: min(450px, calc(100% - 24px));
+  min-height: 64px;
+  padding: 5px;
+  gap: 3px;
+  border-radius: 20px;
+  box-shadow: 0 12px 34px rgba(45, 66, 54, 0.14);
+}
+
+.child-dashboard-v3 .child-tab-panel:not(.child-home-v3) ~ .child-bottom-nav-v3 button,
+.child-dashboard-v3 .child-tab-panel:not(.child-home-v3) ~ .child-bottom-nav-v3 a {
+  min-height: 52px;
+  border-radius: 14px;
+}
+
+/* A balanced three-column menu on wide screens shortens the page considerably. */
+@media (min-width: 980px) {
+  .child-dashboard-v3 .child-main-sections {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .child-dashboard-v3 .child-main-section {
+    min-height: 108px;
+    padding: 15px;
+    grid-template-columns: 50px minmax(0, 1fr) auto;
+    gap: 11px;
+    border-radius: 20px;
+  }
+
+  .child-dashboard-v3 .child-main-section > span:first-child {
+    width: 50px;
+    height: 50px;
+    border-radius: 16px;
+    font-size: 25px;
+  }
+
+  .child-dashboard-v3 .child-main-section strong {
+    font-size: 17px;
+  }
+
+  .child-dashboard-v3 .child-main-section small {
+    font-size: 11px;
+  }
+}
+
+/* Mobile: two clear rows of cards instead of six long stacked blocks. */
+@media (max-width: 760px) {
+  .child-dashboard-v3 .child-home-v3 {
+    gap: 10px;
+  }
+
+  .child-dashboard-v3 .child-welcome-card {
+    padding: 16px;
+    border-radius: 21px;
+  }
+
+  .child-dashboard-v3 .child-welcome-card h2 {
+    margin-top: 10px;
+    font-size: 24px;
+  }
+
+  .child-dashboard-v3 .child-welcome-card p {
+    font-size: 12px;
+    line-height: 1.65;
+  }
+
+  .child-dashboard-v3 .child-main-sections {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .child-dashboard-v3 .child-main-section {
+    min-height: 126px;
+    padding: 12px;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-rows: auto 1fr;
+    align-content: start;
+    align-items: start;
+    gap: 8px;
+    border-radius: 18px;
+  }
+
+  .child-dashboard-v3 .child-main-section > span:first-child {
+    grid-column: 1;
+    grid-row: 1;
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+    font-size: 22px;
+  }
+
+  .child-dashboard-v3 .child-main-section > div {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+
+  .child-dashboard-v3 .child-main-section > b {
+    grid-column: 2;
+    grid-row: 1;
+    align-self: center;
+    min-width: 28px;
+    font-size: 12px;
+  }
+
+  .child-dashboard-v3 .child-main-section strong {
+    font-size: 15px;
+    line-height: 1.35;
+  }
+
+  .child-dashboard-v3 .child-main-section small {
+    margin-top: 3px;
+    display: -webkit-box;
+    overflow: hidden;
+    font-size: 10px;
+    line-height: 1.5;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  .child-dashboard-v3 .child-next-action-card {
+    padding: 16px;
+    border-radius: 20px;
+  }
+
+  .child-dashboard-v3 .child-tab-panel:not(.child-home-v3) ~ .child-bottom-nav-v3 {
+    width: calc(100% - 18px) !important;
+    bottom: max(8px, env(safe-area-inset-bottom)) !important;
+    padding: 4px !important;
+  }
+}
+
+@media (max-width: 390px) {
+  .child-dashboard-v3 .child-main-section {
+    min-height: 108px;
+  }
+
+  .child-dashboard-v3 .child-main-section small {
+    display: none;
+  }
+}
