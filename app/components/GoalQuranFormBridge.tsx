@@ -4,7 +4,7 @@ import { useEffect } from "react";
 
 export default function GoalQuranFormBridge() {
   useEffect(() => {
-    const connected = new Set<HTMLSelectElement>();
+    const handlers = new Map<HTMLSelectElement, EventListener>();
 
     function openQuranPlanner(select: HTMLSelectElement) {
       if (select.value !== "quran") return;
@@ -29,11 +29,10 @@ export default function GoalQuranFormBridge() {
 
         option.textContent = "📖 قرآن — تلاوة أو حفظ مع تقسيم الآيات";
 
-        if (!connected.has(select)) {
-          const handler = () => openQuranPlanner(select);
+        if (!handlers.has(select)) {
+          const handler: EventListener = () => openQuranPlanner(select);
           select.addEventListener("change", handler);
-          connected.add(select);
-          select.dataset.goalQuranChangeHandler = "true";
+          handlers.set(select, handler);
         }
       }
     }
@@ -44,9 +43,8 @@ export default function GoalQuranFormBridge() {
 
     return () => {
       observer.disconnect();
-      for (const select of connected) {
-        const clone = select.cloneNode(true);
-        select.parentNode?.replaceChild(clone, select);
+      for (const [select, handler] of handlers) {
+        select.removeEventListener("change", handler);
       }
     };
   }, []);
