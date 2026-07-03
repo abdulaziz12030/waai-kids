@@ -11,6 +11,7 @@ export default function RegisterPage() {
   const [fullName, setFullName] = useState("");
   const [organizationName, setOrganizationName] = useState("");
   const [email, setEmail] = useState("");
+  const [confirmEmail, setConfirmEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
@@ -31,6 +32,14 @@ export default function RegisterPage() {
       return;
     }
 
+    const normalizedEmail = email.trim().toLowerCase();
+    const normalizedConfirmation = confirmEmail.trim().toLowerCase();
+
+    if (normalizedEmail !== normalizedConfirmation) {
+      setError("البريد الإلكتروني غير متطابق. أعد كتابته في خانة التأكيد لتجنب إنشاء حساب ببريد خاطئ.");
+      return;
+    }
+
     if (password.length < 8) {
       setError("يجب ألا تقل كلمة المرور عن 8 أحرف.");
       return;
@@ -39,7 +48,7 @@ export default function RegisterPage() {
     setLoading(true);
     const redirectTo = `${window.location.origin}/auth/callback?next=/onboarding`;
     const { data, error: signUpError } = await supabase.auth.signUp({
-      email,
+      email: normalizedEmail,
       password,
       options: {
         emailRedirectTo: redirectTo,
@@ -88,6 +97,7 @@ export default function RegisterPage() {
           <label>الاسم الكامل<input value={fullName} onChange={(event) => setFullName(event.target.value)} placeholder="مثال: أحمد محمد" autoComplete="name" required /></label>
           <label>{accountType === "teacher" ? "اسم الحلقة أو الاسم الظاهر" : "اسم الأسرة"}<input value={organizationName} onChange={(event) => setOrganizationName(event.target.value)} placeholder={accountType === "teacher" ? "مثال: حلقة الإتقان" : "مثال: أسرة محمد"} required /></label>
           <label>البريد الإلكتروني<input type="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="name@example.com" autoComplete="email" required /></label>
+          <label>تأكيد البريد الإلكتروني<input type="email" value={confirmEmail} onChange={(event) => setConfirmEmail(event.target.value)} placeholder="أعد كتابة البريد نفسه" autoComplete="email" required /></label>
           <label>كلمة المرور<input type="password" value={password} onChange={(event) => setPassword(event.target.value)} placeholder="8 أحرف على الأقل" autoComplete="new-password" minLength={8} required /></label>
           {error && <p className="form-message error-message">{error}</p>}
           {message && <p className="form-message success-message">{message}</p>}
