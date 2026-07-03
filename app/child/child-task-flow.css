@@ -1,4 +1,4 @@
-/* Standalone Quran assignments belong in مهامي, not in the memorization-plan list. */
+/* Standalone and divided Quran assignments belong in مهامي. */
 .task-round-icon.category-quran_task {
   position: relative;
   overflow: hidden;
@@ -11,6 +11,52 @@
   content: "📖";
   font-size: 24px;
   line-height: 1;
+}
+
+.child-quran-task-program {
+  border-color: rgba(145, 114, 35, 0.18) !important;
+  background: linear-gradient(145deg, #fffdf8, #fff) !important;
+}
+
+.quran-task-mode-chip {
+  background: #f5edcf !important;
+  color: #765f1e !important;
+}
+
+.child-quran-task-text {
+  margin-top: 14px;
+  padding: 16px;
+  border: 1px solid rgba(139, 108, 29, 0.15);
+  border-radius: 18px;
+  background: linear-gradient(145deg, #fffdf6, #f8f2de);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.6);
+}
+
+.child-quran-task-text > span {
+  display: inline-flex;
+  min-height: 27px;
+  padding: 0 9px;
+  align-items: center;
+  border-radius: 999px;
+  background: #e9dfba;
+  color: #715b1f;
+  font-size: 10px;
+  font-weight: 900;
+}
+
+.child-quran-task-text p {
+  margin: 12px 0 0;
+  color: #27382f;
+  font-family: "Amiri Quran", "Amiri", serif;
+  font-size: 24px;
+  line-height: 2.15;
+  text-align: right;
+}
+
+.child-task-history-fold {
+  margin-top: 10px;
+  border-color: rgba(62, 112, 76, 0.13) !important;
+  background: #f8fbf8 !important;
 }
 
 .child-task-submit-box {
@@ -42,5 +88,14 @@
 
   .child-task-submit-box button {
     width: 100%;
+  }
+
+  .child-quran-task-text {
+    padding: 13px;
+  }
+
+  .child-quran-task-text p {
+    font-size: 20px;
+    line-height: 2;
   }
 }
