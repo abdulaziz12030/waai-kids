@@ -53,6 +53,23 @@
   text-align: right;
 }
 
+.task-early-access {
+  border-color: rgba(111, 87, 30, 0.2) !important;
+  background: linear-gradient(145deg, #fffef9, #fbf6e8) !important;
+}
+
+.early-access-note {
+  margin-top: 12px;
+  border: 1px dashed rgba(126, 96, 28, 0.25) !important;
+  background: #fff8df !important;
+  color: #6d571e !important;
+}
+
+.task-early-access .child-task-submit-box button {
+  background: linear-gradient(135deg, #745a19, #a4812d) !important;
+  box-shadow: 0 9px 22px rgba(116, 90, 25, 0.2);
+}
+
 .child-task-history-fold {
   margin-top: 10px;
   border-color: rgba(62, 112, 76, 0.13) !important;
