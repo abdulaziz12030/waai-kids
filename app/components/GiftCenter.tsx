@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { supabase } from "../../lib/supabase";
 import GiftCatalog from "./GiftCatalog";
 import GiftCertificate from "./GiftCertificate";
@@ -11,6 +12,8 @@ import styles from "./GiftCenter.module.css";
 const TRIAL_GIFTS_FREE = true;
 
 export default function GiftCenter({ studentId }: { studentId: string }) {
+  const searchParams = useSearchParams();
+  const requestedTaskId = searchParams.get("task") || "";
   const [data, setData] = useState<GiftCenterData | null>(null);
   const [giftCode, setGiftCode] = useState("");
   const [achievement, setAchievement] = useState("custom");
@@ -40,6 +43,18 @@ export default function GiftCenter({ studentId }: { studentId: string }) {
 
   useEffect(() => { void loadCenter(); }, [studentId]);
 
+  useEffect(() => {
+    if (!data || !requestedTaskId) return;
+    const task = data.tasks.find((item) => item.id === requestedTaskId);
+    if (!task) return;
+
+    setAchievement(`task:${task.id}`);
+    setReason((current) => current || `أحسنت إتمام مهمة «${task.title}». هذا التكريم تقديرًا لاجتهادك والتزامك.`);
+    window.setTimeout(() => {
+      document.getElementById("gift-award-details")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 120);
+  }, [data, requestedTaskId]);
+
   const gift = useMemo(() => data?.catalog.find((item) => item.code === giftCode) || null, [data, giftCode]);
   const details = useMemo(() => {
     if (!data) return { type: "custom", title: title.trim(), goalId: null, taskId: null };
@@ -49,7 +64,7 @@ export default function GiftCenter({ studentId }: { studentId: string }) {
     }
     if (achievement.startsWith("task:")) {
       const item = data.tasks.find((task) => task.id === achievement.slice(5));
-      return { type: "task", title: item ? `إتقان جزء من الهدف: ${item.title}` : "", goalId: null, taskId: item?.id || null };
+      return { type: "task", title: item ? `إتمام المهمة: ${item.title}` : "", goalId: null, taskId: item?.id || null };
     }
     return { type: achievement === "quran" ? "quran" : "custom", title: title.trim(), goalId: null, taskId: null };
   }, [achievement, data, title]);
@@ -101,7 +116,7 @@ export default function GiftCenter({ studentId }: { studentId: string }) {
   return (
     <main className={styles.page}>
       <section className={styles.hero}>
-        <div><span className={styles.label}>مركز الهدايا والتحفيز</span><h1>كرّم {data.student.full_name} على كل خطوة جميلة</h1><p>اختر هدية واربطها بهدف مكتمل أو جزء معتمد. ستظهر للطفل باحتفال كامل وتبقى في خزانة إنجازاته.</p></div>
+        <div><span className={styles.label}>مركز الهدايا والتحفيز</span><h1>كرّم {data.student.full_name} على كل خطوة جميلة</h1><p>اختر هدية واربطها بهدف مكتمل أو مهمة معتمدة. ستظهر للطفل باحتفال كامل وتبقى في خزانة إنجازاته.</p></div>
         <div className={styles.wallets}>
           {TRIAL_GIFTS_FREE ? (
             <>
@@ -133,9 +148,9 @@ export default function GiftCenter({ studentId }: { studentId: string }) {
         <div className={styles.head}><div><span className={styles.label}>تفاصيل التكريم</span><h2>اربط الهدية بالإنجاز</h2></div></div>
         <div className={styles.formGrid}>
           <form className={styles.form} onSubmit={submit}>
-            <label>الإنجاز<select value={achievement} onChange={(event) => setAchievement(event.target.value)}><option value="custom">إنجاز مخصص</option><option value="quran">إنجاز في حفظ القرآن</option>{data.goals.map((item) => <option key={item.id} value={`goal:${item.id}`}>هدف مكتمل: {item.title}</option>)}{data.tasks.map((item) => <option key={item.id} value={`task:${item.id}`}>جزء معتمد: {item.title}</option>)}</select></label>
+            <label>الإنجاز<select value={achievement} onChange={(event) => setAchievement(event.target.value)}><option value="custom">إنجاز مخصص</option><option value="quran">إنجاز في حفظ القرآن</option>{data.goals.map((item) => <option key={item.id} value={`goal:${item.id}`}>هدف مكتمل: {item.title}</option>)}{data.tasks.map((item) => <option key={item.id} value={`task:${item.id}`}>مهمة معتمدة: {item.title}</option>)}</select></label>
             {(achievement === "custom" || achievement === "quran") && <label>اسم الإنجاز<input value={title} onChange={(event) => setTitle(event.target.value)} placeholder={achievement === "quran" ? "مثال: إتقان حفظ سورة الملك" : "مثال: الالتزام بالصلاة لمدة أسبوع"} required /></label>}
-            <label>سبب الهدية وخطاب التقدير<textarea rows={4} value={reason} onChange={(event) => setReason(event.target.value)} placeholder="تقديرًا لاجتهادك وصبرك وإكمالك مراحل الهدف" /></label>
+            <label>سبب الهدية وخطاب التقدير<textarea rows={4} value={reason} onChange={(event) => setReason(event.target.value)} placeholder="تقديرًا لاجتهادك وصبرك وإكمالك المهمة" /></label>
             <button className={styles.button} type="submit" disabled={!canSend}>{sending ? "جارٍ الإرسال..." : TRIAL_GIFTS_FREE ? "إرسال الهدية مجانًا" : noIncluded ? "انتهت الهدايا المشمولة" : noCoins ? `تحتاج ${gift?.coin_price || 0} كوينز` : "إرسال الهدية الآن"}</button>
             {error && <p className={`${styles.message} ${styles.error}`}>{error}</p>}{success && <p className={styles.message}>{success}</p>}
           </form>
