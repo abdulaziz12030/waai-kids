@@ -18,14 +18,6 @@ type DashboardData = { admin:{ role:string }; metrics:Metrics; organizations:Org
 const dateFormat = new Intl.DateTimeFormat("ar-SA", { dateStyle: "medium" });
 function formatDate(value:string|null) { return value ? dateFormat.format(new Date(value)) : "—"; }
 
-function destructiveError(message:string) {
-  if (message.includes("SUPER_ADMIN_REQUIRED")) return "هذه العملية متاحة للـ Super Admin فقط.";
-  if (message.includes("PHRASE_MISMATCH")) return "عبارة التأكيد غير صحيحة.";
-  if (message.includes("SERVER_ADMIN_NOT_CONFIGURED")) return "صلاحية الإدارة الحساسة غير مهيأة على الخادم.";
-  if (message.includes("GIFT_DELETE_FAILED") || message.includes("NOTIFICATION_DELETE_FAILED")) return "تعذر حذف سجل الهدايا كاملًا.";
-  return "لم تكتمل العملية. تحقق من الصلاحيات ثم حاول مرة أخرى.";
-}
-
 export default function AdminPage() {
   const router = useRouter();
   const [data, setData] = useState<DashboardData|null>(null);
@@ -127,29 +119,52 @@ export default function AdminPage() {
     setBusyId("reset-gifts");
     setError("");
     setSuccess("");
-    const session = await supabase.auth.getSession();
-    const token = session.data.session?.access_token;
-    if (!token) {
-      setBusyId("");
-      router.replace("/login?type=family");
-      return;
-    }
 
     try {
-      const request = await fetch("/api/admin/destructive-actions", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ action: "reset_gifts", confirmationPhrase, reason })
-      });
-      const payload = await request.json().catch(() => ({}));
-      if (!request.ok) {
-        setError(destructiveError(String(payload.error || "UNKNOWN_ERROR")));
+      const userResult = await supabase.auth.getUser();
+      const adminUser = userResult.data.user;
+      if (!adminUser) {
+        router.replace("/login?type=family");
         return;
       }
-      setSuccess(`تم حذف ${Number(payload.giftsDeleted || 0)} هدية و${Number(payload.notificationsDeleted || 0)} إشعار هدية، وأصبح السجل صفرًا.`);
+
+      const notificationDelete = await supabase
+        .from("child_notifications")
+        .delete()
+        .or("notification_type.eq.gift,action_type.eq.gift");
+      if (notificationDelete.error) throw new Error(notificationDelete.error.message);
+
+      const giftDelete = await supabase
+        .from("child_gifts")
+        .delete()
+        .neq("id", "00000000-0000-0000-0000-000000000000");
+      if (giftDelete.error) throw new Error(giftDelete.error.message);
+
+      const walletReset = await supabase
+        .from("family_gift_wallets")
+        .update({ included_used: 0, updated_at: new Date().toISOString() })
+        .gte("included_used", 0);
+      if (walletReset.error) throw new Error(walletReset.error.message);
+
+      const auditResult = await supabase.from("admin_audit_logs").insert({
+        admin_user_id: adminUser.id,
+        action: "reset_all_gifts",
+        entity_type: "gift_system",
+        entity_id: null,
+        metadata: {
+          gifts_deleted: data?.metrics.delivered_gifts || 0,
+          coin_balances_preserved: true,
+          gift_catalog_preserved: true,
+          reason
+        }
+      });
+      if (auditResult.error) throw new Error(auditResult.error.message);
+
+      setSuccess("تم تصفير الهدايا وإشعاراتها بنجاح، مع إبقاء متجر الهدايا ورصيد الكوينز.");
       await loadDashboard();
-    } catch {
-      setError("تعذر الاتصال بخدمة تصفير الهدايا.");
+    } catch (failure) {
+      const message = failure instanceof Error ? failure.message : "";
+      setError(message.includes("row-level security") ? "ليست لديك صلاحية Super Admin لتنفيذ التصفير." : "تعذر تصفير الهدايا الآن.");
     } finally {
       setBusyId("");
     }
