@@ -1,7 +1,6 @@
 "use client";
 
 import { FormEvent, useEffect, useMemo, useState } from "react";
-import { useSearchParams } from "next/navigation";
 import { supabase } from "../../lib/supabase";
 import GiftCatalog from "./GiftCatalog";
 import GiftCertificate from "./GiftCertificate";
@@ -12,8 +11,7 @@ import styles from "./GiftCenter.module.css";
 const TRIAL_GIFTS_FREE = true;
 
 export default function GiftCenter({ studentId }: { studentId: string }) {
-  const searchParams = useSearchParams();
-  const requestedTaskId = searchParams.get("task") || "";
+  const [requestedTaskId, setRequestedTaskId] = useState("");
   const [data, setData] = useState<GiftCenterData | null>(null);
   const [giftCode, setGiftCode] = useState("");
   const [achievement, setAchievement] = useState("custom");
@@ -25,6 +23,10 @@ export default function GiftCenter({ studentId }: { studentId: string }) {
   const [sending, setSending] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+
+  useEffect(() => {
+    setRequestedTaskId(new URLSearchParams(window.location.search).get("task") || "");
+  }, []);
 
   async function loadCenter() {
     if (!supabase) return null;
@@ -134,15 +136,7 @@ export default function GiftCenter({ studentId }: { studentId: string }) {
 
       <p className={styles.notice}>{TRIAL_GIFTS_FREE ? "النسخة الحالية تجريبية: يمكنك إرسال جميع الهدايا مجانًا دون خصم كوينز أو احتساب حد شهري." : "الهدايا رقمية تشجيعية لا تُباع ولا تُستبدل بأموال، ونقاط الطفل مستقلة تمامًا عن كوينز ولي الأمر."}</p>
 
-      <GiftCatalog
-        gifts={data.catalog}
-        selectedCode={giftCode}
-        balance={data.wallet.coin_balance}
-        includedRemaining={data.wallet.included_remaining}
-        trialMode={TRIAL_GIFTS_FREE}
-        onSelect={setGiftCode}
-        onPreview={setPreviewGift}
-      />
+      <GiftCatalog gifts={data.catalog} selectedCode={giftCode} balance={data.wallet.coin_balance} includedRemaining={data.wallet.included_remaining} trialMode={TRIAL_GIFTS_FREE} onSelect={setGiftCode} onPreview={setPreviewGift} />
 
       <section className={styles.section} id="gift-award-details">
         <div className={styles.head}><div><span className={styles.label}>تفاصيل التكريم</span><h2>اربط الهدية بالإنجاز</h2></div></div>
@@ -158,12 +152,7 @@ export default function GiftCenter({ studentId }: { studentId: string }) {
         </div>
       </section>
 
-      {!TRIAL_GIFTS_FREE && (
-        <section className={styles.section}>
-          <div className={styles.head}><div><span className={styles.label}>شحن الكوينز</span><h2>الباقات المقترحة</h2><p>تم تجهيز الباقات، ويُفعّل الدفع عند ربط بوابة الدفع المعتمدة.</p></div></div>
-          <div className={styles.packages}>{data.coin_packages.map((item) => <article className={styles.package} key={item.id}><span>🪙</span><h3>{item.name}</h3><strong>{item.coins + item.bonus_coins} كوينز</strong><p>{item.price_sar} ر.س {item.bonus_coins > 0 ? `· ${item.bonus_coins} إضافية` : ""}</p><button type="button" disabled>الدفع قريبًا</button></article>)}</div>
-        </section>
-      )}
+      {!TRIAL_GIFTS_FREE && <section className={styles.section}><div className={styles.head}><div><span className={styles.label}>شحن الكوينز</span><h2>الباقات المقترحة</h2><p>تم تجهيز الباقات، ويُفعّل الدفع عند ربط بوابة الدفع المعتمدة.</p></div></div><div className={styles.packages}>{data.coin_packages.map((item) => <article className={styles.package} key={item.id}><span>🪙</span><h3>{item.name}</h3><strong>{item.coins + item.bonus_coins} كوينز</strong><p>{item.price_sar} ر.س {item.bonus_coins > 0 ? `· ${item.bonus_coins} إضافية` : ""}</p><button type="button" disabled>الدفع قريبًا</button></article>)}</div></section>}
 
       <section className={styles.section}>
         <div className={styles.head}><div><span className={styles.label}>السجل</span><h2>الهدايا المرسلة</h2></div></div>
@@ -172,19 +161,7 @@ export default function GiftCenter({ studentId }: { studentId: string }) {
 
       {printable && <GiftCertificate gift={printable} studentName={data.student.full_name} />}
 
-      {previewGift && (
-        <GiftCelebrationModal
-          gift={previewGift}
-          childName="عمر"
-          achievement="إتمام حفظ سورة الملك"
-          reason="تقديرًا لاجتهاده وإتقانه الحفظ"
-          mode="preview"
-          priceLabel={TRIAL_GIFTS_FREE ? "مجانية في النسخة التجريبية" : previewGift.tier === "included" ? "ضمن الاشتراك" : `${previewGift.coin_price} كوينز`}
-          primaryActionLabel={TRIAL_GIFTS_FREE ? "اختيارها للإهداء مجانًا" : previewGift.tier === "included" ? "اختيارها للإهداء" : "اختيارها للشراء بالكوينز"}
-          onPrimaryAction={() => choosePreviewGift(previewGift)}
-          onClose={() => setPreviewGift(null)}
-        />
-      )}
+      {previewGift && <GiftCelebrationModal gift={previewGift} childName="عمر" achievement="إتمام حفظ سورة الملك" reason="تقديرًا لاجتهاده وإتقانه الحفظ" mode="preview" priceLabel={TRIAL_GIFTS_FREE ? "مجانية في النسخة التجريبية" : previewGift.tier === "included" ? "ضمن الاشتراك" : `${previewGift.coin_price} كوينز`} primaryActionLabel={TRIAL_GIFTS_FREE ? "اختيارها للإهداء مجانًا" : previewGift.tier === "included" ? "اختيارها للإهداء" : "اختيارها للشراء بالكوينز"} onPrimaryAction={() => choosePreviewGift(previewGift)} onClose={() => setPreviewGift(null)} />}
     </main>
   );
 }
