@@ -1,0 +1,746 @@
+.child-dashboard-v3 {
+  --child-v3-ink: #24372d;
+  --child-v3-muted: #6b7d73;
+  --child-v3-line: rgba(60, 88, 72, 0.13);
+}
+
+.child-dashboard-v3 .child-home-v3 {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+.child-dashboard-v3 .child-welcome-card {
+  min-height: 190px;
+  padding: clamp(20px, 4vw, 32px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  border-radius: 28px;
+  background:
+    radial-gradient(
+      circle at 12% 18%,
+      rgba(255, 255, 255, 0.18),
+      transparent 28%
+    ),
+    linear-gradient(135deg, #3d7257, #5a4ca8);
+  color: #fff;
+  box-shadow: 0 20px 48px rgba(54, 69, 61, 0.16);
+}
+
+.child-dashboard-v3 .child-welcome-card h2 {
+  margin: 13px 0 8px;
+  font-size: clamp(27px, 5vw, 42px);
+  line-height: 1.25;
+}
+
+.child-dashboard-v3 .child-welcome-card p {
+  max-width: 650px;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.84);
+  line-height: 1.8;
+}
+
+.child-level-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.child-today-summary {
+  min-width: 150px;
+  min-height: 130px;
+  padding: 16px;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 5px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.13);
+  text-align: center;
+  backdrop-filter: blur(8px);
+}
+
+.child-today-summary strong {
+  font-size: 42px;
+  line-height: 1;
+}
+.child-today-summary span {
+  font-size: 12px;
+  font-weight: 800;
+  opacity: 0.88;
+}
+
+.child-main-sections {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 13px;
+}
+
+.child-main-section {
+  min-height: 120px;
+  padding: 18px;
+  display: grid;
+  grid-template-columns: 58px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  border: 1px solid var(--child-v3-line);
+  border-radius: 23px;
+  background: #fff;
+  color: var(--child-v3-ink);
+  text-align: right;
+  text-decoration: none;
+  font: inherit;
+  box-shadow: 0 12px 30px rgba(43, 68, 54, 0.07);
+  cursor: pointer;
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    border-color 180ms ease;
+}
+
+.child-main-section:hover,
+.child-main-section:focus-visible {
+  transform: translateY(-3px);
+  box-shadow: 0 18px 38px rgba(43, 68, 54, 0.12);
+  outline: none;
+}
+
+.child-main-section > span:first-child {
+  width: 58px;
+  height: 58px;
+  display: grid;
+  place-items: center;
+  border-radius: 19px;
+  font-size: 29px;
+  background: #eff5f1;
+}
+
+.child-main-section div {
+  min-width: 0;
+}
+.child-main-section strong {
+  display: block;
+  font-size: 19px;
+}
+.child-main-section small {
+  display: block;
+  margin-top: 5px;
+  color: var(--child-v3-muted);
+  line-height: 1.6;
+}
+.child-main-section > b {
+  min-width: 34px;
+  color: #4d6658;
+  font-size: 14px;
+  text-align: center;
+}
+.child-main-section.section-quran > span:first-child {
+  background: #f5f1dd;
+}
+.child-main-section.section-progress > span:first-child {
+  background: #ece9fb;
+}
+.child-main-section.section-gifts > span:first-child {
+  background: #fff0e8;
+}
+.child-main-section.section-goals > span:first-child {
+  background: #eaf4fb;
+}
+.child-main-section.section-notifications > span:first-child {
+  background: #f4ebf8;
+}
+
+.child-next-action-card {
+  padding: 22px;
+  border: 1px solid rgba(91, 75, 170, 0.14);
+  border-radius: 24px;
+  background: linear-gradient(145deg, #fff, #faf8ff);
+  box-shadow: 0 13px 34px rgba(68, 54, 130, 0.08);
+}
+
+.child-next-action-card .child-section-head > span {
+  font-size: 34px;
+}
+.child-next-action-card p {
+  color: var(--child-v3-muted);
+  line-height: 1.75;
+}
+.child-next-action-card > button {
+  min-height: 45px;
+  padding: 0 20px;
+  border: 0;
+  border-radius: 14px;
+  background: #5848a6;
+  color: #fff;
+  font: inherit;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.child-simple-section-page {
+  min-height: 520px;
+}
+
+.child-task-card-simple {
+  box-shadow: none !important;
+}
+
+.child-task-card-simple .child-task-head > div > p,
+.child-goal-card-simple .child-plan-pill {
+  display: none !important;
+}
+
+.child-task-card-simple .task-description,
+.child-goal-card-simple .goal-description {
+  line-height: 1.75;
+}
+
+.child-progress-summary-grid {
+  margin: 20px 0 15px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.child-progress-summary-grid article {
+  min-height: 128px;
+  padding: 16px;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 5px;
+  border: 1px solid var(--child-v3-line);
+  border-radius: 22px;
+  background: #fff;
+  text-align: center;
+}
+
+.child-progress-summary-grid article span {
+  font-size: 28px;
+}
+.child-progress-summary-grid article strong {
+  font-size: 28px;
+  color: #385a46;
+}
+.child-progress-summary-grid article small {
+  color: var(--child-v3-muted);
+}
+
+.child-big-progress-card {
+  margin-top: 13px;
+  padding: 20px;
+  border: 1px solid var(--child-v3-line);
+  border-radius: 22px;
+  background: #fff;
+}
+
+.child-big-progress-card > div:first-child {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-weight: 900;
+}
+
+.child-big-progress-card > div:first-child strong {
+  font-size: 24px;
+  color: #426650;
+}
+.child-big-progress-card p {
+  margin: 10px 0 0;
+  color: var(--child-v3-muted);
+}
+.child-big-progress-card button {
+  margin-top: 13px;
+  min-height: 42px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 13px;
+  background: #eeeafa;
+  color: #5140a7;
+  font: inherit;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.child-progress-program-link {
+  margin-top: 14px;
+  min-height: 94px;
+  padding: 16px;
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 13px;
+  border: 1px solid rgba(151, 124, 38, 0.18);
+  border-radius: 22px;
+  background: #fffdf5;
+  color: inherit;
+  text-decoration: none;
+}
+
+.child-progress-program-link > span {
+  font-size: 30px;
+}
+.child-progress-program-link strong {
+  display: block;
+}
+.child-progress-program-link small {
+  display: block;
+  margin-top: 4px;
+  color: var(--child-v3-muted);
+  line-height: 1.6;
+}
+
+.child-bottom-nav-v3 {
+  display: grid !important;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.child-bottom-nav-v3 button,
+.child-bottom-nav-v3 a {
+  position: relative;
+  min-width: 0;
+  min-height: 58px;
+  padding: 7px 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  border: 0;
+  border-radius: 16px;
+  background: transparent;
+  color: #637268;
+  text-decoration: none;
+  font: inherit;
+  cursor: pointer;
+}
+
+.child-bottom-nav-v3 button.active {
+  background: #e8f1eb;
+  color: #31513e;
+}
+
+.child-bottom-nav-v3 span {
+  font-size: 20px;
+}
+.child-bottom-nav-v3 small {
+  font-size: 10px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+.child-bottom-nav-v3 b {
+  position: absolute;
+  top: 3px;
+  right: calc(50% - 22px);
+  min-width: 18px;
+  height: 18px;
+  display: grid;
+  place-items: center;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: #d94672;
+  color: #fff;
+  font-size: 9px;
+}
+
+/* Separate memorization program library */
+.child-quran-library-page,
+.child-program-detail-page,
+.child-notifications-page {
+  width: min(1040px, calc(100% - 28px));
+  margin: 0 auto;
+  padding: 18px 0 116px;
+}
+
+.child-program-library-hero {
+  margin-bottom: 18px;
+}
+
+.child-program-library-grid {
+  display: grid;
+  gap: 13px;
+}
+
+.child-program-link-card {
+  min-height: 128px;
+  padding: 17px;
+  display: grid;
+  grid-template-columns: 34px 58px minmax(0, 1fr) minmax(150px, 210px) 28px;
+  align-items: center;
+  gap: 14px;
+  border: 1px solid rgba(70, 94, 78, 0.14);
+  border-radius: 23px;
+  background: #fff;
+  color: inherit;
+  text-decoration: none;
+  box-shadow: 0 13px 34px rgba(44, 66, 53, 0.07);
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.child-program-link-card:hover,
+.child-program-link-card:focus-visible {
+  transform: translateY(-3px);
+  box-shadow: 0 19px 42px rgba(44, 66, 53, 0.12);
+  outline: none;
+}
+
+.program-library-icon {
+  width: 58px;
+  height: 58px;
+  display: grid;
+  place-items: center;
+  border-radius: 19px;
+  background: #f6f0dc;
+  font-size: 28px;
+}
+
+.program-library-copy {
+  min-width: 0;
+}
+.program-library-copy > small {
+  color: #7a6c3d;
+  font-size: 11px;
+  font-weight: 900;
+}
+.program-library-copy > strong {
+  display: block;
+  margin-top: 4px;
+  font-size: 19px;
+}
+.program-library-copy > p {
+  margin: 5px 0 0;
+  color: #718078;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.program-library-progress {
+  display: grid;
+  gap: 5px;
+}
+.program-library-progress > b {
+  color: #41634f;
+  font-size: 18px;
+}
+.program-library-progress > i {
+  height: 8px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #e9efeb;
+}
+.program-library-progress > i > em {
+  height: 100%;
+  display: block;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #4b785f, #7966c3);
+}
+.program-library-progress > small {
+  color: #758279;
+  font-size: 10px;
+}
+.program-library-arrow {
+  color: #5f4fad;
+  font-size: 20px;
+  font-weight: 900;
+}
+
+.child-program-detail-page .child-quran-program-card.is-standalone {
+  border-radius: 26px;
+  box-shadow: 0 18px 46px rgba(45, 68, 55, 0.09);
+}
+
+.child-quran-program-static {
+  cursor: default !important;
+}
+.child-quran-program-card.is-standalone .program-number {
+  display: none;
+}
+.child-quran-program-card.is-standalone .child-quran-program-toggle {
+  grid-template-columns: minmax(0, 1fr) minmax(150px, 220px) auto;
+}
+
+/* Dedicated notification history */
+.child-notifications-header {
+  margin-bottom: 15px;
+}
+.child-notifications-summary {
+  min-height: 86px;
+  padding: 16px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  border: 1px solid rgba(94, 72, 166, 0.15);
+  border-radius: 22px;
+  background: linear-gradient(135deg, #faf7ff, #fff);
+}
+
+.child-notifications-summary div {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.child-notifications-summary span {
+  color: #70698a;
+  font-weight: 800;
+}
+.child-notifications-summary strong {
+  min-width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+  background: #efeaff;
+  color: #5845a6;
+  font-size: 20px;
+}
+.child-notifications-summary button {
+  min-height: 40px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 13px;
+  background: #5c4cad;
+  color: #fff;
+  font: inherit;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.child-notifications-list {
+  margin-top: 14px;
+  display: grid;
+  gap: 10px;
+}
+.child-notification-card {
+  width: 100%;
+  min-height: 112px;
+  padding: 15px 16px;
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 13px;
+  border: 1px solid rgba(68, 91, 77, 0.12);
+  border-radius: 21px;
+  background: #fff;
+  color: inherit;
+  text-align: right;
+  font: inherit;
+  box-shadow: 0 10px 28px rgba(45, 67, 54, 0.06);
+  cursor: pointer;
+}
+
+.child-notification-card.is-unread {
+  border-color: rgba(94, 72, 166, 0.24);
+  background: linear-gradient(90deg, #fff, #f9f5ff);
+}
+.child-notification-icon {
+  width: 52px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  border-radius: 17px;
+  background: #f1ecff;
+  font-size: 25px;
+}
+.child-notification-copy {
+  min-width: 0;
+  display: grid;
+  gap: 5px;
+}
+.child-notification-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.child-notification-meta b {
+  color: #6654ad;
+  font-size: 10px;
+}
+.child-notification-meta time {
+  color: #9a94a5;
+  font-size: 9px;
+}
+.child-notification-copy > strong {
+  color: #313e36;
+  font-size: 15px;
+}
+.child-notification-copy p {
+  margin: 0;
+  color: #6d7871;
+  font-size: 12px;
+  line-height: 1.7;
+}
+.child-notification-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #dc3e70;
+  box-shadow: 0 0 0 5px rgba(220, 62, 112, 0.1);
+}
+.child-notification-arrow {
+  color: #6554ad;
+  font-weight: 900;
+}
+.child-notifications-empty {
+  margin-top: 15px;
+}
+
+@media (min-width: 820px) {
+  .child-main-section.section-goals,
+  .child-main-section.section-notifications {
+    min-height: 105px;
+  }
+}
+
+@media (max-width: 760px) {
+  .child-dashboard-v3 .child-welcome-card {
+    min-height: 0;
+    padding: 19px;
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .child-today-summary {
+    min-width: 0;
+    min-height: 78px;
+    grid-template-columns: auto 1fr;
+    justify-items: start;
+    text-align: right;
+  }
+
+  .child-today-summary strong {
+    font-size: 30px;
+  }
+  .child-main-sections {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .child-main-section {
+    min-height: 94px;
+    padding: 13px;
+    grid-template-columns: 48px minmax(0, 1fr) auto;
+    border-radius: 19px;
+  }
+  .child-main-section > span:first-child {
+    width: 48px;
+    height: 48px;
+    border-radius: 15px;
+    font-size: 24px;
+  }
+  .child-main-section strong {
+    font-size: 16px;
+  }
+  .child-main-section small {
+    font-size: 11px;
+  }
+  .child-progress-summary-grid {
+    gap: 7px;
+  }
+  .child-progress-summary-grid article {
+    min-height: 108px;
+    padding: 10px 5px;
+    border-radius: 18px;
+  }
+  .child-progress-summary-grid article strong {
+    font-size: 23px;
+  }
+  .child-progress-summary-grid article small {
+    font-size: 10px;
+  }
+
+  .child-bottom-nav-v3 {
+    width: calc(100% - 14px) !important;
+    bottom: max(7px, env(safe-area-inset-bottom)) !important;
+    gap: 1px;
+    padding: 5px !important;
+  }
+  .child-bottom-nav-v3 button,
+  .child-bottom-nav-v3 a {
+    min-height: 54px;
+    padding-inline: 2px;
+  }
+  .child-bottom-nav-v3 small {
+    font-size: 9px;
+  }
+
+  .child-quran-library-page,
+  .child-program-detail-page,
+  .child-notifications-page {
+    width: min(100% - 18px, 1040px);
+    padding-top: 9px;
+  }
+
+  .child-program-link-card {
+    min-height: 118px;
+    padding: 13px;
+    grid-template-columns: 28px 48px minmax(0, 1fr) 24px;
+    gap: 10px;
+    border-radius: 20px;
+  }
+
+  .program-library-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 15px;
+    font-size: 23px;
+  }
+  .program-library-copy > strong {
+    font-size: 16px;
+  }
+  .program-library-progress {
+    grid-column: 2 / -2;
+    padding-right: 0;
+  }
+  .program-library-arrow {
+    grid-column: 4;
+    grid-row: 1;
+  }
+
+  .child-quran-program-card.is-standalone .child-quran-program-toggle {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .child-quran-program-card.is-standalone .program-counters {
+    justify-self: stretch;
+  }
+
+  .child-notifications-summary {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .child-notifications-summary button {
+    width: 100%;
+  }
+  .child-notification-card {
+    min-height: 104px;
+    padding: 12px;
+    grid-template-columns: 46px minmax(0, 1fr) auto;
+    gap: 10px;
+  }
+  .child-notification-icon {
+    width: 46px;
+    height: 46px;
+    border-radius: 15px;
+    font-size: 22px;
+  }
+  .child-notification-arrow {
+    display: none;
+  }
+  .child-notification-meta {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 2px;
+  }
+}
