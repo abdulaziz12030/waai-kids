@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 type ChildSection = "home" | "tasks" | "quran" | "progress" | "goals" | "gifts" | "notifications";
 
@@ -59,7 +59,6 @@ function activateDashboardSection(section: ChildSection) {
 export default function ChildSectionNav() {
   const pathname = usePathname();
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [active, setActive] = useState<ChildSection>(() => routeSection(pathname));
 
   useEffect(() => {
@@ -68,7 +67,7 @@ export default function ChildSectionNav() {
       return;
     }
 
-    const requested = searchParams.get("section") as ChildSection | null;
+    const requested = new URLSearchParams(window.location.search).get("section") as ChildSection | null;
     if (requested && dashboardSections.includes(requested)) {
       setActive(requested);
       window.setTimeout(() => activateDashboardSection(requested), 0);
@@ -79,7 +78,7 @@ export default function ChildSectionNav() {
     const observer = new MutationObserver(sync);
     observer.observe(document.body, { childList: true, subtree: true });
     return () => observer.disconnect();
-  }, [pathname, searchParams]);
+  }, [pathname]);
 
   if (pathname === "/child/login") return null;
 
