@@ -13,16 +13,31 @@ type Goal = {
 };
 type Data = { admin:{role:string}; metrics:{total:number;active:number;requested:number;completed:number;orphan_quran:number}; goals:Goal[] };
 
-const statuses:Record<string,string>={requested:"طلب جديد",pending:"بانتظار الموافقة",approved:"معتمد",active:"نشط",paused:"متوقف مؤقتًا",completed:"مكتمل",rejected:"مرفوض"};
+const statuses:Record<string,string>={
+  draft:"مسودة",
+  requested:"طلب جديد",
+  pending:"بانتظار الموافقة",
+  approved:"معتمد",
+  active:"نشط",
+  paused:"متوقف مؤقتًا",
+  completed:"مكتمل",
+  reward_due:"مكافأة مستحقة",
+  reward_scheduled:"مكافأة مجدولة",
+  closed:"مغلق",
+  rejected:"مرفوض"
+};
 const types:Record<string,string>={educational:"تعليمي",behavioral:"سلوكي",financial:"مالي",material:"مادي"};
 const dateFmt=new Intl.DateTimeFormat("ar-SA",{dateStyle:"medium"});
 const showDate=(value:string|null)=>value?dateFmt.format(new Date(value)):"غير محدد";
 
 function friendly(message:string){
-  if(message.includes("SUPER_ADMIN_REQUIRED"))return"الحذف النهائي متاح للـSuper Admin فقط.";
+  if(message.includes("ADMIN_ACCESS_DENIED"))return"ليست لديك صلاحية دخول إدارة الأهداف.";
   if(message.includes("ADMIN_GOAL_WRITE_DENIED"))return"التعديل متاح للـSuper Admin ومدير العمليات فقط.";
+  if(message.includes("SUPER_ADMIN_REQUIRED"))return"الحذف النهائي متاح للـSuper Admin فقط.";
   if(message.includes("CONFIRMATION_MISMATCH"))return"عنوان الهدف المكتوب غير مطابق.";
   if(message.includes("GOAL_NOT_FOUND"))return"الهدف غير موجود أو سبق حذفه.";
+  if(message.includes("INVALID_GOAL_STATUS"))return"حالة الهدف غير صحيحة.";
+  if(message.includes("operator does not exist")||message.includes("goal_status"))return"تعذر قراءة حالة الهدف من قاعدة البيانات. تم إرسال إصلاح لهذا الخطأ.";
   return"تعذر تنفيذ العملية الآن.";
 }
 
@@ -39,7 +54,7 @@ export default function AdminGoalsPage(){
     const result=await supabase.rpc("get_admin_goals_dashboard",{p_search:q.trim(),p_status:s,p_limit:500});
     if(result.error||!result.data){
       if(result.error?.message.includes("ADMIN_ACCESS_DENIED"))router.replace("/dashboard");
-      else setError("تعذر تحميل الأهداف الآن.");
+      else setError(friendly(result.error?.message||""));
       setLoading(false);return;
     }
     setData(result.data as Data);setLoading(false);
@@ -52,7 +67,7 @@ export default function AdminGoalsPage(){
     const title=window.prompt("عنوان الهدف:",goal.title);if(title===null)return;
     const description=window.prompt("وصف الهدف:",goal.description||"");if(description===null)return;
     const goalType=window.prompt("نوع الهدف: educational أو behavioral أو financial أو material",goal.goal_type);if(!goalType||!types[goalType])return setError("نوع الهدف غير صحيح.");
-    const nextStatus=window.prompt("الحالة: requested أو pending أو approved أو active أو paused أو completed أو rejected",goal.status);if(!nextStatus||!statuses[nextStatus])return setError("حالة الهدف غير صحيحة.");
+    const nextStatus=window.prompt(`الحالة: ${Object.keys(statuses).join(" أو ")}`,goal.status);if(!nextStatus||!statuses[nextStatus])return setError("حالة الهدف غير صحيحة.");
     const progressText=window.prompt("نسبة التقدم من 0 إلى 100:",String(goal.progress||0));if(progressText===null)return;
     const progress=Math.max(0,Math.min(100,Number(progressText||0)));if(!Number.isFinite(progress))return setError("نسبة التقدم غير صحيحة.");
     const dueDate=window.prompt("تاريخ الاستحقاق بصيغة YYYY-MM-DD، أو اتركه فارغًا:",goal.due_date||"");if(dueDate===null)return;
