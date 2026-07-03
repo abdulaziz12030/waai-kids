@@ -94,19 +94,13 @@ function formatDate(value: string | null) {
     : "غير محدد";
 }
 
-function blocked(task: Task, tasks: Task[]) {
-  return Boolean(
-    task.plan_batch_id &&
-    task.plan_step &&
-    task.plan_step > 1 &&
-    tasks.some((previous) => previous.plan_step && previous.plan_step < task.plan_step! && previous.status !== "approved")
-  );
+function canStartEarly(task: Task) {
+  return Boolean(task.plan_batch_id);
 }
 
-function actionable(task: Task, tasks: Task[], currentDate: string) {
+function actionable(task: Task, currentDate: string) {
   return ["pending", "rejected"].includes(task.status) &&
-    (!task.starts_on || task.starts_on <= currentDate) &&
-    !blocked(task, tasks);
+    (!task.starts_on || task.starts_on <= currentDate || canStartEarly(task));
 }
 
 export default function ChildDashboardPage() {
@@ -174,7 +168,7 @@ export default function ChildDashboardPage() {
   }, [data]);
 
   const tasks = groups.flatMap((group) => group.tasks);
-  const ready = groups.flatMap((group) => group.tasks.filter((task) => actionable(task, group.tasks, currentDate)));
+  const ready = tasks.filter((task) => actionable(task, currentDate));
   const done = tasks.filter((task) => task.status === "approved").length;
   const waiting = tasks.filter((task) => task.status === "submitted").length;
   const activeGoals = data?.goals.filter((goal) => ["approved", "active", "paused"].includes(goal.status)) || [];
@@ -232,7 +226,7 @@ export default function ChildDashboardPage() {
     await load();
   }
 
-  async function submitTask(taskId: string) {
+  async function submitTask(taskId: string, early: boolean) {
     if (!supabase) return;
     const token = localStorage.getItem("namaa_child_token");
     if (!token) return;
@@ -246,28 +240,29 @@ export default function ChildDashboardPage() {
     setBusy("");
 
     if (result.error) {
-      setError(result.error.message.includes("المرحلة السابقة") ? "أكمل الجزء السابق وانتظر اعتماده أولًا." : "تعذر إرسال المهمة الآن.");
+      setError(result.error.message.includes("لم يحن") ? "هذه المهمة ليست مجزأة ولا يمكن فتحها قبل موعدها." : "تعذر إرسال المهمة الآن.");
       return;
     }
 
     setNotes((current) => ({ ...current, [taskId]: "" }));
-    setMessage("رائع! تم إرسال الجزء للمراجعة.");
+    setMessage(early ? "رائع! أنجزت هذا الجزء مبكرًا وتم إرساله للمراجعة." : "رائع! تم إرسال المهمة للمراجعة.");
     await load();
   }
 
-  function taskCard(task: Task, groupTasks: Task[]) {
+  function taskCard(task: Task) {
     const future = Boolean(task.starts_on && task.starts_on > currentDate);
-    const locked = (future || blocked(task, groupTasks)) && !["approved", "submitted"].includes(task.status);
-    const canSubmit = actionable(task, groupTasks, currentDate);
+    const early = future && canStartEarly(task);
+    const locked = future && !canStartEarly(task) && !["approved", "submitted"].includes(task.status);
+    const canSubmit = actionable(task, currentDate);
     const modeLabel = task.quran_mode === "memorization" ? "حفظ" : task.quran_mode === "recitation" ? "تلاوة" : null;
 
     return (
-      <article className={`child-task-card child-task-card-simple task-${task.status} ${locked ? "task-locked" : ""} ${canSubmit ? "task-current" : ""}`} key={task.id}>
+      <article className={`child-task-card child-task-card-simple task-${task.status} ${locked ? "task-locked" : ""} ${canSubmit ? "task-current" : ""} ${early ? "task-early-access" : ""}`} key={task.id}>
         <div className="child-task-head">
           <span className={`task-round-icon category-${task.category}`}>{locked ? "🔒" : taskIcons[task.category] || "✨"}</span>
           <div>
             <div className="task-stage-row">
-              <span className={`task-status task-status-${task.status}`}>{locked ? "قادمة" : taskLabels[task.status] || task.status}</span>
+              <span className={`task-status task-status-${task.status}`}>{early && ["pending", "rejected"].includes(task.status) ? "متاحة مبكرًا" : locked ? "قادمة" : taskLabels[task.status] || task.status}</span>
               {modeLabel && <b className="quran-task-mode-chip">{modeLabel}</b>}
               {task.plan_step && <b>الجزء {task.plan_step} من {task.plan_total}</b>}
             </div>
@@ -285,15 +280,18 @@ export default function ChildDashboardPage() {
         {task.description && <p className="task-description">{task.description}</p>}
         {task.review_note && <div className="task-note review"><strong>ملاحظة المراجع</strong><p>{task.review_note}</p></div>}
 
+        {early && ["pending", "rejected"].includes(task.status) && (
+          <div className="child-goal-note early-access-note">موعد هذا الجزء {formatDate(task.starts_on)}، ويمكنك فتحه وإنجازه الآن قبل موعده.</div>
+        )}
+
         {canSubmit && (
           <div className="child-task-submit-box">
             <textarea rows={2} value={notes[task.id] || ""} onChange={(event) => setNotes((current) => ({ ...current, [task.id]: event.target.value }))} placeholder={task.quran_mode === "memorization" ? "اكتب ملاحظة عن الحفظ أو التسميع" : "اكتب باختصار ماذا أنجزت"} />
-            <button type="button" disabled={busy === task.id} onClick={() => void submitTask(task.id)}>{busy === task.id ? "جارٍ الإرسال..." : "تم الإنجاز"}</button>
+            <button type="button" disabled={busy === task.id} onClick={() => void submitTask(task.id, early)}>{busy === task.id ? "جارٍ الإرسال..." : early ? "إتمام مبكرًا" : "تم الإنجاز"}</button>
           </div>
         )}
 
-        {future && task.status !== "approved" && <div className="child-goal-note task-lock-note">يفتح في {formatDate(task.starts_on)}</div>}
-        {!future && blocked(task, groupTasks) && task.status !== "approved" && <div className="child-goal-note task-lock-note">يفتح بعد اعتماد الجزء السابق.</div>}
+        {locked && <div className="child-goal-note task-lock-note">تفتح في {formatDate(task.starts_on)}</div>}
         {task.status === "submitted" && <div className="child-goal-note">بانتظار مراجعة ولي الأمر.</div>}
         {task.status === "approved" && <div className="child-goal-note success">أحسنت، تم اعتماد هذا الجزء.</div>}
       </article>
@@ -315,8 +313,8 @@ export default function ChildDashboardPage() {
       {tab === "home" && (
         <div className="child-tab-panel child-home-panel child-home-v3">
           <section className="child-hero-card child-welcome-card">
-            <div><span className="child-level-chip">{data.student.level.icon} {data.student.level.name}</span><h2>اختر ما تريد إنجازه الآن</h2><p>كل قسم مستقل وواضح حتى تركز على خطوة واحدة في كل مرة.</p></div>
-            <div className="child-today-summary"><strong>{ready.length}</strong><span>مهام جاهزة الآن</span></div>
+            <div><span className="child-level-chip">{data.student.level.icon} {data.student.level.name}</span><h2>اختر ما تريد إنجازه الآن</h2><p>يمكنك أيضًا فتح الأجزاء المجزأة القادمة وإنجازها مبكرًا.</p></div>
+            <div className="child-today-summary"><strong>{ready.length}</strong><span>مهام متاحة</span></div>
           </section>
 
           <section className="child-main-sections" aria-label="أقسام حساب الطفل">
@@ -328,13 +326,13 @@ export default function ChildDashboardPage() {
             <Link className="child-main-section section-notifications" href="/child/notifications"><span>🔔</span><div><strong>إشعاراتي</strong><small>ردود المعلم وولي الأمر والتكليفات الجديدة</small></div><b>←</b></Link>
           </section>
 
-          {ready[0] && <section className="child-next-action-card"><div className="child-section-head"><div><span className="section-label">الخطوة التالية</span><h2>{ready[0].title}</h2></div><span>{taskIcons[ready[0].category] || "✨"}</span></div><p>{ready[0].description || (ready[0].quran_mode ? "هذا الجزء القرآني جاهز للإنجاز الآن." : "هذه المهمة جاهزة للإنجاز الآن.")}</p><button type="button" onClick={() => go("tasks")}>فتح المهمة</button></section>}
+          {ready[0] && <section className="child-next-action-card"><div className="child-section-head"><div><span className="section-label">الخطوة التالية</span><h2>{ready[0].title}</h2></div><span>{taskIcons[ready[0].category] || "✨"}</span></div><p>{ready[0].description || (ready[0].quran_mode ? "هذا الجزء القرآني متاح للإنجاز الآن." : "هذه المهمة جاهزة للإنجاز الآن.")}</p><button type="button" onClick={() => go("tasks")}>فتح المهمة</button></section>}
         </div>
       )}
 
       {tab === "tasks" && (
         <section className="child-tab-panel child-goals-section child-tasks-section child-plan-workspace child-simple-section-page">
-          <div className="child-section-head"><div><span className="section-label">مهامي</span><h2>المهام المسندة إليّ</h2><p>تشمل المهام العامة ومهام التلاوة والحفظ المجزأة.</p></div><span className="section-color-icon">✅</span></div>
+          <div className="child-section-head"><div><span className="section-label">مهامي</span><h2>المهام المسندة إليّ</h2><p>تشمل المهام العامة ومهام التلاوة والحفظ المجزأة، ويمكن بدء الأجزاء القادمة مبكرًا.</p></div><span className="section-color-icon">✅</span></div>
           {groups.length === 0 ? (
             <div className="child-friendly-empty"><span>🌤️</span><strong>لا توجد مهام الآن</strong><p>ستظهر هنا المهام التي يرسلها ولي الأمر أو المعلم.</p></div>
           ) : (
@@ -342,8 +340,8 @@ export default function ChildDashboardPage() {
               {groups.map((group) => {
                 const approvedCount = group.tasks.filter((task) => task.status === "approved").length;
                 const progress = Math.round((approvedCount / group.tasks.length) * 100);
-                const current = group.tasks.filter((task) => !((task.starts_on && task.starts_on > currentDate) || blocked(task, group.tasks)) && !["approved", "submitted"].includes(task.status));
-                const upcoming = group.tasks.filter((task) => ((task.starts_on && task.starts_on > currentDate) || blocked(task, group.tasks)) && !["approved", "submitted"].includes(task.status));
+                const current = group.tasks.filter((task) => ["pending", "rejected"].includes(task.status) && (!task.starts_on || task.starts_on <= currentDate));
+                const upcoming = group.tasks.filter((task) => ["pending", "rejected"].includes(task.status) && Boolean(task.starts_on && task.starts_on > currentDate));
                 const history = group.tasks.filter((task) => ["approved", "submitted"].includes(task.status));
                 const programLabel = group.quranMode === "memorization" ? "خطة حفظ" : group.quranMode === "recitation" ? "خطة تلاوة" : group.goal ? "مهام هدف" : "مهام مستقلة";
 
@@ -351,9 +349,9 @@ export default function ChildDashboardPage() {
                   <section className={`child-plan-group child-task-program-card ${group.quranMode ? "child-quran-task-program" : ""}`} key={group.key}>
                     <div className="child-plan-header"><div><span>{programLabel}</span><h3>{group.title}</h3><p>{approvedCount} من {group.tasks.length} أجزاء معتمدة</p></div><strong>{progress}%</strong></div>
                     <div className="child-plan-progress"><span style={{ width: `${progress}%` }} /></div>
-                    {current.length > 0 && <div className="child-task-list child-plan-task-list">{current.map((task) => taskCard(task, group.tasks))}</div>}
-                    {upcoming.length > 0 && <details className="child-upcoming-tasks-fold"><summary><div className="child-upcoming-summary-main"><span>🔒</span><div><strong>الأجزاء القادمة</strong><small>تفتح حسب التاريخ وبعد اعتماد الجزء السابق</small></div></div><div className="child-upcoming-summary-side"><b>{upcoming.length}</b><span className="child-upcoming-chevron">⌄</span></div></summary><div className="child-task-list child-plan-task-list child-upcoming-task-list">{upcoming.map((task) => taskCard(task, group.tasks))}</div></details>}
-                    {history.length > 0 && <details className="child-upcoming-tasks-fold child-task-history-fold"><summary><div className="child-upcoming-summary-main"><span>✅</span><div><strong>المنجزة والمراجعة</strong><small>الأجزاء التي أرسلتها أو تم اعتمادها</small></div></div><div className="child-upcoming-summary-side"><b>{history.length}</b><span className="child-upcoming-chevron">⌄</span></div></summary><div className="child-task-list child-plan-task-list">{history.map((task) => taskCard(task, group.tasks))}</div></details>}
+                    {current.length > 0 && <div className="child-task-list child-plan-task-list">{current.map(taskCard)}</div>}
+                    {upcoming.length > 0 && <details className="child-upcoming-tasks-fold"><summary><div className="child-upcoming-summary-main"><span>🗓️</span><div><strong>الأجزاء القادمة</strong><small>يمكن فتحها الآن والبدء بها مبكرًا</small></div></div><div className="child-upcoming-summary-side"><b>{upcoming.length}</b><span className="child-upcoming-chevron">⌄</span></div></summary><div className="child-task-list child-plan-task-list child-upcoming-task-list">{upcoming.map(taskCard)}</div></details>}
+                    {history.length > 0 && <details className="child-upcoming-tasks-fold child-task-history-fold"><summary><div className="child-upcoming-summary-main"><span>✅</span><div><strong>المنجزة والمراجعة</strong><small>الأجزاء التي أرسلتها أو تم اعتمادها</small></div></div><div className="child-upcoming-summary-side"><b>{history.length}</b><span className="child-upcoming-chevron">⌄</span></div></summary><div className="child-task-list child-plan-task-list">{history.map(taskCard)}</div></details>}
                   </section>
                 );
               })}
