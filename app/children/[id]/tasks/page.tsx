@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import ChildTasks from "../../../components/ChildTasks";
+import QuranTaskPlanner from "../../../components/QuranTaskPlanner";
 import TaskRecognitionPanel from "../../../components/TaskRecognitionPanel";
 
 export default function ChildTasksPage() {
@@ -15,6 +16,7 @@ export default function ChildTasksPage() {
         <Link className="brand" href="/dashboard"><span className="brand-mark">و</span><span>واعي كيدز</span></Link>
         <Link className="quiet-button link-submit" href={`/children/${studentId}`}>ملف الطفل</Link>
       </header>
+      <QuranTaskPlanner studentId={studentId} />
       <ChildTasks studentId={studentId} />
       <TaskRecognitionPanel studentId={studentId} />
     </main>
