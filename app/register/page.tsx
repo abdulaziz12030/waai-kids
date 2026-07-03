@@ -13,7 +13,9 @@ export default function RegisterPage() {
   const [email, setEmail] = useState("");
   const [confirmEmail, setConfirmEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [pendingEmail, setPendingEmail] = useState("");
   const [loading, setLoading] = useState(false);
+  const [resending, setResending] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
 
@@ -26,6 +28,7 @@ export default function RegisterPage() {
     event.preventDefault();
     setError("");
     setMessage("");
+    setPendingEmail("");
 
     if (!supabase) {
       setError("تعذر الاتصال بقاعدة البيانات. تحقق من إعدادات Supabase في Vercel.");
@@ -63,8 +66,14 @@ export default function RegisterPage() {
 
     if (signUpError) {
       setError(signUpError.message === "User already registered"
-        ? "هذا البريد مسجل مسبقًا. يمكنك تسجيل الدخول مباشرة."
+        ? "هذا البريد مسجل مسبقًا. استخدم تسجيل الدخول أو استعادة كلمة المرور."
         : signUpError.message);
+      return;
+    }
+
+    const existingProtectedAccount = Boolean(data.user && Array.isArray(data.user.identities) && data.user.identities.length === 0);
+    if (existingProtectedAccount) {
+      setError("هذا البريد مسجل مسبقًا، لذلك لم يُنشأ حساب جديد ولم يُرسل بريد تأكيد. استخدم تسجيل الدخول أو استعادة كلمة المرور، أو استخدم بريدًا مختلفًا لحساب مستقل.");
       return;
     }
 
@@ -74,7 +83,32 @@ export default function RegisterPage() {
       return;
     }
 
+    setPendingEmail(normalizedEmail);
     setMessage("تم إنشاء الحساب. افتح بريدك واضغط رابط التأكيد لإكمال الإعداد.");
+  }
+
+  async function resendConfirmation() {
+    if (!supabase || !pendingEmail || resending) return;
+    setError("");
+    setMessage("");
+    setResending(true);
+
+    const redirectTo = `${window.location.origin}/auth/callback?next=/onboarding`;
+    const { error: resendError } = await supabase.auth.resend({
+      type: "signup",
+      email: pendingEmail,
+      options: { emailRedirectTo: redirectTo }
+    });
+
+    setResending(false);
+    if (resendError) {
+      setError(resendError.message.includes("rate limit")
+        ? "تم طلب البريد قبل قليل. انتظر دقيقة ثم حاول مرة أخرى."
+        : "تعذر إعادة إرسال رابط التأكيد الآن. حاول مرة أخرى بعد قليل.");
+      return;
+    }
+
+    setMessage("أُعيد إرسال رابط التأكيد. تحقق من صندوق الوارد والرسائل غير المرغوبة.");
   }
 
   return (
@@ -101,6 +135,7 @@ export default function RegisterPage() {
           <label>كلمة المرور<input type="password" value={password} onChange={(event) => setPassword(event.target.value)} placeholder="8 أحرف على الأقل" autoComplete="new-password" minLength={8} required /></label>
           {error && <p className="form-message error-message">{error}</p>}
           {message && <p className="form-message success-message">{message}</p>}
+          {pendingEmail && <button className="secondary-button" type="button" onClick={resendConfirmation} disabled={resending}>{resending ? "جارٍ إعادة الإرسال..." : "إعادة إرسال رابط التأكيد"}</button>}
           <button className="auth-submit" type="submit" disabled={loading}>{loading ? "جارٍ إنشاء الحساب..." : accountType === "teacher" ? "إنشاء حساب المعلم" : "إنشاء حساب ولي الأمر"}</button>
         </form>
 
