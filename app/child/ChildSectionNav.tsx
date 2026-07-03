@@ -35,6 +35,7 @@ function clickDashboardButton(label: string) {
 }
 
 function activateDashboardSection(section: ChildSection) {
+  if (!document.querySelector(".child-dashboard-v3")) return false;
   if (section === "home") return clickDashboardButton("الرئيسية");
   if (section === "tasks") return clickDashboardButton("مهامي");
   if (section === "progress") return clickDashboardButton("تقدمي");
@@ -46,7 +47,7 @@ function activateDashboardSection(section: ChildSection) {
       return true;
     }
 
-    clickDashboardButton("الرئيسية");
+    if (!clickDashboardButton("الرئيسية")) return false;
     window.setTimeout(() => {
       document.querySelector<HTMLButtonElement>(".child-main-section.section-goals")?.click();
     }, 40);
@@ -54,6 +55,11 @@ function activateDashboardSection(section: ChildSection) {
   }
 
   return false;
+}
+
+function scheduleDashboardSection(section: ChildSection, attempt = 0) {
+  if (activateDashboardSection(section) || attempt >= 40) return;
+  window.setTimeout(() => scheduleDashboardSection(section, attempt + 1), 100);
 }
 
 export default function ChildSectionNav() {
@@ -70,7 +76,7 @@ export default function ChildSectionNav() {
     const requested = new URLSearchParams(window.location.search).get("section") as ChildSection | null;
     if (requested && dashboardSections.includes(requested)) {
       setActive(requested);
-      window.setTimeout(() => activateDashboardSection(requested), 0);
+      scheduleDashboardSection(requested);
     }
 
     const sync = () => setActive(detectDashboardSection());
@@ -90,7 +96,7 @@ export default function ChildSectionNav() {
       return;
     }
 
-    activateDashboardSection(section);
+    scheduleDashboardSection(section);
     const nextUrl = section === "home" ? "/child" : `/child?section=${section}`;
     window.history.replaceState(window.history.state, "", nextUrl);
   }
