@@ -7,10 +7,14 @@ export default function QuranTaskFormBridge() {
     function updateGenericTaskForm() {
       const options = Array.from(document.querySelectorAll<HTMLOptionElement>('select option[value="quran"]'));
       for (const option of options) {
+        if (option.dataset.quranPlannerRedirect === "true") continue;
         const select = option.parentElement as HTMLSelectElement | null;
-        if (!select || select.closest("[class*='QuranTaskPlanner']")) continue;
+        if (!select) continue;
+
+        option.dataset.quranPlannerRedirect = "true";
         option.disabled = true;
         option.textContent = "📖 قرآن — استخدم نموذج المهمة القرآنية المجزأة أعلاه";
+
         if (select.value === "quran") {
           select.value = "behavior";
           select.dispatchEvent(new Event("change", { bubbles: true }));
