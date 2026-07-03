@@ -34,6 +34,15 @@ function clickDashboardButton(label: string) {
   return Boolean(button);
 }
 
+function clickGoalCard(attempt = 0) {
+  const goalCard = document.querySelector<HTMLButtonElement>(".child-main-section.section-goals");
+  if (goalCard) {
+    goalCard.click();
+    return;
+  }
+  if (attempt < 20) window.setTimeout(() => clickGoalCard(attempt + 1), 50);
+}
+
 function activateDashboardSection(section: ChildSection) {
   if (!document.querySelector(".child-dashboard-v3")) return false;
   if (section === "home") return clickDashboardButton("الرئيسية");
@@ -48,9 +57,7 @@ function activateDashboardSection(section: ChildSection) {
     }
 
     if (!clickDashboardButton("الرئيسية")) return false;
-    window.setTimeout(() => {
-      document.querySelector<HTMLButtonElement>(".child-main-section.section-goals")?.click();
-    }, 40);
+    window.setTimeout(() => clickGoalCard(), 40);
     return true;
   }
 
