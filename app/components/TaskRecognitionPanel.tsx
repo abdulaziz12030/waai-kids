@@ -44,15 +44,18 @@ export default function TaskRecognitionPanel({ studentId }: { studentId: string 
   const [error, setError] = useState("");
 
   useEffect(() => {
-    async function load() {
+    let active = true;
+
+    async function load(silent = false) {
       if (!supabase) return;
-      setLoading(true);
+      if (!silent) setLoading(true);
       setError("");
       const result = await supabase.rpc("get_parent_task_recognition_status", {
         p_student_id: studentId
       });
+      if (!active) return;
       if (result.error || !result.data) {
-        setError("تعذر تحميل مهام التكريم الآن.");
+        if (!silent) setError("تعذر تحميل مهام التكريم الآن.");
         setLoading(false);
         return;
       }
@@ -61,6 +64,15 @@ export default function TaskRecognitionPanel({ studentId }: { studentId: string 
     }
 
     void load();
+    const interval = window.setInterval(() => void load(true), 4000);
+    const onVisible = () => { if (document.visibilityState === "visible") void load(true); };
+    document.addEventListener("visibilitychange", onVisible);
+
+    return () => {
+      active = false;
+      window.clearInterval(interval);
+      document.removeEventListener("visibilitychange", onVisible);
+    };
   }, [studentId]);
 
   if (loading) {
@@ -113,11 +125,7 @@ export default function TaskRecognitionPanel({ studentId }: { studentId: string 
                   <Link className={styles.primary} href={`/children/${studentId}/gifts?task=${task.id}`}>
                     {gifted ? "🎁 إهداء إضافي" : "🎁 تكريم وإهداء"}
                   </Link>
-                  {gifted && (
-                    <Link className={styles.secondary} href={`/children/${studentId}/gifts`}>
-                      عرض سجل الهدايا
-                    </Link>
-                  )}
+                  {gifted && <Link className={styles.secondary} href={`/children/${studentId}/gifts`}>عرض سجل الهدايا</Link>}
                 </div>
               </article>
             );
