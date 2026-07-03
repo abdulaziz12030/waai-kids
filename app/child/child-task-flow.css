@@ -1,0 +1,46 @@
+/* Standalone Quran assignments belong in مهامي, not in the memorization-plan list. */
+.task-round-icon.category-quran_task {
+  position: relative;
+  overflow: hidden;
+  background: #f7f0dc !important;
+  color: #7d6424 !important;
+  font-size: 0 !important;
+}
+
+.task-round-icon.category-quran_task::before {
+  content: "📖";
+  font-size: 24px;
+  line-height: 1;
+}
+
+.child-task-submit-box {
+  margin-top: 14px;
+  padding: 13px;
+  border: 1px solid rgba(66, 100, 78, 0.14);
+  border-radius: 16px;
+  background: linear-gradient(145deg, #f6faf7, #fff);
+}
+
+.child-task-submit-box button {
+  min-height: 46px !important;
+  padding-inline: 18px !important;
+  border-radius: 14px !important;
+  background: linear-gradient(135deg, #3f6f52, #57936c) !important;
+  color: #fff !important;
+  font-weight: 900 !important;
+  box-shadow: 0 9px 22px rgba(52, 105, 72, 0.2);
+}
+
+.child-task-submit-box button::before {
+  content: "✓ ";
+}
+
+@media (max-width: 600px) {
+  .child-task-submit-box {
+    padding: 10px;
+  }
+
+  .child-task-submit-box button {
+    width: 100%;
+  }
+}
