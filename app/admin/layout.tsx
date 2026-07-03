@@ -5,25 +5,52 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
   return (
     <>
       {children}
-      <Link
-        href="/admin/accounts"
+      <nav
+        aria-label="أدوات الإدارة السريعة"
         style={{
           position: "fixed",
           left: 16,
           bottom: 16,
           zIndex: 80,
-          padding: "11px 16px",
-          borderRadius: 14,
-          background: "#31513e",
-          color: "#fff",
-          fontWeight: 900,
-          fontSize: 13,
-          textDecoration: "none",
-          boxShadow: "0 12px 32px rgba(35, 58, 44, .24)"
+          display: "flex",
+          flexWrap: "wrap",
+          gap: 8,
+          padding: 6,
+          borderRadius: 18,
+          background: "rgba(255,255,255,.92)",
+          boxShadow: "0 12px 32px rgba(35,58,44,.2)",
+          backdropFilter: "blur(14px)"
         }}
       >
-        إدارة الحسابات
-      </Link>
+        <Link
+          href="/admin/accounts"
+          style={{
+            padding: "10px 14px",
+            borderRadius: 12,
+            background: "#31513e",
+            color: "#fff",
+            fontWeight: 900,
+            fontSize: 12,
+            textDecoration: "none"
+          }}
+        >
+          إدارة الحسابات
+        </Link>
+        <Link
+          href="/admin/goals"
+          style={{
+            padding: "10px 14px",
+            borderRadius: 12,
+            background: "#6651a8",
+            color: "#fff",
+            fontWeight: 900,
+            fontSize: 12,
+            textDecoration: "none"
+          }}
+        >
+          إدارة الأهداف
+        </Link>
+      </nav>
     </>
   );
 }
