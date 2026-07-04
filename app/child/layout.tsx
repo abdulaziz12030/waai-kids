@@ -4,6 +4,7 @@ import "./child-layout-cleanup.css";
 import "./child-unified-nav.css";
 import "./child-task-flow.css";
 import "./floating-goal-prompt.css";
+import "./child-header-actions.css";
 import ChildExperienceLayer from "./ChildExperienceLayer";
 import ChildGiftAutoDisplay from "./ChildGiftAutoDisplay";
 import ChildSectionNav from "./ChildSectionNav";
