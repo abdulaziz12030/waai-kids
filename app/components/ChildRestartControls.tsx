@@ -3,21 +3,24 @@
 import { useState } from "react";
 import { supabase } from "../../lib/supabase";
 
-type RestartAction = "points" | "goals" | "quran";
+type RestartAction = "achievement" | "reward" | "allPoints" | "goals" | "quran";
 
-type RestartResult = Record<string, number | string | null>;
+type RestartResult = Record<string, number | string | boolean | null>;
 
 type ChildRestartControlsProps = {
   studentId: string;
   studentName: string;
   achievementPoints: number;
+  rewardPoints: number;
   goalCount: number;
   quranPlanCount: number;
   onChanged?: (action: RestartAction, result: RestartResult) => void | Promise<void>;
 };
 
 const actionLabels: Record<RestartAction, string> = {
-  points: "تصفير نقاط الإنجاز",
+  achievement: "تصفير نقاط الإنجاز",
+  reward: "تصفير نقاط المكافآت",
+  allPoints: "تصفير الإنجاز والمكافآت",
   goals: "حذف جميع الأهداف",
   quran: "حذف برنامج حفظ القرآن"
 };
@@ -26,6 +29,7 @@ export default function ChildRestartControls({
   studentId,
   studentName,
   achievementPoints,
+  rewardPoints,
   goalCount,
   quranPlanCount,
   onChanged
@@ -36,7 +40,9 @@ export default function ChildRestartControls({
   const [error, setError] = useState("");
 
   const disabled: Record<RestartAction, boolean> = {
-    points: achievementPoints <= 0,
+    achievement: achievementPoints <= 0,
+    reward: rewardPoints <= 0,
+    allPoints: achievementPoints <= 0 && rewardPoints <= 0,
     goals: goalCount <= 0,
     quran: quranPlanCount <= 0
   };
@@ -54,11 +60,15 @@ export default function ChildRestartControls({
     }
 
     setBusy(action);
-    const rpcName = action === "points"
+    const rpcName = action === "achievement"
       ? "parent_zero_student_achievement_points"
-      : action === "goals"
-        ? "parent_delete_all_student_goals"
-        : "reset_student_quran_program_shared";
+      : action === "reward"
+        ? "parent_zero_student_reward_points"
+        : action === "allPoints"
+          ? "parent_zero_student_points"
+          : action === "goals"
+            ? "parent_delete_all_student_goals"
+            : "reset_student_quran_program_shared";
 
     const result = await client.rpc(rpcName, { p_student_id: studentId });
     setBusy(null);
@@ -69,8 +79,12 @@ export default function ChildRestartControls({
     }
 
     const data = (result.data || {}) as RestartResult;
-    if (action === "points") {
-      setMessage(`تم تصفير نقاط الإنجاز الخاصة بـ ${studentName} مع الإبقاء على نقاط المكافآت.`);
+    if (action === "achievement") {
+      setMessage(`تم تصفير نقاط إنجاز ${studentName} مع إبقاء نقاط المكافآت وسجل العمليات.`);
+    } else if (action === "reward") {
+      setMessage(`تم تصفير نقاط مكافآت ${studentName} مع إبقاء نقاط الإنجاز وسجل العمليات.`);
+    } else if (action === "allPoints") {
+      setMessage(`تم تصفير نقاط الإنجاز والمكافآت الخاصة بـ ${studentName} مع الاحتفاظ بسجل العمليات السابق.`);
     } else if (action === "goals") {
       setMessage(`تم حذف ${Number(data.deleted_goals || goalCount)} من الأهداف والمهام المرتبطة بها، ويمكن البدء من جديد.`);
     } else {
@@ -82,8 +96,14 @@ export default function ChildRestartControls({
   }
 
   function confirmationText(action: RestartAction) {
-    if (action === "points") {
-      return `سيتم جعل نقاط إنجاز ${studentName} صفرًا، دون حذف نقاط المكافآت أو الأهداف.`;
+    if (action === "achievement") {
+      return `سيصبح رصيد إنجاز ${studentName} صفرًا، وستبقى المكافآت وسجل النقاط السابق محفوظين.`;
+    }
+    if (action === "reward") {
+      return `سيصبح رصيد مكافآت ${studentName} صفرًا، وستبقى نقاط الإنجاز وسجل النقاط السابق محفوظين.`;
+    }
+    if (action === "allPoints") {
+      return `سيصبح رصيد الإنجاز والمكافآت لدى ${studentName} صفرًا، مع الاحتفاظ بتاريخ جميع العمليات السابقة.`;
     }
     if (action === "goals") {
       return `سيتم حذف جميع أهداف ${studentName} والمهام المرتبطة بها نهائيًا. لن يُحذف برنامج حفظ القرآن.`;
@@ -118,9 +138,9 @@ export default function ChildRestartControls({
     <section className="child-restart-panel">
       <div className="child-restart-head">
         <div>
-          <span className="section-label">إدارة البداية الجديدة</span>
+          <span className="section-label">إدارة الأرصدة والبداية الجديدة</span>
           <h2>التحكم في بيانات {studentName}</h2>
-          <p>كل عملية مستقلة ومحمية بتأكيد إضافي حتى لا تُحذف بيانات أخرى عن طريق الخطأ.</p>
+          <p>يمكن تصفير الإنجاز أو المكافآت كلٌ على حدة، مع حفظ سجل النقاط السابق وعدم التأثير في الأهداف والمهام.</p>
         </div>
         <span className="restart-lock-badge">🔒 لولي الأمر فقط</span>
       </div>
@@ -134,10 +154,32 @@ export default function ChildRestartControls({
           <div>
             <h3>نقاط الإنجاز</h3>
             <strong>{achievementPoints} نقطة</strong>
-            <p>تصفير نقاط الإنجاز فقط، مع بقاء نقاط المكافآت والمهام والأهداف كما هي.</p>
+            <p>تصفير رصيد الإنجاز فقط، مع بقاء المكافآت والأهداف والمهام وسجل النقاط.</p>
           </div>
-          {confirming === "points" && <div className="restart-confirmation-note">{confirmationText("points")}</div>}
-          {actionButton("points", actionLabels.points)}
+          {confirming === "achievement" && <div className="restart-confirmation-note">{confirmationText("achievement")}</div>}
+          {actionButton("achievement", actionLabels.achievement)}
+        </article>
+
+        <article className="restart-action-card">
+          <span className="restart-action-icon">💎</span>
+          <div>
+            <h3>نقاط المكافآت</h3>
+            <strong>{rewardPoints} نقطة</strong>
+            <p>تصفير رصيد المكافآت فقط، مع بقاء الإنجاز والأهداف والمهام وسجل النقاط.</p>
+          </div>
+          {confirming === "reward" && <div className="restart-confirmation-note">{confirmationText("reward")}</div>}
+          {actionButton("reward", actionLabels.reward)}
+        </article>
+
+        <article className="restart-action-card warning">
+          <span className="restart-action-icon">🔄</span>
+          <div>
+            <h3>جميع النقاط</h3>
+            <strong>{achievementPoints + rewardPoints} نقطة إجمالًا</strong>
+            <p>تصفير الإنجاز والمكافآت معًا دون حذف المهام أو الأهداف أو تاريخ العمليات.</p>
+          </div>
+          {confirming === "allPoints" && <div className="restart-confirmation-note">{confirmationText("allPoints")}</div>}
+          {actionButton("allPoints", actionLabels.allPoints)}
         </article>
 
         <article className="restart-action-card warning">
