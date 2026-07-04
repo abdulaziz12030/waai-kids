@@ -16,6 +16,11 @@ import {
   segmentSortValue,
 } from "../matn-types";
 
+type SegmentContent = {
+  uthmani_text: string | null;
+  readable_text: string | null;
+};
+
 export default function ChildMemorizationProgramPage() {
   const params = useParams<{ planId: string }>();
   const router = useRouter();
@@ -25,6 +30,8 @@ export default function ChildMemorizationProgramPage() {
     segments: [],
     religious_content: [],
   });
+  const [segmentContent, setSegmentContent] = useState<Record<string, SegmentContent>>({});
+  const [loadingSegmentId, setLoadingSegmentId] = useState("");
   const [loading, setLoading] = useState(true);
   const [busyId, setBusyId] = useState("");
   const [recordingSegmentId, setRecordingSegmentId] = useState("");
@@ -43,12 +50,13 @@ export default function ChildMemorizationProgramPage() {
       return;
     }
 
-    const result = await client.rpc("get_child_quran_dashboard", {
+    const result = await client.rpc("get_child_quran_program", {
       p_session_token: token,
+      p_plan_id: params.planId,
     });
     if (result.error || !result.data) {
-      localStorage.removeItem("namaa_child_token");
-      router.replace("/child/login");
+      setLoading(false);
+      setError("تعذر فتح البرنامج الآن. حاول العودة إلى قائمة البرامج ثم فتحه مجددًا.");
       return;
     }
 
@@ -59,7 +67,7 @@ export default function ChildMemorizationProgramPage() {
 
   useEffect(() => {
     void loadData();
-  }, []);
+  }, [params.planId]);
 
   const group = useMemo<PlanGroup | null>(() => {
     const plan = data.plans.find((item) => item.id === params.planId);
@@ -97,9 +105,12 @@ export default function ChildMemorizationProgramPage() {
   }
 
   const content = group ? getContent(group.plan.catalog_item_id) : null;
-  const activeSegment: QuranSegment | null = group
+  const activeSegmentBase: QuranSegment | null = group
     ? group.segments.find((segment) => segment.id === selectedSegmentId) ||
       group.current
+    : null;
+  const activeSegment: QuranSegment | null = activeSegmentBase
+    ? { ...activeSegmentBase, ...(segmentContent[activeSegmentBase.id] || {}) }
     : null;
 
   useEffect(() => {
@@ -109,6 +120,45 @@ export default function ChildMemorizationProgramPage() {
     if (!selectedChapterId && content?.chapters[0])
       setSelectedChapterId(content.chapters[0].id);
   }, [content, group, selectedChapterId, selectedSegmentId]);
+
+  useEffect(() => {
+    const segmentId = activeSegmentBase?.id;
+    if (!segmentId || group?.plan.content_kind === "matn" || segmentContent[segmentId]) return;
+
+    let cancelled = false;
+    async function loadSegmentContent() {
+      const client = supabase;
+      const token = localStorage.getItem("namaa_child_token");
+      if (!client || !token) return;
+
+      setLoadingSegmentId(segmentId);
+      const result = await client.rpc("get_child_quran_segment_content", {
+        p_session_token: token,
+        p_segment_id: segmentId,
+      });
+      if (cancelled) return;
+      setLoadingSegmentId("");
+
+      if (result.error || !result.data) {
+        setError("تعذر تحميل نص المقطع. حاول فتحه مرة أخرى.");
+        return;
+      }
+
+      const payload = result.data as { id: string } & SegmentContent;
+      setSegmentContent((current) => ({
+        ...current,
+        [payload.id]: {
+          uthmani_text: payload.uthmani_text,
+          readable_text: payload.readable_text,
+        },
+      }));
+    }
+
+    void loadSegmentContent();
+    return () => {
+      cancelled = true;
+    };
+  }, [activeSegmentBase?.id, group?.plan.content_kind, segmentContent]);
 
   async function markMemorized(segmentId: string) {
     const client = supabase;
@@ -148,7 +198,7 @@ export default function ChildMemorizationProgramPage() {
         <section className="child-friendly-empty child-quran-empty">
           <span>📘</span>
           <strong>لم يتم العثور على البرنامج</strong>
-          <p>قد يكون البرنامج قد أوقف أو حُذف.</p>
+          <p>{error || "قد يكون البرنامج قد أوقف أو حُذف."}</p>
           <Link className="soft-action-button" href="/child/quran">
             العودة إلى برامجي
           </Link>
@@ -189,6 +239,7 @@ export default function ChildMemorizationProgramPage() {
         isOpen
         standalone
         activeSegment={activeSegment}
+        segmentTextLoading={Boolean(activeSegmentBase && loadingSegmentId === activeSegmentBase.id)}
         content={content}
         matnMode={matnMode}
         selectedChapterId={selectedChapterId || content?.chapters[0]?.id || ""}
