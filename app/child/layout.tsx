@@ -3,9 +3,11 @@ import "./child-dashboard-v3.css";
 import "./child-layout-cleanup.css";
 import "./child-unified-nav.css";
 import "./child-task-flow.css";
+import "./floating-goal-prompt.css";
 import ChildExperienceLayer from "./ChildExperienceLayer";
 import ChildGiftAutoDisplay from "./ChildGiftAutoDisplay";
 import ChildSectionNav from "./ChildSectionNav";
+import FloatingGoalPrompt from "./FloatingGoalPrompt";
 
 export default function ChildLayout({
   children,
@@ -17,6 +19,7 @@ export default function ChildLayout({
       {children}
       <ChildExperienceLayer />
       <ChildGiftAutoDisplay />
+      <FloatingGoalPrompt />
       <ChildSectionNav />
     </>
   );
