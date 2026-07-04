@@ -1,0 +1,57 @@
+.child-app-refresh .child-app-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  column-gap: 12px;
+}
+
+.child-app-refresh .child-app-header > div:first-child {
+  min-width: 0;
+}
+
+.child-app-refresh .child-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
+.child-app-refresh .child-notification-mount {
+  display: none;
+}
+
+.child-app-refresh .child-app-header > div:last-child {
+  position: static !important;
+  inset: auto !important;
+  transform: none !important;
+  flex: 0 0 auto;
+  justify-self: start;
+}
+
+@media (max-width: 680px) {
+  .child-app-refresh .child-app-header {
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    column-gap: 10px;
+  }
+
+  .child-app-refresh .child-logout-button {
+    min-width: 62px;
+    min-height: 38px;
+    padding-inline: 12px;
+  }
+
+  .child-app-refresh .child-app-header > div:last-child {
+    margin-inline-start: 2px;
+  }
+}
+
+@media (max-width: 390px) {
+  .child-app-refresh .child-app-header {
+    column-gap: 8px;
+  }
+
+  .child-app-refresh .child-logout-button {
+    min-width: 56px;
+    padding-inline: 9px;
+    font-size: 12px;
+  }
+}
