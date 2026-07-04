@@ -7,6 +7,7 @@ import { supabase } from "../../lib/supabase";
 import styles from "./admin.module.css";
 
 type Tab = "organizations" | "students" | "subscriptions" | "memberships" | "gifts";
+type PointResetType = "achievement" | "reward" | "all";
 type Metrics = { organizations:number; families:number; teachers:number; students:number; active_goals:number; pending_tasks:number; delivered_gifts:number; subscriptions:number; active_subscriptions:number };
 type Organization = { id:string; name:string; type:string; family_title:string|null; city:string|null; family_code:string; created_at:string; owner_email:string|null; students_count:number; active_members_count:number; subscription?:{ id:string; status:string; plan_code:string; ends_at:string|null }|null };
 type Student = { id:string; full_name:string; organization_name:string; achievement_points:number; reward_points:number; child_login_code:string; created_at:string; goals_count:number; tasks_count:number; gifts_count:number };
@@ -17,6 +18,12 @@ type DashboardData = { admin:{ role:string }; metrics:Metrics; organizations:Org
 
 const dateFormat = new Intl.DateTimeFormat("ar-SA", { dateStyle: "medium" });
 function formatDate(value:string|null) { return value ? dateFormat.format(new Date(value)) : "—"; }
+
+const pointResetLabels: Record<PointResetType, string> = {
+  achievement: "الإنجاز",
+  reward: "المكافآت",
+  all: "الإنجاز والمكافآت"
+};
 
 export default function AdminPage() {
   const router = useRouter();
@@ -89,6 +96,41 @@ export default function AdminPage() {
       if (!supabase) return { error: { message:"SUPABASE_NOT_READY" } };
       return supabase.rpc("admin_adjust_student_points", { p_student_id:student.id, p_achievement_delta:achievement, p_reward_delta:reward, p_reason:reason });
     }, `تم تحديث نقاط ${student.full_name}.`);
+  }
+
+  async function resetStudentPoints(student:Student, pointType:PointResetType) {
+    if (!supabase) return;
+    const currentBalance = pointType === "achievement"
+      ? student.achievement_points
+      : pointType === "reward"
+        ? student.reward_points
+        : student.achievement_points + student.reward_points;
+
+    if (currentBalance <= 0) {
+      setError(`رصيد ${pointResetLabels[pointType]} لدى ${student.full_name} يساوي صفرًا بالفعل.`);
+      return;
+    }
+
+    const label = pointResetLabels[pointType];
+    if (!window.confirm(`سيتم تصفير ${label} لدى ${student.full_name} مع الاحتفاظ بسجل النقاط السابق. متابعة؟`)) return;
+
+    const requiredPhrase = `تصفير ${label}`;
+    const confirmation = window.prompt(`اكتب العبارة التالية حرفيًا:\n${requiredPhrase}`, "");
+    if (confirmation !== requiredPhrase) {
+      setError("لم يتم التنفيذ لأن عبارة التأكيد غير صحيحة.");
+      return;
+    }
+
+    const reason = window.prompt(`سبب تصفير ${label}:`, "تصفير إداري للرصيد") || "تصفير إداري للرصيد";
+    const actionId = `reset-${pointType}-${student.id}`;
+    await runAction(actionId, async () => {
+      if (!supabase) return { error: { message:"SUPABASE_NOT_READY" } };
+      return supabase.rpc("admin_reset_student_points", {
+        p_student_id: student.id,
+        p_point_type: pointType,
+        p_reason: reason
+      });
+    }, `تم تصفير ${label} لدى ${student.full_name} مع حفظ العملية في سجل التدقيق.`);
   }
 
   async function revokeSessions(student:Student) {
@@ -205,7 +247,10 @@ export default function AdminPage() {
 
         {tab === "organizations" && <section className={styles.section}><div className={styles.sectionHead}><div><h3>الأسر والجهات</h3><p>المالك وعدد الأطفال وحالة الاشتراك.</p></div><span className={styles.countBadge}>{data.organizations.length}</span></div><div className={styles.tableWrap}><table className={styles.table}><thead><tr><th>الجهة</th><th>النوع</th><th>المالك</th><th>الأطفال</th><th>العضويات</th><th>الاشتراك</th><th>تاريخ الإنشاء</th></tr></thead><tbody>{data.organizations.map((item) => <tr key={item.id}><td className={styles.mainCell}><strong>{item.family_title || item.name}</strong><small>{item.city || "المدينة غير محددة"} · {item.family_code}</small></td><td><span className={styles.status}>{item.type}</span></td><td>{item.owner_email || "—"}</td><td>{item.students_count}</td><td>{item.active_members_count}</td><td>{item.subscription ? `${item.subscription.plan_code} · ${item.subscription.status}` : "بدون اشتراك"}</td><td>{formatDate(item.created_at)}</td></tr>)}</tbody></table></div></section>}
 
-        {tab === "students" && <section className={styles.section}><div className={styles.sectionHead}><div><h3>الأطفال</h3><p>النقاط والأنشطة وجلسات الدخول.</p></div><span className={styles.countBadge}>{data.students.length}</span></div><div className={styles.tableWrap}><table className={styles.table}><thead><tr><th>الطفل</th><th>الأسرة</th><th>الإنجاز</th><th>المكافآت</th><th>الأهداف</th><th>المهام</th><th>الهدايا</th><th>الإجراءات</th></tr></thead><tbody>{data.students.map((item) => <tr key={item.id}><td className={styles.mainCell}><strong>{item.full_name}</strong><small>رمز الدخول: {item.child_login_code}</small></td><td>{item.organization_name}</td><td>{item.achievement_points}</td><td>{item.reward_points}</td><td>{item.goals_count}</td><td>{item.tasks_count}</td><td>{item.gifts_count}</td><td><div className={styles.rowActions}><button className={styles.iconButton} type="button" disabled={busyId === item.id} onClick={() => void adjustPoints(item)}>تعديل النقاط</button><button className={styles.dangerButton} type="button" disabled={busyId === `session-${item.id}`} onClick={() => void revokeSessions(item)}>إلغاء الجلسات</button></div></td></tr>)}</tbody></table></div></section>}
+        {tab === "students" && <section className={styles.section}><div className={styles.sectionHead}><div><h3>الأطفال</h3><p>التحكم في الإنجاز والمكافآت والأنشطة وجلسات الدخول، مع حفظ جميع العمليات الحساسة في سجل التدقيق.</p></div><span className={styles.countBadge}>{data.students.length}</span></div><div className={styles.tableWrap}><table className={styles.table}><thead><tr><th>الطفل</th><th>الأسرة</th><th>الإنجاز</th><th>المكافآت</th><th>الأهداف</th><th>المهام</th><th>الهدايا</th><th>الإجراءات</th></tr></thead><tbody>{data.students.map((item) => {
+          const resetting = busyId.startsWith("reset-") && busyId.endsWith(item.id);
+          return <tr key={item.id}><td className={styles.mainCell}><strong>{item.full_name}</strong><small>رمز الدخول: {item.child_login_code}</small></td><td>{item.organization_name}</td><td>{item.achievement_points}</td><td>{item.reward_points}</td><td>{item.goals_count}</td><td>{item.tasks_count}</td><td>{item.gifts_count}</td><td><div className={styles.rowActions}><button className={styles.iconButton} type="button" disabled={busyId === item.id || resetting} onClick={() => void adjustPoints(item)}>تعديل النقاط</button><button className={styles.dangerButton} type="button" disabled={item.achievement_points <= 0 || Boolean(busyId)} onClick={() => void resetStudentPoints(item, "achievement")}>تصفير الإنجاز</button><button className={styles.dangerButton} type="button" disabled={item.reward_points <= 0 || Boolean(busyId)} onClick={() => void resetStudentPoints(item, "reward")}>تصفير المكافآت</button><button className={styles.dangerButton} type="button" disabled={(item.achievement_points <= 0 && item.reward_points <= 0) || Boolean(busyId)} onClick={() => void resetStudentPoints(item, "all")}>{resetting ? "جارٍ التصفير..." : "تصفير الكل"}</button><button className={styles.dangerButton} type="button" disabled={busyId === `session-${item.id}` || resetting} onClick={() => void revokeSessions(item)}>إلغاء الجلسات</button></div></td></tr>;
+        })}</tbody></table></div></section>}
 
         {tab === "subscriptions" && <section className={styles.section}><div className={styles.sectionHead}><div><h3>الاشتراكات</h3><p>تغيير الحالة يتم فورًا ويسجل باسم الآدمين.</p></div><span className={styles.countBadge}>{data.subscriptions.length}</span></div><div className={styles.tableWrap}><table className={styles.table}><thead><tr><th>الجهة</th><th>الخطة</th><th>الحالة</th><th>البداية</th><th>النهاية</th><th>حفظ</th></tr></thead><tbody>{data.subscriptions.map((item) => <tr key={item.id}><td>{item.organization_name}</td><td>{item.plan_code}</td><td><select className={styles.select} value={subscriptionStatuses[item.id] || item.status} onChange={(event) => setSubscriptionStatuses((current) => ({...current,[item.id]:event.target.value}))}><option value="trial">تجريبي</option><option value="active">نشط</option><option value="suspended">موقوف</option><option value="cancelled">ملغي</option><option value="expired">منتهي</option></select></td><td>{formatDate(item.starts_at)}</td><td>{formatDate(item.ends_at)}</td><td><button className={styles.primaryButton} type="button" disabled={busyId === item.id} onClick={() => void saveSubscription(item)}>حفظ</button></td></tr>)}</tbody></table></div></section>}
 
