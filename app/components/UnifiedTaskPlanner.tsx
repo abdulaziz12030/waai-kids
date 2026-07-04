@@ -33,7 +33,7 @@ export default function UnifiedTaskPlanner({ studentId }: { studentId: string })
   const searchParams = useSearchParams();
   const goalFromUrl = searchParams.get("goal") || "";
   const [open, setOpen] = useState(Boolean(goalFromUrl));
-  const [category, setCategory] = useState<TaskCategory>("quran");
+  const [category, setCategory] = useState<TaskCategory>(goalFromUrl ? "educational" : "quran");
   const [goals, setGoals] = useState<GoalOption[]>([]);
   const [goalId, setGoalId] = useState(goalFromUrl);
   const [title, setTitle] = useState("");
@@ -64,6 +64,7 @@ export default function UnifiedTaskPlanner({ studentId }: { studentId: string })
   useEffect(() => {
     if (goalFromUrl) {
       setGoalId(goalFromUrl);
+      setCategory("educational");
       setOpen(true);
     }
   }, [goalFromUrl]);
@@ -142,7 +143,7 @@ export default function UnifiedTaskPlanner({ studentId }: { studentId: string })
 
       {open && (
         <div className={styles.form}>
-          <div className={styles.modeSwitch} role="group" aria-label="نوع المهمة">
+          <div className={`${styles.modeSwitch} ${styles.categorySwitch}`} role="group" aria-label="نوع المهمة">
             {categories.map((item) => (
               <button
                 className={category === item.id ? styles.active : ""}
