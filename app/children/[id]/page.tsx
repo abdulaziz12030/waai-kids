@@ -309,7 +309,7 @@ export default function ChildProfilePage() {
             <label>الصف الدراسي<input value={gradeLevel} onChange={(event) => setGradeLevel(event.target.value)} required /></label>
 
             <fieldset className="avatar-fieldset">
-              <legend>صورة رمزية للطفل</legend>
+              <legend>الصورة أو الرمز</legend>
               <div className="avatar-options avatar-options-with-photo">
                 <label className={avatar === "photo" ? "avatar-option photo-avatar-option selected" : "avatar-option photo-avatar-option"}>
                   <input type="file" accept="image/*" onChange={handlePhotoChange} />
@@ -371,6 +371,7 @@ export default function ChildProfilePage() {
         studentId={studentId}
         studentName={fullName}
         achievementPoints={achievementPoints}
+        rewardPoints={rewardPoints}
         goalCount={goalCount}
         quranPlanCount={quranPlanCount}
         onChanged={() => loadChild(false)}
