@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "../../lib/supabase";
 
-type RestartAction = "achievement" | "reward" | "allPoints" | "goals" | "quran";
+type RestartAction = "achievement" | "reward" | "allPoints" | "tasks" | "goals" | "quran";
 
 type RestartResult = Record<string, number | string | boolean | null>;
 
@@ -21,6 +21,7 @@ const actionLabels: Record<RestartAction, string> = {
   achievement: "تصفير نقاط الإنجاز",
   reward: "تصفير نقاط المكافآت",
   allPoints: "تصفير الإنجاز والمكافآت",
+  tasks: "تصفير جميع المهام",
   goals: "حذف جميع الأهداف",
   quran: "حذف برنامج حفظ القرآن"
 };
@@ -36,13 +37,42 @@ export default function ChildRestartControls({
 }: ChildRestartControlsProps) {
   const [confirming, setConfirming] = useState<RestartAction | null>(null);
   const [busy, setBusy] = useState<RestartAction | null>(null);
+  const [taskCount, setTaskCount] = useState(0);
+  const [loadingTasks, setLoadingTasks] = useState(true);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadTaskCount() {
+      const client = supabase;
+      if (!client) {
+        setLoadingTasks(false);
+        return;
+      }
+
+      const result = await client
+        .from("tasks")
+        .select("id", { count: "exact", head: true })
+        .eq("student_id", studentId);
+
+      if (cancelled) return;
+      setTaskCount(result.count || 0);
+      setLoadingTasks(false);
+    }
+
+    void loadTaskCount();
+    return () => {
+      cancelled = true;
+    };
+  }, [studentId]);
 
   const disabled: Record<RestartAction, boolean> = {
     achievement: achievementPoints <= 0,
     reward: rewardPoints <= 0,
     allPoints: achievementPoints <= 0 && rewardPoints <= 0,
+    tasks: loadingTasks || taskCount <= 0,
     goals: goalCount <= 0,
     quran: quranPlanCount <= 0
   };
@@ -66,9 +96,11 @@ export default function ChildRestartControls({
         ? "parent_zero_student_reward_points"
         : action === "allPoints"
           ? "parent_zero_student_points"
-          : action === "goals"
-            ? "parent_delete_all_student_goals"
-            : "reset_student_quran_program_shared";
+          : action === "tasks"
+            ? "parent_zero_student_tasks"
+            : action === "goals"
+              ? "parent_delete_all_student_goals"
+              : "reset_student_quran_program_shared";
 
     const result = await client.rpc(rpcName, { p_student_id: studentId });
     setBusy(null);
@@ -85,6 +117,10 @@ export default function ChildRestartControls({
       setMessage(`تم تصفير نقاط مكافآت ${studentName} مع إبقاء نقاط الإنجاز وسجل العمليات.`);
     } else if (action === "allPoints") {
       setMessage(`تم تصفير نقاط الإنجاز والمكافآت الخاصة بـ ${studentName} مع الاحتفاظ بسجل العمليات السابق.`);
+    } else if (action === "tasks") {
+      const deletedTasks = Number(data.deleted_tasks || taskCount);
+      setTaskCount(0);
+      setMessage(`تم تصفير ${deletedTasks} من مهام ${studentName} وإشعاراتها، مع إبقاء الأهداف والنقاط وبرامج الحفظ.`);
     } else if (action === "goals") {
       setMessage(`تم حذف ${Number(data.deleted_goals || goalCount)} من الأهداف والمهام المرتبطة بها، ويمكن البدء من جديد.`);
     } else {
@@ -104,6 +140,9 @@ export default function ChildRestartControls({
     }
     if (action === "allPoints") {
       return `سيصبح رصيد الإنجاز والمكافآت لدى ${studentName} صفرًا، مع الاحتفاظ بتاريخ جميع العمليات السابقة.`;
+    }
+    if (action === "tasks") {
+      return `سيتم حذف جميع مهام ${studentName} وعددها ${taskCount} مهمة، بما فيها المهام القرآنية الموجودة في صفحة المهام، مع حذف إشعاراتها. ستبقى الأهداف والنقاط السابقة وبرامج الحفظ والهدايا محفوظة.`;
     }
     if (action === "goals") {
       return `سيتم حذف جميع أهداف ${studentName} والمهام المرتبطة بها نهائيًا. لن يُحذف برنامج حفظ القرآن.`;
@@ -140,7 +179,7 @@ export default function ChildRestartControls({
         <div>
           <span className="section-label">إدارة الأرصدة والبداية الجديدة</span>
           <h2>التحكم في بيانات {studentName}</h2>
-          <p>يمكن تصفير الإنجاز أو المكافآت كلٌ على حدة، مع حفظ سجل النقاط السابق وعدم التأثير في الأهداف والمهام.</p>
+          <p>كل عملية مستقلة؛ يمكن تصفير النقاط أو المهام دون التأثير في بقية بيانات الطفل.</p>
         </div>
         <span className="restart-lock-badge">🔒 لولي الأمر فقط</span>
       </div>
@@ -180,6 +219,17 @@ export default function ChildRestartControls({
           </div>
           {confirming === "allPoints" && <div className="restart-confirmation-note">{confirmationText("allPoints")}</div>}
           {actionButton("allPoints", actionLabels.allPoints)}
+        </article>
+
+        <article className="restart-action-card warning">
+          <span className="restart-action-icon">✅</span>
+          <div>
+            <h3>جميع المهام</h3>
+            <strong>{loadingTasks ? "جارٍ العد..." : `${taskCount} مهمة`}</strong>
+            <p>حذف جميع المهام وإشعاراتها، مع إبقاء الأهداف والنقاط والهدايا وبرامج الحفظ كما هي.</p>
+          </div>
+          {confirming === "tasks" && <div className="restart-confirmation-note">{confirmationText("tasks")}</div>}
+          {actionButton("tasks", actionLabels.tasks)}
         </article>
 
         <article className="restart-action-card warning">
