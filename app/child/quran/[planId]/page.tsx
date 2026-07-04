@@ -31,6 +31,7 @@ export default function ChildMemorizationProgramPage() {
     religious_content: [],
   });
   const [segmentContent, setSegmentContent] = useState<Record<string, SegmentContent>>({});
+  const [failedSegmentIds, setFailedSegmentIds] = useState<Record<string, boolean>>({});
   const [loadingSegmentId, setLoadingSegmentId] = useState("");
   const [loading, setLoading] = useState(true);
   const [busyId, setBusyId] = useState("");
@@ -123,23 +124,30 @@ export default function ChildMemorizationProgramPage() {
 
   useEffect(() => {
     const segmentId = activeSegmentBase?.id;
-    if (!segmentId || group?.plan.content_kind === "matn" || segmentContent[segmentId]) return;
+    if (
+      !segmentId ||
+      group?.plan.content_kind === "matn" ||
+      segmentContent[segmentId] ||
+      failedSegmentIds[segmentId]
+    ) return;
 
     let cancelled = false;
-    async function loadSegmentContent() {
+
+    async function loadSegmentContent(targetSegmentId: string) {
       const client = supabase;
       const token = localStorage.getItem("namaa_child_token");
       if (!client || !token) return;
 
-      setLoadingSegmentId(segmentId);
+      setLoadingSegmentId(targetSegmentId);
       const result = await client.rpc("get_child_quran_segment_content", {
         p_session_token: token,
-        p_segment_id: segmentId,
+        p_segment_id: targetSegmentId,
       });
       if (cancelled) return;
       setLoadingSegmentId("");
 
       if (result.error || !result.data) {
+        setFailedSegmentIds((current) => ({ ...current, [targetSegmentId]: true }));
         setError("تعذر تحميل نص المقطع. حاول فتحه مرة أخرى.");
         return;
       }
@@ -154,11 +162,11 @@ export default function ChildMemorizationProgramPage() {
       }));
     }
 
-    void loadSegmentContent();
+    void loadSegmentContent(segmentId);
     return () => {
       cancelled = true;
     };
-  }, [activeSegmentBase?.id, group?.plan.content_kind, segmentContent]);
+  }, [activeSegmentBase?.id, failedSegmentIds, group?.plan.content_kind, segmentContent]);
 
   async function markMemorized(segmentId: string) {
     const client = supabase;
@@ -184,6 +192,7 @@ export default function ChildMemorizationProgramPage() {
     if (recordingSegmentId) return;
     setSelectedSegmentId(segmentId);
     setMatnMode("current");
+    setError("");
     window.requestAnimationFrame(() =>
       focusRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }),
     );
@@ -206,6 +215,14 @@ export default function ChildMemorizationProgramPage() {
       </main>
     );
   }
+
+  const segmentTextLoading = Boolean(
+    activeSegmentBase &&
+    group.plan.content_kind !== "matn" &&
+    !segmentContent[activeSegmentBase.id] &&
+    !failedSegmentIds[activeSegmentBase.id] &&
+    (loadingSegmentId === activeSegmentBase.id || !loadingSegmentId),
+  );
 
   return (
     <main className="child-quran-page child-quran-focus-page child-program-detail-page">
@@ -239,7 +256,7 @@ export default function ChildMemorizationProgramPage() {
         isOpen
         standalone
         activeSegment={activeSegment}
-        segmentTextLoading={Boolean(activeSegmentBase && loadingSegmentId === activeSegmentBase.id)}
+        segmentTextLoading={segmentTextLoading}
         content={content}
         matnMode={matnMode}
         selectedChapterId={selectedChapterId || content?.chapters[0]?.id || ""}
