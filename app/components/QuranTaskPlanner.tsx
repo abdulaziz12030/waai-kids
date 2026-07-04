@@ -13,14 +13,20 @@ type Surah = {
 type QuranMode = "recitation" | "memorization";
 type SplitMode = "single" | "days" | "parts" | "ayahs";
 
+type QuranTaskPlannerProps = {
+  studentId: string;
+  embedded?: boolean;
+  initiallyOpen?: boolean;
+};
+
 function localDateIso() {
   const now = new Date();
   const offset = now.getTimezoneOffset();
   return new Date(now.getTime() - offset * 60_000).toISOString().slice(0, 10);
 }
 
-export default function QuranTaskPlanner({ studentId }: { studentId: string }) {
-  const [open, setOpen] = useState(false);
+export default function QuranTaskPlanner({ studentId, embedded = false, initiallyOpen = false }: QuranTaskPlannerProps) {
+  const [open, setOpen] = useState(initiallyOpen || embedded);
   const [surahs, setSurahs] = useState<Surah[]>([]);
   const [mode, setMode] = useState<QuranMode>("recitation");
   const [surahNumber, setSurahNumber] = useState("1");
@@ -111,20 +117,22 @@ export default function QuranTaskPlanner({ studentId }: { studentId: string }) {
   }
 
   return (
-    <section className={styles.panel}>
-      <div className={styles.head}>
-        <div>
-          <span>مهمة قرآنية مجزأة</span>
-          <h2>تلاوة أو حفظ مقسّم إلى آيات وأجزاء</h2>
-          <p>اختر السورة والنطاق وطريقة التقسيم. يصل كل جزء للطفل بآياته مكتوبة، ولا يفتح الجزء التالي حتى يعتمد ولي الأمر الجزء السابق.</p>
+    <section className={embedded ? "" : styles.panel}>
+      {!embedded && (
+        <div className={styles.head}>
+          <div>
+            <span>مهمة قرآنية مجزأة</span>
+            <h2>تلاوة أو حفظ مقسّم إلى آيات وأجزاء</h2>
+            <p>اختر السورة والنطاق وطريقة التقسيم. يصل كل جزء للطفل بآياته مكتوبة، ولا يفتح الجزء التالي حتى يعتمد ولي الأمر الجزء السابق.</p>
+          </div>
+          <button className={styles.toggle} type="button" onClick={() => setOpen((current) => !current)}>
+            {open ? "إغلاق" : "+ إضافة مهمة قرآنية"}
+          </button>
         </div>
-        <button className={styles.toggle} type="button" onClick={() => setOpen((current) => !current)}>
-          {open ? "إغلاق" : "+ إضافة مهمة قرآنية"}
-        </button>
-      </div>
+      )}
 
-      {open && (
-        <form className={styles.form} onSubmit={submit}>
+      {(embedded || open) && (
+        <form className={embedded ? "" : styles.form} onSubmit={submit}>
           <div className={styles.modeSwitch} role="group" aria-label="نوع المهمة القرآنية">
             <button className={mode === "recitation" ? styles.active : ""} type="button" onClick={() => setMode("recitation")}>📖 تلاوة</button>
             <button className={mode === "memorization" ? styles.active : ""} type="button" onClick={() => setMode("memorization")}>🧠 حفظ</button>
