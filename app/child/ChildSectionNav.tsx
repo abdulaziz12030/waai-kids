@@ -4,12 +4,13 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 
-type ChildSection = "home" | "tasks" | "quran" | "progress" | "goals" | "gifts" | "notifications";
+type ChildSection = "home" | "tasks" | "quran" | "multiplication" | "progress" | "goals" | "gifts" | "notifications";
 
 const dashboardSections: ChildSection[] = ["home", "tasks", "progress", "goals"];
 
 function routeSection(pathname: string): ChildSection {
   if (pathname.startsWith("/child/quran")) return "quran";
+  if (pathname.startsWith("/child/multiplication")) return "multiplication";
   if (pathname.startsWith("/child/gifts")) return "gifts";
   if (pathname.startsWith("/child/notifications")) return "notifications";
   return "home";
@@ -122,6 +123,9 @@ export default function ChildSectionNav() {
         </button>
         <Link className={itemClass("quran")} href="/child/quran">
           <span>📖</span><small>حفظي</small>
+        </Link>
+        <Link className={itemClass("multiplication")} href="/child/multiplication">
+          <span>✖️</span><small>جدول الضرب</small>
         </Link>
         <button className={itemClass("progress")} type="button" onClick={() => openDashboardSection("progress")}>
           <span>🚀</span><small>تقدمي</small>
