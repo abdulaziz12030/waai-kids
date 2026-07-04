@@ -17,6 +17,7 @@ type Props = {
   isOpen: boolean;
   standalone?: boolean;
   activeSegment: QuranSegment | null;
+  segmentTextLoading?: boolean;
   content: ReligiousContent | null;
   matnMode: MatnViewMode;
   selectedChapterId: string;
@@ -194,6 +195,7 @@ export default function MemorizationProgramCard(props: Props) {
                     group={group}
                     segment={selected}
                     verses={[]}
+                    textLoading={Boolean(props.segmentTextLoading)}
                     recordingSegmentId={props.recordingSegmentId}
                     busyId={props.busyId}
                     today={today}
