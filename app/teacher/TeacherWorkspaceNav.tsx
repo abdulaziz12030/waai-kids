@@ -23,6 +23,12 @@ export default function TeacherWorkspaceNav({ studentId }: TeacherWorkspaceNavPr
       active: pathname.startsWith("/teacher/students/")
     },
     {
+      href: "/teacher/multiplication",
+      icon: "✖️",
+      label: "جدول الضرب",
+      active: pathname === "/teacher/multiplication"
+    },
+    {
       href: "/teacher/quran/reviews",
       icon: "🎙️",
       label: "مركز التسميع",
