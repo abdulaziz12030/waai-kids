@@ -2,10 +2,8 @@
 
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import ChildGoals from "../../../components/ChildGoals";
 import GoalDeletionManager from "../../../components/GoalDeletionManager";
-import GoalQuranFormBridge from "../../../components/GoalQuranFormBridge";
-import GoalQuranTaskPlanner from "../../../components/GoalQuranTaskPlanner";
+import ParentGoalWorkspace from "../../../components/ParentGoalWorkspace";
 
 export default function ChildGoalsPage() {
   const params = useParams<{ id: string }>();
@@ -21,10 +19,8 @@ export default function ChildGoalsPage() {
         <Link className="quiet-button link-submit" href={`/children/${studentId}`}>ملف الطفل</Link>
       </header>
 
-      <GoalQuranFormBridge />
-      <GoalQuranTaskPlanner studentId={studentId} />
       <GoalDeletionManager studentId={studentId} />
-      <ChildGoals studentId={studentId} />
+      <ParentGoalWorkspace studentId={studentId} />
     </main>
   );
 }
