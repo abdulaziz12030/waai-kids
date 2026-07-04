@@ -102,7 +102,7 @@ export default function ChildMultiplicationGamePage() {
   }
 
   async function startChallenge() {
-    if (!supabase || !program || !selectedStage || selectedStage.status === "locked") return;
+    if (!supabase || !program || !selectedStage || selectedStage.status !== "available") return;
     const token = childToken();
     if (!token) return;
     setBusy(true);
@@ -186,7 +186,7 @@ export default function ChildMultiplicationGamePage() {
               <div className={styles.studyCard}>
                 <div className={styles.studyGrid}>{Array.from({ length: 10 }, (_, index) => index + 1).map((multiplier) => <div className={styles.studyEquation} key={multiplier}><span>{selectedTable} × {multiplier}</span><strong>{selectedTable * multiplier}</strong></div>)}</div>
                 {selectedStage?.best_score ? <p className={styles.successMessage}>أفضل نتيجة سابقة: {selectedStage.best_score}٪</p> : null}
-                <div className={styles.studyActions}><button className={styles.primaryButton} type="button" disabled={busy || selectedStage?.status === "locked"} onClick={() => void startChallenge()}>{busy ? "جارٍ تجهيز التحدي..." : selectedStage?.status === "completed" ? "تدريب مرأخرى" : "أنا مستعد للتحدي"}</button></div>
+                <div className={styles.studyActions}><button className={styles.primaryButton} type="button" disabled={busy || selectedStage?.status !== "available"} onClick={() => void startChallenge()}>{busy ? "جارٍ تجهيز التحدي..." : selectedStage?.status === "completed" ? "تم إتقان هذه المرحلة" : "أنا مستعد للتحدي"}</button></div>
               </div>
             )}
 
@@ -199,7 +199,7 @@ export default function ChildMultiplicationGamePage() {
             )}
 
             {mode === "result" && result && (
-              <div className={styles.resultCard}><span>{result.stage_passed ? "🎉" : "💪"}</span><h2>{result.stage_passed ? `أتقنت جدول ${selectedTable}` : "اقتربت من الإتقان"}</h2><div className={styles.scoreCircle}>{result.score}٪</div><p>{result.stage_passed ? "رائع! فُتحت لك المرحلة التالية." : `راجع البطاقة ثم حاول مجددًا. المطلوب ${program.pass_percentage}٪.`}</p><div className={styles.resultActions}>{result.stage_passed && result.next_table ? <button className={styles.primaryButton} type="button" onClick={() => { setSelectedTable(result.next_table as number); setResult(null); setMode("study"); }}>الانتقال إلى جدول {result.next_table}</button> : <button className={styles.primaryButton} type="button" onClick={() => { setResult(null); setMode("study"); }}>مراجعة البطاقة والمحاولة</button>}<Link className={styles.secondaryButton} href="/child/multiplication">حفظ والخروج</Link></div></div>
+              <div className={styles.resultCard}><span>{result.stage_passed ? "🎉" : "💪"}</span><h2>{result.stage_passed ? `أتقنت جدول ${round?.table_number || selectedTable}` : "اقتربت من الإتقان"}</h2><div className={styles.scoreCircle}>{result.score}٪</div><p>{result.stage_passed ? "رائع! فُتحت لك المرحلة التالية." : `راجع البطاقة ثم حاول مجددًا. المطلوب ${program.pass_percentage}٪.`}</p><div className={styles.resultActions}>{result.stage_passed && result.next_table ? <button className={styles.primaryButton} type="button" onClick={() => { setSelectedTable(result.next_table as number); setResult(null); setMode("study"); }}>الانتقال إلى جدول {result.next_table}</button> : <button className={styles.primaryButton} type="button" onClick={() => { setResult(null); setMode("study"); }}>مراجعة البطاقة والمحاولة</button>}<Link className={styles.secondaryButton} href="/child/multiplication">حفظ والخروج</Link></div></div>
             )}
           </>
         )}
