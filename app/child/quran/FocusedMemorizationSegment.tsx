@@ -9,6 +9,7 @@ type Props = {
   group: PlanGroup;
   segment: QuranSegment;
   verses: MatnVerse[];
+  textLoading?: boolean;
   recordingSegmentId: string;
   busyId: string;
   onRecordingChange: (segmentId: string, isRecording: boolean) => void;
@@ -23,6 +24,7 @@ export default function FocusedMemorizationSegment({
   group,
   segment,
   verses,
+  textLoading = false,
   recordingSegmentId,
   busyId,
   onRecordingChange,
@@ -87,7 +89,11 @@ export default function FocusedMemorizationSegment({
         ) : isMatn ? (
           <MatnTextDisplay verses={verses} title={segment.chapter_title || undefined} />
         ) : (
-          <QuranTextDisplay uthmaniText={segment.uthmani_text} readableText={segment.readable_text} />
+          <QuranTextDisplay
+            uthmaniText={segment.uthmani_text}
+            readableText={segment.readable_text}
+            loading={textLoading}
+          />
         )}
 
         {segment.notes && (
