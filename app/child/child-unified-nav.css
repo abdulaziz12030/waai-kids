@@ -4,6 +4,14 @@
   display: none !important;
 }
 
+/* جدول الضرب يظهر داخل مهامي فقط، ولا يظهر في أي شريط تنقل للطفل. */
+.child-section-nav a[href^="/child/multiplication"],
+.child-section-nav button[data-href^="/child/multiplication"],
+.child-bottom-nav a[href^="/child/multiplication"],
+.child-bottom-nav-v3 a[href^="/child/multiplication"] {
+  display: none !important;
+}
+
 .child-unified-nav-spacer {
   width: 100%;
   height: calc(92px + env(safe-area-inset-bottom));
