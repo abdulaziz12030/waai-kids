@@ -1,0 +1,105 @@
+.child-task-card[data-multiplication-task="true"] {
+  border-color: rgba(210, 168, 55, 0.72);
+  box-shadow: 0 16px 38px rgba(58, 73, 63, 0.08);
+}
+
+.child-task-card[data-multiplication-task="true"] .task-round-icon {
+  background: linear-gradient(145deg, #7645a8, #4f257c);
+  color: #fff;
+}
+
+.multiplication-task-inline {
+  display: grid;
+  gap: 12px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(29, 96, 59, 0.12);
+}
+
+.multiplication-task-progress-head,
+.multiplication-task-stats {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.multiplication-task-progress-head strong {
+  color: #174f31;
+  font-size: 0.98rem;
+}
+
+.multiplication-task-progress-head span {
+  color: #174f31;
+  font-weight: 800;
+}
+
+.multiplication-task-progress {
+  height: 11px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #e8ece9;
+}
+
+.multiplication-task-progress span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #247a47, #d4aa38);
+  transition: width 0.35s ease;
+}
+
+.multiplication-task-stats {
+  color: #667068;
+  font-size: 0.86rem;
+}
+
+.multiplication-task-lock,
+.multiplication-task-complete {
+  padding: 12px 14px;
+  border-radius: 14px;
+  font-weight: 700;
+  line-height: 1.7;
+}
+
+.multiplication-task-lock {
+  color: #6d5717;
+  background: #fff8dc;
+  border: 1px solid #f0dfa0;
+}
+
+.multiplication-task-complete {
+  color: #155936;
+  background: #ecf8f0;
+  border: 1px solid #bfe2cb;
+}
+
+.multiplication-task-start {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 50px;
+  padding: 12px 18px;
+  border-radius: 15px;
+  background: linear-gradient(135deg, #16713b, #0f5c31);
+  color: #fff;
+  font-weight: 800;
+  text-decoration: none;
+  box-shadow: 0 10px 22px rgba(15, 92, 49, 0.18);
+}
+
+.multiplication-task-start:hover {
+  transform: translateY(-1px);
+}
+
+@media (max-width: 640px) {
+  .multiplication-task-progress-head,
+  .multiplication-task-stats {
+    align-items: flex-start;
+  }
+
+  .multiplication-task-stats {
+    flex-direction: column;
+    gap: 4px;
+  }
+}
