@@ -6,6 +6,7 @@ import { supabase } from "../../lib/supabase";
 type Program = {
   id: string;
   task_id: string;
+  task_status?: string | null;
   from_table: number;
   to_table: number;
   status: "active" | "completed";
@@ -56,6 +57,7 @@ export default function MultiplicationTaskEnhancer() {
 
         const progress = progressPercent(program);
         const completed = program.status === "completed";
+        const submitted = program.task_status === "submitted" || program.task_status === "approved";
         panel.innerHTML = `
           <div class="multiplication-task-progress-head">
             <strong>${completed ? "اكتملت المغامرة" : `التقدم العام · جدول ${program.current_table}`}</strong>
@@ -67,10 +69,10 @@ export default function MultiplicationTaskEnhancer() {
             <span>من جدول ${program.from_table} إلى ${program.to_table}</span>
           </div>
           ${completed
-            ? '<div class="multiplication-task-complete">🏆 أحسنت! تم اعتماد المهمة تلقائيًا بعد إنهاء جميع الجداول.</div>'
-            : '<div class="multiplication-task-lock">🔒 لا يمكن إتمام المهمة يدويًا؛ تُعتمد تلقائيًا بعد إنهاء كامل الجدول.</div>'}
+            ? `<div class="multiplication-task-complete">🏆 انتهى التحدي. ${submitted ? "تم إرسال الإنجاز لولي الأمر." : "افتح صفحة التحدي واضغط إنجاز المهمة لإرسالها لولي الأمر."}</div>`
+            : '<div class="multiplication-task-lock">🔒 لا يمكن إنجاز هذه المهمة إلا بعد إنهاء كامل تحدي جدول الضرب.</div>'}
           <a class="multiplication-task-start" href="/child/multiplication/${program.id}">
-            ${completed ? "عرض الإنجاز" : program.completed_tables > 0 ? "متابعة التحدي" : "ابدأ التحدي"}
+            ${completed ? submitted ? "عرض الإنجاز" : "إرسال الإنجاز" : program.completed_tables > 0 ? "متابعة التحدي" : "ابدأ التحدي"}
           </a>
         `;
       });
