@@ -34,6 +34,12 @@ function formatDate(value: string | null) {
   return new Intl.DateTimeFormat("ar-SA", { dateStyle: "medium" }).format(new Date(`${value}T12:00:00`));
 }
 
+function stageLabel(stage: Stage) {
+  if (stage.status === "completed") return "متقن";
+  if (stage.status === "available") return stage.attempts_count > 0 ? "قيد التدريب" : "المرحلة الحالية";
+  return "لم تُفتح بعد";
+}
+
 export default function MultiplicationAssignmentPanel({
   studentId,
   studentName,
@@ -43,8 +49,11 @@ export default function MultiplicationAssignmentPanel({
 }) {
   const [programs, setPrograms] = useState<Program[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [deletingId, setDeletingId] = useState("");
+  const [expandedId, setExpandedId] = useState("");
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [fromTable, setFromTable] = useState("1");
   const [toTable, setToTable] = useState("10");
@@ -56,19 +65,34 @@ export default function MultiplicationAssignmentPanel({
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
 
-  async function loadPrograms() {
+  async function loadPrograms(silent = false) {
     if (!supabase || !studentId) return;
-    setLoading(true);
+    if (silent) setRefreshing(true);
+    else setLoading(true);
     const result = await supabase.rpc("get_multiplication_programs_for_student", {
       p_student_id: studentId,
     });
     if (result.error) setError("تعذر تحميل برامج جدول الضرب الآن.");
-    else setPrograms((result.data || []) as Program[]);
+    else {
+      setPrograms((result.data || []) as Program[]);
+      setLastUpdated(new Date());
+      setError("");
+    }
     setLoading(false);
+    setRefreshing(false);
   }
 
   useEffect(() => {
     void loadPrograms();
+    const interval = window.setInterval(() => void loadPrograms(true), 15000);
+    const refreshOnVisible = () => {
+      if (document.visibilityState === "visible") void loadPrograms(true);
+    };
+    document.addEventListener("visibilitychange", refreshOnVisible);
+    return () => {
+      window.clearInterval(interval);
+      document.removeEventListener("visibilitychange", refreshOnVisible);
+    };
   }, [studentId]);
 
   const activePrograms = useMemo(() => programs.filter((program) => program.status === "active"), [programs]);
@@ -144,7 +168,6 @@ export default function MultiplicationAssignmentPanel({
             <div><span>إعداد الرحلة</span><h2>اختر الجداول ومستوى الإتقان</h2></div>
             <strong>{Number(toTable) - Number(fromTable) + 1} مراحل</strong>
           </div>
-
           <div className={styles.formGrid}>
             <label>من جدول<select value={fromTable} onChange={(event) => setFromTable(event.target.value)}>{Array.from({ length: 12 }, (_, index) => index + 1).map((value) => <option key={value} value={value}>{value}</option>)}</select></label>
             <label>إلى جدول<select value={toTable} onChange={(event) => setToTable(event.target.value)}>{Array.from({ length: 12 }, (_, index) => index + 1).map((value) => <option key={value} value={value}>{value}</option>)}</select></label>
@@ -154,19 +177,14 @@ export default function MultiplicationAssignmentPanel({
             <label>نقاط المكافآت<input type="number" min="0" value={rewardPoints} onChange={(event) => setRewardPoints(event.target.value)} /></label>
             <label className={styles.fullField}>موعد الإكمال<input type="date" value={dueDate} onChange={(event) => setDueDate(event.target.value)} /></label>
           </div>
-
-          <div className={styles.formSummary}>
-            <span>👀 بطاقة تعلّم قبل كل اختبار</span>
-            <span>🔐 فتح المراحل بالتتابع</span>
-            <span>🏆 تكريم بعد الإكمال الكامل</span>
-          </div>
+          <div className={styles.formSummary}><span>👀 بطاقة تعلّم قبل كل اختبار</span><span>🔐 فتح المراحل بالتتابع</span><span>🏆 تكريم بعد الإكمال الكامل</span></div>
           <button className={styles.primaryButton} disabled={saving} type="submit">{saving ? "جارٍ الإسناد..." : "إسناد المغامرة للطفل"}</button>
         </form>
       )}
 
       <div className={styles.programSectionHead}>
-        <div><span className={styles.eyebrow}>المتابعة</span><h2>البرامج المسندة</h2></div>
-        <strong>{activePrograms.length} نشطة</strong>
+        <div><span className={styles.eyebrow}>المتابعة الحية</span><h2>البرامج المسندة</h2><small className={styles.liveUpdate}>{refreshing ? "جارٍ تحديث التقدم..." : lastUpdated ? `آخر تحديث ${lastUpdated.toLocaleTimeString("ar-SA", { hour: "2-digit", minute: "2-digit" })}` : ""}</small></div>
+        <div className={styles.followActions}><button type="button" className={styles.refreshButton} disabled={refreshing} onClick={() => void loadPrograms(true)}>تحديث الآن</button><strong>{activePrograms.length} نشطة</strong></div>
       </div>
 
       {loading ? <div className={styles.emptyState}>جارٍ تحميل البرامج...</div> : programs.length === 0 ? (
@@ -176,16 +194,26 @@ export default function MultiplicationAssignmentPanel({
           {programs.map((program) => {
             const total = program.to_table - program.from_table + 1;
             const progress = Math.round((program.completed_tables / total) * 100);
+            const currentStage = program.stages.find((stage) => stage.status === "available") || program.stages.find((stage) => stage.table_number === program.current_table);
+            const totalAttempts = program.stages.reduce((sum, stage) => sum + stage.attempts_count, 0);
+            const isExpanded = expandedId === program.id;
             return (
               <article className={styles.programCard} key={program.id}>
                 <div className={styles.programCardHead}>
                   <div><span className={styles.programIcon}>{program.status === "completed" ? "🏆" : "✖️"}</span><div><h3>الجداول {program.from_table}–{program.to_table}</h3><p>{program.questions_per_stage} أسئلة · نجاح {program.pass_percentage}٪</p></div></div>
-                  <span className={program.status === "completed" ? styles.completedBadge : styles.activeBadge}>{program.status === "completed" ? "مكتمل" : `المرحلة ${program.current_table}`}</span>
+                  <span className={program.status === "completed" ? styles.completedBadge : styles.activeBadge}>{program.status === "completed" ? "مكتمل" : `وصل إلى جدول ${program.current_table}`}</span>
                 </div>
+
+                {program.status === "active" && <div className={styles.currentProgressCard}><span>📍 المرحلة الحالية</span><strong>جدول ضرب {program.current_table}</strong><small>{currentStage?.attempts_count ? `${currentStage.attempts_count} محاولات حتى الآن · أفضل نتيجة ${currentStage.best_score}٪` : "لم يبدأ اختبار هذه المرحلة بعد"}</small></div>}
+
                 <div className={styles.progressTrack}><span style={{ width: `${progress}%` }} /></div>
                 <div className={styles.progressCopy}><strong>{program.completed_tables} من {total} مراحل</strong><span>{progress}٪</span></div>
-                <div className={styles.stageStrip}>{program.stages.map((stage) => <span key={stage.table_number} className={stage.status === "completed" ? styles.stageDone : stage.status === "available" ? styles.stageCurrent : styles.stageLocked}>{stage.status === "completed" ? "✓" : stage.table_number}</span>)}</div>
-                <div className={styles.programMeta}><span>⭐ {program.achievement_points}</span><span>💎 {program.reward_points}</span><span>📅 {formatDate(program.due_date)}</span></div>
+                <div className={styles.stageStrip}>{program.stages.map((stage) => <span title={`جدول ${stage.table_number}: ${stageLabel(stage)}، ${stage.attempts_count} محاولات، أفضل نتيجة ${stage.best_score}٪`} key={stage.table_number} className={stage.status === "completed" ? styles.stageDone : stage.status === "available" ? styles.stageCurrent : styles.stageLocked}>{stage.status === "completed" ? "✓" : stage.table_number}</span>)}</div>
+                <div className={styles.programMeta}><span>🎯 {totalAttempts} محاولة</span><span>⭐ {program.achievement_points}</span><span>💎 {program.reward_points}</span><span>📅 {formatDate(program.due_date)}</span></div>
+
+                <button type="button" className={styles.detailsButton} aria-expanded={isExpanded} onClick={() => setExpandedId(isExpanded ? "" : program.id)}>{isExpanded ? "إخفاء تفاصيل المراحل" : "عرض تفاصيل تقدم الطفل"}</button>
+                {isExpanded && <div className={styles.stageDetails}>{program.stages.map((stage) => <div className={styles.stageDetailRow} key={stage.table_number} data-status={stage.status}><div><strong>جدول {stage.table_number}</strong><span>{stageLabel(stage)}</span></div><div><span>المحاولات <strong>{stage.attempts_count}</strong></span><span>أفضل نتيجة <strong>{stage.best_score}٪</strong></span></div></div>)}</div>}
+
                 {program.status === "active" && <button type="button" className={styles.deleteButton} disabled={deletingId === program.id} onClick={() => void deleteProgram(program)}>{deletingId === program.id ? "جارٍ الحذف..." : "حذف البرنامج"}</button>}
                 {program.status === "completed" && <p className={styles.recognitionNote}>أُضيفت النقاط وأصبح الإنجاز جاهزًا للتكريم والهدية.</p>}
               </article>
