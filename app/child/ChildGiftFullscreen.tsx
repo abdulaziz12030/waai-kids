@@ -12,6 +12,8 @@ export default function ChildGiftFullscreen({ gift, onEnded }: { gift: ChildGift
   const [childName, setChildName] = useState("بطل واعي كيدز");
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const soundStartedRef = useRef(false);
+  const unlockingRef = useRef(false);
+  const finishedRef = useRef(false);
   const finishTimerRef = useRef<number | null>(null);
   const config = useMemo(() => getGiftPreviewConfig(gift.gift), [gift]);
 
@@ -26,6 +28,9 @@ export default function ChildGiftFullscreen({ gift, onEnded }: { gift: ChildGift
 
     const video = videoRef.current;
     let disposed = false;
+    finishedRef.current = false;
+    soundStartedRef.current = false;
+    unlockingRef.current = false;
 
     const removeUnlockListeners = () => {
       window.removeEventListener("pointerdown", unlockFromGesture, true);
@@ -34,7 +39,7 @@ export default function ChildGiftFullscreen({ gift, onEnded }: { gift: ChildGift
     };
 
     const playWithFullSound = async (restart: boolean) => {
-      if (disposed) return false;
+      if (disposed || finishedRef.current) return false;
       video.pause();
       if (restart) video.currentTime = 0;
       video.volume = 1;
@@ -51,9 +56,11 @@ export default function ChildGiftFullscreen({ gift, onEnded }: { gift: ChildGift
     };
 
     function unlockFromGesture() {
-      if (soundStartedRef.current || disposed) return;
+      if (soundStartedRef.current || unlockingRef.current || finishedRef.current || disposed) return;
+      unlockingRef.current = true;
       void playWithFullSound(true).then((started) => {
-        if (started || disposed) return;
+        unlockingRef.current = false;
+        if (started || disposed || finishedRef.current) return;
         video.muted = true;
         void video.play().catch(() => undefined);
       });
@@ -67,8 +74,10 @@ export default function ChildGiftFullscreen({ gift, onEnded }: { gift: ChildGift
     window.addEventListener("touchend", unlockFromGesture, true);
     window.addEventListener("keydown", unlockFromGesture, true);
 
+    unlockingRef.current = true;
     void playWithFullSound(false).then((started) => {
-      if (started || disposed) return;
+      unlockingRef.current = false;
+      if (started || disposed || finishedRef.current) return;
 
       // بعض متصفحات الجوال تمنع الصوت التلقائي حتى أول لمسة. نبدأ العرض
       // دون إظهار أي زر، ثم تعيد أول لمسة طبيعية تشغيله من البداية بصوت كامل.
@@ -86,6 +95,7 @@ export default function ChildGiftFullscreen({ gift, onEnded }: { gift: ChildGift
   }, [mounted, config.videoUrl]);
 
   function handleVideoEnded() {
+    finishedRef.current = true;
     setFinished(true);
     finishTimerRef.current = window.setTimeout(onEnded, 6500);
   }
