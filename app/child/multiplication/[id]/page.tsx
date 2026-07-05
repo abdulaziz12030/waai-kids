@@ -75,19 +75,19 @@ function playFeedbackTone(context: AudioContext | null, isCorrect: boolean) {
   if (!context || context.state !== "running") return;
 
   try {
-    const startAt = context.currentTime + 0.015;
+    const startAt = context.currentTime + 0.01;
     if (isCorrect) {
       [523.25, 659.25, 783.99, 1046.5].forEach((frequency, index) => {
-        playNote(context, frequency, startAt + index * 0.085, 0.18, 0.14, "triangle");
+        playNote(context, frequency, startAt + index * 0.08, 0.19, 0.2, "triangle");
       });
       return;
     }
 
     [220, 174.61].forEach((frequency, index) => {
-      playNote(context, frequency, startAt + index * 0.12, 0.22, 0.09, "sine");
+      playNote(context, frequency, startAt + index * 0.12, 0.24, 0.14, "sine");
     });
   } catch {
-    // يتعذر الصوت فقط في المتصفحات التي لا تدعم Web Audio، دون تعطيل التحدي.
+    // لا يتوقف التحدي إذا كان المتصفح لا يدعم Web Audio.
   }
 }
 
@@ -123,30 +123,31 @@ export default function ChildMultiplicationGamePage() {
     return audioContextRef.current;
   }
 
-  async function unlockAudio() {
+  function prepareAudio() {
     const context = getAudioContext();
-    if (!context) return null;
+    if (!context || context.state === "running") return context;
 
     try {
-      if (context.state === "suspended") await context.resume();
-      if (context.state === "running") {
-        const oscillator = context.createOscillator();
-        const gain = context.createGain();
-        gain.gain.setValueAtTime(0.0001, context.currentTime);
-        oscillator.connect(gain);
-        gain.connect(context.destination);
-        oscillator.start(context.currentTime);
-        oscillator.stop(context.currentTime + 0.02);
-        oscillator.addEventListener("ended", () => {
-          oscillator.disconnect();
-          gain.disconnect();
-        }, { once: true });
-      }
+      void context.resume();
     } catch {
       return context;
     }
 
     return context;
+  }
+
+  function playImmediateFeedback(isCorrect: boolean) {
+    const context = prepareAudio();
+    if (!context) return;
+
+    if (context.state === "running") {
+      playFeedbackTone(context, isCorrect);
+      return;
+    }
+
+    void context.resume()
+      .then(() => playFeedbackTone(context, isCorrect))
+      .catch(() => undefined);
   }
 
   async function loadProgram(preferredTable?: number) {
@@ -203,7 +204,7 @@ export default function ChildMultiplicationGamePage() {
 
   async function startChallenge() {
     if (!supabase || !program || !selectedStage || selectedStage.status !== "available") return;
-    await unlockAudio();
+    prepareAudio();
     const token = childToken();
     if (!token) return;
     setBusy(true);
@@ -229,7 +230,10 @@ export default function ChildMultiplicationGamePage() {
 
   async function answer(value: number) {
     if (!supabase || !question || busy) return;
-    await unlockAudio();
+
+    const expectedAnswer = question.table_number * question.multiplier;
+    playImmediateFeedback(value === expectedAnswer);
+
     const token = childToken();
     if (!token) return;
     setBusy(true);
@@ -247,7 +251,6 @@ export default function ChildMultiplicationGamePage() {
     const nextResult = response.data as AnswerResult;
     setFeedback({ correct: nextResult.is_correct, answer: nextResult.correct_answer });
     setResult(nextResult);
-    playFeedbackTone(audioContextRef.current, nextResult.is_correct);
     window.setTimeout(async () => {
       setFeedback(null);
       setSelectedAnswer(null);
@@ -346,13 +349,13 @@ export default function ChildMultiplicationGamePage() {
               <div className={styles.studyCard}>
                 <div className={styles.studyGrid}>{Array.from({ length: 10 }, (_, index) => index + 1).map((multiplier) => <div className={styles.studyEquation} key={multiplier}><span>{selectedTable} × {multiplier}</span><strong>{selectedTable * multiplier}</strong></div>)}</div>
                 {selectedStage?.best_score ? <p className={styles.successMessage}>أفضل نتيجة سابقة: {selectedStage.best_score}٪</p> : null}
-                <div className={styles.studyActions}><button className={styles.primaryButton} type="button" disabled={busy || selectedStage?.status !== "available"} onClick={() => void startChallenge()}>{busy ? "جارٍ تجهيز التحدي..." : selectedStage?.status === "completed" ? "تم إتقان هذه المرحلة" : "أنا مستعد للتحدي"}</button></div>
+                <div className={styles.studyActions}><button className={styles.primaryButton} type="button" disabled={busy || selectedStage?.status !== "available"} onPointerDown={prepareAudio} onClick={() => void startChallenge()}>{busy ? "جارٍ تجهيز التحدي..." : selectedStage?.status === "completed" ? "تم إتقان هذه المرحلة" : "أنا مستعد للتحدي"}</button></div>
               </div>
             )}
             {mode === "question" && question && (
               <>
                 <div className={styles.roundStats}><span>السؤال {answered + 1} من {question.question_limit}</span><span>إجابات صحيحة: {correct}</span></div>
-                <div className={styles.questionCard}><small>اختر الإجابة الصحيحة</small><div className={styles.questionEquation}>{question.table_number} × {question.multiplier} = ؟</div><div className={styles.answersGrid}>{question.options.map((option) => <button className={answerClass(option)} type="button" disabled={busy} key={option} onClick={() => void answer(option)}>{option}</button>)}</div></div>
+                <div className={styles.questionCard}><small>اختر الإجابة الصحيحة</small><div className={styles.questionEquation}>{question.table_number} × {question.multiplier} = ؟</div><div className={styles.answersGrid}>{question.options.map((option) => <button className={answerClass(option)} type="button" disabled={busy} key={option} onPointerDown={prepareAudio} onClick={() => void answer(option)}>{option}</button>)}</div></div>
                 {feedback && <div className={feedback.correct ? styles.feedbackCorrect : styles.feedbackWrong}>{feedback.correct ? "أحسنت! إجابة صحيحة ⭐" : `محاولة جميلة، الإجابة الصحيحة هي ${feedback.answer}`}</div>}
               </>
             )}
