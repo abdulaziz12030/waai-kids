@@ -74,6 +74,116 @@
   border: 1px solid #bfe2cb;
 }
 
+.multiplication-task-report {
+  overflow: hidden;
+  border: 1px solid rgba(30, 101, 62, 0.14);
+  border-radius: 18px;
+  background: #fbfdfb;
+}
+
+.multiplication-task-report summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px;
+  cursor: pointer;
+  list-style: none;
+  color: #244a32;
+  font-weight: 900;
+}
+
+.multiplication-task-report summary::-webkit-details-marker {
+  display: none;
+}
+
+.multiplication-task-report summary strong {
+  color: #18703d;
+  font-size: 1.1rem;
+}
+
+.multiplication-task-report-body {
+  display: grid;
+  gap: 14px;
+  padding: 0 16px 16px;
+}
+
+.multiplication-task-report-summary {
+  display: grid;
+  gap: 4px;
+  padding: 14px;
+  border-radius: 15px;
+  background: #eef8f1;
+  text-align: center;
+}
+
+.multiplication-task-report-summary strong {
+  color: #16683a;
+  font-size: 1.8rem;
+}
+
+.multiplication-task-report-summary small {
+  color: #6b756e;
+}
+
+.multiplication-table-results {
+  display: grid;
+  gap: 10px;
+}
+
+.multiplication-table-result {
+  display: grid;
+  grid-template-columns: 70px minmax(0, 1fr) 48px 70px;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.86rem;
+}
+
+.multiplication-table-result > div {
+  height: 8px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #e8ece9;
+}
+
+.multiplication-table-result i {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+}
+
+.multiplication-table-result.strong i { background: #239052; }
+.multiplication-table-result.medium i { background: #e0a51b; }
+.multiplication-table-result.weak i { background: #d8463d; }
+.multiplication-table-result.strong strong { color: #17733e; }
+.multiplication-table-result.medium strong { color: #9a6d08; }
+.multiplication-table-result.weak strong { color: #b6332b; }
+.multiplication-table-result small { color: #707a73; text-align: left; }
+
+.multiplication-weak-tables {
+  display: grid;
+  gap: 9px;
+  padding: 14px;
+  border-radius: 15px;
+  background: #fff8e8;
+  border: 1px solid #f0d99f;
+}
+
+.multiplication-weak-tables > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.multiplication-weak-tables span {
+  padding: 7px 10px;
+  border-radius: 999px;
+  background: #fff;
+  color: #855d0f;
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
 .multiplication-task-start {
   display: flex;
   align-items: center;
@@ -101,5 +211,13 @@
   .multiplication-task-stats {
     flex-direction: column;
     gap: 4px;
+  }
+
+  .multiplication-table-result {
+    grid-template-columns: 62px minmax(0, 1fr) 44px;
+  }
+
+  .multiplication-table-result small {
+    display: none;
   }
 }
