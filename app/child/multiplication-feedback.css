@@ -1,0 +1,33 @@
+.multiplication-answer-correct {
+  background: #e4f7ea !important;
+  border-color: #20914e !important;
+  color: #145c32 !important;
+  box-shadow: 0 0 0 4px rgba(32, 145, 78, 0.13), 0 12px 26px rgba(32, 145, 78, 0.16);
+  animation: multiplicationAnswerPop 0.35s ease;
+}
+
+.multiplication-answer-wrong {
+  background: #fff0ef !important;
+  border-color: #d33b2f !important;
+  color: #9e2f27 !important;
+  box-shadow: 0 0 0 4px rgba(211, 59, 47, 0.11);
+  animation: multiplicationAnswerShake 0.34s ease;
+}
+
+.multiplication-answer-muted {
+  opacity: 0.42 !important;
+  filter: grayscale(0.25);
+}
+
+@keyframes multiplicationAnswerPop {
+  0% { transform: scale(0.96); }
+  70% { transform: scale(1.04); }
+  100% { transform: scale(1); }
+}
+
+@keyframes multiplicationAnswerShake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(6px); }
+  50% { transform: translateX(-6px); }
+  75% { transform: translateX(4px); }
+}
