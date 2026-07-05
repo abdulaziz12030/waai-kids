@@ -3,6 +3,7 @@
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import { supabase } from "../../lib/supabase";
 import styles from "./MultiplicationAdventure.module.css";
+import trackingStyles from "./MultiplicationTracking.module.css";
 
 type Stage = {
   table_number: number;
@@ -183,8 +184,8 @@ export default function MultiplicationAssignmentPanel({
       )}
 
       <div className={styles.programSectionHead}>
-        <div><span className={styles.eyebrow}>المتابعة الحية</span><h2>البرامج المسندة</h2><small className={styles.liveUpdate}>{refreshing ? "جارٍ تحديث التقدم..." : lastUpdated ? `آخر تحديث ${lastUpdated.toLocaleTimeString("ar-SA", { hour: "2-digit", minute: "2-digit" })}` : ""}</small></div>
-        <div className={styles.followActions}><button type="button" className={styles.refreshButton} disabled={refreshing} onClick={() => void loadPrograms(true)}>تحديث الآن</button><strong>{activePrograms.length} نشطة</strong></div>
+        <div><span className={styles.eyebrow}>المتابعة الحية</span><h2>البرامج المسندة</h2><small className={trackingStyles.liveUpdate}>{refreshing ? "جارٍ تحديث التقدم..." : lastUpdated ? `آخر تحديث ${lastUpdated.toLocaleTimeString("ar-SA", { hour: "2-digit", minute: "2-digit" })}` : ""}</small></div>
+        <div className={trackingStyles.followActions}><button type="button" className={trackingStyles.refreshButton} disabled={refreshing} onClick={() => void loadPrograms(true)}>تحديث الآن</button><strong>{activePrograms.length} نشطة</strong></div>
       </div>
 
       {loading ? <div className={styles.emptyState}>جارٍ تحميل البرامج...</div> : programs.length === 0 ? (
@@ -204,15 +205,15 @@ export default function MultiplicationAssignmentPanel({
                   <span className={program.status === "completed" ? styles.completedBadge : styles.activeBadge}>{program.status === "completed" ? "مكتمل" : `وصل إلى جدول ${program.current_table}`}</span>
                 </div>
 
-                {program.status === "active" && <div className={styles.currentProgressCard}><span>📍 المرحلة الحالية</span><strong>جدول ضرب {program.current_table}</strong><small>{currentStage?.attempts_count ? `${currentStage.attempts_count} محاولات حتى الآن · أفضل نتيجة ${currentStage.best_score}٪` : "لم يبدأ اختبار هذه المرحلة بعد"}</small></div>}
+                {program.status === "active" && <div className={trackingStyles.currentProgressCard}><span>📍 المرحلة الحالية</span><strong>جدول ضرب {program.current_table}</strong><small>{currentStage?.attempts_count ? `${currentStage.attempts_count} محاولات حتى الآن · أفضل نتيجة ${currentStage.best_score}٪` : "لم يبدأ اختبار هذه المرحلة بعد"}</small></div>}
 
                 <div className={styles.progressTrack}><span style={{ width: `${progress}%` }} /></div>
                 <div className={styles.progressCopy}><strong>{program.completed_tables} من {total} مراحل</strong><span>{progress}٪</span></div>
                 <div className={styles.stageStrip}>{program.stages.map((stage) => <span title={`جدول ${stage.table_number}: ${stageLabel(stage)}، ${stage.attempts_count} محاولات، أفضل نتيجة ${stage.best_score}٪`} key={stage.table_number} className={stage.status === "completed" ? styles.stageDone : stage.status === "available" ? styles.stageCurrent : styles.stageLocked}>{stage.status === "completed" ? "✓" : stage.table_number}</span>)}</div>
                 <div className={styles.programMeta}><span>🎯 {totalAttempts} محاولة</span><span>⭐ {program.achievement_points}</span><span>💎 {program.reward_points}</span><span>📅 {formatDate(program.due_date)}</span></div>
 
-                <button type="button" className={styles.detailsButton} aria-expanded={isExpanded} onClick={() => setExpandedId(isExpanded ? "" : program.id)}>{isExpanded ? "إخفاء تفاصيل المراحل" : "عرض تفاصيل تقدم الطفل"}</button>
-                {isExpanded && <div className={styles.stageDetails}>{program.stages.map((stage) => <div className={styles.stageDetailRow} key={stage.table_number} data-status={stage.status}><div><strong>جدول {stage.table_number}</strong><span>{stageLabel(stage)}</span></div><div><span>المحاولات <strong>{stage.attempts_count}</strong></span><span>أفضل نتيجة <strong>{stage.best_score}٪</strong></span></div></div>)}</div>}
+                <button type="button" className={trackingStyles.detailsButton} aria-expanded={isExpanded} onClick={() => setExpandedId(isExpanded ? "" : program.id)}>{isExpanded ? "إخفاء تفاصيل المراحل" : "عرض تفاصيل تقدم الطفل"}</button>
+                {isExpanded && <div className={trackingStyles.stageDetails}>{program.stages.map((stage) => <div className={trackingStyles.stageDetailRow} key={stage.table_number} data-status={stage.status}><div><strong>جدول {stage.table_number}</strong><span>{stageLabel(stage)}</span></div><div><span>المحاولات <strong>{stage.attempts_count}</strong></span><span>أفضل نتيجة <strong>{stage.best_score}٪</strong></span></div></div>)}</div>}
 
                 {program.status === "active" && <button type="button" className={styles.deleteButton} disabled={deletingId === program.id} onClick={() => void deleteProgram(program)}>{deletingId === program.id ? "جارٍ الحذف..." : "حذف البرنامج"}</button>}
                 {program.status === "completed" && <p className={styles.recognitionNote}>أُضيفت النقاط وأصبح الإنجاز جاهزًا للتكريم والهدية.</p>}
