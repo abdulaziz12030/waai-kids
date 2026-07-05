@@ -5,10 +5,12 @@ import "./child-unified-nav.css";
 import "./child-task-flow.css";
 import "./floating-goal-prompt.css";
 import "./child-header-actions.css";
+import "./multiplication-task-inline.css";
 import ChildExperienceLayer from "./ChildExperienceLayer";
 import ChildGiftAutoDisplay from "./ChildGiftAutoDisplay";
 import ChildSectionNav from "./ChildSectionNav";
 import FloatingGoalPrompt from "./FloatingGoalPrompt";
+import MultiplicationTaskEnhancer from "./MultiplicationTaskEnhancer";
 
 export default function ChildLayout({
   children,
@@ -21,6 +23,7 @@ export default function ChildLayout({
       <ChildExperienceLayer />
       <ChildGiftAutoDisplay />
       <FloatingGoalPrompt />
+      <MultiplicationTaskEnhancer />
       <ChildSectionNav />
     </>
   );
