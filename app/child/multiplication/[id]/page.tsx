@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { supabase } from "../../../../lib/supabase";
 import styles from "../../../components/MultiplicationAdventure.module.css";
@@ -41,33 +41,61 @@ type AnswerResult = {
   next_table: number | null;
 };
 type Mode = "study" | "question" | "result" | "complete";
+type AudioWindow = Window & { webkitAudioContext?: typeof AudioContext };
 
-function playFeedbackTone(isCorrect: boolean) {
-  if (typeof window === "undefined") return;
-  const AudioContextClass = window.AudioContext || (window as typeof window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
-  if (!AudioContextClass) return;
-  const context = new AudioContextClass();
+function playNote(
+  context: AudioContext,
+  frequency: number,
+  startAt: number,
+  duration: number,
+  volume: number,
+  oscillatorType: OscillatorType
+) {
+  const oscillator = context.createOscillator();
   const gain = context.createGain();
+
+  oscillator.type = oscillatorType;
+  oscillator.frequency.setValueAtTime(frequency, startAt);
+  gain.gain.setValueAtTime(0.0001, startAt);
+  gain.gain.exponentialRampToValueAtTime(volume, startAt + 0.018);
+  gain.gain.exponentialRampToValueAtTime(0.0001, startAt + duration);
+
+  oscillator.connect(gain);
   gain.connect(context.destination);
-  gain.gain.setValueAtTime(0.001, context.currentTime);
-  gain.gain.exponentialRampToValueAtTime(isCorrect ? 0.16 : 0.11, context.currentTime + 0.02);
-  gain.gain.exponentialRampToValueAtTime(0.001, context.currentTime + (isCorrect ? 0.45 : 0.32));
-  const notes = isCorrect ? [523.25, 659.25, 783.99] : [196, 164.81];
-  notes.forEach((frequency, index) => {
-    const oscillator = context.createOscillator();
-    oscillator.type = isCorrect ? "triangle" : "sawtooth";
-    oscillator.frequency.setValueAtTime(frequency, context.currentTime + index * 0.1);
-    oscillator.connect(gain);
-    oscillator.start(context.currentTime + index * 0.1);
-    oscillator.stop(context.currentTime + index * 0.1 + 0.14);
-  });
-  window.setTimeout(() => void context.close(), isCorrect ? 650 : 520);
+  oscillator.start(startAt);
+  oscillator.stop(startAt + duration + 0.02);
+
+  oscillator.addEventListener("ended", () => {
+    oscillator.disconnect();
+    gain.disconnect();
+  }, { once: true });
+}
+
+function playFeedbackTone(context: AudioContext | null, isCorrect: boolean) {
+  if (!context || context.state !== "running") return;
+
+  try {
+    const startAt = context.currentTime + 0.015;
+    if (isCorrect) {
+      [523.25, 659.25, 783.99, 1046.5].forEach((frequency, index) => {
+        playNote(context, frequency, startAt + index * 0.085, 0.18, 0.14, "triangle");
+      });
+      return;
+    }
+
+    [220, 174.61].forEach((frequency, index) => {
+      playNote(context, frequency, startAt + index * 0.12, 0.22, 0.09, "sine");
+    });
+  } catch {
+    // يتعذر الصوت فقط في المتصفحات التي لا تدعم Web Audio، دون تعطيل التحدي.
+  }
 }
 
 export default function ChildMultiplicationGamePage() {
   const params = useParams<{ id: string }>();
   const router = useRouter();
   const programId = params.id;
+  const audioContextRef = useRef<AudioContext | null>(null);
   const [program, setProgram] = useState<Program | null>(null);
   const [selectedTable, setSelectedTable] = useState(1);
   const [round, setRound] = useState<Round | null>(null);
@@ -82,6 +110,43 @@ export default function ChildMultiplicationGamePage() {
 
   function childToken() {
     return typeof window === "undefined" ? null : localStorage.getItem("namaa_child_token");
+  }
+
+  function getAudioContext() {
+    if (typeof window === "undefined") return null;
+    if (audioContextRef.current?.state !== "closed") return audioContextRef.current;
+
+    const AudioContextClass = window.AudioContext || (window as AudioWindow).webkitAudioContext;
+    if (!AudioContextClass) return null;
+
+    audioContextRef.current = new AudioContextClass();
+    return audioContextRef.current;
+  }
+
+  async function unlockAudio() {
+    const context = getAudioContext();
+    if (!context) return null;
+
+    try {
+      if (context.state === "suspended") await context.resume();
+      if (context.state === "running") {
+        const oscillator = context.createOscillator();
+        const gain = context.createGain();
+        gain.gain.setValueAtTime(0.0001, context.currentTime);
+        oscillator.connect(gain);
+        gain.connect(context.destination);
+        oscillator.start(context.currentTime);
+        oscillator.stop(context.currentTime + 0.02);
+        oscillator.addEventListener("ended", () => {
+          oscillator.disconnect();
+          gain.disconnect();
+        }, { once: true });
+      }
+    } catch {
+      return context;
+    }
+
+    return context;
   }
 
   async function loadProgram(preferredTable?: number) {
@@ -109,6 +174,14 @@ export default function ChildMultiplicationGamePage() {
     void loadProgram();
   }, [programId]);
 
+  useEffect(() => {
+    return () => {
+      const context = audioContextRef.current;
+      audioContextRef.current = null;
+      if (context && context.state !== "closed") void context.close();
+    };
+  }, []);
+
   const selectedStage = useMemo(() => program?.stages.find((stage) => stage.table_number === selectedTable), [program, selectedTable]);
 
   async function fetchQuestion(roundId: string) {
@@ -130,6 +203,7 @@ export default function ChildMultiplicationGamePage() {
 
   async function startChallenge() {
     if (!supabase || !program || !selectedStage || selectedStage.status !== "available") return;
+    await unlockAudio();
     const token = childToken();
     if (!token) return;
     setBusy(true);
@@ -155,6 +229,7 @@ export default function ChildMultiplicationGamePage() {
 
   async function answer(value: number) {
     if (!supabase || !question || busy) return;
+    await unlockAudio();
     const token = childToken();
     if (!token) return;
     setBusy(true);
@@ -172,7 +247,7 @@ export default function ChildMultiplicationGamePage() {
     const nextResult = response.data as AnswerResult;
     setFeedback({ correct: nextResult.is_correct, answer: nextResult.correct_answer });
     setResult(nextResult);
-    playFeedbackTone(nextResult.is_correct);
+    playFeedbackTone(audioContextRef.current, nextResult.is_correct);
     window.setTimeout(async () => {
       setFeedback(null);
       setSelectedAnswer(null);
