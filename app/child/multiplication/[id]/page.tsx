@@ -230,6 +230,10 @@ export default function ChildMultiplicationGamePage() {
   const answered = result?.answered_count ?? question?.answered_count ?? round?.answered_count ?? 0;
   const correct = result?.correct_count ?? round?.correct_count ?? 0;
   const completionSubmitted = program.task_status === "submitted" || program.task_status === "approved";
+  const weaknessReport = [...program.stages]
+    .filter((stage) => stage.status === "completed")
+    .sort((a, b) => a.best_score - b.best_score || b.attempts_count - a.attempts_count)
+    .slice(0, 3);
 
   return (
     <main className={styles.gamePage}>
@@ -237,7 +241,20 @@ export default function ChildMultiplicationGamePage() {
       <section className={styles.gameShell}>
         {mode === "complete" ? (
           <div className={styles.finalCelebration}>
-            <span>🏆</span><h1>أنت بطل جدول الضرب!</h1><p>أكملت جميع الجداول بنجاح. اضغط الآن على إنجاز المهمة حتى تصل لولي الأمر للمراجعة والاعتماد.</p>
+            <span>🏆</span><h1>أنت بطل جدول الضرب!</h1><p>أكملت جميع الجداول بنجاح. ستبقى النتيجة داخل مهامي في مساحتي التعليمية، ويمكنك إرسالها لولي الأمر للاعتماد.</p>
+            <div className="multiplication-weakness-report">
+              <h2>تقرير نقاط الضعف</h2>
+              <p>هذه أقل الجداول نتيجة وتحتاج مراجعة سريعة حتى تثبت المهارة أكثر.</p>
+              <div className="multiplication-weakness-grid">
+                {weaknessReport.length > 0 ? weaknessReport.map((stage) => (
+                  <article key={stage.id}>
+                    <strong>جدول {stage.table_number}</strong>
+                    <span>{stage.best_score}%</span>
+                    <small>{stage.attempts_count > 1 ? `احتجت ${stage.attempts_count} محاولات` : "تم اجتيازه من أول محاولة"}</small>
+                  </article>
+                )) : <article><strong>ممتاز</strong><span>100%</span><small>لا توجد نقاط ضعف واضحة.</small></article>}
+              </div>
+            </div>
             {error && <p className={styles.errorMessage}>{error}</p>}
             {completionMessage && <p className={styles.successMessage}>{completionMessage}</p>}
             <div className={styles.studyActions}>
