@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import { supabase } from "../../lib/supabase";
+import GoalEducationalProgramPlanner from "./GoalEducationalProgramPlanner";
 import styles from "./ParentGoalWorkspace.module.css";
 
 type Goal = {
@@ -46,6 +47,7 @@ type PlanDraft = {
   startDate: string;
   dueDate: string;
   category: TaskCategory;
+  educationalProgramKey: string;
   titlePrefix: string;
   difficulty: string;
   pointsMode: "automatic" | "manual";
@@ -98,7 +100,8 @@ const planModeLabels: Record<string, string> = {
   weekly: "مهام أسبوعية",
   milestones: "مراحل مخصصة",
   "حفظ قرآني": "خطة حفظ قرآني",
-  "تلاوة قرآنية": "خطة تلاوة قرآنية"
+  "تلاوة قرآنية": "خطة تلاوة قرآنية",
+  "برنامج جدول الضرب": "مغامرة أبطال جدول الضرب"
 };
 
 const categories: Array<{ id: TaskCategory; icon: string; label: string }> = [
@@ -140,6 +143,10 @@ function durationDays(draft: PlanDraft | null) {
   const start = new Date(`${draft.startDate}T12:00:00`).getTime();
   const due = new Date(`${draft.dueDate}T12:00:00`).getTime();
   return Math.floor((due - start) / 86_400_000) + 1;
+}
+
+function isSpecialEducationalProgram(draft: PlanDraft | null) {
+  return Boolean(draft?.category === "educational" && draft.educationalProgramKey);
 }
 
 function estimateGeneralTaskCount(draft: PlanDraft | null) {
@@ -191,16 +198,14 @@ function buildPlanPeriods(draft: PlanDraft | null): PlanPeriod[] {
       if (index !== count - 1) periodDue.setDate(start.getDate() + Math.max(startOffset, nextOffset - 1));
     }
 
-    const label = draft.generalSplitMode === "weekly"
-      ? `الأسبوع ${index + 1} من ${count}`
-      : draft.generalSplitMode === "daily"
-        ? `اليوم ${index + 1} من ${count}`
-        : draft.generalSplitMode === "milestones"
-          ? `المرحلة ${index + 1} من ${count}`
-          : "المهمة المطلوبة";
-
     return {
-      label,
+      label: draft.generalSplitMode === "weekly"
+        ? `الأسبوع ${index + 1} من ${count}`
+        : draft.generalSplitMode === "daily"
+          ? `اليوم ${index + 1} من ${count}`
+          : draft.generalSplitMode === "milestones"
+            ? `المرحلة ${index + 1} من ${count}`
+            : "المهمة المطلوبة",
       startDate: toIsoDate(periodStart),
       dueDate: toIsoDate(periodDue)
     };
@@ -209,7 +214,7 @@ function buildPlanPeriods(draft: PlanDraft | null): PlanPeriod[] {
 
 function friendlyError(message?: string) {
   if (!message) return "تعذر تنفيذ العملية الآن.";
-  if (message.includes("يوجد مهام مرتبطة")) return "يوجد بالفعل مهام مرتبطة بهذا الهدف. يمكنك إدارتها من صفحة المهام.";
+  if (message.includes("يوجد مهام مرتبطة")) return "يوجد بالفعل مهام أو برنامج مرتبط بهذا الهدف.";
   if (message.includes("تاريخ الاستحقاق")) return "تحقق من تاريخ البداية وتاريخ الاستحقاق.";
   if (message.includes("التجزئة اليومية")) return "التجزئة اليومية متاحة للخطط التي لا تتجاوز 90 يومًا.";
   if (message.includes("نطاق الآيات") || message.includes("اختر نطاق")) return "تحقق من بداية الآيات ونهايتها.";
@@ -247,11 +252,8 @@ export default function ParentGoalWorkspace({ studentId }: { studentId: string }
       client.rpc("get_quran_surah_catalog")
     ]);
 
-    if (goalResult.error) {
-      setError(friendlyError(goalResult.error.message));
-    } else {
-      setGoals((goalResult.data || []) as Goal[]);
-    }
+    if (goalResult.error) setError(friendlyError(goalResult.error.message));
+    else setGoals((goalResult.data || []) as Goal[]);
 
     if (!taskResult.error) {
       const summaries: Record<string, TaskSummary> = {};
@@ -277,7 +279,7 @@ export default function ParentGoalWorkspace({ studentId }: { studentId: string }
 
   useEffect(() => {
     async function loadSuggestedPoints() {
-      if (!planDraft || planDraft.pointsMode !== "automatic" || !supabase) return;
+      if (!planDraft || planDraft.pointsMode !== "automatic" || !supabase || isSpecialEducationalProgram(planDraft)) return;
       const result = await supabase.rpc("suggest_task_points", {
         p_student_id: studentId,
         p_category: planDraft.category,
@@ -294,7 +296,7 @@ export default function ParentGoalWorkspace({ studentId }: { studentId: string }
     }
 
     void loadSuggestedPoints();
-  }, [planDraft?.goalId, planDraft?.category, planDraft?.difficulty, planDraft?.pointsMode, studentId]);
+  }, [planDraft?.goalId, planDraft?.category, planDraft?.difficulty, planDraft?.pointsMode, planDraft?.educationalProgramKey, studentId]);
 
   const pendingCount = useMemo(
     () => goals.filter((goal) => goal.status === "pending" || goal.status === "requested").length,
@@ -310,7 +312,7 @@ export default function ParentGoalWorkspace({ studentId }: { studentId: string }
     setPlanDraft((current) => {
       if (!current) return current;
       const next = { ...current, ...patch };
-      if (next.category === "quran") return next;
+      if (next.category === "quran" || isSpecialEducationalProgram(next)) return next;
       const count = estimateGeneralTaskCount(next);
       return {
         ...next,
@@ -359,6 +361,7 @@ export default function ParentGoalWorkspace({ studentId }: { studentId: string }
       startDate,
       dueDate: goal.due_date || addDays(startDate, 30),
       category: initialCategory,
+      educationalProgramKey: "",
       titlePrefix: goal.title || "",
       difficulty: "medium",
       pointsMode: "automatic",
@@ -380,16 +383,15 @@ export default function ParentGoalWorkspace({ studentId }: { studentId: string }
   }
 
   function chooseCategory(category: TaskCategory) {
-    updatePlanDraft({ category });
+    updatePlanDraft({
+      category,
+      educationalProgramKey: category === "educational" ? planDraft?.educationalProgramKey || "" : ""
+    });
   }
 
   function chooseSurah(value: string) {
     const surah = surahs.find((item) => item.surah_number === Number(value));
-    updatePlanDraft({
-      surahNumber: value,
-      fromAyah: "1",
-      toAyah: String(surah?.ayah_count || 1)
-    });
+    updatePlanDraft({ surahNumber: value, fromAyah: "1", toAyah: String(surah?.ayah_count || 1) });
   }
 
   async function submitReview(event: FormEvent<HTMLFormElement>) {
@@ -425,7 +427,7 @@ export default function ParentGoalWorkspace({ studentId }: { studentId: string }
 
   async function submitPlan(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!supabase || !planDraft) return;
+    if (!supabase || !planDraft || isSpecialEducationalProgram(planDraft)) return;
 
     if (!planDraft.startDate || !planDraft.dueDate || planDraft.dueDate < planDraft.startDate) {
       setError("تحقق من تاريخ البداية والاستحقاق قبل إنشاء المهام.");
@@ -516,6 +518,13 @@ export default function ParentGoalWorkspace({ studentId }: { studentId: string }
     await loadGoals();
   }
 
+  async function handleEducationalProgramCreated(message: string) {
+    setSuccess(message);
+    setError("");
+    setPlanDraft(null);
+    await loadGoals();
+  }
+
   async function updateGoal(id: string, patch: Record<string, unknown>, successMessage: string) {
     if (!supabase) return;
     setBusyId(id);
@@ -554,7 +563,7 @@ export default function ParentGoalWorkspace({ studentId }: { studentId: string }
         <div>
           <span className="section-label">إشراف ولي الأمر</span>
           <h2>أهداف الطفل وقراراتها</h2>
-          <p>راجع الهدف الذي أرسله الطفل، ثم وافق عليه أو ارفضه أو حوّله مباشرة إلى مهام قابلة للتقسيم.</p>
+          <p>راجع الهدف الذي أرسله الطفل، ثم وافق عليه أو ارفضه أو حوّله مباشرة إلى مهمة عامة أو برنامج تعليمي مسجل.</p>
         </div>
         <div className="goal-head-actions">
           {pendingCount > 0 && <span className="pending-goals-badge">{pendingCount} تنتظر قرارك</span>}
@@ -576,10 +585,16 @@ export default function ParentGoalWorkspace({ studentId }: { studentId: string }
             const canPlan = ["pending", "requested", "approved", "paused"].includes(goal.status) && !hasTasks;
             const planIsOpen = planDraft?.goalId === goal.id;
             const reviewIsOpen = reviewDraft?.goalId === goal.id;
-            const planPeriods = planIsOpen && planDraft?.category !== "quran" ? buildPlanPeriods(planDraft) : [];
+            const specialProgram = planIsOpen && isSpecialEducationalProgram(planDraft);
+            const planPeriods = planIsOpen && planDraft?.category !== "quran" && !specialProgram ? buildPlanPeriods(planDraft) : [];
             const estimatedCount = planDraft?.category === "quran"
               ? estimateQuranTaskCount(planDraft, selectedSurah)
               : estimateGeneralTaskCount(planDraft);
+            const manageHref = goal.task_plan_mode === "برنامج جدول الضرب"
+              ? `/children/${studentId}/multiplication`
+              : goal.task_plan_mode?.startsWith("برنامج ")
+                ? `/children/${studentId}/quran`
+                : `/children/${studentId}/tasks?goal=${goal.id}`;
 
             return (
               <article className={`goal-card goal-decision-card goal-card-${goal.status}`} key={goal.id}>
@@ -603,14 +618,14 @@ export default function ParentGoalWorkspace({ studentId }: { studentId: string }
 
                 {goal.decision_note && <div className={`goal-decision-note ${goal.status === "rejected" ? "rejected" : ""}`}><strong>{goal.status === "rejected" ? "سبب الرفض" : "ملاحظة ولي الأمر"}</strong><p>{goal.decision_note}</p></div>}
 
-                {hasTasks && <div className="goal-task-summary"><div><span>المهام</span><strong>{taskSummary.total || goal.task_plan_count || 0}</strong></div><div><span>قيد التنفيذ</span><strong>{taskSummary.pending}</strong></div><div><span>تنتظر المراجعة</span><strong>{taskSummary.submitted}</strong></div><div><span>مكتملة</span><strong>{taskSummary.approved}</strong></div></div>}
+                {hasTasks && <div className="goal-task-summary"><div><span>المهام أو المقاطع</span><strong>{taskSummary.total || goal.task_plan_count || 0}</strong></div><div><span>قيد التنفيذ</span><strong>{taskSummary.pending}</strong></div><div><span>تنتظر المراجعة</span><strong>{taskSummary.submitted}</strong></div><div><span>مكتملة</span><strong>{taskSummary.approved}</strong></div></div>}
 
                 <div className="progress-row"><div className="progress-row-head"><span>نسبة الإنجاز</span><strong>{progress}%</strong></div><div className="progress-track"><div className="progress-fill" style={{ width: `${progress}%` }} /></div></div>
 
                 <div className="goal-actions goal-decision-actions">
                   {canReview && <><button type="button" disabled={busyId === goal.id} onClick={() => openReview(goal, "approved")}>✓ موافقة</button><button className="danger-goal-action" type="button" disabled={busyId === goal.id} onClick={() => openReview(goal, "rejected")}>رفض</button></>}
                   {canPlan && <button className="goal-plan-action" type="button" disabled={busyId === goal.id} onClick={() => openPlanner(goal)}>🗂 تحويل إلى مهام</button>}
-                  {hasTasks && <Link className="goal-task-link" href={`/children/${studentId}/tasks?goal=${goal.id}`}>إدارة المهام المرتبطة</Link>}
+                  {hasTasks && <Link className="goal-task-link" href={manageHref}>إدارة البرنامج أو المهام المرتبطة</Link>}
                   {goal.status === "approved" && <button className="secondary-goal-action" type="button" disabled={busyId === goal.id} onClick={() => updateGoal(goal.id, { status: "paused" }, "تم إيقاف الهدف مؤقتًا.")}>إيقاف مؤقت</button>}
                   {goal.status === "paused" && <button className="secondary-goal-action" type="button" disabled={busyId === goal.id} onClick={() => updateGoal(goal.id, { status: "approved" }, "تم استئناف الهدف.")}>استئناف</button>}
                   {(goal.status === "pending" || goal.status === "requested" || goal.status === "rejected") && !hasTasks && <button className="danger-goal-action subtle-delete-action" type="button" disabled={busyId === goal.id} onClick={() => deleteGoal(goal.id)}>حذف</button>}
@@ -627,7 +642,7 @@ export default function ParentGoalWorkspace({ studentId }: { studentId: string }
 
                 {planIsOpen && planDraft && (
                   <form className="goal-inline-panel goal-plan-panel" onSubmit={submitPlan}>
-                    <div className="goal-inline-panel-head"><div><span>تحويل الهدف إلى مهام</span><h4>اختر نوع المهمة ثم حدّد طريقة تقسيمها</h4></div><button type="button" onClick={() => setPlanDraft(null)}>×</button></div>
+                    <div className="goal-inline-panel-head"><div><span>تحويل الهدف إلى مهام</span><h4>اختر نوع المهمة أو برنامجًا تعليميًا مسجلًا</h4></div><button type="button" onClick={() => setPlanDraft(null)}>×</button></div>
 
                     <div className={styles.categorySection}>
                       <span>نوع المهام</span>
@@ -637,6 +652,18 @@ export default function ParentGoalWorkspace({ studentId }: { studentId: string }
                     </div>
 
                     <div className="goal-plan-grid two-columns"><label>تاريخ البداية<input type="date" value={planDraft.startDate} onChange={(event) => updatePlanDraft({ startDate: event.target.value })} required /></label><label>تاريخ الاستحقاق<input type="date" min={planDraft.startDate} value={planDraft.dueDate} onChange={(event) => updatePlanDraft({ dueDate: event.target.value })} required /></label></div>
+
+                    {planDraft.category === "educational" && (
+                      <GoalEducationalProgramPlanner
+                        goalId={planDraft.goalId}
+                        startDate={planDraft.startDate}
+                        dueDate={planDraft.dueDate}
+                        note={planDraft.note}
+                        selectedKey={planDraft.educationalProgramKey}
+                        onSelectedKeyChange={(value) => updatePlanDraft({ educationalProgramKey: value })}
+                        onCreated={handleEducationalProgramCreated}
+                      />
+                    )}
 
                     {planDraft.category === "quran" ? (
                       <section className={styles.quranBox}>
@@ -651,7 +678,7 @@ export default function ParentGoalWorkspace({ studentId }: { studentId: string }
                         </div>
                         <p className={styles.helperText}>تظهر كل مرحلة للطفل بمقطع الآيات المحدد، ويمكنه فتح المقاطع القادمة وإنجازها مبكرًا.</p>
                       </section>
-                    ) : (
+                    ) : !specialProgram ? (
                       <>
                         <fieldset className="goal-split-options"><legend>طريقة التجزئة</legend>{([[
                           "single", "مهمة واحدة", "من البداية حتى الاستحقاق"
@@ -659,15 +686,19 @@ export default function ParentGoalWorkspace({ studentId }: { studentId: string }
                         {planDraft.generalSplitMode === "milestones" && <label className="goal-installments-field">عدد المراحل<input type="number" min="2" max="30" step="1" value={planDraft.installments} onChange={(event) => updatePlanDraft({ installments: event.target.value })} required /></label>}
                         <section className="goal-part-descriptions"><div className="goal-part-descriptions-head"><div><span>وصف كل جزء</span><strong>حدد المطلوب من الطفل في كل فترة</strong></div><small>يمكن ترك أي جزء فارغًا ليستخدم الوصف العام تلقائيًا.</small></div><div className="goal-part-description-list">{planPeriods.map((period, index) => <label className="goal-part-description-card" key={`${period.label}-${index}`}><span className="goal-part-description-number">{index + 1}</span><div className="goal-part-description-title"><strong>{period.label}</strong><small>{period.startDate === period.dueDate ? formatDate(period.startDate) : `${formatDate(period.startDate)} — ${formatDate(period.dueDate)}`}</small></div><textarea rows={2} value={planDraft.partDescriptions[index] || ""} onChange={(event) => updatePartDescription(index, event.target.value)} placeholder="اكتب المهمة المطلوبة في هذا الجزء" /></label>)}</div></section>
                       </>
+                    ) : null}
+
+                    {!specialProgram && (
+                      <>
+                        <div className={styles.planSummary}><span>سيتم إنشاء</span><strong>{estimatedCount} {estimatedCount === 1 ? "مهمة" : "مهام"}</strong><small>{planDraft.category === "quran" ? `${planDraft.quranMode === "memorization" ? "حفظ" : "تلاوة"} سورة ${selectedSurah?.surah_name_ar || ""}` : `موزعة بين ${formatDate(planDraft.startDate)} و${formatDate(planDraft.dueDate)}`}</small></div>
+
+                        <label>عنوان الخطة أو المهام<input value={planDraft.titlePrefix} onChange={(event) => updatePlanDraft({ titlePrefix: event.target.value })} placeholder="يُستخدم عنوان الهدف تلقائيًا" /></label>
+                        <div className="goal-plan-grid two-columns"><label>درجة الصعوبة<select value={planDraft.difficulty} onChange={(event) => updatePlanDraft({ difficulty: event.target.value })}><option value="easy">سهل</option><option value="medium">متوسط</option><option value="hard">صعب</option><option value="major">إنجاز كبير</option></select></label><label>طريقة النقاط<select value={planDraft.pointsMode} onChange={(event) => updatePlanDraft({ pointsMode: event.target.value as "automatic" | "manual" })}><option value="automatic">تلقائي</option><option value="manual">يدوي</option></select></label></div>
+                        <div className="goal-plan-grid two-columns"><label>⭐ نقاط الإنجاز<input type="number" min="0" step="1" value={planDraft.achievementPoints} onChange={(event) => updatePlanDraft({ achievementPoints: event.target.value })} disabled={planDraft.pointsMode === "automatic"} /></label><label>💎 نقاط المكافآت<input type="number" min="0" step="1" value={planDraft.rewardPoints} onChange={(event) => updatePlanDraft({ rewardPoints: event.target.value })} disabled={planDraft.pointsMode === "automatic"} /></label></div>
+                        <label>{planDraft.category === "quran" ? "تعليمات الحفظ أو التلاوة" : "وصف عام احتياطي"}<textarea rows={3} value={planDraft.note} onChange={(event) => updatePlanDraft({ note: event.target.value })} placeholder={planDraft.category === "quran" ? "مثال: كرر المقطع ثلاث مرات ثم سمّع غيبًا" : "يظهر للأجزاء التي لم تكتب لها وصفًا مستقلًا"} /></label>
+                        <div className="goal-inline-submit-row"><button type="submit" disabled={busyId === goal.id}>{busyId === goal.id ? "جارٍ إنشاء المهام..." : `اعتماد وتحويل إلى ${estimatedCount} ${estimatedCount === 1 ? "مهمة" : "مهام"}`}</button><button className="cancel-inline-action" type="button" onClick={() => setPlanDraft(null)}>إلغاء</button></div>
+                      </>
                     )}
-
-                    <div className={styles.planSummary}><span>سيتم إنشاء</span><strong>{estimatedCount} {estimatedCount === 1 ? "مهمة" : "مهام"}</strong><small>{planDraft.category === "quran" ? `${planDraft.quranMode === "memorization" ? "حفظ" : "تلاوة"} سورة ${selectedSurah?.surah_name_ar || ""}` : `موزعة بين ${formatDate(planDraft.startDate)} و${formatDate(planDraft.dueDate)}`}</small></div>
-
-                    <label>عنوان الخطة أو المهام<input value={planDraft.titlePrefix} onChange={(event) => updatePlanDraft({ titlePrefix: event.target.value })} placeholder="يُستخدم عنوان الهدف تلقائيًا" /></label>
-                    <div className="goal-plan-grid two-columns"><label>درجة الصعوبة<select value={planDraft.difficulty} onChange={(event) => updatePlanDraft({ difficulty: event.target.value })}><option value="easy">سهل</option><option value="medium">متوسط</option><option value="hard">صعب</option><option value="major">إنجاز كبير</option></select></label><label>طريقة النقاط<select value={planDraft.pointsMode} onChange={(event) => updatePlanDraft({ pointsMode: event.target.value as "automatic" | "manual" })}><option value="automatic">تلقائي</option><option value="manual">يدوي</option></select></label></div>
-                    <div className="goal-plan-grid two-columns"><label>⭐ نقاط الإنجاز<input type="number" min="0" step="1" value={planDraft.achievementPoints} onChange={(event) => updatePlanDraft({ achievementPoints: event.target.value })} disabled={planDraft.pointsMode === "automatic"} /></label><label>💎 نقاط المكافآت<input type="number" min="0" step="1" value={planDraft.rewardPoints} onChange={(event) => updatePlanDraft({ rewardPoints: event.target.value })} disabled={planDraft.pointsMode === "automatic"} /></label></div>
-                    <label>{planDraft.category === "quran" ? "تعليمات الحفظ أو التلاوة" : "وصف عام احتياطي"}<textarea rows={3} value={planDraft.note} onChange={(event) => updatePlanDraft({ note: event.target.value })} placeholder={planDraft.category === "quran" ? "مثال: كرر المقطع ثلاث مرات ثم سمّع غيبًا" : "يظهر للأجزاء التي لم تكتب لها وصفًا مستقلًا"} /></label>
-                    <div className="goal-inline-submit-row"><button type="submit" disabled={busyId === goal.id}>{busyId === goal.id ? "جارٍ إنشاء المهام..." : `اعتماد وتحويل إلى ${estimatedCount} ${estimatedCount === 1 ? "مهمة" : "مهام"}`}</button><button className="cancel-inline-action" type="button" onClick={() => setPlanDraft(null)}>إلغاء</button></div>
                   </form>
                 )}
               </article>
