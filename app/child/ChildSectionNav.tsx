@@ -4,9 +4,9 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 
-type ChildSection = "home" | "tasks" | "quran" | "progress" | "goals" | "gifts" | "notifications";
+type ChildSection = "home" | "tasks" | "quran" | "progress" | "gifts" | "notifications";
 
-const dashboardSections: ChildSection[] = ["home", "tasks", "progress", "goals"];
+const dashboardSections: ChildSection[] = ["home", "tasks", "progress"];
 
 function routeSection(pathname: string): ChildSection {
   if (pathname.startsWith("/child/quran")) return "quran";
@@ -21,9 +21,6 @@ function detectDashboardSection(): ChildSection {
   if (panel.classList.contains("child-home-v3")) return "home";
   if (panel.classList.contains("child-tasks-section")) return "tasks";
   if (panel.classList.contains("child-progress-page")) return "progress";
-
-  const label = panel.querySelector<HTMLElement>(".section-label")?.textContent || "";
-  if (label.includes("أهداف")) return "goals";
   return "home";
 }
 
@@ -34,33 +31,11 @@ function clickDashboardButton(label: string) {
   return Boolean(button);
 }
 
-function clickGoalCard(attempt = 0) {
-  const goalCard = document.querySelector<HTMLButtonElement>(".child-main-section.section-goals");
-  if (goalCard) {
-    goalCard.click();
-    return;
-  }
-  if (attempt < 20) window.setTimeout(() => clickGoalCard(attempt + 1), 50);
-}
-
 function activateDashboardSection(section: ChildSection) {
   if (!document.querySelector(".child-dashboard-v3")) return false;
   if (section === "home") return clickDashboardButton("الرئيسية");
   if (section === "tasks") return clickDashboardButton("مهامي");
   if (section === "progress") return clickDashboardButton("تقدمي");
-
-  if (section === "goals") {
-    const goalCard = document.querySelector<HTMLButtonElement>(".child-main-section.section-goals");
-    if (goalCard) {
-      goalCard.click();
-      return true;
-    }
-
-    if (!clickDashboardButton("الرئيسية")) return false;
-    window.setTimeout(() => clickGoalCard(), 40);
-    return true;
-  }
-
   return false;
 }
 
@@ -125,9 +100,6 @@ export default function ChildSectionNav() {
         </Link>
         <button className={itemClass("progress")} type="button" onClick={() => openDashboardSection("progress")}>
           <span>🚀</span><small>تقدمي</small>
-        </button>
-        <button className={itemClass("goals")} type="button" onClick={() => openDashboardSection("goals")}>
-          <span>🎯</span><small>أهدافي</small>
         </button>
         <Link className={itemClass("gifts")} href="/child/gifts">
           <span>🎁</span><small>هداياي</small>
