@@ -44,17 +44,14 @@ type Mode = "study" | "question" | "result" | "complete";
 
 function playFeedbackTone(isCorrect: boolean) {
   if (typeof window === "undefined") return;
-
   const AudioContextClass = window.AudioContext || (window as typeof window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
   if (!AudioContextClass) return;
-
   const context = new AudioContextClass();
   const gain = context.createGain();
   gain.connect(context.destination);
   gain.gain.setValueAtTime(0.001, context.currentTime);
   gain.gain.exponentialRampToValueAtTime(isCorrect ? 0.16 : 0.11, context.currentTime + 0.02);
   gain.gain.exponentialRampToValueAtTime(0.001, context.currentTime + (isCorrect ? 0.45 : 0.32));
-
   const notes = isCorrect ? [523.25, 659.25, 783.99] : [196, 164.81];
   notes.forEach((frequency, index) => {
     const oscillator = context.createOscillator();
@@ -64,7 +61,6 @@ function playFeedbackTone(isCorrect: boolean) {
     oscillator.start(context.currentTime + index * 0.1);
     oscillator.stop(context.currentTime + index * 0.1 + 0.14);
   });
-
   window.setTimeout(() => void context.close(), isCorrect ? 650 : 520);
 }
 
@@ -177,7 +173,6 @@ export default function ChildMultiplicationGamePage() {
     setFeedback({ correct: nextResult.is_correct, answer: nextResult.correct_answer });
     setResult(nextResult);
     playFeedbackTone(nextResult.is_correct);
-
     window.setTimeout(async () => {
       setFeedback(null);
       setSelectedAnswer(null);
@@ -224,10 +219,10 @@ export default function ChildMultiplicationGamePage() {
 
   function answerClass(option: number) {
     if (!feedback) return styles.answerButton;
-    if (option === feedback.answer) return `${styles.answerButton} ${styles.answerCorrect}`;
-    if (option === selectedAnswer && !feedback.correct) return `${styles.answerButton} ${styles.answerWrong}`;
-    if (option === selectedAnswer && feedback.correct) return `${styles.answerButton} ${styles.answerCorrect}`;
-    return `${styles.answerButton} ${styles.answerMuted}`;
+    if (option === feedback.answer) return `${styles.answerButton} multiplication-answer-correct`;
+    if (option === selectedAnswer && !feedback.correct) return `${styles.answerButton} multiplication-answer-wrong`;
+    if (option === selectedAnswer && feedback.correct) return `${styles.answerButton} multiplication-answer-correct`;
+    return `${styles.answerButton} multiplication-answer-muted`;
   }
 
   if (!program) return <main className={styles.loading}>{error || "جارٍ تحميل بطاقات جدول الضرب..."}</main>;
@@ -255,7 +250,6 @@ export default function ChildMultiplicationGamePage() {
             <div className={styles.gameTitle}><span>المرحلة الحالية</span><h1>جدول ضرب {selectedTable}</h1><p>تأمل النتائج بهدوء، ثم ابدأ عندما تشعر أنك مستعد.</p></div>
             <div className={styles.stageStrip}>{program.stages.map((stage) => <button type="button" key={stage.table_number} onClick={() => chooseStage(stage.table_number, stage.status)} disabled={stage.status === "locked" || mode === "question"} className={stage.status === "completed" ? styles.stageDone : stage.table_number === selectedTable ? styles.stageCurrent : styles.stageLocked}>{stage.status === "completed" ? "✓" : stage.table_number}</button>)}</div>
             {error && <p className={styles.errorMessage}>{error}</p>}
-
             {mode === "study" && (
               <div className={styles.studyCard}>
                 <div className={styles.studyGrid}>{Array.from({ length: 10 }, (_, index) => index + 1).map((multiplier) => <div className={styles.studyEquation} key={multiplier}><span>{selectedTable} × {multiplier}</span><strong>{selectedTable * multiplier}</strong></div>)}</div>
@@ -263,7 +257,6 @@ export default function ChildMultiplicationGamePage() {
                 <div className={styles.studyActions}><button className={styles.primaryButton} type="button" disabled={busy || selectedStage?.status !== "available"} onClick={() => void startChallenge()}>{busy ? "جارٍ تجهيز التحدي..." : selectedStage?.status === "completed" ? "تم إتقان هذه المرحلة" : "أنا مستعد للتحدي"}</button></div>
               </div>
             )}
-
             {mode === "question" && question && (
               <>
                 <div className={styles.roundStats}><span>السؤال {answered + 1} من {question.question_limit}</span><span>إجابات صحيحة: {correct}</span></div>
@@ -271,7 +264,6 @@ export default function ChildMultiplicationGamePage() {
                 {feedback && <div className={feedback.correct ? styles.feedbackCorrect : styles.feedbackWrong}>{feedback.correct ? "أحسنت! إجابة صحيحة ⭐" : `محاولة جميلة، الإجابة الصحيحة هي ${feedback.answer}`}</div>}
               </>
             )}
-
             {mode === "result" && result && (
               <div className={styles.resultCard}><span>{result.stage_passed ? "🎉" : "💪"}</span><h2>{result.stage_passed ? `أتقنت جدول ${round?.table_number || selectedTable}` : "اقتربت من الإتقان"}</h2><div className={styles.scoreCircle}>{result.score}٪</div><p>{result.stage_passed ? "رائع! فُتحت لك المرحلة التالية." : `راجع البطاقة ثم حاول مجددًا. المطلوب ${program.pass_percentage}٪.`}</p><div className={styles.resultActions}>{result.stage_passed && result.next_table ? <button className={styles.primaryButton} type="button" onClick={() => { setSelectedTable(result.next_table as number); setResult(null); setMode("study"); }}>الانتقال إلى جدول {result.next_table}</button> : <button className={styles.primaryButton} type="button" onClick={() => { setResult(null); setMode("study"); }}>مراجعة البطاقة والمحاولة</button>}<Link className={styles.secondaryButton} href="/child?section=tasks">حفظ والخروج إلى مهامي</Link></div></div>
             )}
