@@ -65,10 +65,32 @@ function scheduleDashboardSection(section: ChildSection, attempt = 0) {
   window.setTimeout(() => scheduleDashboardSection(section, attempt + 1), 100);
 }
 
+function sanitizeLegacyNavigation() {
+  document.querySelectorAll<HTMLElement>(".child-bottom-nav, .child-bottom-nav-v3").forEach((nav) => {
+    nav.style.setProperty("display", "none", "important");
+    nav.setAttribute("aria-hidden", "true");
+  });
+
+  document.querySelectorAll<HTMLElement>("nav a, nav button").forEach((item) => {
+    const href = item instanceof HTMLAnchorElement ? item.getAttribute("href") || "" : item.getAttribute("data-href") || "";
+    const text = item.textContent?.trim() || "";
+    if (href.startsWith("/child/multiplication") || text.includes("جدول الضرب")) {
+      item.remove();
+    }
+  });
+}
+
 export default function ChildSectionNav() {
   const pathname = usePathname();
   const router = useRouter();
   const [active, setActive] = useState<ChildSection>(() => routeSection(pathname));
+
+  useEffect(() => {
+    sanitizeLegacyNavigation();
+    const cleanupObserver = new MutationObserver(sanitizeLegacyNavigation);
+    cleanupObserver.observe(document.body, { childList: true, subtree: true });
+    return () => cleanupObserver.disconnect();
+  }, [pathname]);
 
   useEffect(() => {
     if (pathname !== "/child") {
@@ -106,6 +128,16 @@ export default function ChildSectionNav() {
 
   return (
     <>
+      <style jsx global>{`
+        .child-bottom-nav,
+        .child-bottom-nav-v3 {
+          display: none !important;
+        }
+        .child-section-nav a[href^="/child/multiplication"],
+        .child-section-nav button[data-href^="/child/multiplication"] {
+          display: none !important;
+        }
+      `}</style>
       <div className="child-unified-nav-spacer" aria-hidden="true" />
       <nav className="child-section-nav child-unified-nav" aria-label="التنقل الرئيسي لحساب الطفل">
         <button className={itemClass("home")} type="button" onClick={() => openDashboardSection("home")}><span>🏠</span><small>الرئيسية</small></button>
