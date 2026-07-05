@@ -15,6 +15,8 @@ type Stage = {
 };
 type Program = {
   id: string;
+  task_id: string | null;
+  task_status: string | null;
   from_table: number;
   to_table: number;
   questions_per_stage: number;
@@ -40,6 +42,32 @@ type AnswerResult = {
 };
 type Mode = "study" | "question" | "result" | "complete";
 
+function playFeedbackTone(isCorrect: boolean) {
+  if (typeof window === "undefined") return;
+
+  const AudioContextClass = window.AudioContext || (window as typeof window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+  if (!AudioContextClass) return;
+
+  const context = new AudioContextClass();
+  const gain = context.createGain();
+  gain.connect(context.destination);
+  gain.gain.setValueAtTime(0.001, context.currentTime);
+  gain.gain.exponentialRampToValueAtTime(isCorrect ? 0.16 : 0.11, context.currentTime + 0.02);
+  gain.gain.exponentialRampToValueAtTime(0.001, context.currentTime + (isCorrect ? 0.45 : 0.32));
+
+  const notes = isCorrect ? [523.25, 659.25, 783.99] : [196, 164.81];
+  notes.forEach((frequency, index) => {
+    const oscillator = context.createOscillator();
+    oscillator.type = isCorrect ? "triangle" : "sawtooth";
+    oscillator.frequency.setValueAtTime(frequency, context.currentTime + index * 0.1);
+    oscillator.connect(gain);
+    oscillator.start(context.currentTime + index * 0.1);
+    oscillator.stop(context.currentTime + index * 0.1 + 0.14);
+  });
+
+  window.setTimeout(() => void context.close(), isCorrect ? 650 : 520);
+}
+
 export default function ChildMultiplicationGamePage() {
   const params = useParams<{ id: string }>();
   const router = useRouter();
@@ -52,6 +80,8 @@ export default function ChildMultiplicationGamePage() {
   const [mode, setMode] = useState<Mode>("study");
   const [busy, setBusy] = useState(false);
   const [feedback, setFeedback] = useState<{ correct: boolean; answer: number } | null>(null);
+  const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
+  const [completionMessage, setCompletionMessage] = useState("");
   const [error, setError] = useState("");
 
   function childToken() {
@@ -97,6 +127,7 @@ export default function ChildMultiplicationGamePage() {
       setError(response.error.message || "تعذر تجهيز السؤال.");
       return;
     }
+    setSelectedAnswer(null);
     setQuestion(response.data as Question);
     setMode("question");
   }
@@ -108,6 +139,7 @@ export default function ChildMultiplicationGamePage() {
     setBusy(true);
     setError("");
     setFeedback(null);
+    setSelectedAnswer(null);
     setResult(null);
     const response = await supabase.rpc("start_child_multiplication_stage", {
       p_session_token: token,
@@ -130,6 +162,7 @@ export default function ChildMultiplicationGamePage() {
     const token = childToken();
     if (!token) return;
     setBusy(true);
+    setSelectedAnswer(value);
     const response = await supabase.rpc("answer_child_multiplication_question", {
       p_session_token: token,
       p_attempt_id: question.attempt_id,
@@ -143,9 +176,11 @@ export default function ChildMultiplicationGamePage() {
     const nextResult = response.data as AnswerResult;
     setFeedback({ correct: nextResult.is_correct, answer: nextResult.correct_answer });
     setResult(nextResult);
+    playFeedbackTone(nextResult.is_correct);
 
     window.setTimeout(async () => {
       setFeedback(null);
+      setSelectedAnswer(null);
       if (nextResult.round_complete) {
         await loadProgram(nextResult.next_table || selectedTable);
         setMode(nextResult.program_complete ? "complete" : "result");
@@ -153,7 +188,28 @@ export default function ChildMultiplicationGamePage() {
         await fetchQuestion(round.round_id);
       }
       setBusy(false);
-    }, 850);
+    }, 1200);
+  }
+
+  async function submitCompletedTask() {
+    if (!supabase || !program?.task_id || program.status !== "completed") return;
+    const token = childToken();
+    if (!token) return;
+    setBusy(true);
+    setError("");
+    setCompletionMessage("");
+    const response = await supabase.rpc("child_submit_task", {
+      p_session_token: token,
+      p_task_id: program.task_id,
+      p_child_note: "أكملت جميع مراحل تحدي جدول الضرب بنجاح.",
+    });
+    setBusy(false);
+    if (response.error) {
+      setError(response.error.message || "تعذر إرسال الإنجاز لولي الأمر.");
+      return;
+    }
+    setCompletionMessage("تم إرسال إنجاز جدول الضرب إلى ولي الأمر للمراجعة والاعتماد.");
+    await loadProgram();
   }
 
   function chooseStage(tableNumber: number, status: Stage["status"]) {
@@ -162,20 +218,38 @@ export default function ChildMultiplicationGamePage() {
     setResult(null);
     setQuestion(null);
     setFeedback(null);
+    setSelectedAnswer(null);
     setMode("study");
+  }
+
+  function answerClass(option: number) {
+    if (!feedback) return styles.answerButton;
+    if (option === feedback.answer) return `${styles.answerButton} ${styles.answerCorrect}`;
+    if (option === selectedAnswer && !feedback.correct) return `${styles.answerButton} ${styles.answerWrong}`;
+    if (option === selectedAnswer && feedback.correct) return `${styles.answerButton} ${styles.answerCorrect}`;
+    return `${styles.answerButton} ${styles.answerMuted}`;
   }
 
   if (!program) return <main className={styles.loading}>{error || "جارٍ تحميل بطاقات جدول الضرب..."}</main>;
 
   const answered = result?.answered_count ?? question?.answered_count ?? round?.answered_count ?? 0;
   const correct = result?.correct_count ?? round?.correct_count ?? 0;
+  const completionSubmitted = program.task_status === "submitted" || program.task_status === "approved";
 
   return (
     <main className={styles.gamePage}>
-      <div className={styles.gameTop}><Link className={styles.backLink} href="/child/multiplication">← كل المغامرات</Link><span>{program.completed_tables} من {program.total_tables} مراحل</span></div>
+      <div className={styles.gameTop}><Link className={styles.backLink} href="/child?section=tasks">← العودة إلى مهامي</Link><span>{program.completed_tables} من {program.total_tables} مراحل</span></div>
       <section className={styles.gameShell}>
         {mode === "complete" ? (
-          <div className={styles.finalCelebration}><span>🏆</span><h1>أنت بطل جدول الضرب!</h1><p>أكملت جميع الجداول بنجاح، وأضيفت نقاطك وأصبح الإنجاز جاهزًا لتكريم ولي الأمر.</p><div className={styles.studyActions}><Link className={styles.primaryButton} href="/child/gifts">زيارة هداياي</Link><Link className={styles.secondaryButton} href="/child/multiplication">عرض البرامج</Link></div></div>
+          <div className={styles.finalCelebration}>
+            <span>🏆</span><h1>أنت بطل جدول الضرب!</h1><p>أكملت جميع الجداول بنجاح. اضغط الآن على إنجاز المهمة حتى تصل لولي الأمر للمراجعة والاعتماد.</p>
+            {error && <p className={styles.errorMessage}>{error}</p>}
+            {completionMessage && <p className={styles.successMessage}>{completionMessage}</p>}
+            <div className={styles.studyActions}>
+              <button className={styles.primaryButton} type="button" disabled={busy || completionSubmitted} onClick={() => void submitCompletedTask()}>{busy ? "جارٍ إرسال الإنجاز..." : completionSubmitted ? "تم إرسال الإنجاز" : "إنجاز المهمة وإرسالها لولي الأمر"}</button>
+              <Link className={styles.secondaryButton} href="/child?section=tasks">العودة إلى مهامي</Link>
+            </div>
+          </div>
         ) : (
           <>
             <div className={styles.gameTitle}><span>المرحلة الحالية</span><h1>جدول ضرب {selectedTable}</h1><p>تأمل النتائج بهدوء، ثم ابدأ عندما تشعر أنك مستعد.</p></div>
@@ -193,13 +267,13 @@ export default function ChildMultiplicationGamePage() {
             {mode === "question" && question && (
               <>
                 <div className={styles.roundStats}><span>السؤال {answered + 1} من {question.question_limit}</span><span>إجابات صحيحة: {correct}</span></div>
-                <div className={styles.questionCard}><small>اختر الإجابة الصحيحة</small><div className={styles.questionEquation}>{question.table_number} × {question.multiplier} = ؟</div><div className={styles.answersGrid}>{question.options.map((option) => <button className={styles.answerButton} type="button" disabled={busy} key={option} onClick={() => void answer(option)}>{option}</button>)}</div></div>
+                <div className={styles.questionCard}><small>اختر الإجابة الصحيحة</small><div className={styles.questionEquation}>{question.table_number} × {question.multiplier} = ؟</div><div className={styles.answersGrid}>{question.options.map((option) => <button className={answerClass(option)} type="button" disabled={busy} key={option} onClick={() => void answer(option)}>{option}</button>)}</div></div>
                 {feedback && <div className={feedback.correct ? styles.feedbackCorrect : styles.feedbackWrong}>{feedback.correct ? "أحسنت! إجابة صحيحة ⭐" : `محاولة جميلة، الإجابة الصحيحة هي ${feedback.answer}`}</div>}
               </>
             )}
 
             {mode === "result" && result && (
-              <div className={styles.resultCard}><span>{result.stage_passed ? "🎉" : "💪"}</span><h2>{result.stage_passed ? `أتقنت جدول ${round?.table_number || selectedTable}` : "اقتربت من الإتقان"}</h2><div className={styles.scoreCircle}>{result.score}٪</div><p>{result.stage_passed ? "رائع! فُتحت لك المرحلة التالية." : `راجع البطاقة ثم حاول مجددًا. المطلوب ${program.pass_percentage}٪.`}</p><div className={styles.resultActions}>{result.stage_passed && result.next_table ? <button className={styles.primaryButton} type="button" onClick={() => { setSelectedTable(result.next_table as number); setResult(null); setMode("study"); }}>الانتقال إلى جدول {result.next_table}</button> : <button className={styles.primaryButton} type="button" onClick={() => { setResult(null); setMode("study"); }}>مراجعة البطاقة والمحاولة</button>}<Link className={styles.secondaryButton} href="/child/multiplication">حفظ والخروج</Link></div></div>
+              <div className={styles.resultCard}><span>{result.stage_passed ? "🎉" : "💪"}</span><h2>{result.stage_passed ? `أتقنت جدول ${round?.table_number || selectedTable}` : "اقتربت من الإتقان"}</h2><div className={styles.scoreCircle}>{result.score}٪</div><p>{result.stage_passed ? "رائع! فُتحت لك المرحلة التالية." : `راجع البطاقة ثم حاول مجددًا. المطلوب ${program.pass_percentage}٪.`}</p><div className={styles.resultActions}>{result.stage_passed && result.next_table ? <button className={styles.primaryButton} type="button" onClick={() => { setSelectedTable(result.next_table as number); setResult(null); setMode("study"); }}>الانتقال إلى جدول {result.next_table}</button> : <button className={styles.primaryButton} type="button" onClick={() => { setResult(null); setMode("study"); }}>مراجعة البطاقة والمحاولة</button>}<Link className={styles.secondaryButton} href="/child?section=tasks">حفظ والخروج إلى مهامي</Link></div></div>
             )}
           </>
         )}
