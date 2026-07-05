@@ -19,6 +19,59 @@
   filter: grayscale(0.25);
 }
 
+.multiplication-weakness-report {
+  margin: 22px auto;
+  max-width: 660px;
+  padding: 18px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.76);
+  border: 1px solid rgba(46, 107, 72, 0.14);
+  text-align: right;
+}
+
+.multiplication-weakness-report h2 {
+  margin: 0 0 8px;
+  color: #203528;
+  font-size: 1.25rem;
+}
+
+.multiplication-weakness-report p {
+  margin: 0 0 14px;
+  color: #657067;
+  line-height: 1.7;
+}
+
+.multiplication-weakness-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.multiplication-weakness-grid article {
+  display: grid;
+  gap: 6px;
+  padding: 14px;
+  border-radius: 18px;
+  background: #fff;
+  border: 1px solid rgba(214, 177, 68, 0.22);
+  box-shadow: 0 8px 20px rgba(50, 67, 54, 0.06);
+}
+
+.multiplication-weakness-grid strong {
+  color: #234832;
+}
+
+.multiplication-weakness-grid span {
+  color: #b07b0c;
+  font-size: 1.35rem;
+  font-weight: 900;
+}
+
+.multiplication-weakness-grid small {
+  color: #6a736d;
+  line-height: 1.5;
+}
+
 @keyframes multiplicationAnswerPop {
   0% { transform: scale(0.96); }
   70% { transform: scale(1.04); }
@@ -30,4 +83,10 @@
   25% { transform: translateX(6px); }
   50% { transform: translateX(-6px); }
   75% { transform: translateX(4px); }
+}
+
+@media (max-width: 640px) {
+  .multiplication-weakness-grid {
+    grid-template-columns: 1fr;
+  }
 }
