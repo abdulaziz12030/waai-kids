@@ -12,6 +12,7 @@ import ChildGiftAutoDisplay from "./ChildGiftAutoDisplay";
 import ChildSectionNav from "./ChildSectionNav";
 import FloatingGoalPrompt from "./FloatingGoalPrompt";
 import MultiplicationTaskEnhancer from "./MultiplicationTaskEnhancer";
+import MultiplicationLearningFeedback from "./MultiplicationLearningFeedback";
 
 export default function ChildLayout({
   children,
@@ -25,6 +26,7 @@ export default function ChildLayout({
       <ChildGiftAutoDisplay />
       <FloatingGoalPrompt />
       <MultiplicationTaskEnhancer />
+      <MultiplicationLearningFeedback />
       <ChildSectionNav />
     </>
   );
