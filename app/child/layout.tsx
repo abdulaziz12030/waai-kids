@@ -7,6 +7,7 @@ import "./floating-goal-prompt.css";
 import "./child-header-actions.css";
 import "./multiplication-task-inline.css";
 import "./multiplication-feedback.css";
+import "./multiplication-feedback-scope.css";
 import ChildExperienceLayer from "./ChildExperienceLayer";
 import ChildGiftAutoDisplay from "./ChildGiftAutoDisplay";
 import ChildSectionNav from "./ChildSectionNav";
