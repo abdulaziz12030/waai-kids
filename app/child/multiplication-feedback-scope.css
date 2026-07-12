@@ -1,0 +1,4 @@
+/* يمنع تأثير إخفاء التغذية القديمة على أي رسائل وصول أخرى في صفحات الطفل. */
+main:not([class*="gamePage"]) [role="status"][aria-live="assertive"] {
+  display: revert !important;
+}
