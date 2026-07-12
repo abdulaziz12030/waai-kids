@@ -72,6 +72,252 @@
   line-height: 1.5;
 }
 
+/* التغذية القديمة داخل تدفق الصفحة تُخفى؛ الطبقة الجديدة تظهر فور لمس الإجابة في منتصف الشاشة. */
+main [role="status"][aria-live="assertive"] {
+  display: none !important;
+}
+
+.multiplication-learning-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483000;
+  display: grid;
+  place-items: center;
+  padding: max(14px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) max(14px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
+  background: rgba(12, 24, 16, 0.78);
+  -webkit-backdrop-filter: blur(9px);
+  backdrop-filter: blur(9px);
+  pointer-events: none;
+  animation: multiplicationLearningBackdrop 180ms ease-out both;
+}
+
+.multiplication-learning-card {
+  position: relative;
+  width: min(94vw, 680px);
+  max-height: min(92dvh, 760px);
+  overflow: hidden auto;
+  overscroll-behavior: contain;
+  padding: clamp(17px, 3vw, 26px);
+  border: 3px solid #9bd4ac;
+  border-radius: 30px;
+  background: linear-gradient(155deg, #f0fff4 0%, #fffdf3 100%);
+  text-align: center;
+  box-shadow: 0 28px 90px rgba(0, 0, 0, 0.38);
+  animation: multiplicationLearningCardEnter 260ms cubic-bezier(0.2, 0.82, 0.24, 1.08) both;
+}
+
+.multiplication-learning-card.is-wrong {
+  border-color: #efb499;
+  background: linear-gradient(155deg, #fff4ed 0%, #fffdf4 100%);
+}
+
+.multiplication-learning-heading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 13px;
+  text-align: right;
+}
+
+.multiplication-learning-heading > span {
+  display: grid;
+  place-items: center;
+  flex: 0 0 54px;
+  width: 54px;
+  height: 54px;
+  border-radius: 18px;
+  background: #fff;
+  font-size: 31px;
+  box-shadow: 0 9px 22px rgba(38, 66, 45, 0.12);
+}
+
+.multiplication-learning-heading h2 {
+  margin: 0 0 4px;
+  color: #205334;
+  font-size: clamp(23px, 5vw, 31px);
+  line-height: 1.25;
+}
+
+.multiplication-learning-card.is-wrong .multiplication-learning-heading h2 {
+  color: #8b3d2b;
+}
+
+.multiplication-learning-heading p {
+  margin: 0;
+  color: #53645a;
+  font-size: clamp(14px, 3.4vw, 18px);
+  font-weight: 750;
+  line-height: 1.55;
+}
+
+.multiplication-learning-equation {
+  width: fit-content;
+  margin: 14px auto 8px;
+  padding: 9px 20px;
+  border-radius: 999px;
+  background: #fff;
+  color: #263d2d;
+  font-size: clamp(31px, 8vw, 48px);
+  font-weight: 950;
+  box-shadow: 0 9px 24px rgba(36, 67, 44, 0.1);
+}
+
+.multiplication-learning-equation strong {
+  color: #16824a;
+}
+
+.multiplication-learning-card.is-wrong .multiplication-learning-equation strong {
+  color: #bd4a30;
+}
+
+.multiplication-learning-answer-number {
+  position: absolute;
+  top: 118px;
+  left: 22px;
+  z-index: 5;
+  display: grid;
+  place-items: center;
+  min-width: 62px;
+  height: 62px;
+  padding: 0 12px;
+  border-radius: 22px;
+  background: #1f7244;
+  color: #fff;
+  font-size: 30px;
+  font-weight: 950;
+  box-shadow: 0 10px 26px rgba(31, 114, 68, 0.26);
+  animation: multiplicationLearningNumberPop 420ms ease-out 120ms both;
+}
+
+.multiplication-learning-card.is-wrong .multiplication-learning-answer-number {
+  background: #ba4d32;
+}
+
+.multiplication-learning-apple-scene {
+  position: relative;
+  height: 265px;
+  margin-top: 9px;
+  overflow: hidden;
+  border: 2px solid rgba(56, 125, 78, 0.14);
+  border-radius: 24px;
+  background: linear-gradient(180deg, #d9f2ff 0%, #effbe8 67%, #d4e7ba 68%, #c2daa4 100%);
+}
+
+.multiplication-learning-tree {
+  position: absolute;
+  top: 3px;
+  right: 50%;
+  z-index: 1;
+  font-size: 145px;
+  line-height: 1;
+  transform: translateX(50%);
+  filter: drop-shadow(0 12px 9px rgba(43, 82, 40, 0.18));
+}
+
+.multiplication-learning-apple-rain {
+  position: absolute;
+  inset: 54px 5% 20px;
+  z-index: 2;
+}
+
+.multiplication-learning-falling-apple {
+  position: absolute;
+  top: 0;
+  left: var(--learning-apple-left);
+  font-size: 35px;
+  line-height: 1;
+  opacity: 0;
+  transform: translate(-50%, -34px) rotate(-12deg);
+  filter: drop-shadow(0 5px 4px rgba(92, 53, 15, 0.24));
+  animation: multiplicationLearningAppleFall 900ms cubic-bezier(0.18, 0.78, 0.28, 1) var(--learning-apple-delay) forwards;
+}
+
+.multiplication-learning-ground {
+  position: absolute;
+  right: 4%;
+  bottom: 16px;
+  left: 4%;
+  height: 9px;
+  border-radius: 999px;
+  background: rgba(63, 112, 42, 0.34);
+}
+
+.multiplication-learning-place-value {
+  margin-top: 10px;
+  padding: 20px 14px 14px;
+  border: 2px solid rgba(69, 124, 80, 0.13);
+  border-radius: 24px;
+  background: linear-gradient(180deg, #e2f5ff, #f5fbe8);
+}
+
+.multiplication-learning-baskets,
+.multiplication-learning-ones {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.multiplication-learning-basket {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  width: 63px;
+  height: 63px;
+  opacity: 0;
+  transform: translateY(-24px) scale(0.84);
+  animation: multiplicationLearningLand 450ms ease-out forwards;
+}
+
+.multiplication-learning-basket > span {
+  font-size: 53px;
+  line-height: 1;
+}
+
+.multiplication-learning-basket strong {
+  position: absolute;
+  right: -3px;
+  bottom: -3px;
+  display: grid;
+  place-items: center;
+  width: 29px;
+  height: 29px;
+  border-radius: 50%;
+  background: #fff;
+  color: #23643e;
+  font-size: 13px;
+  box-shadow: 0 5px 12px rgba(43, 70, 48, 0.17);
+}
+
+.multiplication-learning-ones {
+  margin-top: 12px;
+}
+
+.multiplication-learning-ones span {
+  display: inline-block;
+  font-size: 34px;
+  opacity: 0;
+  transform: translateY(-22px);
+  animation: multiplicationLearningLand 430ms ease-out forwards;
+}
+
+.multiplication-learning-place-value p {
+  margin: 12px 0 0;
+  color: #244c34;
+  direction: ltr;
+  font-size: 22px;
+  font-weight: 900;
+}
+
+.multiplication-learning-caption {
+  margin: 12px 0 0;
+  color: #405b49;
+  font-size: clamp(15px, 3.6vw, 19px);
+  font-weight: 850;
+  line-height: 1.5;
+}
+
 @keyframes multiplicationAnswerPop {
   0% { transform: scale(0.96); }
   70% { transform: scale(1.04); }
@@ -85,8 +331,149 @@
   75% { transform: translateX(4px); }
 }
 
+@keyframes multiplicationLearningBackdrop {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes multiplicationLearningCardEnter {
+  from { opacity: 0; transform: translateY(28px) scale(0.9); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes multiplicationLearningNumberPop {
+  0% { opacity: 0; transform: scale(0.65) rotate(-8deg); }
+  70% { opacity: 1; transform: scale(1.1) rotate(3deg); }
+  100% { opacity: 1; transform: scale(1) rotate(0); }
+}
+
+@keyframes multiplicationLearningAppleFall {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -38px) rotate(-14deg);
+  }
+  16% { opacity: 1; }
+  80% {
+    transform: translate(calc(-50% + var(--learning-apple-drift)), 150px) rotate(18deg);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(calc(-50% + var(--learning-apple-drift)), 166px) rotate(0deg) scale(1.04);
+  }
+}
+
+@keyframes multiplicationLearningLand {
+  0% { opacity: 0; transform: translateY(-24px) scale(0.84); }
+  72% { opacity: 1; transform: translateY(4px) scale(1.06); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
 @media (max-width: 640px) {
   .multiplication-weakness-grid {
     grid-template-columns: 1fr;
+  }
+
+  .multiplication-learning-overlay {
+    align-items: center;
+    padding: max(10px, env(safe-area-inset-top)) 8px max(10px, env(safe-area-inset-bottom));
+  }
+
+  .multiplication-learning-card {
+    width: 96vw;
+    max-height: 91dvh;
+    padding: 15px 11px 14px;
+    border-radius: 25px;
+  }
+
+  .multiplication-learning-heading {
+    gap: 9px;
+  }
+
+  .multiplication-learning-heading > span {
+    flex-basis: 46px;
+    width: 46px;
+    height: 46px;
+    border-radius: 15px;
+    font-size: 27px;
+  }
+
+  .multiplication-learning-heading h2 {
+    font-size: clamp(21px, 6vw, 27px);
+  }
+
+  .multiplication-learning-heading p {
+    font-size: 14px;
+  }
+
+  .multiplication-learning-equation {
+    margin-top: 11px;
+    padding: 7px 17px;
+    font-size: clamp(31px, 10vw, 43px);
+  }
+
+  .multiplication-learning-answer-number {
+    top: 103px;
+    left: 12px;
+    min-width: 54px;
+    height: 54px;
+    border-radius: 18px;
+    font-size: 27px;
+  }
+
+  .multiplication-learning-apple-scene {
+    height: 275px;
+    border-radius: 21px;
+  }
+
+  .multiplication-learning-tree {
+    top: 5px;
+    font-size: 142px;
+  }
+
+  .multiplication-learning-apple-rain {
+    inset: 54px 2% 18px;
+  }
+
+  .multiplication-learning-falling-apple {
+    font-size: 34px;
+  }
+
+  .multiplication-learning-caption {
+    margin-top: 9px;
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 390px) {
+  .multiplication-learning-card {
+    padding: 13px 9px;
+  }
+
+  .multiplication-learning-apple-scene {
+    height: 255px;
+  }
+
+  .multiplication-learning-tree {
+    font-size: 130px;
+  }
+
+  .multiplication-learning-falling-apple {
+    font-size: 31px;
+  }
+
+  .multiplication-learning-answer-number {
+    top: 98px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .multiplication-learning-overlay,
+  .multiplication-learning-card,
+  .multiplication-learning-answer-number,
+  .multiplication-learning-falling-apple,
+  .multiplication-learning-basket,
+  .multiplication-learning-ones span {
+    animation-duration: 1ms !important;
+    animation-delay: 0ms !important;
   }
 }
