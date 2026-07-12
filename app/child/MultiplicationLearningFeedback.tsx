@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 
-type LearningFeedback = {
+type Feedback = {
   correct: boolean;
   selected: number;
   answer: number;
@@ -20,8 +20,6 @@ type AppleStyle = CSSProperties & {
 const APPLE_POSITIONS = [10, 28, 47, 67, 86, 18, 38, 58, 78, 22, 43, 63, 83, 13, 33, 53, 73, 91, 25, 69];
 const CORRECT_SOUND = "/audio/correct-answer.mp3";
 const WRONG_SOUND = "/audio/wrong-answer.mp3";
-const CORRECT_DURATION_MS = 5000;
-const WRONG_DURATION_MS = 6300;
 
 function normalizeDigits(value: string) {
   const arabicDigits = "٠١٢٣٤٥٦٧٨٩";
@@ -31,7 +29,7 @@ function normalizeDigits(value: string) {
     .replace(/[۰-۹]/g, (digit) => String(persianDigits.indexOf(digit)));
 }
 
-function findAnswerInteraction(target: EventTarget | null) {
+function findAnswer(target: EventTarget | null) {
   if (!(target instanceof Element)) return null;
   const button = target.closest<HTMLButtonElement>("button");
   if (!button || button.disabled) return null;
@@ -39,9 +37,9 @@ function findAnswerInteraction(target: EventTarget | null) {
   const selectedText = normalizeDigits(button.textContent || "").trim();
   if (!/^\d+$/.test(selectedText)) return null;
 
-  let questionRoot: HTMLElement | null = button.parentElement;
-  for (let depth = 0; depth < 5 && questionRoot; depth += 1) {
-    const text = normalizeDigits(questionRoot.textContent || "");
+  let root: HTMLElement | null = button.parentElement;
+  for (let depth = 0; depth < 5 && root; depth += 1) {
+    const text = normalizeDigits(root.textContent || "");
     const equation = text.match(/(\d+)\s*[×xX*]\s*(\d+)\s*=\s*[؟?]/);
     if (text.includes("اختر الإجابة الصحيحة") && equation) {
       const tableNumber = Number(equation[1]);
@@ -50,13 +48,42 @@ function findAnswerInteraction(target: EventTarget | null) {
       if (![tableNumber, multiplier, selected].every(Number.isFinite)) return null;
       return { tableNumber, multiplier, selected, answer: tableNumber * multiplier };
     }
-    questionRoot = questionRoot.parentElement;
+    root = root.parentElement;
   }
-
   return null;
 }
 
-function DirectAppleCount({ count }: { count: number }) {
+function muteLegacyWebAudio() {
+  const audioWindow = window as typeof window & { webkitAudioContext?: typeof AudioContext };
+  const classes = [window.AudioContext, audioWindow.webkitAudioContext].filter(Boolean) as Array<typeof AudioContext>;
+  const restorers: Array<() => void> = [];
+
+  classes.forEach((AudioContextClass) => {
+    const prototype = AudioContextClass.prototype as unknown as { createGain: AudioContext["createGain"] };
+    const original = prototype.createGain;
+    if (!original || (original as unknown as { __waaiMuted?: boolean }).__waaiMuted) return;
+
+    const muted = function (this: AudioContext) {
+      const node = original.call(this);
+      const parameter = node.gain;
+      parameter.value = 0;
+      parameter.setValueAtTime = () => parameter;
+      parameter.linearRampToValueAtTime = () => parameter;
+      parameter.exponentialRampToValueAtTime = () => parameter;
+      return node;
+    } as AudioContext["createGain"] & { __waaiMuted?: boolean };
+
+    muted.__waaiMuted = true;
+    prototype.createGain = muted;
+    restorers.push(() => {
+      if (prototype.createGain === muted) prototype.createGain = original;
+    });
+  });
+
+  window.setTimeout(() => restorers.forEach((restore) => restore()), 1600);
+}
+
+function Apples({ count }: { count: number }) {
   return (
     <div className="multiplication-learning-apple-scene" aria-label={`${count} تفاحات`}>
       <div className="multiplication-learning-tree" aria-hidden="true">🌳</div>
@@ -75,12 +102,12 @@ function DirectAppleCount({ count }: { count: number }) {
   );
 }
 
-function PlaceValueCount({ answer }: { answer: number }) {
+function PlaceValue({ answer }: { answer: number }) {
   const tens = Math.floor(answer / 10);
   const ones = answer % 10;
   return (
     <div className="multiplication-learning-place-value">
-      <div className="multiplication-learning-baskets" aria-label={`${tens} مجموعات من عشر تفاحات`}>
+      <div className="multiplication-learning-baskets">
         {Array.from({ length: tens }, (_, index) => (
           <span className="multiplication-learning-basket" style={{ animationDelay: `${index * 65}ms` }} key={index}>
             <span aria-hidden="true">🧺</span><strong>10</strong>
@@ -88,10 +115,8 @@ function PlaceValueCount({ answer }: { answer: number }) {
         ))}
       </div>
       {ones > 0 && (
-        <div className="multiplication-learning-ones" aria-label={`${ones} تفاحات منفردة`}>
-          {Array.from({ length: ones }, (_, index) => (
-            <span style={{ animationDelay: `${tens * 65 + index * 70}ms` }} key={index}>🍎</span>
-          ))}
+        <div className="multiplication-learning-ones">
+          {Array.from({ length: ones }, (_, index) => <span key={index}>🍎</span>)}
         </div>
       )}
       <p>{tens > 0 ? `${tens} × 10` : ""}{tens > 0 && ones > 0 ? " + " : ""}{ones || ""} = {answer}</p>
@@ -100,60 +125,53 @@ function PlaceValueCount({ answer }: { answer: number }) {
 }
 
 export default function MultiplicationLearningFeedback() {
-  const [feedback, setFeedback] = useState<LearningFeedback | null>(null);
-  const correctAudioRef = useRef<HTMLAudioElement | null>(null);
-  const wrongAudioRef = useRef<HTMLAudioElement | null>(null);
-  const hideTimerRef = useRef<number | null>(null);
+  const [feedback, setFeedback] = useState<Feedback | null>(null);
+  const correctRef = useRef<HTMLAudioElement | null>(null);
+  const wrongRef = useRef<HTMLAudioElement | null>(null);
+  const timerRef = useRef<number | null>(null);
 
   useEffect(() => {
-    const correctAudio = new Audio(CORRECT_SOUND);
-    const wrongAudio = new Audio(WRONG_SOUND);
-    correctAudio.preload = "auto";
-    wrongAudio.preload = "auto";
-    correctAudio.volume = 1;
-    wrongAudio.volume = 1;
-    correctAudioRef.current = correctAudio;
-    wrongAudioRef.current = wrongAudio;
+    correctRef.current = new Audio(CORRECT_SOUND);
+    wrongRef.current = new Audio(WRONG_SOUND);
+    correctRef.current.preload = "auto";
+    wrongRef.current.preload = "auto";
+    correctRef.current.volume = 1;
+    wrongRef.current.volume = 1;
 
-    return () => {
-      correctAudio.pause();
-      wrongAudio.pause();
-      correctAudioRef.current = null;
-      wrongAudioRef.current = null;
+    const stop = (audio: HTMLAudioElement | null) => {
+      if (!audio) return;
+      audio.pause();
+      audio.currentTime = 0;
     };
-  }, []);
 
-  useEffect(() => {
-    function playUploadedSound(correct: boolean) {
-      const current = correct ? correctAudioRef.current : wrongAudioRef.current;
-      const other = correct ? wrongAudioRef.current : correctAudioRef.current;
-      other?.pause();
-      if (!current) return;
-      current.pause();
-      current.currentTime = 0;
-      void current.play().catch(() => undefined);
-    }
-
-    function handleAnswerClick(event: MouseEvent) {
-      const interaction = findAnswerInteraction(event.target);
+    const onClick = (event: MouseEvent) => {
+      const interaction = findAnswer(event.target);
       if (!interaction) return;
 
       const correct = interaction.selected === interaction.answer;
-      playUploadedSound(correct);
+      muteLegacyWebAudio();
+      stop(correctRef.current);
+      stop(wrongRef.current);
+
+      const audio = correct ? correctRef.current : wrongRef.current;
+      if (audio) void audio.play().catch(() => undefined);
+      if ("speechSynthesis" in window) window.speechSynthesis.cancel();
       if ("vibrate" in navigator) navigator.vibrate(correct ? [35, 35, 35] : 100);
 
       setFeedback({ ...interaction, correct, key: Date.now() });
-      if (hideTimerRef.current) window.clearTimeout(hideTimerRef.current);
-      hideTimerRef.current = window.setTimeout(
-        () => setFeedback(null),
-        correct ? CORRECT_DURATION_MS : WRONG_DURATION_MS,
-      );
-    }
+      if (timerRef.current) window.clearTimeout(timerRef.current);
+      timerRef.current = window.setTimeout(() => setFeedback(null), correct ? 5000 : 6300);
+    };
 
-    document.addEventListener("click", handleAnswerClick, true);
+    document.addEventListener("click", onClick, true);
     return () => {
-      document.removeEventListener("click", handleAnswerClick, true);
-      if (hideTimerRef.current) window.clearTimeout(hideTimerRef.current);
+      document.removeEventListener("click", onClick, true);
+      if (timerRef.current) window.clearTimeout(timerRef.current);
+      stop(correctRef.current);
+      stop(wrongRef.current);
+      correctRef.current = null;
+      wrongRef.current = null;
+      if ("speechSynthesis" in window) window.speechSynthesis.cancel();
     };
   }, []);
 
@@ -162,24 +180,19 @@ export default function MultiplicationLearningFeedback() {
 
   return (
     <div className="multiplication-learning-overlay" aria-live="assertive" key={feedback.key}>
-      <section
-        className={`multiplication-learning-card ${feedback.correct ? "is-correct" : "is-wrong"}`}
-        role="dialog"
-        aria-modal="true"
-        aria-label="شرح الإجابة بصريًا وصوتيًا"
-      >
+      <section className={`multiplication-learning-card ${feedback.correct ? "is-correct" : "is-wrong"}`} role="dialog" aria-modal="true">
         <div className="multiplication-learning-heading">
           <span aria-hidden="true">{feedback.correct ? "⭐" : "💡"}</span>
           <div>
             <h2>{feedback.correct ? "أحسنت! إجابة صحيحة" : "محاولة جميلة، تعلّم الإجابة"}</h2>
-            <p>{feedback.correct ? "شاهد العدد أمامك واستمع للمؤثر." : `اخترت ${feedback.selected}، والصحيح هو ${feedback.answer}.`}</p>
+            <p>{feedback.correct ? "شاهد العدد أمامك." : `اخترت ${feedback.selected}، والصحيح هو ${feedback.answer}.`}</p>
           </div>
         </div>
         <div className="multiplication-learning-equation" dir="ltr">
           {feedback.tableNumber} × {feedback.multiplier} = <strong>{feedback.answer}</strong>
         </div>
         <div className="multiplication-learning-answer-number">{feedback.answer}</div>
-        {directCount ? <DirectAppleCount count={feedback.answer} /> : <PlaceValueCount answer={feedback.answer} />}
+        {directCount ? <Apples count={feedback.answer} /> : <PlaceValue answer={feedback.answer} />}
         <p className="multiplication-learning-caption">
           {directCount ? `أمامك ${feedback.answer} تفاحات، وهو عدد الإجابة.` : "كل سلة تساوي عشر تفاحات، ثم نضيف الآحاد."}
         </p>
