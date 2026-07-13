@@ -28,6 +28,10 @@ type DashboardMetrics = {
   totalPoints: number;
 };
 
+type ChildDeleteResult = {
+  photo_path?: string | null;
+};
+
 const avatarSymbols: Record<string, string> = {
   leaf: "🌿",
   star: "⭐",
@@ -54,76 +58,81 @@ export default function DashboardPage() {
   const [students, setStudents] = useState<Student[]>([]);
   const [metrics, setMetrics] = useState<DashboardMetrics>({ activeGoals: 0, pendingTasks: 0, totalPoints: 0 });
   const [loading, setLoading] = useState(true);
+  const [deletingId, setDeletingId] = useState("");
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
-  useEffect(() => {
-    async function loadSession() {
-      const client = supabase;
-      if (!client) {
-        router.replace("/login?type=family");
-        return;
-      }
-
-      const { data } = await client.auth.getSession();
-      const session = data.session;
-      if (!session) {
-        router.replace("/login?type=family");
-        return;
-      }
-
-      const organization = await client
-        .from("organizations")
-        .select("id, name, family_title")
-        .eq("owner_id", session.user.id)
-        .eq("type", "family")
-        .maybeSingle();
-
-      if (!organization.data) {
-        router.replace("/onboarding");
-        return;
-      }
-
-      const [studentResult, goalsResult, tasksResult] = await Promise.all([
-        client
-          .from("students")
-          .select("id, full_name, achievement_points, reward_points, profile_data")
-          .eq("organization_id", organization.data.id)
-          .order("created_at", { ascending: true }),
-        client
-          .from("goals")
-          .select("id", { count: "exact", head: true })
-          .eq("organization_id", organization.data.id)
-          .in("status", ["approved", "active", "paused"]),
-        client
-          .from("tasks")
-          .select("id", { count: "exact", head: true })
-          .eq("organization_id", organization.data.id)
-          .eq("status", "submitted")
-      ]);
-
-      if (studentResult.error) {
-        setError("تعذر تحميل بيانات الأبناء.");
-      } else {
-        const withPhotos = await Promise.all((studentResult.data || []).map(async (student) => {
-          const profile = (student.profile_data || {}) as StudentProfile;
-          if (!profile.photo_path) return student;
-          const signed = await client.storage.from("child-photos").createSignedUrl(profile.photo_path, 3600);
-          return { ...student, photo_url: signed.data?.signedUrl || "" };
-        }));
-        setStudents(withPhotos);
-        setMetrics({
-          activeGoals: goalsResult.count || 0,
-          pendingTasks: tasksResult.count || 0,
-          totalPoints: withPhotos.reduce((sum, student) => sum + Number(student.achievement_points || 0), 0)
-        });
-      }
-
-      setEmail(session.user.email || "");
-      setFamilyName(organization.data.family_title || organization.data.name);
-      setLoading(false);
+  async function loadDashboard() {
+    const client = supabase;
+    if (!client) {
+      router.replace("/login?type=family");
+      return;
     }
 
-    loadSession();
+    setLoading(true);
+    setError("");
+
+    const { data } = await client.auth.getSession();
+    const session = data.session;
+    if (!session) {
+      router.replace("/login?type=family");
+      return;
+    }
+
+    const organization = await client
+      .from("organizations")
+      .select("id, name, family_title")
+      .eq("owner_id", session.user.id)
+      .eq("type", "family")
+      .maybeSingle();
+
+    if (!organization.data) {
+      router.replace("/onboarding");
+      return;
+    }
+
+    const [studentResult, goalsResult, tasksResult] = await Promise.all([
+      client
+        .from("students")
+        .select("id, full_name, achievement_points, reward_points, profile_data")
+        .eq("organization_id", organization.data.id)
+        .order("created_at", { ascending: true }),
+      client
+        .from("goals")
+        .select("id", { count: "exact", head: true })
+        .eq("organization_id", organization.data.id)
+        .in("status", ["approved", "active", "paused"]),
+      client
+        .from("tasks")
+        .select("id", { count: "exact", head: true })
+        .eq("organization_id", organization.data.id)
+        .eq("status", "submitted")
+    ]);
+
+    if (studentResult.error) {
+      setError("تعذر تحميل بيانات الأبناء.");
+    } else {
+      const withPhotos = await Promise.all((studentResult.data || []).map(async (student) => {
+        const profile = (student.profile_data || {}) as StudentProfile;
+        if (!profile.photo_path) return student;
+        const signed = await client.storage.from("child-photos").createSignedUrl(profile.photo_path, 3600);
+        return { ...student, photo_url: signed.data?.signedUrl || "" };
+      }));
+      setStudents(withPhotos);
+      setMetrics({
+        activeGoals: goalsResult.count || 0,
+        pendingTasks: tasksResult.count || 0,
+        totalPoints: withPhotos.reduce((sum, student) => sum + Number(student.achievement_points || 0), 0)
+      });
+    }
+
+    setEmail(session.user.email || "");
+    setFamilyName(organization.data.family_title || organization.data.name);
+    setLoading(false);
+  }
+
+  useEffect(() => {
+    void loadDashboard();
   }, [router]);
 
   async function signOut() {
@@ -131,6 +140,60 @@ export default function DashboardPage() {
     if (client) await client.auth.signOut();
     router.replace("/login?type=family");
     router.refresh();
+  }
+
+  async function deleteChild(student: Student) {
+    const client = supabase;
+    if (!client || deletingId) return;
+
+    const warning = [
+      `سيتم حذف ملف ${student.full_name} نهائيًا.`,
+      "يشمل الحذف الأهداف والمهام وخطط الحفظ والنقاط والهدايا والروابط والجلسات المرتبطة بالطفل.",
+      "لا يمكن التراجع عن هذه العملية. هل تريد المتابعة؟"
+    ].join("\n");
+
+    if (!window.confirm(warning)) return;
+
+    const confirmation = window.prompt(
+      `للتأكيد اكتب اسم الطفل كما يظهر تمامًا:\n${student.full_name}`,
+      ""
+    );
+
+    if (confirmation?.trim() !== student.full_name.trim()) {
+      setError("لم يتم الحذف لأن اسم الطفل المكتوب لا يطابق الاسم الظاهر.");
+      setSuccess("");
+      return;
+    }
+
+    setDeletingId(student.id);
+    setError("");
+    setSuccess("");
+
+    const result = await client.rpc("parent_delete_child", {
+      p_student_id: student.id,
+      p_confirmation: confirmation.trim()
+    });
+
+    if (result.error) {
+      setDeletingId("");
+      if (result.error.message.includes("CONFIRMATION_MISMATCH")) {
+        setError("لم يتم الحذف لأن اسم الطفل المكتوب غير مطابق.");
+      } else if (result.error.message.includes("CHILD_DELETE_FORBIDDEN")) {
+        setError("لا تملك صلاحية حذف هذا الطفل.");
+      } else {
+        setError("تعذر حذف ملف الطفل الآن. حاول مرة أخرى.");
+      }
+      return;
+    }
+
+    const deleted = (result.data || {}) as ChildDeleteResult;
+    if (deleted.photo_path) {
+      await client.storage.from("child-photos").remove([deleted.photo_path]);
+    }
+
+    setSuccess(`تم حذف ملف ${student.full_name} وجميع البيانات المرتبطة به.`);
+    setDeletingId("");
+    await loadDashboard();
   }
 
   if (loading) return <main className="dashboard-loading">جارٍ تجهيز لوحة الأسرة...</main>;
@@ -157,6 +220,7 @@ export default function DashboardPage() {
           <Link className="auth-submit link-submit dashboard-primary-action" href="/children/new">+ إضافة طفل</Link>
         </div>
         {error && <p className="form-message error-message dashboard-error">{error}</p>}
+        {success && <p className="form-message success-message dashboard-error">{success}</p>}
       </section>
 
       <section className="family-metrics focused-metrics" aria-label="ملخص الأسرة">
@@ -178,6 +242,7 @@ export default function DashboardPage() {
               const profile = student.profile_data || {};
               const completion = getProfileCompletion(student);
               const icon = index % 4 === 0 ? "🌟" : index % 4 === 1 ? "🚀" : index % 4 === 2 ? "📚" : "🌈";
+              const deleting = deletingId === student.id;
               return (
                 <article className="child-card child-card-summary refreshed-child-card" key={student.id}>
                   <Link className="child-card-main-link" href={`/children/${student.id}`}>
@@ -194,6 +259,14 @@ export default function DashboardPage() {
                     <Link href={`/children/${student.id}/gifts`}><span>🎁</span>الهدايا</Link>
                     <Link href={`/children/${student.id}/quran`}><span>📖</span>متابعة الحفظ</Link>
                     <Link href={`/children/${student.id}/access`}><span>🔐</span>الدخول</Link>
+                    <button
+                      className="child-delete-action"
+                      type="button"
+                      disabled={Boolean(deletingId)}
+                      onClick={() => void deleteChild(student)}
+                    >
+                      <span>🗑️</span>{deleting ? "جارٍ الحذف..." : "حذف الطفل"}
+                    </button>
                   </div>
                 </article>
               );
