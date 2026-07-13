@@ -16,6 +16,7 @@ type Subscription = { id:string; organization_name:string; plan_code:string; sta
 type Membership = { id:string; organization_name:string; email:string|null; role:string; display_name:string|null; is_active:boolean; created_at:string };
 type Gift = { id:string; student_name:string; organization_name:string; gift_name:string; achievement_title:string; sender_name:string; status:string; coin_cost:number; gifted_at:string; opened_at:string|null };
 type DashboardData = { admin:{ role:string }; metrics:Metrics; organizations:Organization[]; students:Student[]; subscriptions:Subscription[]; memberships:Membership[]; recent_gifts:Gift[] };
+type ChildDeleteResult = { photo_path?: string | null };
 
 const dateFormat = new Intl.DateTimeFormat("ar-SA", { dateStyle: "medium" });
 function formatDate(value:string|null) { return value ? dateFormat.format(new Date(value)) : "—"; }
@@ -142,6 +143,66 @@ export default function AdminPage() {
     }, "تم إلغاء جلسات دخول الطفل.");
   }
 
+  async function deleteStudent(student: Student) {
+    if (!supabase || busyId) return;
+
+    const warning = [
+      `سيتم حذف الطفل ${student.full_name} من أسرة ${student.organization_name} نهائيًا.`,
+      "سيُحذف معه سجل الأهداف والمهام والحفظ والنقاط والهدايا وروابط المعلمين وجلسات الدخول.",
+      "لا يمكن التراجع عن العملية. هل تريد المتابعة؟"
+    ].join("\n");
+
+    if (!window.confirm(warning)) return;
+
+    const confirmation = window.prompt(
+      `اكتب اسم الطفل كما يظهر تمامًا للتأكيد:\n${student.full_name}`,
+      ""
+    );
+
+    if (confirmation?.trim() !== student.full_name.trim()) {
+      setError("لم يتم الحذف لأن اسم الطفل المكتوب لا يطابق الاسم الظاهر.");
+      setSuccess("");
+      return;
+    }
+
+    const reason = window.prompt(
+      "اكتب سبب حذف الطفل ليُحفظ في سجل التدقيق:",
+      "حذف إداري لملف طفل"
+    ) || "حذف إداري لملف طفل";
+
+    const actionId = `delete-${student.id}`;
+    setBusyId(actionId);
+    setError("");
+    setSuccess("");
+
+    const result = await supabase.rpc("admin_delete_child", {
+      p_student_id: student.id,
+      p_confirmation: confirmation.trim(),
+      p_reason: reason
+    });
+
+    if (result.error) {
+      setBusyId("");
+      if (result.error.message.includes("CONFIRMATION_MISMATCH")) {
+        setError("لم يتم الحذف لأن اسم الطفل المكتوب غير مطابق.");
+      } else if (result.error.message.includes("ADMIN_CHILD_DELETE_FORBIDDEN")) {
+        setError("هذه العملية متاحة للآدمين الأعلى أو آدمين العمليات فقط.");
+      } else {
+        setError("تعذر حذف ملف الطفل الآن.");
+      }
+      return;
+    }
+
+    const deleted = (result.data || {}) as ChildDeleteResult;
+    if (deleted.photo_path) {
+      await supabase.storage.from("child-photos").remove([deleted.photo_path]);
+    }
+
+    setBusyId("");
+    setSuccess(`تم حذف ${student.full_name} وجميع البيانات المرتبطة به، وحُفظت العملية في سجل التدقيق.`);
+    await loadDashboard();
+  }
+
   async function toggleMembership(item:Membership) {
     await runAction(item.id, async () => {
       if (!supabase) return { error: { message:"SUPABASE_NOT_READY" } };
@@ -248,9 +309,10 @@ export default function AdminPage() {
 
         {tab === "organizations" && <section className={styles.section}><div className={styles.sectionHead}><div><h3>الأسر والجهات</h3><p>المالك وعدد الأطفال وحالة الاشتراك.</p></div><span className={styles.countBadge}>{data.organizations.length}</span></div><div className={styles.tableWrap}><table className={styles.table}><thead><tr><th>الجهة</th><th>النوع</th><th>المالك</th><th>الأطفال</th><th>العضويات</th><th>الاشتراك</th><th>تاريخ الإنشاء</th></tr></thead><tbody>{data.organizations.map((item) => <tr key={item.id}><td className={styles.mainCell}><strong>{item.family_title || item.name}</strong><small>{item.city || "المدينة غير محددة"} · {item.family_code}</small></td><td><span className={styles.status}>{item.type}</span></td><td>{item.owner_email || "—"}</td><td>{item.students_count}</td><td>{item.active_members_count}</td><td>{item.subscription ? `${item.subscription.plan_code} · ${item.subscription.status}` : "بدون اشتراك"}</td><td>{formatDate(item.created_at)}</td></tr>)}</tbody></table></div></section>}
 
-        {tab === "students" && <section className={styles.section}><div className={styles.sectionHead}><div><h3>الأطفال</h3><p>التحكم في الإنجاز والمكافآت والمهام والأنشطة وجلسات الدخول، مع حفظ جميع العمليات الحساسة في سجل التدقيق.</p></div><span className={styles.countBadge}>{data.students.length}</span></div><div className={styles.tableWrap}><table className={styles.table}><thead><tr><th>الطفل</th><th>الأسرة</th><th>الإنجاز</th><th>المكافآت</th><th>الأهداف</th><th>المهام</th><th>الهدايا</th><th>الإجراءات</th></tr></thead><tbody>{data.students.map((item) => {
+        {tab === "students" && <section className={styles.section}><div className={styles.sectionHead}><div><h3>الأطفال</h3><p>التحكم في الإنجاز والمكافآت والمهام والجلسات، مع إمكانية حذف الطفل نهائيًا وتسجيل العملية.</p></div><span className={styles.countBadge}>{data.students.length}</span></div><div className={styles.tableWrap}><table className={styles.table}><thead><tr><th>الطفل</th><th>الأسرة</th><th>الإنجاز</th><th>المكافآت</th><th>الأهداف</th><th>المهام</th><th>الهدايا</th><th>الإجراءات</th></tr></thead><tbody>{data.students.map((item) => {
           const resetting = busyId.startsWith("reset-") && busyId.endsWith(item.id);
-          return <tr key={item.id}><td className={styles.mainCell}><strong>{item.full_name}</strong><small>رمز الدخول: {item.child_login_code}</small></td><td>{item.organization_name}</td><td>{item.achievement_points}</td><td>{item.reward_points}</td><td>{item.goals_count}</td><td>{item.tasks_count}</td><td>{item.gifts_count}</td><td><div className={styles.rowActions}><button className={styles.iconButton} type="button" disabled={busyId === item.id || resetting} onClick={() => void adjustPoints(item)}>تعديل النقاط</button><button className={styles.dangerButton} type="button" disabled={item.achievement_points <= 0 || Boolean(busyId)} onClick={() => void resetStudentPoints(item, "achievement")}>تصفير الإنجاز</button><button className={styles.dangerButton} type="button" disabled={item.reward_points <= 0 || Boolean(busyId)} onClick={() => void resetStudentPoints(item, "reward")}>تصفير المكافآت</button><button className={styles.dangerButton} type="button" disabled={(item.achievement_points <= 0 && item.reward_points <= 0) || Boolean(busyId)} onClick={() => void resetStudentPoints(item, "all")}>{resetting ? "جارٍ التصفير..." : "تصفير الكل"}</button><AdminTaskResetButton student={item} disabled={Boolean(busyId) || resetting} onReset={() => loadDashboard()} /><button className={styles.dangerButton} type="button" disabled={busyId === `session-${item.id}` || resetting} onClick={() => void revokeSessions(item)}>إلغاء الجلسات</button></div></td></tr>;
+          const deleting = busyId === `delete-${item.id}`;
+          return <tr key={item.id}><td className={styles.mainCell}><strong>{item.full_name}</strong><small>رمز الدخول: {item.child_login_code}</small></td><td>{item.organization_name}</td><td>{item.achievement_points}</td><td>{item.reward_points}</td><td>{item.goals_count}</td><td>{item.tasks_count}</td><td>{item.gifts_count}</td><td><div className={styles.rowActions}><button className={styles.iconButton} type="button" disabled={busyId === item.id || resetting || deleting} onClick={() => void adjustPoints(item)}>تعديل النقاط</button><button className={styles.dangerButton} type="button" disabled={item.achievement_points <= 0 || Boolean(busyId)} onClick={() => void resetStudentPoints(item, "achievement")}>تصفير الإنجاز</button><button className={styles.dangerButton} type="button" disabled={item.reward_points <= 0 || Boolean(busyId)} onClick={() => void resetStudentPoints(item, "reward")}>تصفير المكافآت</button><button className={styles.dangerButton} type="button" disabled={(item.achievement_points <= 0 && item.reward_points <= 0) || Boolean(busyId)} onClick={() => void resetStudentPoints(item, "all")}>{resetting ? "جارٍ التصفير..." : "تصفير الكل"}</button><AdminTaskResetButton student={item} disabled={Boolean(busyId) || resetting} onReset={() => loadDashboard()} /><button className={styles.dangerButton} type="button" disabled={Boolean(busyId)} onClick={() => void revokeSessions(item)}>إلغاء الجلسات</button><button className={styles.dangerButton} type="button" disabled={Boolean(busyId)} onClick={() => void deleteStudent(item)}>{deleting ? "جارٍ الحذف..." : "حذف الطفل"}</button></div></td></tr>;
         })}</tbody></table></div></section>}
 
         {tab === "subscriptions" && <section className={styles.section}><div className={styles.sectionHead}><div><h3>الاشتراكات</h3><p>تغيير الحالة يتم فورًا ويسجل باسم الآدمين.</p></div><span className={styles.countBadge}>{data.subscriptions.length}</span></div><div className={styles.tableWrap}><table className={styles.table}><thead><tr><th>الجهة</th><th>الخطة</th><th>الحالة</th><th>البداية</th><th>النهاية</th><th>حفظ</th></tr></thead><tbody>{data.subscriptions.map((item) => <tr key={item.id}><td>{item.organization_name}</td><td>{item.plan_code}</td><td><select className={styles.select} value={subscriptionStatuses[item.id] || item.status} onChange={(event) => setSubscriptionStatuses((current) => ({...current,[item.id]:event.target.value}))}><option value="trial">تجريبي</option><option value="active">نشط</option><option value="suspended">موقوف</option><option value="cancelled">ملغي</option><option value="expired">منتهي</option></select></td><td>{formatDate(item.starts_at)}</td><td>{formatDate(item.ends_at)}</td><td><button className={styles.primaryButton} type="button" disabled={busyId === item.id} onClick={() => void saveSubscription(item)}>حفظ</button></td></tr>)}</tbody></table></div></section>}
