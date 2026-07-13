@@ -1,7 +1,7 @@
 create or replace function public.ensure_student_child_login_code()
 returns trigger
 language plpgsql
-security definer
+security invoker
 set search_path = public
 as $$
 begin
@@ -14,6 +14,8 @@ begin
   return new;
 end;
 $$;
+
+revoke execute on function public.ensure_student_child_login_code() from public, anon, authenticated;
 
 drop trigger if exists ensure_student_child_login_code_before_write on public.students;
 
