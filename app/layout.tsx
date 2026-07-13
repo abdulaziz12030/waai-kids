@@ -43,6 +43,7 @@ import './teacher-review-polish.css';
 import './teacher-recovery.css';
 import './memorization-builder.css';
 import './waai-brand.css';
+import './child-deletion.css';
 
 const waaiKidsBrandRuntime = `
 (() => {
