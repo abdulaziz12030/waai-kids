@@ -1,0 +1,45 @@
+name: Verify Arabian Horse Video
+
+on:
+  pull_request:
+    paths:
+      - public/gifts/arabian-horse/video-parts/**
+      - scripts/list_horse_chunk_hashes.sh
+      - .github/workflows/verify-arabian-horse-video.yml
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List chunk hashes
+        run: bash scripts/list_horse_chunk_hashes.sh | tee /tmp/chunks.txt
+      - name: Assemble video and record result
+        id: assemble
+        shell: bash
+        run: |
+          set +e
+          cat public/gifts/arabian-horse/video-parts/part-*.txt | tr -d '\n\r ' | base64 --decode > /tmp/horse.mp4
+          decode_status=$?
+          actual_size="$(stat -c%s /tmp/horse.mp4 2>/dev/null || echo 0)"
+          actual_sha="$(sha256sum /tmp/horse.mp4 2>/dev/null | cut -d' ' -f1)"
+          cp /tmp/chunks.txt /tmp/horse-result.txt
+          printf 'decode_status=%s\nsize=%s\nsha=%s\n' "$decode_status" "$actual_size" "$actual_sha" >> /tmp/horse-result.txt
+          cat /tmp/horse-result.txt
+          echo "decode_status=$decode_status" >> "$GITHUB_OUTPUT"
+          echo "actual_size=$actual_size" >> "$GITHUB_OUTPUT"
+          echo "actual_sha=$actual_sha" >> "$GITHUB_OUTPUT"
+      - name: Upload result
+        uses: actions/upload-artifact@v4
+        with:
+          name: arabian-horse-video-result
+          path: /tmp/horse-result.txt
+      - name: Verify expected file
+        shell: bash
+        run: |
+          test "${{ steps.assemble.outputs.decode_status }}" = "0"
+          test "${{ steps.assemble.outputs.actual_size }}" = "88977"
+          test "${{ steps.assemble.outputs.actual_sha }}" = "0f1bf6583b83947f3cef94578bfaf8a6818798fe47a0c7dc269b50a966220424"
